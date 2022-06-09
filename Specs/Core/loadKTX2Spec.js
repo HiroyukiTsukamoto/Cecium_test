@@ -18,13 +18,13 @@ describe("Core/loadKTX2", function () {
   });
 
   it("throws if loadKTX2 is called with invalid url", function () {
-    const testUrl = "http://example.invalid/testuri";
-    const promise = loadKTX2(testUrl);
+    var testUrl = "http://example.invalid/testuri";
+    var promise = loadKTX2(testUrl);
     return promise
       .then(function (value) {
         fail();
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toBeDefined();
       });
   });
@@ -36,10 +36,10 @@ describe("Core/loadKTX2", function () {
     height,
     isCompressed
   ) {
-    const resource = Resource.createIfNeeded(url);
-    const loadPromise = resource.fetchArrayBuffer();
+    var resource = Resource.createIfNeeded(url);
+    var loadPromise = resource.fetchArrayBuffer();
     return loadPromise.then(function (buffer) {
-      const promise = KTX2Transcoder.transcode(buffer, supportedFormats);
+      var promise = KTX2Transcoder.transcode(buffer, supportedFormats);
       return promise.then(function (result) {
         expect(result).toBeDefined();
         expect(result.width).toEqual(width);
@@ -183,17 +183,15 @@ describe("Core/loadKTX2", function () {
   });
 
   it("returns a promise that resolves to an uncompressed texture containing all mip levels of the original texture", function () {
-    const resource = Resource.createIfNeeded(
-      "./Data/Images/Green4x4Mipmap.ktx2"
-    );
-    const loadPromise = resource.fetchArrayBuffer();
+    var resource = Resource.createIfNeeded("./Data/Images/Green4x4Mipmap.ktx2");
+    var loadPromise = resource.fetchArrayBuffer();
     return loadPromise.then(function (buffer) {
-      const promise = KTX2Transcoder.transcode(buffer, {});
+      var promise = KTX2Transcoder.transcode(buffer, {});
       return promise.then(function (resolvedValue) {
         expect(resolvedValue).toBeDefined();
         expect(resolvedValue.length).toEqual(3);
-        const dims = [4, 2, 1];
-        for (let i = 0; i < resolvedValue.length; ++i) {
+        var dims = [4, 2, 1];
+        for (var i = 0; i < resolvedValue.length; ++i) {
           expect(resolvedValue[i].width).toEqual(dims[i]);
           expect(resolvedValue[i].height).toEqual(dims[i]);
           expect(
@@ -206,17 +204,17 @@ describe("Core/loadKTX2", function () {
   });
 
   it("returns a promise that resolves to a compressed texture containing all mip levels of the original texture", function () {
-    const resource = Resource.createIfNeeded(
+    var resource = Resource.createIfNeeded(
       "./Data/Images/Green4x4Mipmap_ETC1S.ktx2"
     );
-    const loadPromise = resource.fetchArrayBuffer();
+    var loadPromise = resource.fetchArrayBuffer();
     return loadPromise.then(function (buffer) {
-      const promise = KTX2Transcoder.transcode(buffer, { etc1: true });
+      var promise = KTX2Transcoder.transcode(buffer, { etc1: true });
       return promise.then(function (resolvedValue) {
         expect(resolvedValue).toBeDefined();
         expect(resolvedValue.length).toEqual(3);
-        const dims = [4, 2, 1];
-        for (let i = 0; i < resolvedValue.length; ++i) {
+        var dims = [4, 2, 1];
+        for (var i = 0; i < resolvedValue.length; ++i) {
           expect(resolvedValue[i].width).toEqual(dims[i]);
           expect(resolvedValue[i].height).toEqual(dims[i]);
           expect(
@@ -229,15 +227,15 @@ describe("Core/loadKTX2", function () {
   });
 
   it("cannot parse invalid KTX2 buffer", function () {
-    const invalidKTX = new Uint8Array([0, 1, 2, 3, 4, 5]);
-    let resolvedValue;
-    let rejectedError;
-    const promise = loadKTX2(invalidKTX.buffer);
+    var invalidKTX = new Uint8Array([0, 1, 2, 3, 4, 5]);
+    var resolvedValue;
+    var rejectedError;
+    var promise = loadKTX2(invalidKTX.buffer);
     return promise
       .then(function (value) {
         fail();
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         rejectedError = error;
         expect(resolvedValue).toBeUndefined();
         expect(rejectedError).toBeInstanceOf(RuntimeError);
@@ -246,20 +244,20 @@ describe("Core/loadKTX2", function () {
   });
 
   it("3D textures are unsupported", function () {
-    const resource = Resource.createIfNeeded("./Data/Images/Green4x4.ktx2");
-    const loadPromise = resource.fetchArrayBuffer();
+    var resource = Resource.createIfNeeded("./Data/Images/Green4x4.ktx2");
+    var loadPromise = resource.fetchArrayBuffer();
     return loadPromise.then(function (buffer) {
-      const invalidKTX = new Uint32Array(buffer);
+      var invalidKTX = new Uint32Array(buffer);
       invalidKTX[7] = 2; // Uint32 pixelDepth
 
-      let resolvedValue;
-      let rejectedError;
-      const promise = loadKTX2(invalidKTX.buffer);
+      var resolvedValue;
+      var rejectedError;
+      var promise = loadKTX2(invalidKTX.buffer);
       return promise
         .then(function (value) {
           fail();
         })
-        .catch(function (error) {
+        .otherwise(function (error) {
           rejectedError = error;
           expect(resolvedValue).toBeUndefined();
           expect(rejectedError).toBeInstanceOf(RuntimeError);
@@ -271,20 +269,20 @@ describe("Core/loadKTX2", function () {
   });
 
   it("texture arrays are unsupported", function () {
-    const resource = Resource.createIfNeeded("./Data/Images/Green4x4.ktx2");
-    const loadPromise = resource.fetchArrayBuffer();
+    var resource = Resource.createIfNeeded("./Data/Images/Green4x4.ktx2");
+    var loadPromise = resource.fetchArrayBuffer();
     return loadPromise.then(function (buffer) {
-      const invalidKTX = new Uint32Array(buffer);
+      var invalidKTX = new Uint32Array(buffer);
       invalidKTX[8] = 15; // Uint32 layerCount
 
-      let resolvedValue;
-      let rejectedError;
-      const promise = loadKTX2(invalidKTX.buffer);
+      var resolvedValue;
+      var rejectedError;
+      var promise = loadKTX2(invalidKTX.buffer);
       return promise
         .then(function (value) {
           fail();
         })
-        .catch(function (error) {
+        .otherwise(function (error) {
           rejectedError = error;
           expect(resolvedValue).toBeUndefined();
           expect(rejectedError).toBeInstanceOf(RuntimeError);

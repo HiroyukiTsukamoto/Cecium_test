@@ -15,21 +15,21 @@ import ShadowMode from "../Scene/ShadowMode.js";
 import BoundingSphereState from "./BoundingSphereState.js";
 import Property from "./Property.js";
 
-const defaultScale = 1.0;
-const defaultMinimumPixelSize = 0.0;
-const defaultIncrementallyLoadTextures = true;
-const defaultClampAnimations = true;
-const defaultShadows = ShadowMode.ENABLED;
-const defaultHeightReference = HeightReference.NONE;
-const defaultSilhouetteColor = Color.RED;
-const defaultSilhouetteSize = 0.0;
-const defaultColor = Color.WHITE;
-const defaultColorBlendMode = ColorBlendMode.HIGHLIGHT;
-const defaultColorBlendAmount = 0.5;
-const defaultImageBasedLightingFactor = new Cartesian2(1.0, 1.0);
+var defaultScale = 1.0;
+var defaultMinimumPixelSize = 0.0;
+var defaultIncrementallyLoadTextures = true;
+var defaultClampAnimations = true;
+var defaultShadows = ShadowMode.ENABLED;
+var defaultHeightReference = HeightReference.NONE;
+var defaultSilhouetteColor = Color.RED;
+var defaultSilhouetteSize = 0.0;
+var defaultColor = Color.WHITE;
+var defaultColorBlendMode = ColorBlendMode.HIGHLIGHT;
+var defaultColorBlendAmount = 0.5;
+var defaultImageBasedLightingFactor = new Cartesian2(1.0, 1.0);
 
-const modelMatrixScratch = new Matrix4();
-const nodeMatrixScratch = new Matrix4();
+var modelMatrixScratch = new Matrix4();
+var nodeMatrixScratch = new Matrix4();
 
 /**
  * A {@link Visualizer} which maps {@link Entity#model} to a {@link Model}.
@@ -76,22 +76,22 @@ ModelVisualizer.prototype.update = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entities = this._entitiesToVisualize.values;
-  const modelHash = this._modelHash;
-  const primitives = this._primitives;
+  var entities = this._entitiesToVisualize.values;
+  var modelHash = this._modelHash;
+  var primitives = this._primitives;
 
-  for (let i = 0, len = entities.length; i < len; i++) {
-    const entity = entities[i];
-    const modelGraphics = entity._model;
+  for (var i = 0, len = entities.length; i < len; i++) {
+    var entity = entities[i];
+    var modelGraphics = entity._model;
 
-    let resource;
-    let modelData = modelHash[entity.id];
-    let show =
+    var resource;
+    var modelData = modelHash[entity.id];
+    var show =
       entity.isShowing &&
       entity.isAvailable(time) &&
       Property.getValueOrDefault(modelGraphics._show, time, true);
 
-    let modelMatrix;
+    var modelMatrix;
     if (show) {
       modelMatrix = entity.computeModelMatrix(time, modelMatrixScratch);
       resource = Resource.createIfNeeded(
@@ -107,7 +107,7 @@ ModelVisualizer.prototype.update = function (time) {
       continue;
     }
 
-    let model = defined(modelData) ? modelData.modelPrimitive : undefined;
+    var model = defined(modelData) ? modelData.modelPrimitive : undefined;
     if (!defined(model) || resource.url !== modelData.url) {
       if (defined(model)) {
         primitives.removeAndDestroy(model);
@@ -204,7 +204,7 @@ ModelVisualizer.prototype.update = function (time) {
       time,
       defaultClampAnimations
     );
-    model.imageBasedLighting.imageBasedLightingFactor = Property.getValueOrDefault(
+    model.imageBasedLightingFactor = Property.getValueOrDefault(
       modelGraphics._imageBasedLightingFactor,
       time,
       defaultImageBasedLightingFactor
@@ -215,7 +215,7 @@ ModelVisualizer.prototype.update = function (time) {
     );
 
     if (model.ready) {
-      const runAnimations = Property.getValueOrDefault(
+      var runAnimations = Property.getValueOrDefault(
         modelGraphics._runAnimations,
         time,
         true
@@ -232,31 +232,31 @@ ModelVisualizer.prototype.update = function (time) {
       }
 
       // Apply node transformations
-      const nodeTransformations = Property.getValueOrUndefined(
+      var nodeTransformations = Property.getValueOrUndefined(
         modelGraphics._nodeTransformations,
         time,
         modelData.nodeTransformationsScratch
       );
       if (defined(nodeTransformations)) {
-        const nodeNames = Object.keys(nodeTransformations);
+        var nodeNames = Object.keys(nodeTransformations);
         for (
-          let nodeIndex = 0, nodeLength = nodeNames.length;
+          var nodeIndex = 0, nodeLength = nodeNames.length;
           nodeIndex < nodeLength;
           ++nodeIndex
         ) {
-          const nodeName = nodeNames[nodeIndex];
+          var nodeName = nodeNames[nodeIndex];
 
-          const nodeTransformation = nodeTransformations[nodeName];
+          var nodeTransformation = nodeTransformations[nodeName];
           if (!defined(nodeTransformation)) {
             continue;
           }
 
-          const modelNode = model.getNode(nodeName);
+          var modelNode = model.getNode(nodeName);
           if (!defined(modelNode)) {
             continue;
           }
 
-          const transformationMatrix = Matrix4.fromTranslationRotationScale(
+          var transformationMatrix = Matrix4.fromTranslationRotationScale(
             nodeTransformation,
             nodeMatrixScratch
           );
@@ -269,22 +269,22 @@ ModelVisualizer.prototype.update = function (time) {
       }
 
       // Apply articulations
-      let anyArticulationUpdated = false;
-      const articulations = Property.getValueOrUndefined(
+      var anyArticulationUpdated = false;
+      var articulations = Property.getValueOrUndefined(
         modelGraphics._articulations,
         time,
         modelData.articulationsScratch
       );
       if (defined(articulations)) {
-        const articulationStageKeys = Object.keys(articulations);
+        var articulationStageKeys = Object.keys(articulations);
         for (
-          let s = 0, numKeys = articulationStageKeys.length;
+          var s = 0, numKeys = articulationStageKeys.length;
           s < numKeys;
           ++s
         ) {
-          const key = articulationStageKeys[s];
+          var key = articulationStageKeys[s];
 
-          const articulationStageValue = articulations[key];
+          var articulationStageValue = articulations[key];
           if (!defined(articulationStageValue)) {
             continue;
           }
@@ -320,10 +320,10 @@ ModelVisualizer.prototype.destroy = function () {
     ModelVisualizer.prototype._onCollectionChanged,
     this
   );
-  const entities = this._entitiesToVisualize.values;
-  const modelHash = this._modelHash;
-  const primitives = this._primitives;
-  for (let i = entities.length - 1; i > -1; i--) {
+  var entities = this._entitiesToVisualize.values;
+  var modelHash = this._modelHash;
+  var primitives = this._primitives;
+  for (var i = entities.length - 1; i > -1; i--) {
     removeModel(this, entities[i], modelHash, primitives);
   }
   return destroyObject(this);
@@ -350,12 +350,12 @@ ModelVisualizer.prototype.getBoundingSphere = function (entity, result) {
   }
   //>>includeEnd('debug');
 
-  const modelData = this._modelHash[entity.id];
+  var modelData = this._modelHash[entity.id];
   if (!defined(modelData) || modelData.loadFail) {
     return BoundingSphereState.FAILED;
   }
 
-  const model = modelData.modelPrimitive;
+  var model = modelData.modelPrimitive;
   if (!defined(model) || !model.show) {
     return BoundingSphereState.FAILED;
   }
@@ -365,17 +365,13 @@ ModelVisualizer.prototype.getBoundingSphere = function (entity, result) {
   }
 
   if (model.heightReference === HeightReference.NONE) {
-    BoundingSphere.transform(
-      model.boundingSphereInternal,
-      model.modelMatrix,
-      result
-    );
+    BoundingSphere.transform(model.boundingSphere, model.modelMatrix, result);
   } else {
     if (!defined(model._clampedModelMatrix)) {
       return BoundingSphereState.PENDING;
     }
     BoundingSphere.transform(
-      model.boundingSphereInternal,
+      model.boundingSphere,
       model._clampedModelMatrix,
       result
     );
@@ -392,11 +388,11 @@ ModelVisualizer.prototype._onCollectionChanged = function (
   removed,
   changed
 ) {
-  let i;
-  let entity;
-  const entities = this._entitiesToVisualize;
-  const modelHash = this._modelHash;
-  const primitives = this._primitives;
+  var i;
+  var entity;
+  var entities = this._entitiesToVisualize;
+  var modelHash = this._modelHash;
+  var primitives = this._primitives;
 
   for (i = added.length - 1; i > -1; i--) {
     entity = added[i];
@@ -424,7 +420,7 @@ ModelVisualizer.prototype._onCollectionChanged = function (
 };
 
 function removeModel(visualizer, entity, modelHash, primitives) {
-  const modelData = modelHash[entity.id];
+  var modelData = modelHash[entity.id];
   if (defined(modelData)) {
     primitives.removeAndDestroy(modelData.modelPrimitive);
     delete modelHash[entity.id];
@@ -432,7 +428,7 @@ function removeModel(visualizer, entity, modelHash, primitives) {
 }
 
 function clearNodeTransformationsArticulationsScratch(entity, modelHash) {
-  const modelData = modelHash[entity.id];
+  var modelData = modelHash[entity.id];
   if (defined(modelData)) {
     modelData.nodeTransformationsScratch = {};
     modelData.articulationsScratch = {};
@@ -440,7 +436,7 @@ function clearNodeTransformationsArticulationsScratch(entity, modelHash) {
 }
 
 function checkModelLoad(model, entity, modelHash) {
-  model.readyPromise.catch(function (error) {
+  model.readyPromise.otherwise(function (error) {
     console.error(error);
     modelHash[entity.id].loadFail = true;
   });

@@ -1,8 +1,8 @@
 /* This file is automatically rebuilt by the Cesium build process. */
-define(['./BoxGeometry-a482a117', './defaultValue-94c3e563', './GeometryOffsetAttribute-3e8c299c', './RuntimeError-c581ca93', './Transforms-20594677', './Matrix2-fc7e9822', './ComponentDatatype-4a60b8d6', './WebGLConstants-7dccdc96', './_commonjsHelpers-3aae1032-f55dc0c4', './combine-761d9c3f', './GeometryAttribute-111bf6c7', './GeometryAttributes-7df9bef6', './VertexFormat-e46f29d6'], (function (BoxGeometry, defaultValue, GeometryOffsetAttribute, RuntimeError, Transforms, Matrix2, ComponentDatatype, WebGLConstants, _commonjsHelpers3aae1032, combine, GeometryAttribute, GeometryAttributes, VertexFormat) { 'use strict';
+define(['./BoxGeometry-cbf2d438', './when-8166c7dd', './GeometryOffsetAttribute-e8e698d7', './RuntimeError-4fdc4459', './Transforms-62a339c3', './Matrix2-92b7fb9d', './ComponentDatatype-9ed50558', './WebGLConstants-0664004c', './combine-a5c4cc47', './GeometryAttribute-6f4c3b93', './GeometryAttributes-50becc99', './VertexFormat-c0801687'], (function (BoxGeometry, when, GeometryOffsetAttribute, RuntimeError, Transforms, Matrix2, ComponentDatatype, WebGLConstants, combine, GeometryAttribute, GeometryAttributes, VertexFormat) { 'use strict';
 
   function createBoxGeometry(boxGeometry, offset) {
-    if (defaultValue.defined(offset)) {
+    if (when.defined(offset)) {
       boxGeometry = BoxGeometry.BoxGeometry.unpack(boxGeometry, offset);
     }
     return BoxGeometry.BoxGeometry.createGeometry(boxGeometry);

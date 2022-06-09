@@ -22,11 +22,11 @@ function subdivideArray(array, numberOfArrays) {
   }
   //>>includeEnd('debug');
 
-  const result = [];
-  const len = array.length;
-  let i = 0;
+  var result = [];
+  var len = array.length;
+  var i = 0;
   while (i < len) {
-    const size = Math.ceil((len - i) / numberOfArrays--);
+    var size = Math.ceil((len - i) / numberOfArrays--);
     result.push(array.slice(i, i + size));
     i += size;
   }

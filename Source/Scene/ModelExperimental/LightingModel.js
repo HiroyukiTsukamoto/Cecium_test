@@ -1,11 +1,11 @@
 /**
- * The lighting model to use for lighting a {@link ModelExperimental}.
+ * The lighting model to use for lighting a {@link ModelExperimental}. This
+ * is applied in the {@link LightingPipelineStage}.
  *
  * @enum {Number}
- *
- * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
+ * @private
  */
-const LightingModel = {
+var LightingModel = {
   /**
    * Use unlit shading, i.e. skip lighting calculations. The model's
    * diffuse color (assumed to be linear RGB, not sRGB) is used directly

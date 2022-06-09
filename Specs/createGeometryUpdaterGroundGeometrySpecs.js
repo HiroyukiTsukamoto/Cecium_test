@@ -16,40 +16,40 @@ function createGeometryUpdaterGroundGeometrySpecs(
   createDynamicEntity,
   getScene
 ) {
-  const time = JulianDate.now();
+  var time = JulianDate.now();
 
   it("has default zIndex of zero", function () {
-    const entity = createEntity();
+    var entity = createEntity();
 
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     expect(updater.zIndex.getValue()).toBe(0);
   });
 
   it("uses zIndex value", function () {
-    const entity = createEntity();
+    var entity = createEntity();
     entity[geometryPropertyName].zIndex = 22;
 
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     expect(updater.zIndex.getValue()).toBe(22);
   });
 
   it("A time-varying color does not cause ground geometry to be dynamic", function () {
-    const entity = createEntity();
-    const color = new SampledProperty(Color);
+    var entity = createEntity();
+    var color = new SampledProperty(Color);
     color.addSample(time, Color.WHITE);
     entity[geometryPropertyName].material = new ColorMaterialProperty(color);
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
 
     expect(updater.isDynamic).toBe(false);
   });
 
   it("Checks that an entity without height and extrudedHeight is on terrain", function () {
-    const entity = createEntity();
-    const geometry = entity[geometryPropertyName];
+    var entity = createEntity();
+    var geometry = entity[geometryPropertyName];
     geometry.height = undefined;
     geometry.outline = new ConstantProperty(true);
 
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
 
     if (GroundPrimitive.isSupported(getScene())) {
       expect(updater.onTerrain).toBe(true);
@@ -61,29 +61,29 @@ function createGeometryUpdaterGroundGeometrySpecs(
   });
 
   it("Checks that an entity with height isn't on terrain", function () {
-    const entity = createEntity();
+    var entity = createEntity();
     entity[geometryPropertyName].height = new ConstantProperty(1);
 
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
 
     expect(updater.onTerrain).toBe(false);
   });
 
   it("Checks that an entity with extrudedHeight isn't on terrain", function () {
-    const entity = createEntity();
-    const geometry = entity[geometryPropertyName];
+    var entity = createEntity();
+    var geometry = entity[geometryPropertyName];
     geometry.height = undefined;
     geometry.extrudedHeight = new ConstantProperty(1);
 
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
 
     expect(updater.onTerrain).toBe(false);
   });
 
   it("fill is true sets onTerrain to true", function () {
-    const entity = createEntity();
+    var entity = createEntity();
     entity[geometryPropertyName].fill = true;
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     if (GroundPrimitive.isSupported(getScene())) {
       expect(updater.onTerrain).toBe(true);
     } else {
@@ -92,50 +92,52 @@ function createGeometryUpdaterGroundGeometrySpecs(
   });
 
   it("fill is false sets onTerrain to false", function () {
-    const entity = createEntity();
+    var entity = createEntity();
     entity[geometryPropertyName].fill = false;
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     expect(updater.onTerrain).toBe(false);
   });
 
   it("a defined height sets onTerrain to false", function () {
-    const entity = createEntity();
-    const geometry = entity[geometryPropertyName];
+    var entity = createEntity();
+    var geometry = entity[geometryPropertyName];
     geometry.fill = true;
     geometry.height = 0;
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     expect(updater.onTerrain).toBe(false);
   });
 
   it("a defined extrudedHeight sets onTerrain to false", function () {
-    const entity = createEntity();
-    const geometry = entity[geometryPropertyName];
+    var entity = createEntity();
+    var geometry = entity[geometryPropertyName];
     geometry.fill = true;
     geometry.extrudedHeight = 12;
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     expect(updater.onTerrain).toBe(false);
   });
 
   it("Creates geometry with no offsetAttribute when geometry is on terrain", function () {
-    const entity = createEntity();
+    var entity = createEntity();
 
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
 
-    const instance = updater.createFillGeometryInstance(time);
-    const geometry = instance.geometry;
+    var instance;
+    var geometry;
+    instance = updater.createFillGeometryInstance(time);
+    geometry = instance.geometry;
     expect(geometry._offsetAttribute).toBeUndefined();
   });
 
   it("Creates geometry with expected offsetAttribute based on height and extrudedHeight", function () {
-    const entity = createEntity();
-    const graphics = entity[geometryPropertyName];
+    var entity = createEntity();
+    var graphics = entity[geometryPropertyName];
     graphics.outline = true;
     graphics.outlineColor = Color.BLACK;
     graphics.height = new ConstantProperty(20.0);
     graphics.extrudedHeight = new ConstantProperty(0.0);
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
 
-    let instance;
+    var instance;
 
     updater._onEntityPropertyChanged(entity, geometryPropertyName);
     instance = updater.createFillGeometryInstance(time);
@@ -281,11 +283,11 @@ function createGeometryUpdaterGroundGeometrySpecs(
   });
 
   it("color material sets onTerrain to true", function () {
-    const entity = createEntity();
-    const geometry = entity[geometryPropertyName];
+    var entity = createEntity();
+    var geometry = entity[geometryPropertyName];
     geometry.fill = true;
     geometry.material = new ColorMaterialProperty(Color.WHITE);
-    const updater = new Updater(entity, getScene());
+    var updater = new Updater(entity, getScene());
     if (GroundPrimitive.isSupported(getScene())) {
       expect(updater.onTerrain).toBe(true);
     } else {
@@ -294,12 +296,12 @@ function createGeometryUpdaterGroundGeometrySpecs(
   });
 
   it("dynamic updater on terrain", function () {
-    const entity = createDynamicEntity();
+    var entity = createDynamicEntity();
 
-    const updater = new Updater(entity, getScene());
-    const primitives = new PrimitiveCollection();
-    const groundPrimitives = new PrimitiveCollection();
-    const dynamicUpdater = updater.createDynamicUpdater(
+    var updater = new Updater(entity, getScene());
+    var primitives = new PrimitiveCollection();
+    var groundPrimitives = new PrimitiveCollection();
+    var dynamicUpdater = updater.createDynamicUpdater(
       primitives,
       groundPrimitives
     );
@@ -322,13 +324,13 @@ function createGeometryUpdaterGroundGeometrySpecs(
   });
 
   it("dynamic updater on terrain propagates classification type", function () {
-    const entity = createDynamicEntity();
+    var entity = createDynamicEntity();
     entity[geometryPropertyName].classificationType = ClassificationType.BOTH;
 
-    const updater = new Updater(entity, getScene());
-    const primitives = new PrimitiveCollection();
-    const groundPrimitives = new PrimitiveCollection();
-    const dynamicUpdater = updater.createDynamicUpdater(
+    var updater = new Updater(entity, getScene());
+    var primitives = new PrimitiveCollection();
+    var groundPrimitives = new PrimitiveCollection();
+    var dynamicUpdater = updater.createDynamicUpdater(
       primitives,
       groundPrimitives
     );

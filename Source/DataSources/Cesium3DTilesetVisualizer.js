@@ -9,7 +9,7 @@ import Cesium3DTileset from "../Scene/Cesium3DTileset.js";
 import BoundingSphereState from "./BoundingSphereState.js";
 import Property from "./Property.js";
 
-const modelMatrixScratch = new Matrix4();
+var modelMatrixScratch = new Matrix4();
 
 /**
  * A {@link Visualizer} which maps {@link Entity#tileset} to a {@link Cesium3DTileset}.
@@ -56,22 +56,22 @@ Cesium3DTilesetVisualizer.prototype.update = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entities = this._entitiesToVisualize.values;
-  const tilesetHash = this._tilesetHash;
-  const primitives = this._primitives;
+  var entities = this._entitiesToVisualize.values;
+  var tilesetHash = this._tilesetHash;
+  var primitives = this._primitives;
 
-  for (let i = 0, len = entities.length; i < len; i++) {
-    const entity = entities[i];
-    const tilesetGraphics = entity._tileset;
+  for (var i = 0, len = entities.length; i < len; i++) {
+    var entity = entities[i];
+    var tilesetGraphics = entity._tileset;
 
-    let resource;
-    let tilesetData = tilesetHash[entity.id];
-    const show =
+    var resource;
+    var tilesetData = tilesetHash[entity.id];
+    var show =
       entity.isShowing &&
       entity.isAvailable(time) &&
       Property.getValueOrDefault(tilesetGraphics._show, time, true);
 
-    let modelMatrix;
+    var modelMatrix;
     if (show) {
       modelMatrix = entity.computeModelMatrix(time, modelMatrixScratch);
       resource = Resource.createIfNeeded(
@@ -86,7 +86,7 @@ Cesium3DTilesetVisualizer.prototype.update = function (time) {
       continue;
     }
 
-    let tileset = defined(tilesetData)
+    var tileset = defined(tilesetData)
       ? tilesetData.tilesetPrimitive
       : undefined;
     if (!defined(tileset) || resource.url !== tilesetData.url) {
@@ -141,10 +141,10 @@ Cesium3DTilesetVisualizer.prototype.destroy = function () {
     Cesium3DTilesetVisualizer.prototype._onCollectionChanged,
     this
   );
-  const entities = this._entitiesToVisualize.values;
-  const tilesetHash = this._tilesetHash;
-  const primitives = this._primitives;
-  for (let i = entities.length - 1; i > -1; i--) {
+  var entities = this._entitiesToVisualize.values;
+  var tilesetHash = this._tilesetHash;
+  var primitives = this._primitives;
+  for (var i = entities.length - 1; i > -1; i--) {
     removeTileset(this, entities[i], tilesetHash, primitives);
   }
   return destroyObject(this);
@@ -174,12 +174,12 @@ Cesium3DTilesetVisualizer.prototype.getBoundingSphere = function (
   }
   //>>includeEnd('debug');
 
-  const tilesetData = this._tilesetHash[entity.id];
+  var tilesetData = this._tilesetHash[entity.id];
   if (!defined(tilesetData) || tilesetData.loadFail) {
     return BoundingSphereState.FAILED;
   }
 
-  const primitive = tilesetData.tilesetPrimitive;
+  var primitive = tilesetData.tilesetPrimitive;
   if (!defined(primitive) || !primitive.show) {
     return BoundingSphereState.FAILED;
   }
@@ -202,11 +202,11 @@ Cesium3DTilesetVisualizer.prototype._onCollectionChanged = function (
   removed,
   changed
 ) {
-  let i;
-  let entity;
-  const entities = this._entitiesToVisualize;
-  const tilesetHash = this._tilesetHash;
-  const primitives = this._primitives;
+  var i;
+  var entity;
+  var entities = this._entitiesToVisualize;
+  var tilesetHash = this._tilesetHash;
+  var primitives = this._primitives;
 
   for (i = added.length - 1; i > -1; i--) {
     entity = added[i];
@@ -233,7 +233,7 @@ Cesium3DTilesetVisualizer.prototype._onCollectionChanged = function (
 };
 
 function removeTileset(visualizer, entity, tilesetHash, primitives) {
-  const tilesetData = tilesetHash[entity.id];
+  var tilesetData = tilesetHash[entity.id];
   if (defined(tilesetData)) {
     primitives.removeAndDestroy(tilesetData.tilesetPrimitive);
     delete tilesetHash[entity.id];
@@ -241,7 +241,7 @@ function removeTileset(visualizer, entity, tilesetHash, primitives) {
 }
 
 function checkLoad(primitive, entity, tilesetHash) {
-  primitive.readyPromise.catch(function (error) {
+  primitive.readyPromise.otherwise(function (error) {
     console.error(error);
     tilesetHash[entity.id].loadFail = true;
   });

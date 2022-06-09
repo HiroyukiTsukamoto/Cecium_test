@@ -1,79 +1,39 @@
 import {
   AlphaPipelineStage,
-  BatchTexturePipelineStage,
   CustomShader,
   CustomShaderMode,
-  CustomShaderPipelineStage,
   FeatureIdPipelineStage,
-  CPUStylingPipelineStage,
+  CustomShaderPipelineStage,
   DequantizationPipelineStage,
   GeometryPipelineStage,
   LightingPipelineStage,
   MaterialPipelineStage,
-  MetadataPipelineStage,
-  ModelExperimentalPrimitive,
-  ModelExperimentalType,
-  MorphTargetsPipelineStage,
   PickingPipelineStage,
-  PointCloudAttenuationPipelineStage,
-  PointCloudShading,
-  PrimitiveType,
-  SceneMode,
-  SceneMode2DPipelineStage,
-  SelectedFeatureIdPipelineStage,
-  SkinningPipelineStage,
-  VertexAttributeSemantic,
-  WireframePipelineStage,
+  ModelExperimentalPrimitive,
 } from "../../../Source/Cesium.js";
+import BatchTexturePipelineStage from "../../../Source/Scene/ModelExperimental/BatchTexturePipelineStage.js";
 
 describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
-  const mockPrimitive = {
-    featureIds: [],
-    attributes: [],
+  var mockPrimitive = {
+    featureIdAttributes: [],
+    featureIdTextures: [],
   };
-  const mockNode = {};
-  const mockModel = {
-    type: ModelExperimentalType.GLTF,
+  var mockNode = {};
+  var mockModel = {
+    content: {},
     allowPicking: true,
-    featureIdLabel: "featureId_0",
-  };
-  const mockFrameState = {
-    context: {
-      webgl2: false,
-    },
-    mode: SceneMode.SCENE3D,
+    featureIdAttributeIndex: 0,
   };
 
-  const mockFrameStateWebgl2 = {
-    context: {
-      webgl2: true,
-    },
-  };
-
-  const mockFrameState2D = {
-    context: {
-      webgl2: false,
-    },
-    mode: SceneMode.SCENE2D,
-  };
-
-  const mockFrameState3DOnly = {
-    context: {
-      webgl2: false,
-    },
-    mode: SceneMode.SCENE3D,
-    scene3DOnly: true,
-  };
-
-  const emptyVertexShader =
+  var emptyVertexShader =
     "void vertexMain(VertexInput vsInput, inout vec3 position) {}";
-  const emptyFragmentShader =
+  var emptyFragmentShader =
     "void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {}";
 
   function verifyExpectedStages(stages, expectedStages) {
     expect(stages.length, expectedStages.stages);
-    for (let i = 0; i < stages.length; i++) {
-      expect(stages[i].name).toEqual(expectedStages[i].name);
+    for (var i = 0; i < stages.length; i++) {
+      expect(expectedStages[i].name).toEqual(stages[i].name);
     }
   }
 
@@ -108,7 +68,7 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
   });
 
   it("constructs", function () {
-    const primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: mockPrimitive,
       node: mockNode,
       model: mockModel,
@@ -120,17 +80,15 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
   });
 
   it("configures the pipeline stages for model picking", function () {
-    let primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: mockPrimitive,
       node: mockNode,
       model: mockModel,
     });
 
-    let expectedStages = [
+    var expectedStages = [
       GeometryPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
       LightingPipelineStage,
       PickingPipelineStage,
       AlphaPipelineStage,
@@ -142,7 +100,6 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
       primitive: mockPrimitive,
       node: mockNode,
       model: {
-        type: ModelExperimentalType.GLTF,
         allowPicking: false,
         content: {},
       },
@@ -151,127 +108,83 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
     expectedStages = [
       GeometryPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
       LightingPipelineStage,
       AlphaPipelineStage,
     ];
 
-    primitive.configurePipeline(mockFrameState);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
   });
 
   it("configures the pipeline stages for instance feature picking", function () {
-    const primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: mockPrimitive,
       node: {
         instances: {
-          featureIds: [
-            {
-              label: "defaultIds",
-              positionalLabel: "instanceFeatureId_0",
-            },
-            {
-              propertyTableId: 0,
-              positionalLabel: "instanceFeatureId_1",
-            },
-          ],
+          featureIdAttributes: [{}],
         },
       },
-      model: {
-        type: ModelExperimentalType.GLTF,
-        allowPicking: true,
-        instanceFeatureIdLabel: "instanceFeatureId_1",
-        content: {},
-      },
+      model: mockModel,
     });
 
-    const expectedStages = [
+    var expectedStages = [
       GeometryPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      SelectedFeatureIdPipelineStage,
-      BatchTexturePipelineStage,
-      CPUStylingPipelineStage,
       LightingPipelineStage,
+      FeatureIdPipelineStage,
+      BatchTexturePipelineStage,
       PickingPipelineStage,
       AlphaPipelineStage,
     ];
 
-    primitive.configurePipeline(mockFrameState);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
   });
 
   it("configures the pipeline stages for feature picking", function () {
-    let primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: {
-        featureIds: [
-          {
-            label: "defaultIds",
-            positionalLabel: "featureId_0",
-          },
-          {
-            propertyTableId: 0,
-            label: "pickingIds",
-          },
-        ],
-        attributes: [
-          {
-            semantic: VertexAttributeSemantic.FEATURE_ID,
-          },
-        ],
+        featureIdAttributes: [{}, {}],
+        featureIdTextures: [],
       },
       node: {},
       model: {
-        type: ModelExperimentalType.GLTF,
         allowPicking: true,
-        featureIdLabel: "pickingIds",
+        featureIdAttributeIndex: 1,
         content: {},
       },
     });
 
-    const expectedStages = [
+    var expectedStages = [
       GeometryPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      SelectedFeatureIdPipelineStage,
-      BatchTexturePipelineStage,
-      CPUStylingPipelineStage,
       LightingPipelineStage,
+      FeatureIdPipelineStage,
+      BatchTexturePipelineStage,
       PickingPipelineStage,
       AlphaPipelineStage,
     ];
 
-    primitive.configurePipeline(mockFrameState);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
 
     primitive = new ModelExperimentalPrimitive({
       primitive: {
-        featureIds: [
-          { positionalLabel: "featureId_0" },
-          { propertyTableId: 0, positionalLabel: "featureId_1" },
-        ],
-        attributes: [],
+        featureIdAttributes: [],
+        featureIdTextures: [{}, {}],
       },
       node: {},
       model: {
-        type: ModelExperimentalType.GLTF,
         allowPicking: true,
-        featureIdLabel: "featureId_1",
+        featureIdTextureIndex: 1,
         content: {},
       },
     });
 
-    primitive.configurePipeline(mockFrameState);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
   });
 
   it("configures dequantization", function () {
-    const primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: {
-        featureIds: [],
+        featureIdAttributes: [],
         featureIdTextures: [],
         attributes: [
           {
@@ -287,13 +200,10 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
       model: mockModel,
     });
 
-    primitive.configurePipeline(mockFrameState);
     expect(primitive.pipelineStages).toEqual([
       GeometryPipelineStage,
       DequantizationPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
       LightingPipelineStage,
       PickingPipelineStage,
       AlphaPipelineStage,
@@ -301,11 +211,10 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
   });
 
   it("configures the pipeline stages for custom shaders", function () {
-    const primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: mockPrimitive,
       node: mockNode,
       model: {
-        type: ModelExperimentalType.GLTF,
         content: {},
         customShader: new CustomShader({
           vertexShaderText: emptyVertexShader,
@@ -315,26 +224,22 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
       },
     });
 
-    const expectedStages = [
+    var expectedStages = [
       GeometryPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
       CustomShaderPipelineStage,
       LightingPipelineStage,
       AlphaPipelineStage,
     ];
 
-    primitive.configurePipeline(mockFrameState);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
   });
 
   it("disables the material stage if the custom shader mode is REPLACE_MATERIAL", function () {
-    const primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: mockPrimitive,
       node: mockNode,
       model: {
-        type: ModelExperimentalType.GLTF,
         content: {},
         customShader: new CustomShader({
           mode: CustomShaderMode.REPLACE_MATERIAL,
@@ -345,25 +250,21 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
       },
     });
 
-    const expectedStages = [
+    var expectedStages = [
       GeometryPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
       CustomShaderPipelineStage,
       LightingPipelineStage,
       AlphaPipelineStage,
     ];
 
-    primitive.configurePipeline(mockFrameState);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
   });
 
   it("does not disable the material stage if the custom shader has no fragment shader", function () {
-    const primitive = new ModelExperimentalPrimitive({
+    var primitive = new ModelExperimentalPrimitive({
       primitive: mockPrimitive,
       node: mockNode,
       model: {
-        type: ModelExperimentalType.GLTF,
         content: {},
         customShader: new CustomShader({
           mode: CustomShaderMode.REPLACE_MATERIAL,
@@ -373,428 +274,14 @@ describe("Scene/ModelExperimental/ModelExperimentalPrimitive", function () {
       },
     });
 
-    const expectedStages = [
+    var expectedStages = [
       GeometryPipelineStage,
       MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
       CustomShaderPipelineStage,
       LightingPipelineStage,
       AlphaPipelineStage,
     ];
 
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures point cloud attenuation stage for 3D Tiles point clouds", function () {
-    const pointCloudShading = new PointCloudShading({
-      attenuation: true,
-    });
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.POINTS,
-      },
-      node: mockNode,
-      model: {
-        type: ModelExperimentalType.TILE_PNTS,
-        featureIdLabel: "featureId_0",
-        pointCloudShading: pointCloudShading,
-        content: {
-          tileset: {
-            pointCloudShading: pointCloudShading,
-          },
-        },
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      PointCloudAttenuationPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures point cloud attenuation stage for point clouds", function () {
-    const pointCloudShading = new PointCloudShading({
-      attenuation: true,
-    });
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.POINTS,
-      },
-      node: mockNode,
-      model: {
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-        pointCloudShading: pointCloudShading,
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      PointCloudAttenuationPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("skips point cloud attenuation if attenuation is false", function () {
-    const pointCloudShading = new PointCloudShading({
-      attenuation: false,
-    });
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.POINTS,
-      },
-      node: mockNode,
-      model: {
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-        pointCloudShading: pointCloudShading,
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("skips point cloud attenuation if point cloud shading is not set", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.POINTS,
-      },
-      node: mockNode,
-      model: {
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-        pointCloudShading: undefined,
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures the pipeline stages for morph targets", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        morphTargets: [{}],
-        morphWeights: [0.0],
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MorphTargetsPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures the pipeline stages for skinning", function () {
-    const mockSkin = {
-      index: 0,
-      inverseBindMatrices: [],
-      joints: [],
-    };
-
-    const mockNode = {
-      skin: mockSkin,
-    };
-
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-        pointCloudShading: undefined,
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      SkinningPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures pipeline for debugWireframe (WebGL 1)", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        debugWireframe: true,
-        _enableDebugWireframe: true,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      WireframePipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("does not include wireframe stage if model.enableDebugWireframe is false (WebGL 1)", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        debugWireframe: true,
-        _enableDebugWireframe: false,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures pipeline for debugWireframe (WebGL 2)", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        debugWireframe: true,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      WireframePipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameStateWebgl2);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("does not include wireframe stage for non-triangle primitives", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.POINTS,
-      },
-      node: mockNode,
-      model: {
-        debugWireframe: true,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameStateWebgl2);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("configures pipeline for projectTo2D", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        _projectTo2D: true,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      SceneMode2DPipelineStage,
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState2D);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("does not add scenemode 2D stage if scene is 3D", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        _projectTo2D: true,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState);
-    verifyExpectedStages(primitive.pipelineStages, expectedStages);
-  });
-
-  it("does not add scenemode 2D stage if scene is 3D only", function () {
-    const primitive = new ModelExperimentalPrimitive({
-      primitive: {
-        featureIds: [],
-        featureIdTextures: [],
-        attributes: [],
-        primitiveType: PrimitiveType.TRIANGLES,
-      },
-      node: mockNode,
-      model: {
-        _projectTo2D: true,
-        type: ModelExperimentalType.GLTF,
-        featureIdLabel: "featureId_0",
-      },
-    });
-
-    const expectedStages = [
-      GeometryPipelineStage,
-      MaterialPipelineStage,
-      FeatureIdPipelineStage,
-      MetadataPipelineStage,
-      LightingPipelineStage,
-      AlphaPipelineStage,
-    ];
-
-    primitive.configurePipeline(mockFrameState3DOnly);
     verifyExpectedStages(primitive.pipelineStages, expectedStages);
   });
 });

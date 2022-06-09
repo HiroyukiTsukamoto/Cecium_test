@@ -12,8 +12,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/PolylineColorAppearance",
   function () {
-    let scene;
-    let primitive;
+    var scene;
+    var primitive;
 
     beforeAll(function () {
       scene = createScene();
@@ -30,7 +30,7 @@ describe(
     });
 
     it("constructor", function () {
-      const a = new PolylineColorAppearance();
+      var a = new PolylineColorAppearance();
 
       expect(a.material).not.toBeDefined();
       expect(a.vertexShaderSource).toBeDefined();

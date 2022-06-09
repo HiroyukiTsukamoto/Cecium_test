@@ -31,19 +31,19 @@ function CommandExtent() {
  * @private
  */
 function View(scene, camera, viewport) {
-  const context = scene.context;
+  var context = scene.context;
 
-  let globeDepth;
+  var globeDepth;
   if (context.depthTexture) {
     globeDepth = new GlobeDepth();
   }
 
-  let oit;
+  var oit;
   if (scene._useOIT && context.depthTexture) {
     oit = new OIT(context);
   }
 
-  const passState = new PassState(context);
+  var passState = new PassState(context);
   passState.viewport = BoundingRectangle.clone(viewport);
 
   this.camera = camera;
@@ -63,6 +63,7 @@ function View(scene, camera, viewport) {
     context
   );
   this.pickDepths = [];
+  this.debugGlobeDepths = [];
   this.frustumCommandsList = [];
   this.debugFrustumStatistics = undefined;
 
@@ -71,17 +72,17 @@ function View(scene, camera, viewport) {
   this._commandExtents = [];
 }
 
-const scratchPosition0 = new Cartesian3();
-const scratchPosition1 = new Cartesian3();
+var scratchPosition0 = new Cartesian3();
+var scratchPosition1 = new Cartesian3();
 function maxComponent(a, b) {
-  const x = Math.max(Math.abs(a.x), Math.abs(b.x));
-  const y = Math.max(Math.abs(a.y), Math.abs(b.y));
-  const z = Math.max(Math.abs(a.z), Math.abs(b.z));
+  var x = Math.max(Math.abs(a.x), Math.abs(b.x));
+  var y = Math.max(Math.abs(a.y), Math.abs(b.y));
+  var z = Math.max(Math.abs(a.z), Math.abs(b.z));
   return Math.max(Math.max(x, y), z);
 }
 
 function cameraEqual(camera0, camera1, epsilon) {
-  const scalar =
+  var scalar =
     1 / Math.max(1, maxComponent(camera0.position, camera1.position));
   Cartesian3.multiplyByScalar(camera0.position, scalar, scratchPosition0);
   Cartesian3.multiplyByScalar(camera1.position, scalar, scratchPosition1);
@@ -96,8 +97,8 @@ function cameraEqual(camera0, camera1, epsilon) {
 }
 
 View.prototype.checkForCameraUpdates = function (scene) {
-  const camera = this.camera;
-  const cameraClone = this._cameraClone;
+  var camera = this.camera;
+  var cameraClone = this._cameraClone;
   if (!cameraEqual(camera, cameraClone, CesiumMath.EPSILON15)) {
     if (!this._cameraStartFired) {
       camera.moveStart.raiseEvent();
@@ -121,13 +122,13 @@ View.prototype.checkForCameraUpdates = function (scene) {
 };
 
 function updateFrustums(view, scene, near, far) {
-  const frameState = scene.frameState;
-  const camera = frameState.camera;
-  const farToNearRatio = frameState.useLogDepth
+  var frameState = scene.frameState;
+  var camera = frameState.camera;
+  var farToNearRatio = frameState.useLogDepth
     ? scene.logarithmicDepthFarToNearRatio
     : scene.farToNearRatio;
-  const is2D = scene.mode === SceneMode.SCENE2D;
-  const nearToFarDistance2D = scene.nearToFarDistance2D;
+  var is2D = scene.mode === SceneMode.SCENE2D;
+  var nearToFarDistance2D = scene.nearToFarDistance2D;
 
   // Extend the far plane slightly further to prevent geometry clipping against the far plane.
   far *= 1.0 + CesiumMath.EPSILON2;
@@ -138,7 +139,7 @@ function updateFrustums(view, scene, near, far) {
   near = Math.min(Math.max(near, camera.frustum.near), camera.frustum.far);
   far = Math.max(Math.min(far, camera.frustum.far), near);
 
-  let numFrustums;
+  var numFrustums;
   if (is2D) {
     // The multifrustum for 2D is uniformly distributed. To avoid z-fighting in 2D,
     // the camera is moved to just before the frustum and the frustum depth is scaled
@@ -153,11 +154,11 @@ function updateFrustums(view, scene, near, far) {
     numFrustums = Math.ceil(Math.log(far / near) / Math.log(farToNearRatio));
   }
 
-  const frustumCommandsList = view.frustumCommandsList;
+  var frustumCommandsList = view.frustumCommandsList;
   frustumCommandsList.length = numFrustums;
-  for (let m = 0; m < numFrustums; ++m) {
-    let curNear;
-    let curFar;
+  for (var m = 0; m < numFrustums; ++m) {
+    var curNear;
+    var curFar;
 
     if (is2D) {
       curNear = Math.min(
@@ -169,7 +170,7 @@ function updateFrustums(view, scene, near, far) {
       curNear = Math.max(near, Math.pow(farToNearRatio, m) * near);
       curFar = Math.min(far, farToNearRatio * curNear);
     }
-    let frustumCommands = frustumCommandsList[m];
+    var frustumCommands = frustumCommandsList[m];
     if (!defined(frustumCommands)) {
       frustumCommands = frustumCommandsList[m] = new FrustumCommands(
         curNear,
@@ -187,13 +188,13 @@ function insertIntoBin(view, scene, command, commandNear, commandFar) {
     command.debugOverlappingFrustums = 0;
   }
 
-  const frustumCommandsList = view.frustumCommandsList;
-  const length = frustumCommandsList.length;
+  var frustumCommandsList = view.frustumCommandsList;
+  var length = frustumCommandsList.length;
 
-  for (let i = 0; i < length; ++i) {
-    const frustumCommands = frustumCommandsList[i];
-    const curNear = frustumCommands.near;
-    const curFar = frustumCommands.far;
+  for (var i = 0; i < length; ++i) {
+    var frustumCommands = frustumCommandsList[i];
+    var curNear = frustumCommands.near;
+    var curFar = frustumCommands.far;
 
     if (commandNear > curFar) {
       continue;
@@ -203,8 +204,8 @@ function insertIntoBin(view, scene, command, commandNear, commandFar) {
       break;
     }
 
-    const pass = command.pass;
-    const index = frustumCommands.indices[pass]++;
+    var pass = command.pass;
+    var index = frustumCommands.indices[pass]++;
     frustumCommands.commands[pass][index] = command;
 
     if (scene.debugShowFrustums) {
@@ -217,7 +218,7 @@ function insertIntoBin(view, scene, command, commandNear, commandFar) {
   }
 
   if (scene.debugShowFrustums) {
-    const cf = view.debugFrustumStatistics.commandsInFrustums;
+    var cf = view.debugFrustumStatistics.commandsInFrustums;
     cf[command.debugOverlappingFrustums] = defined(
       cf[command.debugOverlappingFrustums]
     )
@@ -229,18 +230,18 @@ function insertIntoBin(view, scene, command, commandNear, commandFar) {
   scene.updateDerivedCommands(command);
 }
 
-const scratchCullingVolume = new CullingVolume();
-const scratchNearFarInterval = new Interval();
+var scratchCullingVolume = new CullingVolume();
+var scratchNearFarInterval = new Interval();
 
 View.prototype.createPotentiallyVisibleSet = function (scene) {
-  const frameState = scene.frameState;
-  const camera = frameState.camera;
-  const direction = camera.directionWC;
-  const position = camera.positionWC;
+  var frameState = scene.frameState;
+  var camera = frameState.camera;
+  var direction = camera.directionWC;
+  var position = camera.positionWC;
 
-  const computeList = scene._computeCommandList;
-  const overlayList = scene._overlayCommandList;
-  const commandList = frameState.commandList;
+  var computeList = scene._computeCommandList;
+  var overlayList = scene._overlayCommandList;
+  var commandList = frameState.commandList;
 
   if (scene.debugShowFrustums) {
     this.debugFrustumStatistics = {
@@ -249,11 +250,11 @@ View.prototype.createPotentiallyVisibleSet = function (scene) {
     };
   }
 
-  const frustumCommandsList = this.frustumCommandsList;
-  const numberOfFrustums = frustumCommandsList.length;
-  const numberOfPasses = Pass.NUMBER_OF_PASSES;
-  for (let n = 0; n < numberOfFrustums; ++n) {
-    for (let p = 0; p < numberOfPasses; ++p) {
+  var frustumCommandsList = this.frustumCommandsList;
+  var numberOfFrustums = frustumCommandsList.length;
+  var numberOfPasses = Pass.NUMBER_OF_PASSES;
+  for (var n = 0; n < numberOfFrustums; ++n) {
+    for (var p = 0; p < numberOfPasses; ++p) {
       frustumCommandsList[n].indices[p] = 0;
     }
   }
@@ -261,49 +262,49 @@ View.prototype.createPotentiallyVisibleSet = function (scene) {
   computeList.length = 0;
   overlayList.length = 0;
 
-  const commandExtents = this._commandExtents;
-  const commandExtentCapacity = commandExtents.length;
-  let commandExtentCount = 0;
+  var commandExtents = this._commandExtents;
+  var commandExtentCapacity = commandExtents.length;
+  var commandExtentCount = 0;
 
-  let near = +Number.MAX_VALUE;
-  let far = -Number.MAX_VALUE;
+  var near = +Number.MAX_VALUE;
+  var far = -Number.MAX_VALUE;
 
-  const shadowsEnabled = frameState.shadowState.shadowsEnabled;
-  let shadowNear = +Number.MAX_VALUE;
-  let shadowFar = -Number.MAX_VALUE;
-  let shadowClosestObjectSize = Number.MAX_VALUE;
+  var shadowsEnabled = frameState.shadowState.shadowsEnabled;
+  var shadowNear = +Number.MAX_VALUE;
+  var shadowFar = -Number.MAX_VALUE;
+  var shadowClosestObjectSize = Number.MAX_VALUE;
 
-  const occluder =
+  var occluder =
     frameState.mode === SceneMode.SCENE3D ? frameState.occluder : undefined;
-  let cullingVolume = frameState.cullingVolume;
+  var cullingVolume = frameState.cullingVolume;
 
   // get user culling volume minus the far plane.
-  const planes = scratchCullingVolume.planes;
-  for (let k = 0; k < 5; ++k) {
+  var planes = scratchCullingVolume.planes;
+  for (var k = 0; k < 5; ++k) {
     planes[k] = cullingVolume.planes[k];
   }
   cullingVolume = scratchCullingVolume;
 
-  const length = commandList.length;
-  for (let i = 0; i < length; ++i) {
-    const command = commandList[i];
-    const pass = command.pass;
+  var length = commandList.length;
+  for (var i = 0; i < length; ++i) {
+    var command = commandList[i];
+    var pass = command.pass;
 
     if (pass === Pass.COMPUTE) {
       computeList.push(command);
     } else if (pass === Pass.OVERLAY) {
       overlayList.push(command);
     } else {
-      let commandNear;
-      let commandFar;
+      var commandNear;
+      var commandFar;
 
-      const boundingVolume = command.boundingVolume;
+      var boundingVolume = command.boundingVolume;
       if (defined(boundingVolume)) {
         if (!scene.isVisible(command, cullingVolume, occluder)) {
           continue;
         }
 
-        const nearFarInterval = boundingVolume.computePlaneDistances(
+        var nearFarInterval = boundingVolume.computePlaneDistances(
           position,
           direction,
           scratchNearFarInterval
@@ -325,7 +326,7 @@ View.prototype.createPotentiallyVisibleSet = function (scene) {
           !(pass === Pass.GLOBE && commandNear < -100.0 && commandFar > 100.0)
         ) {
           // Get the smallest bounding volume the camera is near. This is used to place more shadow detail near the object.
-          const size = commandFar - commandNear;
+          var size = commandFar - commandNear;
           if (pass !== Pass.GLOBE && commandNear < 100.0) {
             shadowClosestObjectSize = Math.min(shadowClosestObjectSize, size);
           }
@@ -345,7 +346,7 @@ View.prototype.createPotentiallyVisibleSet = function (scene) {
         far = Math.max(far, commandFar);
       }
 
-      let extent = commandExtents[commandExtentCount];
+      var extent = commandExtents[commandExtentCount];
       if (!defined(extent)) {
         extent = commandExtents[commandExtentCount] = new CommandExtent();
       }
@@ -373,8 +374,8 @@ View.prototype.createPotentiallyVisibleSet = function (scene) {
 
   updateFrustums(this, scene, near, far);
 
-  let c;
-  let ce;
+  var c;
+  var ce;
 
   for (c = 0; c < commandExtentCount; c++) {
     ce = commandExtents[c];
@@ -395,10 +396,10 @@ View.prototype.createPotentiallyVisibleSet = function (scene) {
     }
   }
 
-  const numFrustums = frustumCommandsList.length;
-  const frustumSplits = frameState.frustumSplits;
+  var numFrustums = frustumCommandsList.length;
+  var frustumSplits = frameState.frustumSplits;
   frustumSplits.length = numFrustums + 1;
-  for (let j = 0; j < numFrustums; ++j) {
+  for (var j = 0; j < numFrustums; ++j) {
     frustumSplits[j] = frustumCommandsList[j].near;
     if (j === numFrustums - 1) {
       frustumSplits[j + 1] = frustumCommandsList[j].far;
@@ -421,11 +422,20 @@ View.prototype.destroy = function () {
     this.globeTranslucencyFramebuffer &&
     this.globeTranslucencyFramebuffer.destroy();
 
-  let i;
-  const pickDepths = this.pickDepths;
-  const length = pickDepths.length;
+  var i;
+  var length;
+
+  var pickDepths = this.pickDepths;
+  var debugGlobeDepths = this.debugGlobeDepths;
+
+  length = pickDepths.length;
   for (i = 0; i < length; ++i) {
     pickDepths[i].destroy();
+  }
+
+  length = debugGlobeDepths.length;
+  for (i = 0; i < length; ++i) {
+    debugGlobeDepths[i].destroy();
   }
 };
 export default View;

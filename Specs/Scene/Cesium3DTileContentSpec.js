@@ -2,7 +2,7 @@ import { Cesium3DTileContent } from "../../Source/Cesium.js";
 
 describe("Scene/Cesium3DTileContent", function () {
   it("throws", function () {
-    const content = new Cesium3DTileContent();
+    var content = new Cesium3DTileContent();
     expect(function () {
       return content.featuresLength;
     }).toThrowDeveloperError();
@@ -40,10 +40,10 @@ describe("Scene/Cesium3DTileContent", function () {
       return content.batchTable;
     }).toThrowDeveloperError();
     expect(function () {
-      return content.group;
+      return content.groupMetadata;
     }).toThrowDeveloperError();
     expect(function () {
-      content.group = {};
+      content.groupMetadata = {};
     }).toThrowDeveloperError();
     expect(function () {
       return content.hasProperty(0, "height");

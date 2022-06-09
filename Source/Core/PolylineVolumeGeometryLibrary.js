@@ -12,30 +12,30 @@ import Quaternion from "./Quaternion.js";
 import Transforms from "./Transforms.js";
 import oneTimeWarning from "../Core/oneTimeWarning.js";
 
-const scratch2Array = [new Cartesian3(), new Cartesian3()];
-const scratchCartesian1 = new Cartesian3();
-const scratchCartesian2 = new Cartesian3();
-const scratchCartesian3 = new Cartesian3();
-const scratchCartesian4 = new Cartesian3();
-const scratchCartesian5 = new Cartesian3();
-const scratchCartesian6 = new Cartesian3();
-const scratchCartesian7 = new Cartesian3();
-const scratchCartesian8 = new Cartesian3();
-const scratchCartesian9 = new Cartesian3();
+var scratch2Array = [new Cartesian3(), new Cartesian3()];
+var scratchCartesian1 = new Cartesian3();
+var scratchCartesian2 = new Cartesian3();
+var scratchCartesian3 = new Cartesian3();
+var scratchCartesian4 = new Cartesian3();
+var scratchCartesian5 = new Cartesian3();
+var scratchCartesian6 = new Cartesian3();
+var scratchCartesian7 = new Cartesian3();
+var scratchCartesian8 = new Cartesian3();
+var scratchCartesian9 = new Cartesian3();
 
-const scratch1 = new Cartesian3();
-const scratch2 = new Cartesian3();
+var scratch1 = new Cartesian3();
+var scratch2 = new Cartesian3();
 
 /**
  * @private
  */
-const PolylineVolumeGeometryLibrary = {};
+var PolylineVolumeGeometryLibrary = {};
 
-let cartographic = new Cartographic();
+var cartographic = new Cartographic();
 function scaleToSurface(positions, ellipsoid) {
-  const heights = new Array(positions.length);
-  for (let i = 0; i < positions.length; i++) {
-    const pos = positions[i];
+  var heights = new Array(positions.length);
+  for (var i = 0; i < positions.length; i++) {
+    var pos = positions[i];
     cartographic = ellipsoid.cartesianToCartographic(pos, cartographic);
     heights[i] = cartographic.height;
     positions[i] = ellipsoid.scaleToGeodeticSurface(pos, pos);
@@ -44,12 +44,12 @@ function scaleToSurface(positions, ellipsoid) {
 }
 
 function subdivideHeights(points, h0, h1, granularity) {
-  const p0 = points[0];
-  const p1 = points[1];
-  const angleBetween = Cartesian3.angleBetween(p0, p1);
-  const numPoints = Math.ceil(angleBetween / granularity);
-  const heights = new Array(numPoints);
-  let i;
+  var p0 = points[0];
+  var p1 = points[1];
+  var angleBetween = Cartesian3.angleBetween(p0, p1);
+  var numPoints = Math.ceil(angleBetween / granularity);
+  var heights = new Array(numPoints);
+  var i;
   if (h0 === h1) {
     for (i = 0; i < numPoints; i++) {
       heights[i] = h0;
@@ -58,11 +58,11 @@ function subdivideHeights(points, h0, h1, granularity) {
     return heights;
   }
 
-  const dHeight = h1 - h0;
-  const heightPerVertex = dHeight / numPoints;
+  var dHeight = h1 - h0;
+  var heightPerVertex = dHeight / numPoints;
 
   for (i = 1; i < numPoints; i++) {
-    const h = h0 + i * heightPerVertex;
+    var h = h0 + i * heightPerVertex;
     heights[i] = h;
   }
 
@@ -71,32 +71,32 @@ function subdivideHeights(points, h0, h1, granularity) {
   return heights;
 }
 
-const nextScratch = new Cartesian3();
-const prevScratch = new Cartesian3();
+var nextScratch = new Cartesian3();
+var prevScratch = new Cartesian3();
 
 function computeRotationAngle(start, end, position, ellipsoid) {
-  const tangentPlane = new EllipsoidTangentPlane(position, ellipsoid);
-  const next = tangentPlane.projectPointOntoPlane(
+  var tangentPlane = new EllipsoidTangentPlane(position, ellipsoid);
+  var next = tangentPlane.projectPointOntoPlane(
     Cartesian3.add(position, start, nextScratch),
     nextScratch
   );
-  const prev = tangentPlane.projectPointOntoPlane(
+  var prev = tangentPlane.projectPointOntoPlane(
     Cartesian3.add(position, end, prevScratch),
     prevScratch
   );
-  const angle = Cartesian2.angleBetween(next, prev);
+  var angle = Cartesian2.angleBetween(next, prev);
 
   return prev.x * next.y - prev.y * next.x >= 0.0 ? -angle : angle;
 }
 
-const negativeX = new Cartesian3(-1, 0, 0);
-let transform = new Matrix4();
-const translation = new Matrix4();
-let rotationZ = new Matrix3();
-const scaleMatrix = Matrix3.IDENTITY.clone();
-const westScratch = new Cartesian3();
-const finalPosScratch = new Cartesian4();
-const heightCartesian = new Cartesian3();
+var negativeX = new Cartesian3(-1, 0, 0);
+var transform = new Matrix4();
+var translation = new Matrix4();
+var rotationZ = new Matrix3();
+var scaleMatrix = Matrix3.IDENTITY.clone();
+var westScratch = new Cartesian3();
+var finalPosScratch = new Cartesian4();
+var heightCartesian = new Cartesian3();
 function addPosition(
   center,
   left,
@@ -107,13 +107,13 @@ function addPosition(
   xScalar,
   repeat
 ) {
-  let west = westScratch;
-  let finalPosition = finalPosScratch;
+  var west = westScratch;
+  var finalPosition = finalPosScratch;
   transform = Transforms.eastNorthUpToFixedFrame(center, ellipsoid, transform);
 
   west = Matrix4.multiplyByPointAsVector(transform, negativeX, west);
   west = Cartesian3.normalize(west, west);
-  const angle = computeRotationAngle(west, left, center, ellipsoid);
+  var angle = computeRotationAngle(west, left, center, ellipsoid);
   rotationZ = Matrix3.fromRotationZ(angle, rotationZ);
 
   heightCartesian.z = height;
@@ -122,11 +122,11 @@ function addPosition(
     Matrix4.fromRotationTranslation(rotationZ, heightCartesian, translation),
     transform
   );
-  const scale = scaleMatrix;
+  var scale = scaleMatrix;
   scale[0] = xScalar;
 
-  for (let j = 0; j < repeat; j++) {
-    for (let i = 0; i < shape.length; i += 3) {
+  for (var j = 0; j < repeat; j++) {
+    for (var i = 0; i < shape.length; i += 3) {
       finalPosition = Cartesian3.fromArray(shape, i, finalPosition);
       finalPosition = Matrix3.multiplyByVector(
         scale,
@@ -145,7 +145,7 @@ function addPosition(
   return finalPositions;
 }
 
-const centerScratch = new Cartesian3();
+var centerScratch = new Cartesian3();
 function addPositions(
   centers,
   left,
@@ -155,8 +155,8 @@ function addPositions(
   heights,
   xScalar
 ) {
-  for (let i = 0; i < centers.length; i += 3) {
-    const center = Cartesian3.fromArray(centers, i, centerScratch);
+  for (var i = 0; i < centers.length; i += 3) {
+    var center = Cartesian3.fromArray(centers, i, centerScratch);
     finalPositions = addPosition(
       center,
       left,
@@ -173,20 +173,20 @@ function addPositions(
 
 function convertShapeTo3DDuplicate(shape2D, boundingRectangle) {
   //orientate 2D shape to XZ plane center at (0, 0, 0), duplicate points
-  const length = shape2D.length;
-  const shape = new Array(length * 6);
-  let index = 0;
-  const xOffset = boundingRectangle.x + boundingRectangle.width / 2;
-  const yOffset = boundingRectangle.y + boundingRectangle.height / 2;
+  var length = shape2D.length;
+  var shape = new Array(length * 6);
+  var index = 0;
+  var xOffset = boundingRectangle.x + boundingRectangle.width / 2;
+  var yOffset = boundingRectangle.y + boundingRectangle.height / 2;
 
-  let point = shape2D[0];
+  var point = shape2D[0];
   shape[index++] = point.x - xOffset;
   shape[index++] = 0.0;
   shape[index++] = point.y - yOffset;
-  for (let i = 1; i < length; i++) {
+  for (var i = 1; i < length; i++) {
     point = shape2D[i];
-    const x = point.x - xOffset;
-    const z = point.y - yOffset;
+    var x = point.x - xOffset;
+    var z = point.y - yOffset;
     shape[index++] = x;
     shape[index++] = 0.0;
     shape[index++] = z;
@@ -205,13 +205,13 @@ function convertShapeTo3DDuplicate(shape2D, boundingRectangle) {
 
 function convertShapeTo3D(shape2D, boundingRectangle) {
   //orientate 2D shape to XZ plane center at (0, 0, 0)
-  const length = shape2D.length;
-  const shape = new Array(length * 3);
-  let index = 0;
-  const xOffset = boundingRectangle.x + boundingRectangle.width / 2;
-  const yOffset = boundingRectangle.y + boundingRectangle.height / 2;
+  var length = shape2D.length;
+  var shape = new Array(length * 3);
+  var index = 0;
+  var xOffset = boundingRectangle.x + boundingRectangle.width / 2;
+  var yOffset = boundingRectangle.y + boundingRectangle.height / 2;
 
-  for (let i = 0; i < length; i++) {
+  for (var i = 0; i < length; i++) {
     shape[index++] = shape2D[i].x - xOffset;
     shape[index++] = 0;
     shape[index++] = shape2D[i].y - yOffset;
@@ -220,9 +220,9 @@ function convertShapeTo3D(shape2D, boundingRectangle) {
   return shape;
 }
 
-const quaterion = new Quaternion();
-const startPointScratch = new Cartesian3();
-const rotMatrix = new Matrix3();
+var quaterion = new Quaternion();
+var startPointScratch = new Cartesian3();
+var rotMatrix = new Matrix3();
 function computeRoundCorner(
   pivot,
   startPoint,
@@ -235,16 +235,16 @@ function computeRoundCorner(
   height,
   duplicatePoints
 ) {
-  const angle = Cartesian3.angleBetween(
+  var angle = Cartesian3.angleBetween(
     Cartesian3.subtract(startPoint, pivot, scratch1),
     Cartesian3.subtract(endPoint, pivot, scratch2)
   );
-  const granularity =
+  var granularity =
     cornerType === CornerType.BEVELED
       ? 0
       : Math.ceil(angle / CesiumMath.toRadians(5));
 
-  let m;
+  var m;
   if (leftIsOutside) {
     m = Matrix3.fromQuaternion(
       Quaternion.fromAxisAngle(
@@ -261,12 +261,12 @@ function computeRoundCorner(
     );
   }
 
-  let left;
-  let surfacePoint;
+  var left;
+  var surfacePoint;
   startPoint = Cartesian3.clone(startPoint, startPointScratch);
   if (granularity > 0) {
-    const repeat = duplicatePoints ? 2 : 1;
-    for (let i = 0; i < granularity; i++) {
+    var repeat = duplicatePoints ? 2 : 1;
+    for (var i = 0; i < granularity; i++) {
       startPoint = Matrix3.multiplyByVector(m, startPoint, startPoint);
       left = Cartesian3.subtract(startPoint, pivot, scratch1);
       left = Cartesian3.normalize(left, left);
@@ -328,11 +328,11 @@ function computeRoundCorner(
 PolylineVolumeGeometryLibrary.removeDuplicatesFromShape = function (
   shapePositions
 ) {
-  const length = shapePositions.length;
-  const cleanedPositions = [];
-  for (let i0 = length - 1, i1 = 0; i1 < length; i0 = i1++) {
-    const v0 = shapePositions[i0];
-    const v1 = shapePositions[i1];
+  var length = shapePositions.length;
+  var cleanedPositions = [];
+  for (var i0 = length - 1, i1 = 0; i1 < length; i0 = i1++) {
+    var v0 = shapePositions[i0];
+    var v1 = shapePositions[i1];
 
     if (!Cartesian2.equals(v0, v1)) {
       cleanedPositions.push(v1); // Shallow copy!
@@ -348,12 +348,12 @@ PolylineVolumeGeometryLibrary.angleIsGreaterThanPi = function (
   position,
   ellipsoid
 ) {
-  const tangentPlane = new EllipsoidTangentPlane(position, ellipsoid);
-  const next = tangentPlane.projectPointOntoPlane(
+  var tangentPlane = new EllipsoidTangentPlane(position, ellipsoid);
+  var next = tangentPlane.projectPointOntoPlane(
     Cartesian3.add(position, forward, nextScratch),
     nextScratch
   );
-  const prev = tangentPlane.projectPointOntoPlane(
+  var prev = tangentPlane.projectPointOntoPlane(
     Cartesian3.add(position, backward, prevScratch),
     prevScratch
   );
@@ -361,8 +361,8 @@ PolylineVolumeGeometryLibrary.angleIsGreaterThanPi = function (
   return prev.x * next.y - prev.y * next.x >= 0.0;
 };
 
-const scratchForwardProjection = new Cartesian3();
-const scratchBackwardProjection = new Cartesian3();
+var scratchForwardProjection = new Cartesian3();
+var scratchBackwardProjection = new Cartesian3();
 
 PolylineVolumeGeometryLibrary.computePositions = function (
   positions,
@@ -371,41 +371,41 @@ PolylineVolumeGeometryLibrary.computePositions = function (
   geometry,
   duplicatePoints
 ) {
-  const ellipsoid = geometry._ellipsoid;
-  const heights = scaleToSurface(positions, ellipsoid);
-  const granularity = geometry._granularity;
-  const cornerType = geometry._cornerType;
-  const shapeForSides = duplicatePoints
+  var ellipsoid = geometry._ellipsoid;
+  var heights = scaleToSurface(positions, ellipsoid);
+  var granularity = geometry._granularity;
+  var cornerType = geometry._cornerType;
+  var shapeForSides = duplicatePoints
     ? convertShapeTo3DDuplicate(shape2D, boundingRectangle)
     : convertShapeTo3D(shape2D, boundingRectangle);
-  const shapeForEnds = duplicatePoints
+  var shapeForEnds = duplicatePoints
     ? convertShapeTo3D(shape2D, boundingRectangle)
     : undefined;
-  const heightOffset = boundingRectangle.height / 2;
-  const width = boundingRectangle.width / 2;
-  let length = positions.length;
-  let finalPositions = [];
-  let ends = duplicatePoints ? [] : undefined;
+  var heightOffset = boundingRectangle.height / 2;
+  var width = boundingRectangle.width / 2;
+  var length = positions.length;
+  var finalPositions = [];
+  var ends = duplicatePoints ? [] : undefined;
 
-  let forward = scratchCartesian1;
-  let backward = scratchCartesian2;
-  let cornerDirection = scratchCartesian3;
-  let surfaceNormal = scratchCartesian4;
-  let pivot = scratchCartesian5;
-  let start = scratchCartesian6;
-  let end = scratchCartesian7;
-  let left = scratchCartesian8;
-  let previousPosition = scratchCartesian9;
+  var forward = scratchCartesian1;
+  var backward = scratchCartesian2;
+  var cornerDirection = scratchCartesian3;
+  var surfaceNormal = scratchCartesian4;
+  var pivot = scratchCartesian5;
+  var start = scratchCartesian6;
+  var end = scratchCartesian7;
+  var left = scratchCartesian8;
+  var previousPosition = scratchCartesian9;
 
-  let position = positions[0];
-  let nextPosition = positions[1];
+  var position = positions[0];
+  var nextPosition = positions[1];
   surfaceNormal = ellipsoid.geodeticSurfaceNormal(position, surfaceNormal);
   forward = Cartesian3.subtract(nextPosition, position, forward);
   forward = Cartesian3.normalize(forward, forward);
   left = Cartesian3.cross(surfaceNormal, forward, left);
   left = Cartesian3.normalize(left, left);
-  let h0 = heights[0];
-  let h1 = heights[1];
+  var h0 = heights[0];
+  var h1 = heights[1];
   if (duplicatePoints) {
     ends = addPosition(
       position,
@@ -421,10 +421,10 @@ PolylineVolumeGeometryLibrary.computePositions = function (
   previousPosition = Cartesian3.clone(position, previousPosition);
   position = nextPosition;
   backward = Cartesian3.negate(forward, backward);
-  let subdividedHeights;
-  let subdividedPositions;
-  for (let i = 1; i < length - 1; i++) {
-    const repeat = duplicatePoints ? 2 : 1;
+  var subdividedHeights;
+  var subdividedPositions;
+  for (var i = 1; i < length - 1; i++) {
+    var repeat = duplicatePoints ? 2 : 1;
     nextPosition = positions[i + 1];
     if (position.equals(nextPosition)) {
       oneTimeWarning(
@@ -438,7 +438,7 @@ PolylineVolumeGeometryLibrary.computePositions = function (
     cornerDirection = Cartesian3.normalize(cornerDirection, cornerDirection);
     surfaceNormal = ellipsoid.geodeticSurfaceNormal(position, surfaceNormal);
 
-    const forwardProjection = Cartesian3.multiplyByScalar(
+    var forwardProjection = Cartesian3.multiplyByScalar(
       surfaceNormal,
       Cartesian3.dot(forward, surfaceNormal),
       scratchForwardProjection
@@ -446,7 +446,7 @@ PolylineVolumeGeometryLibrary.computePositions = function (
     Cartesian3.subtract(forward, forwardProjection, forwardProjection);
     Cartesian3.normalize(forwardProjection, forwardProjection);
 
-    const backwardProjection = Cartesian3.multiplyByScalar(
+    var backwardProjection = Cartesian3.multiplyByScalar(
       surfaceNormal,
       Cartesian3.dot(backward, surfaceNormal),
       scratchBackwardProjection
@@ -454,7 +454,7 @@ PolylineVolumeGeometryLibrary.computePositions = function (
     Cartesian3.subtract(backward, backwardProjection, backwardProjection);
     Cartesian3.normalize(backwardProjection, backwardProjection);
 
-    const doCorner = !CesiumMath.equalsEpsilon(
+    var doCorner = !CesiumMath.equalsEpsilon(
       Math.abs(Cartesian3.dot(forwardProjection, backwardProjection)),
       1.0,
       CesiumMath.EPSILON7
@@ -472,7 +472,7 @@ PolylineVolumeGeometryLibrary.computePositions = function (
         cornerDirection
       );
       cornerDirection = Cartesian3.normalize(cornerDirection, cornerDirection);
-      const scalar =
+      var scalar =
         1 /
         Math.max(
           0.25,
@@ -480,7 +480,7 @@ PolylineVolumeGeometryLibrary.computePositions = function (
             Cartesian3.cross(cornerDirection, backward, scratch1)
           )
         );
-      const leftIsOutside = PolylineVolumeGeometryLibrary.angleIsGreaterThanPi(
+      var leftIsOutside = PolylineVolumeGeometryLibrary.angleIsGreaterThanPi(
         forward,
         backward,
         position,
@@ -689,8 +689,8 @@ PolylineVolumeGeometryLibrary.computePositions = function (
   }
 
   length = finalPositions.length;
-  const posLength = duplicatePoints ? length + ends.length : length;
-  const combinedPositions = new Float64Array(posLength);
+  var posLength = duplicatePoints ? length + ends.length : length;
+  var combinedPositions = new Float64Array(posLength);
   combinedPositions.set(finalPositions);
   if (duplicatePoints) {
     combinedPositions.set(ends, length);

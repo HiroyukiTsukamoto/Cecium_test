@@ -12,12 +12,12 @@ describe("Core/isBlobUri", function () {
   });
 
   it("Determines that a uri is a blob uri", function () {
-    const uint8Array = new Uint8Array(4);
-    const blob = new Blob([uint8Array], {
+    var uint8Array = new Uint8Array(4);
+    var blob = new Blob([uint8Array], {
       type: "application/octet-stream",
     });
 
-    const blobUrl = window.URL.createObjectURL(blob);
+    var blobUrl = window.URL.createObjectURL(blob);
     expect(isBlobUri(blobUrl)).toEqual(true);
   });
 });

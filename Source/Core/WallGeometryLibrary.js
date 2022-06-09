@@ -8,7 +8,7 @@ import PolylinePipeline from "./PolylinePipeline.js";
 /**
  * @private
  */
-const WallGeometryLibrary = {};
+var WallGeometryLibrary = {};
 
 function latLonEquals(c0, c1) {
   return (
@@ -17,27 +17,27 @@ function latLonEquals(c0, c1) {
   );
 }
 
-const scratchCartographic1 = new Cartographic();
-const scratchCartographic2 = new Cartographic();
+var scratchCartographic1 = new Cartographic();
+var scratchCartographic2 = new Cartographic();
 function removeDuplicates(ellipsoid, positions, topHeights, bottomHeights) {
   positions = arrayRemoveDuplicates(positions, Cartesian3.equalsEpsilon);
 
-  const length = positions.length;
+  var length = positions.length;
   if (length < 2) {
     return;
   }
 
-  const hasBottomHeights = defined(bottomHeights);
-  const hasTopHeights = defined(topHeights);
+  var hasBottomHeights = defined(bottomHeights);
+  var hasTopHeights = defined(topHeights);
 
-  const cleanedPositions = new Array(length);
-  const cleanedTopHeights = new Array(length);
-  const cleanedBottomHeights = new Array(length);
+  var cleanedPositions = new Array(length);
+  var cleanedTopHeights = new Array(length);
+  var cleanedBottomHeights = new Array(length);
 
-  const v0 = positions[0];
+  var v0 = positions[0];
   cleanedPositions[0] = v0;
 
-  const c0 = ellipsoid.cartesianToCartographic(v0, scratchCartographic1);
+  var c0 = ellipsoid.cartesianToCartographic(v0, scratchCartographic1);
   if (hasTopHeights) {
     c0.height = topHeights[0];
   }
@@ -50,14 +50,14 @@ function removeDuplicates(ellipsoid, positions, topHeights, bottomHeights) {
     cleanedBottomHeights[0] = 0.0;
   }
 
-  const startTopHeight = cleanedTopHeights[0];
-  const startBottomHeight = cleanedBottomHeights[0];
-  let hasAllSameHeights = startTopHeight === startBottomHeight;
+  var startTopHeight = cleanedTopHeights[0];
+  var startBottomHeight = cleanedBottomHeights[0];
+  var hasAllSameHeights = startTopHeight === startBottomHeight;
 
-  let index = 1;
-  for (let i = 1; i < length; ++i) {
-    const v1 = positions[i];
-    const c1 = ellipsoid.cartesianToCartographic(v1, scratchCartographic2);
+  var index = 1;
+  for (var i = 1; i < length; ++i) {
+    var v1 = positions[i];
+    var c1 = ellipsoid.cartesianToCartographic(v1, scratchCartographic2);
     if (hasTopHeights) {
       c1.height = topHeights[i];
     }
@@ -99,9 +99,9 @@ function removeDuplicates(ellipsoid, positions, topHeights, bottomHeights) {
   };
 }
 
-const positionsArrayScratch = new Array(2);
-const heightsArrayScratch = new Array(2);
-const generateArcOptionsScratch = {
+var positionsArrayScratch = new Array(2);
+var heightsArrayScratch = new Array(2);
+var generateArcOptionsScratch = {
   positions: undefined,
   height: undefined,
   granularity: undefined,
@@ -119,7 +119,7 @@ WallGeometryLibrary.computePositions = function (
   granularity,
   duplicateCorners
 ) {
-  const o = removeDuplicates(
+  var o = removeDuplicates(
     ellipsoid,
     wallPositions,
     maximumHeights,
@@ -134,23 +134,23 @@ WallGeometryLibrary.computePositions = function (
   maximumHeights = o.topHeights;
   minimumHeights = o.bottomHeights;
 
-  const length = wallPositions.length;
-  const numCorners = length - 2;
-  let topPositions;
-  let bottomPositions;
+  var length = wallPositions.length;
+  var numCorners = length - 2;
+  var topPositions;
+  var bottomPositions;
 
-  const minDistance = CesiumMath.chordLength(
+  var minDistance = CesiumMath.chordLength(
     granularity,
     ellipsoid.maximumRadius
   );
 
-  const generateArcOptions = generateArcOptionsScratch;
+  var generateArcOptions = generateArcOptionsScratch;
   generateArcOptions.minDistance = minDistance;
   generateArcOptions.ellipsoid = ellipsoid;
 
   if (duplicateCorners) {
-    let count = 0;
-    let i;
+    var count = 0;
+    var i;
 
     for (i = 0; i < length - 1; i++) {
       count +=
@@ -164,12 +164,12 @@ WallGeometryLibrary.computePositions = function (
     topPositions = new Float64Array(count * 3);
     bottomPositions = new Float64Array(count * 3);
 
-    const generateArcPositions = positionsArrayScratch;
-    const generateArcHeights = heightsArrayScratch;
+    var generateArcPositions = positionsArrayScratch;
+    var generateArcHeights = heightsArrayScratch;
     generateArcOptions.positions = generateArcPositions;
     generateArcOptions.height = generateArcHeights;
 
-    let offset = 0;
+    var offset = 0;
     for (i = 0; i < length - 1; i++) {
       generateArcPositions[0] = wallPositions[i];
       generateArcPositions[1] = wallPositions[i + 1];
@@ -177,7 +177,7 @@ WallGeometryLibrary.computePositions = function (
       generateArcHeights[0] = maximumHeights[i];
       generateArcHeights[1] = maximumHeights[i + 1];
 
-      const pos = PolylinePipeline.generateArc(generateArcOptions);
+      var pos = PolylinePipeline.generateArc(generateArcOptions);
       topPositions.set(pos, offset);
 
       generateArcHeights[0] = minimumHeights[i];

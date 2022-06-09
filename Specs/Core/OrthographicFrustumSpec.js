@@ -7,7 +7,7 @@ import { OrthographicFrustum } from "../../Source/Cesium.js";
 import createPackableSpecs from "../createPackableSpecs.js";
 
 describe("Core/OrthographicFrustum", function () {
-  let frustum, planes;
+  var frustum, planes;
 
   beforeEach(function () {
     frustum = new OrthographicFrustum();
@@ -23,7 +23,7 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("constructs", function () {
-    const options = {
+    var options = {
       width: 1.0,
       aspectRatio: 2.0,
       near: 3.0,
@@ -31,7 +31,7 @@ describe("Core/OrthographicFrustum", function () {
       xOffset: 5.0,
       yOffset: 6.0,
     };
-    const f = new OrthographicFrustum(options);
+    var f = new OrthographicFrustum(options);
     expect(f.width).toEqual(options.width);
     expect(f.aspectRatio).toEqual(options.aspectRatio);
     expect(f.near).toEqual(options.near);
@@ -39,7 +39,7 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("default constructs", function () {
-    const f = new OrthographicFrustum();
+    var f = new OrthographicFrustum();
     expect(f.width).toBeUndefined();
     expect(f.aspectRatio).toBeUndefined();
     expect(f.near).toEqual(1.0);
@@ -98,45 +98,45 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("get frustum left plane", function () {
-    const leftPlane = planes[0];
-    const expectedResult = new Cartesian4(1.0, 0.0, 0.0, 1.0);
+    var leftPlane = planes[0];
+    var expectedResult = new Cartesian4(1.0, 0.0, 0.0, 1.0);
     expect(leftPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON4);
   });
 
   it("get frustum right plane", function () {
-    const rightPlane = planes[1];
-    const expectedResult = new Cartesian4(-1.0, 0.0, 0.0, 1.0);
+    var rightPlane = planes[1];
+    var expectedResult = new Cartesian4(-1.0, 0.0, 0.0, 1.0);
     expect(rightPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON4);
   });
 
   it("get frustum bottom plane", function () {
-    const bottomPlane = planes[2];
-    const expectedResult = new Cartesian4(0.0, 1.0, 0.0, 1.0);
+    var bottomPlane = planes[2];
+    var expectedResult = new Cartesian4(0.0, 1.0, 0.0, 1.0);
     expect(bottomPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON4);
   });
 
   it("get frustum top plane", function () {
-    const topPlane = planes[3];
-    const expectedResult = new Cartesian4(0.0, -1.0, 0.0, 1.0);
+    var topPlane = planes[3];
+    var expectedResult = new Cartesian4(0.0, -1.0, 0.0, 1.0);
     expect(topPlane).toEqual(expectedResult, CesiumMath.EPSILON4);
   });
 
   it("get frustum near plane", function () {
-    const nearPlane = planes[4];
-    const expectedResult = new Cartesian4(0.0, 0.0, -1.0, -1.0);
+    var nearPlane = planes[4];
+    var expectedResult = new Cartesian4(0.0, 0.0, -1.0, -1.0);
     expect(nearPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON4);
   });
 
   it("get frustum far plane", function () {
-    const farPlane = planes[5];
-    const expectedResult = new Cartesian4(0.0, 0.0, 1.0, 3.0);
+    var farPlane = planes[5];
+    var expectedResult = new Cartesian4(0.0, 0.0, 1.0, 3.0);
     expect(farPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON4);
   });
 
   it("get orthographic projection matrix", function () {
-    const projectionMatrix = frustum.projectionMatrix;
+    var projectionMatrix = frustum.projectionMatrix;
     frustum = frustum._offCenterFrustum;
-    const expected = Matrix4.computeOrthographicOffCenter(
+    var expected = Matrix4.computeOrthographicOffCenter(
       frustum.left,
       frustum.right,
       frustum.bottom,
@@ -203,17 +203,17 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("get pixel dimensions", function () {
-    const dimensions = new Cartesian2(1.0, 1.0);
-    const pixelRatio = 1.0;
-    const distance = 1.0;
-    const pixelSize = frustum.getPixelDimensions(
+    var dimensions = new Cartesian2(1.0, 1.0);
+    var pixelRatio = 1.0;
+    var distance = 1.0;
+    var pixelSize = frustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
       pixelRatio,
       new Cartesian2()
     );
-    const expected = frustum._offCenterFrustum.getPixelDimensions(
+    var expected = frustum._offCenterFrustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
@@ -225,17 +225,17 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("get pixel dimensions with pixel ratio", function () {
-    const dimensions = new Cartesian2(1.0, 1.0);
-    const pixelRatio = 2.0;
-    const distance = 1.0;
-    const pixelSize = frustum.getPixelDimensions(
+    var dimensions = new Cartesian2(1.0, 1.0);
+    var pixelRatio = 2.0;
+    var distance = 1.0;
+    var pixelSize = frustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
       pixelRatio,
       new Cartesian2()
     );
-    const expected = frustum._offCenterFrustum.getPixelDimensions(
+    var expected = frustum._offCenterFrustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
@@ -247,7 +247,7 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("equals", function () {
-    const frustum2 = new OrthographicFrustum();
+    var frustum2 = new OrthographicFrustum();
     frustum2.near = 1.0;
     frustum2.far = 3.0;
     frustum2.width = 2.0;
@@ -256,21 +256,21 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("equals epsilon", function () {
-    const frustum2 = new OrthographicFrustum();
+    var frustum2 = new OrthographicFrustum();
     frustum2.near = 1.0;
     frustum2.far = 3.0;
     frustum2.width = 2.0;
     frustum2.aspectRatio = 1.0;
     expect(frustum.equalsEpsilon(frustum2, CesiumMath.EPSILON7)).toEqual(true);
 
-    const frustum3 = new OrthographicFrustum();
+    var frustum3 = new OrthographicFrustum();
     frustum3.near = 1.01;
     frustum3.far = 3.01;
     frustum3.width = 2.01;
     frustum3.aspectRatio = 1.01;
     expect(frustum.equalsEpsilon(frustum3, CesiumMath.EPSILON1)).toEqual(true);
 
-    const frustum4 = new OrthographicFrustum();
+    var frustum4 = new OrthographicFrustum();
     frustum4.near = 1.0;
     frustum4.far = 3.0;
     frustum4.width = 2.0;
@@ -283,20 +283,20 @@ describe("Core/OrthographicFrustum", function () {
   });
 
   it("throws with undefined frustum parameters", function () {
-    const frustum = new OrthographicFrustum();
+    var frustum = new OrthographicFrustum();
     expect(function () {
       return frustum.projectionMatrix;
     }).toThrowDeveloperError();
   });
 
   it("clone", function () {
-    const frustum2 = frustum.clone();
+    var frustum2 = frustum.clone();
     expect(frustum).toEqual(frustum2);
   });
 
   it("clone with result parameter", function () {
-    const result = new OrthographicFrustum();
-    const frustum2 = frustum.clone(result);
+    var result = new OrthographicFrustum();
+    var frustum2 = frustum.clone(result);
     expect(frustum2).toBe(result);
     expect(frustum).toEqual(frustum2);
   });

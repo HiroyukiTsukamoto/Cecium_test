@@ -6,11 +6,11 @@ import createPropertyDescriptor from "./createPropertyDescriptor.js";
 import Property from "./Property.js";
 import StripeOrientation from "./StripeOrientation.js";
 
-const defaultOrientation = StripeOrientation.HORIZONTAL;
-const defaultEvenColor = Color.WHITE;
-const defaultOddColor = Color.BLACK;
-const defaultOffset = 0;
-const defaultRepeat = 1;
+var defaultOrientation = StripeOrientation.HORIZONTAL;
+var defaultEvenColor = Color.WHITE;
+var defaultOddColor = Color.BLACK;
+var defaultOffset = 0;
+var defaultRepeat = 1;
 
 /**
  * A {@link MaterialProperty} that maps to stripe {@link Material} uniforms.

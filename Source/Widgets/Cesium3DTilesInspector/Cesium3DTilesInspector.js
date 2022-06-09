@@ -23,10 +23,10 @@ function Cesium3DTilesInspector(container, scene) {
   //>>includeEnd('debug');
 
   container = getElement(container);
-  const element = document.createElement("div");
-  const performanceContainer = document.createElement("div");
+  var element = document.createElement("div");
+  var performanceContainer = document.createElement("div");
   performanceContainer.setAttribute("data-bind", "visible: performance");
-  const viewModel = new Cesium3DTilesInspectorViewModel(
+  var viewModel = new Cesium3DTilesInspectorViewModel(
     scene,
     performanceContainer
   );
@@ -35,7 +35,7 @@ function Cesium3DTilesInspector(container, scene) {
   this._container = container;
   this._element = element;
 
-  const text = document.createElement("div");
+  var text = document.createElement("div");
   text.textContent = "3D Tiles Inspector";
   text.className = "cesium-cesiumInspector-button";
   text.setAttribute("data-bind", "click: toggleInspector");
@@ -47,63 +47,63 @@ function Cesium3DTilesInspector(container, scene) {
   );
   container.appendChild(element);
 
-  const panel = document.createElement("div");
+  var panel = document.createElement("div");
   this._panel = panel;
   panel.className = "cesium-cesiumInspector-dropDown";
   element.appendChild(panel);
 
-  const createSection = InspectorShared.createSection;
-  const createCheckbox = InspectorShared.createCheckbox;
+  var createSection = InspectorShared.createSection;
+  var createCheckbox = InspectorShared.createCheckbox;
 
-  const tilesetPanelContents = createSection(
+  var tilesetPanelContents = createSection(
     panel,
     "Tileset",
     "tilesetVisible",
     "toggleTileset"
   );
-  const displayPanelContents = createSection(
+  var displayPanelContents = createSection(
     panel,
     "Display",
     "displayVisible",
     "toggleDisplay"
   );
-  const updatePanelContents = createSection(
+  var updatePanelContents = createSection(
     panel,
     "Update",
     "updateVisible",
     "toggleUpdate"
   );
-  const loggingPanelContents = createSection(
+  var loggingPanelContents = createSection(
     panel,
     "Logging",
     "loggingVisible",
     "toggleLogging"
   );
-  const tileDebugLabelsPanelContents = createSection(
+  var tileDebugLabelsPanelContents = createSection(
     panel,
     "Tile Debug Labels",
     "tileDebugLabelsVisible",
     "toggleTileDebugLabels"
   );
-  const stylePanelContents = createSection(
+  var stylePanelContents = createSection(
     panel,
     "Style",
     "styleVisible",
     "toggleStyle"
   );
-  const optimizationPanelContents = createSection(
+  var optimizationPanelContents = createSection(
     panel,
     "Optimization",
     "optimizationVisible",
     "toggleOptimization"
   );
 
-  const properties = document.createElement("div");
+  var properties = document.createElement("div");
   properties.className = "field-group";
-  const propertiesLabel = document.createElement("label");
+  var propertiesLabel = document.createElement("label");
   propertiesLabel.className = "field-label";
   propertiesLabel.appendChild(document.createTextNode("Properties: "));
-  const propertiesField = document.createElement("div");
+  var propertiesField = document.createElement("div");
   propertiesField.setAttribute("data-bind", "text: properties");
   properties.appendChild(propertiesLabel);
   properties.appendChild(propertiesField);
@@ -131,7 +131,7 @@ function Cesium3DTilesInspector(container, scene) {
   displayPanelContents.appendChild(
     createCheckbox("Point Cloud Shading", "pointCloudShading")
   );
-  const pointCloudShadingContainer = document.createElement("div");
+  var pointCloudShadingContainer = document.createElement("div");
   pointCloudShadingContainer.setAttribute(
     "data-bind",
     "visible: pointCloudShading"
@@ -150,7 +150,7 @@ function Cesium3DTilesInspector(container, scene) {
   );
   displayPanelContents.appendChild(pointCloudShadingContainer);
 
-  const edlContainer = document.createElement("div");
+  var edlContainer = document.createElement("div");
   edlContainer.setAttribute("data-bind", "visible: eyeDomeLighting");
   edlContainer.appendChild(
     makeRangeInput("eyeDomeLightingStrength", 0, 2.0, 0.1, "EDL Strength")
@@ -166,7 +166,7 @@ function Cesium3DTilesInspector(container, scene) {
   updatePanelContents.appendChild(
     createCheckbox("Dynamic Screen Space Error", "dynamicScreenSpaceError")
   );
-  const sseContainer = document.createElement("div");
+  var sseContainer = document.createElement("div");
   sseContainer.appendChild(
     makeRangeInput(
       "maximumScreenSpaceError",
@@ -177,7 +177,7 @@ function Cesium3DTilesInspector(container, scene) {
     )
   );
   updatePanelContents.appendChild(sseContainer);
-  const dynamicScreenSpaceErrorContainer = document.createElement("div");
+  var dynamicScreenSpaceErrorContainer = document.createElement("div");
   dynamicScreenSpaceErrorContainer.setAttribute(
     "data-bind",
     "visible: dynamicScreenSpaceError"
@@ -210,7 +210,7 @@ function Cesium3DTilesInspector(container, scene) {
   loggingPanelContents.appendChild(
     createCheckbox("Statistics", "showStatistics")
   );
-  const statistics = document.createElement("div");
+  var statistics = document.createElement("div");
   statistics.className = "cesium-3dTilesInspector-statistics";
   statistics.setAttribute(
     "data-bind",
@@ -220,7 +220,7 @@ function Cesium3DTilesInspector(container, scene) {
   loggingPanelContents.appendChild(
     createCheckbox("Pick Statistics", "showPickStatistics")
   );
-  const pickStatistics = document.createElement("div");
+  var pickStatistics = document.createElement("div");
   pickStatistics.className = "cesium-3dTilesInspector-statistics";
   pickStatistics.setAttribute(
     "data-bind",
@@ -228,10 +228,10 @@ function Cesium3DTilesInspector(container, scene) {
   );
   loggingPanelContents.appendChild(pickStatistics);
 
-  const stylePanelEditor = document.createElement("div");
+  var stylePanelEditor = document.createElement("div");
   stylePanelContents.appendChild(stylePanelEditor);
   stylePanelEditor.appendChild(document.createTextNode("Color Blend Mode: "));
-  const blendDropdown = document.createElement("select");
+  var blendDropdown = document.createElement("select");
   blendDropdown.setAttribute(
     "data-bind",
     "options: colorBlendModes, " +
@@ -240,16 +240,16 @@ function Cesium3DTilesInspector(container, scene) {
       "value: colorBlendMode"
   );
   stylePanelEditor.appendChild(blendDropdown);
-  const styleEditor = document.createElement("textarea");
+  var styleEditor = document.createElement("textarea");
   styleEditor.setAttribute(
     "data-bind",
     "textInput: styleString, event: { keydown: styleEditorKeyPress }"
   );
   stylePanelEditor.className = "cesium-cesiumInspector-styleEditor";
   stylePanelEditor.appendChild(styleEditor);
-  const closeStylesBtn = makeButton("compileStyle", "Compile (Ctrl+Enter)");
+  var closeStylesBtn = makeButton("compileStyle", "Compile (Ctrl+Enter)");
   stylePanelEditor.appendChild(closeStylesBtn);
-  const errorBox = document.createElement("div");
+  var errorBox = document.createElement("div");
   errorBox.className = "cesium-cesiumInspector-error";
   errorBox.setAttribute("data-bind", "text: editorError");
   stylePanelEditor.appendChild(errorBox);
@@ -271,12 +271,12 @@ function Cesium3DTilesInspector(container, scene) {
   optimizationPanelContents.appendChild(
     createCheckbox("Skip Tile LODs", "skipLevelOfDetail")
   );
-  const skipScreenSpaceErrorFactorContainer = document.createElement("div");
+  var skipScreenSpaceErrorFactorContainer = document.createElement("div");
   skipScreenSpaceErrorFactorContainer.appendChild(
     makeRangeInput("skipScreenSpaceErrorFactor", 1, 50, 1, "Skip SSE Factor")
   );
   optimizationPanelContents.appendChild(skipScreenSpaceErrorFactorContainer);
-  const baseScreenSpaceError = document.createElement("div");
+  var baseScreenSpaceError = document.createElement("div");
   baseScreenSpaceError.appendChild(
     makeRangeInput(
       "baseScreenSpaceError",
@@ -287,7 +287,7 @@ function Cesium3DTilesInspector(container, scene) {
     )
   );
   optimizationPanelContents.appendChild(baseScreenSpaceError);
-  const skipLevelsContainer = document.createElement("div");
+  var skipLevelsContainer = document.createElement("div");
   skipLevelsContainer.appendChild(
     makeRangeInput("skipLevels", 0, 10, 1, "Min. levels to skip")
   );
@@ -352,21 +352,21 @@ Cesium3DTilesInspector.prototype.destroy = function () {
 
 function makeRangeInput(property, min, max, step, text, displayProperty) {
   displayProperty = defaultValue(displayProperty, property);
-  const input = document.createElement("input");
-  input.setAttribute("data-bind", `value: ${displayProperty}`);
+  var input = document.createElement("input");
+  input.setAttribute("data-bind", "value: " + displayProperty);
   input.type = "number";
 
-  const slider = document.createElement("input");
+  var slider = document.createElement("input");
   slider.type = "range";
   slider.min = min;
   slider.max = max;
   slider.step = step;
-  slider.setAttribute("data-bind", `valueUpdate: "input", value: ${property}`);
+  slider.setAttribute("data-bind", 'valueUpdate: "input", value: ' + property);
 
-  const wrapper = document.createElement("div");
+  var wrapper = document.createElement("div");
   wrapper.appendChild(slider);
 
-  const container = document.createElement("div");
+  var container = document.createElement("div");
   container.className = "cesium-cesiumInspector-slider";
   container.appendChild(document.createTextNode(text));
   container.appendChild(input);
@@ -376,13 +376,14 @@ function makeRangeInput(property, min, max, step, text, displayProperty) {
 }
 
 function makeButton(action, text, active) {
-  const button = document.createElement("button");
+  var button = document.createElement("button");
   button.type = "button";
   button.textContent = text;
   button.className = "cesium-cesiumInspector-pickButton";
-  let binding = `click: ${action}`;
+  var binding = "click: " + action;
   if (defined(active)) {
-    binding += `, css: {"cesium-cesiumInspector-pickButtonHighlight" : ${active}}`;
+    binding +=
+      ', css: {"cesium-cesiumInspector-pickButtonHighlight" : ' + active + "}";
   }
   button.setAttribute("data-bind", binding);
 

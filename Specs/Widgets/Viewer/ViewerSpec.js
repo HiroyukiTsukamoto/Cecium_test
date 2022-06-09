@@ -45,13 +45,13 @@ import { Timeline } from "../../../Source/Cesium.js";
 describe(
   "Widgets/Viewer/Viewer",
   function () {
-    const testProvider = {
+    var testProvider = {
       isReady: function () {
         return false;
       },
     };
 
-    const testProviderViewModel = new ProviderViewModel({
+    var testProviderViewModel = new ProviderViewModel({
       name: "name",
       tooltip: "tooltip",
       iconUrl: "url",
@@ -60,8 +60,8 @@ describe(
       },
     });
 
-    let container;
-    let viewer;
+    var container;
+    var viewer;
     beforeEach(function () {
       container = document.createElement("div");
       container.id = "container";
@@ -114,7 +114,7 @@ describe(
     });
 
     it("can specify custom clockViewModel", function () {
-      const clockViewModel = new ClockViewModel();
+      var clockViewModel = new ClockViewModel();
       viewer = createViewer(container, { clockViewModel: clockViewModel });
       expect(viewer.clockViewModel).toBe(clockViewModel);
       expect(viewer.animation.viewModel.clockViewModel).toBe(
@@ -133,7 +133,7 @@ describe(
     });
 
     it("setting shouldAnimate in options overrides clock shouldAnimate", function () {
-      const clockViewModel = new ClockViewModel(
+      var clockViewModel = new ClockViewModel(
         new Clock({
           shouldAnimate: false,
         })
@@ -361,7 +361,7 @@ describe(
     });
 
     it("constructs geocoder with geocoder service option", function () {
-      const service = new CartographicGeocoderService();
+      var service = new CartographicGeocoderService();
       viewer = createViewer(container, {
         geocoder: service,
       });
@@ -371,7 +371,7 @@ describe(
     });
 
     it("constructs geocoder with geocoder service options", function () {
-      const service = new CartographicGeocoderService();
+      var service = new CartographicGeocoderService();
       viewer = createViewer(container, {
         geocoder: [service],
       });
@@ -414,7 +414,7 @@ describe(
     });
 
     it("can set terrainProvider", function () {
-      const provider = new EllipsoidTerrainProvider();
+      var provider = new EllipsoidTerrainProvider();
 
       viewer = createViewer(container, {
         baseLayerPicker: false,
@@ -422,13 +422,13 @@ describe(
       });
       expect(viewer.scene.terrainProvider).toBe(provider);
 
-      const anotherProvider = new EllipsoidTerrainProvider();
+      var anotherProvider = new EllipsoidTerrainProvider();
       viewer.terrainProvider = anotherProvider;
       expect(viewer.terrainProvider).toBe(anotherProvider);
     });
 
     it("can set fullScreenElement", function () {
-      const testElement = document.createElement("span");
+      var testElement = document.createElement("span");
 
       viewer = createViewer(container, {
         fullscreenElement: testElement,
@@ -439,7 +439,7 @@ describe(
     });
 
     it("can set contextOptions", function () {
-      const webglOptions = {
+      var webglOptions = {
         alpha: true,
         depth: true, //TODO Change to false when https://bugzilla.mozilla.org/show_bug.cgi?id=745912 is fixed.
         stencil: true,
@@ -448,7 +448,7 @@ describe(
         premultipliedAlpha: true, // Workaround IE 11.0.8, which does not honor false.
         preserveDrawingBuffer: true,
       };
-      const contextOptions = {
+      var contextOptions = {
         allowTextureFilterAnisotropic: false,
         webgl: webglOptions,
       };
@@ -457,8 +457,8 @@ describe(
         contextOptions: contextOptions,
       });
 
-      const context = viewer.scene.context;
-      const contextAttributes = context._gl.getContextAttributes();
+      var context = viewer.scene.context;
+      var contextAttributes = context._gl.getContextAttributes();
 
       expect(context.options.allowTextureFilterAnisotropic).toEqual(false);
       expect(contextAttributes.alpha).toEqual(webglOptions.alpha);
@@ -492,7 +492,7 @@ describe(
     });
 
     it("can set map projection", function () {
-      const mapProjection = new WebMercatorProjection();
+      var mapProjection = new WebMercatorProjection();
 
       viewer = createViewer(container, {
         mapProjection: mapProjection,
@@ -525,7 +525,7 @@ describe(
     });
 
     it("can set imageryProviderViewModels", function () {
-      const models = [testProviderViewModel];
+      var models = [testProviderViewModel];
 
       viewer = createViewer(container, {
         imageryProviderViewModels: models,
@@ -581,7 +581,7 @@ describe(
     });
 
     it("can set dataSources at construction", function () {
-      const collection = new DataSourceCollection();
+      var collection = new DataSourceCollection();
       viewer = createViewer(container, {
         dataSources: collection,
       });
@@ -590,13 +590,13 @@ describe(
 
     it("default DataSourceCollection is destroyed when Viewer is destroyed", function () {
       viewer = createViewer(container);
-      const dataSources = viewer.dataSources;
+      var dataSources = viewer.dataSources;
       viewer.destroy();
       expect(dataSources.isDestroyed()).toBe(true);
     });
 
     it("specified DataSourceCollection is not destroyed when Viewer is destroyed", function () {
-      const collection = new DataSourceCollection();
+      var collection = new DataSourceCollection();
       viewer = createViewer(container, {
         dataSources: collection,
       });
@@ -633,7 +633,7 @@ describe(
     });
 
     it("useBrowserRecommendedResolution ignores devicePixelRatio", function () {
-      const oldDevicePixelRatio = window.devicePixelRatio;
+      var oldDevicePixelRatio = window.devicePixelRatio;
       window.devicePixelRatio = 2.0;
 
       viewer = createViewer(container, {
@@ -685,7 +685,7 @@ describe(
       viewer = createViewer(container);
       expect(viewer.useDefaultRenderLoop).toEqual(true);
 
-      const error = "foo";
+      var error = "foo";
       viewer.scene.primitives.update = function () {
         throw error;
       };
@@ -696,7 +696,7 @@ describe(
     });
 
     it("sets the clock and timeline based on the first data source", function () {
-      const dataSource = new MockDataSource();
+      var dataSource = new MockDataSource();
       dataSource.clock = new DataSourceClock();
       dataSource.clock.startTime = JulianDate.fromIso8601("2013-08-01T18:00Z");
       dataSource.clock.stopTime = JulianDate.fromIso8601("2013-08-21T02:00Z");
@@ -708,18 +708,18 @@ describe(
       dataSource.clock.multiplier = 20.0;
 
       viewer = createViewer(container);
-      return viewer.dataSources.add(dataSource).then(function () {
-        expect(viewer.clock.startTime).toEqual(dataSource.clock.startTime);
-        expect(viewer.clock.stopTime).toEqual(dataSource.clock.stopTime);
-        expect(viewer.clock.currentTime).toEqual(dataSource.clock.currentTime);
-        expect(viewer.clock.clockRange).toEqual(dataSource.clock.clockRange);
-        expect(viewer.clock.clockStep).toEqual(dataSource.clock.clockStep);
-        expect(viewer.clock.multiplier).toEqual(dataSource.clock.multiplier);
-      });
+      viewer.dataSources.add(dataSource);
+
+      expect(viewer.clock.startTime).toEqual(dataSource.clock.startTime);
+      expect(viewer.clock.stopTime).toEqual(dataSource.clock.stopTime);
+      expect(viewer.clock.currentTime).toEqual(dataSource.clock.currentTime);
+      expect(viewer.clock.clockRange).toEqual(dataSource.clock.clockRange);
+      expect(viewer.clock.clockStep).toEqual(dataSource.clock.clockStep);
+      expect(viewer.clock.multiplier).toEqual(dataSource.clock.multiplier);
     });
 
     it("sets the clock for multiple data sources", function () {
-      const dataSource1 = new MockDataSource();
+      var dataSource1 = new MockDataSource();
       dataSource1.clock = new DataSourceClock();
       dataSource1.clock.startTime = JulianDate.fromIso8601("2013-08-01T18:00Z");
       dataSource1.clock.stopTime = JulianDate.fromIso8601("2013-08-21T02:00Z");
@@ -727,64 +727,49 @@ describe(
         "2013-08-02T00:00Z"
       );
 
-      let dataSource2, dataSource3;
       viewer = createViewer(container);
-      return viewer.dataSources
-        .add(dataSource1)
-        .then(function () {
-          expect(viewer.clockTrackedDataSource).toBe(dataSource1);
-          expect(viewer.clock.startTime).toEqual(dataSource1.clock.startTime);
+      viewer.dataSources.add(dataSource1);
 
-          dataSource2 = new MockDataSource();
-          dataSource2.clock = new DataSourceClock();
-          dataSource2.clock.startTime = JulianDate.fromIso8601(
-            "2014-08-01T18:00Z"
-          );
-          dataSource2.clock.stopTime = JulianDate.fromIso8601(
-            "2014-08-21T02:00Z"
-          );
-          dataSource2.clock.currentTime = JulianDate.fromIso8601(
-            "2014-08-02T00:00Z"
-          );
+      expect(viewer.clockTrackedDataSource).toBe(dataSource1);
+      expect(viewer.clock.startTime).toEqual(dataSource1.clock.startTime);
 
-          viewer.dataSources.add(dataSource2);
-        })
-        .then(function () {
-          expect(viewer.clockTrackedDataSource).toBe(dataSource2);
-          expect(viewer.clock.startTime).toEqual(dataSource2.clock.startTime);
+      var dataSource2 = new MockDataSource();
+      dataSource2.clock = new DataSourceClock();
+      dataSource2.clock.startTime = JulianDate.fromIso8601("2014-08-01T18:00Z");
+      dataSource2.clock.stopTime = JulianDate.fromIso8601("2014-08-21T02:00Z");
+      dataSource2.clock.currentTime = JulianDate.fromIso8601(
+        "2014-08-02T00:00Z"
+      );
 
-          dataSource3 = new MockDataSource();
-          dataSource3.clock = new DataSourceClock();
-          dataSource3.clock.startTime = JulianDate.fromIso8601(
-            "2015-08-01T18:00Z"
-          );
-          dataSource3.clock.stopTime = JulianDate.fromIso8601(
-            "2015-08-21T02:00Z"
-          );
-          dataSource3.clock.currentTime = JulianDate.fromIso8601(
-            "2015-08-02T00:00Z"
-          );
+      viewer.dataSources.add(dataSource2);
+      expect(viewer.clockTrackedDataSource).toBe(dataSource2);
+      expect(viewer.clock.startTime).toEqual(dataSource2.clock.startTime);
 
-          viewer.dataSources.add(dataSource3);
-        })
-        .then(function () {
-          expect(viewer.clockTrackedDataSource).toBe(dataSource3);
-          expect(viewer.clock.startTime).toEqual(dataSource3.clock.startTime);
+      var dataSource3 = new MockDataSource();
+      dataSource3.clock = new DataSourceClock();
+      dataSource3.clock.startTime = JulianDate.fromIso8601("2015-08-01T18:00Z");
+      dataSource3.clock.stopTime = JulianDate.fromIso8601("2015-08-21T02:00Z");
+      dataSource3.clock.currentTime = JulianDate.fromIso8601(
+        "2015-08-02T00:00Z"
+      );
 
-          // Removing the last dataSource moves the clock to second-last.
-          viewer.dataSources.remove(dataSource3);
-          expect(viewer.clockTrackedDataSource).toBe(dataSource2);
-          expect(viewer.clock.startTime).toEqual(dataSource2.clock.startTime);
+      viewer.dataSources.add(dataSource3);
+      expect(viewer.clockTrackedDataSource).toBe(dataSource3);
+      expect(viewer.clock.startTime).toEqual(dataSource3.clock.startTime);
 
-          // Removing the first data source has no effect, because it's not active.
-          viewer.dataSources.remove(dataSource1);
-          expect(viewer.clockTrackedDataSource).toBe(dataSource2);
-          expect(viewer.clock.startTime).toEqual(dataSource2.clock.startTime);
-        });
+      // Removing the last dataSource moves the clock to second-last.
+      viewer.dataSources.remove(dataSource3);
+      expect(viewer.clockTrackedDataSource).toBe(dataSource2);
+      expect(viewer.clock.startTime).toEqual(dataSource2.clock.startTime);
+
+      // Removing the first data source has no effect, because it's not active.
+      viewer.dataSources.remove(dataSource1);
+      expect(viewer.clockTrackedDataSource).toBe(dataSource2);
+      expect(viewer.clock.startTime).toEqual(dataSource2.clock.startTime);
     });
 
     it("updates the clock when the data source changes", function () {
-      const dataSource = new MockDataSource();
+      var dataSource = new MockDataSource();
       dataSource.clock = new DataSourceClock();
       dataSource.clock.startTime = JulianDate.fromIso8601("2013-08-01T18:00Z");
       dataSource.clock.stopTime = JulianDate.fromIso8601("2013-08-21T02:00Z");
@@ -796,38 +781,36 @@ describe(
       dataSource.clock.multiplier = 20.0;
 
       viewer = createViewer(container);
-      return viewer.dataSources.add(dataSource).then(function () {
-        dataSource.clock.startTime = JulianDate.fromIso8601(
-          "2014-08-01T18:00Z"
-        );
-        dataSource.clock.stopTime = JulianDate.fromIso8601("2014-08-21T02:00Z");
-        dataSource.clock.currentTime = JulianDate.fromIso8601(
-          "2014-08-02T00:00Z"
-        );
-        dataSource.clock.clockRange = ClockRange.UNBOUNDED;
-        dataSource.clock.clockStep = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
-        dataSource.clock.multiplier = 10.0;
+      viewer.dataSources.add(dataSource);
 
-        dataSource.changedEvent.raiseEvent(dataSource);
+      dataSource.clock.startTime = JulianDate.fromIso8601("2014-08-01T18:00Z");
+      dataSource.clock.stopTime = JulianDate.fromIso8601("2014-08-21T02:00Z");
+      dataSource.clock.currentTime = JulianDate.fromIso8601(
+        "2014-08-02T00:00Z"
+      );
+      dataSource.clock.clockRange = ClockRange.UNBOUNDED;
+      dataSource.clock.clockStep = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+      dataSource.clock.multiplier = 10.0;
 
-        expect(viewer.clock.startTime).toEqual(dataSource.clock.startTime);
-        expect(viewer.clock.stopTime).toEqual(dataSource.clock.stopTime);
-        expect(viewer.clock.currentTime).toEqual(dataSource.clock.currentTime);
-        expect(viewer.clock.clockRange).toEqual(dataSource.clock.clockRange);
-        expect(viewer.clock.clockStep).toEqual(dataSource.clock.clockStep);
-        expect(viewer.clock.multiplier).toEqual(dataSource.clock.multiplier);
+      dataSource.changedEvent.raiseEvent(dataSource);
 
-        dataSource.clock.clockStep = ClockStep.SYSTEM_CLOCK;
-        dataSource.clock.multiplier = 1.0;
+      expect(viewer.clock.startTime).toEqual(dataSource.clock.startTime);
+      expect(viewer.clock.stopTime).toEqual(dataSource.clock.stopTime);
+      expect(viewer.clock.currentTime).toEqual(dataSource.clock.currentTime);
+      expect(viewer.clock.clockRange).toEqual(dataSource.clock.clockRange);
+      expect(viewer.clock.clockStep).toEqual(dataSource.clock.clockStep);
+      expect(viewer.clock.multiplier).toEqual(dataSource.clock.multiplier);
 
-        dataSource.changedEvent.raiseEvent(dataSource);
+      dataSource.clock.clockStep = ClockStep.SYSTEM_CLOCK;
+      dataSource.clock.multiplier = 1.0;
 
-        expect(viewer.clock.clockStep).toEqual(dataSource.clock.clockStep);
-      });
+      dataSource.changedEvent.raiseEvent(dataSource);
+
+      expect(viewer.clock.clockStep).toEqual(dataSource.clock.clockStep);
     });
 
     it("can manually control the clock tracking", function () {
-      const dataSource1 = new MockDataSource();
+      var dataSource1 = new MockDataSource();
       dataSource1.clock = new DataSourceClock();
       dataSource1.clock.startTime = JulianDate.fromIso8601("2013-08-01T18:00Z");
       dataSource1.clock.stopTime = JulianDate.fromIso8601("2013-08-21T02:00Z");
@@ -838,71 +821,59 @@ describe(
       viewer = createViewer(container, {
         automaticallyTrackDataSourceClocks: false,
       });
+      viewer.dataSources.add(dataSource1);
 
-      let dataSource2;
-      return viewer.dataSources
-        .add(dataSource1)
-        .then(function () {
-          // Because of the above Viewer option, data sources are not automatically
-          // selected for clock tracking.
-          expect(viewer.clockTrackedDataSource).not.toBeDefined();
-          // The mock data source time is in the past, so will not be the default time.
-          expect(viewer.clock.startTime).not.toEqual(
-            dataSource1.clock.startTime
-          );
+      // Because of the above Viewer option, data sources are not automatically
+      // selected for clock tracking.
+      expect(viewer.clockTrackedDataSource).not.toBeDefined();
+      // The mock data source time is in the past, so will not be the default time.
+      expect(viewer.clock.startTime).not.toEqual(dataSource1.clock.startTime);
 
-          // Manually set the first data source as the tracked data source.
-          viewer.clockTrackedDataSource = dataSource1;
-          expect(viewer.clockTrackedDataSource).toBe(dataSource1);
-          expect(viewer.clock.startTime).toEqual(dataSource1.clock.startTime);
+      // Manually set the first data source as the tracked data source.
+      viewer.clockTrackedDataSource = dataSource1;
+      expect(viewer.clockTrackedDataSource).toBe(dataSource1);
+      expect(viewer.clock.startTime).toEqual(dataSource1.clock.startTime);
 
-          dataSource2 = new MockDataSource();
-          dataSource2.clock = new DataSourceClock();
-          dataSource2.clock.startTime = JulianDate.fromIso8601(
-            "2014-08-01T18:00Z"
-          );
-          dataSource2.clock.stopTime = JulianDate.fromIso8601(
-            "2014-08-21T02:00Z"
-          );
-          dataSource2.clock.currentTime = JulianDate.fromIso8601(
-            "2014-08-02T00:00Z"
-          );
+      var dataSource2 = new MockDataSource();
+      dataSource2.clock = new DataSourceClock();
+      dataSource2.clock.startTime = JulianDate.fromIso8601("2014-08-01T18:00Z");
+      dataSource2.clock.stopTime = JulianDate.fromIso8601("2014-08-21T02:00Z");
+      dataSource2.clock.currentTime = JulianDate.fromIso8601(
+        "2014-08-02T00:00Z"
+      );
 
-          // Adding a second data source in manual mode still leaves the first one tracked.
-          viewer.dataSources.add(dataSource2);
-        })
-        .then(function () {
-          expect(viewer.clockTrackedDataSource).toBe(dataSource1);
-          expect(viewer.clock.startTime).toEqual(dataSource1.clock.startTime);
+      // Adding a second data source in manual mode still leaves the first one tracked.
+      viewer.dataSources.add(dataSource2);
+      expect(viewer.clockTrackedDataSource).toBe(dataSource1);
+      expect(viewer.clock.startTime).toEqual(dataSource1.clock.startTime);
 
-          // Removing the tracked data source in manual mode turns off tracking, even
-          // if other data sources remain available for tracking.
-          viewer.dataSources.remove(dataSource1);
-          expect(viewer.clockTrackedDataSource).not.toBeDefined();
-        });
+      // Removing the tracked data source in manual mode turns off tracking, even
+      // if other data sources remain available for tracking.
+      viewer.dataSources.remove(dataSource1);
+      expect(viewer.clockTrackedDataSource).not.toBeDefined();
     });
 
     it("shows the error panel when render throws", function () {
       viewer = createViewer(container);
 
-      const error = "foo";
+      var error = "foo";
       viewer.scene.primitives.update = function () {
         throw error;
       };
 
       return pollToPromise(function () {
         return !viewer.useDefaultRenderLoop;
-      }).catch(function () {
+      }).then(function () {
         expect(
           viewer._element.querySelector(".cesium-widget-errorPanel")
         ).not.toBeNull();
 
-        const messages = viewer._element.querySelectorAll(
+        var messages = viewer._element.querySelectorAll(
           ".cesium-widget-errorPanel-message"
         );
 
-        let found = false;
-        for (let i = 0; i < messages.length; ++i) {
+        var found = false;
+        for (var i = 0; i < messages.length; ++i) {
           if (messages[i].textContent.indexOf(error) !== -1) {
             found = true;
           }
@@ -926,14 +897,14 @@ describe(
         showRenderLoopErrors: false,
       });
 
-      const error = "foo";
+      var error = "foo";
       viewer.scene.primitives.update = function () {
         throw error;
       };
 
       return pollToPromise(function () {
         return !viewer.useDefaultRenderLoop;
-      }).catch(function () {
+      }).then(function () {
         expect(
           viewer._element.querySelector(".cesium-widget-errorPanel")
         ).toBeNull();
@@ -958,20 +929,10 @@ describe(
       );
     });
 
-    it("can set depthPlaneEllipsoidOffset", function () {
-      viewer = createViewer(container, {
-        depthPlaneEllipsoidOffset: Number.POSITIVE_INFINITY,
-      });
-
-      expect(viewer.scene._depthPlane._ellipsoidOffset).toBe(
-        Number.POSITIVE_INFINITY
-      );
-    });
-
     it("can get and set trackedEntity", function () {
       viewer = createViewer(container);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantProperty(
         new Cartesian3(123456, 123456, 123456)
       );
@@ -984,12 +945,12 @@ describe(
     });
 
     it("can get and set selectedEntity", function () {
-      const viewer = createViewer(container);
+      var viewer = createViewer(container);
 
-      const dataSource = new MockDataSource();
+      var dataSource = new MockDataSource();
       viewer.dataSources.add(dataSource);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(123456, 123456, 123456)
       );
@@ -1006,19 +967,19 @@ describe(
     });
 
     it("raises an event when the selected entity changes", function () {
-      const viewer = createViewer(container);
+      var viewer = createViewer(container);
 
-      const dataSource = new MockDataSource();
+      var dataSource = new MockDataSource();
       viewer.dataSources.add(dataSource);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(123456, 123456, 123456)
       );
 
       dataSource.entities.add(entity);
 
-      let myEntity;
+      var myEntity;
       viewer.selectedEntityChanged.addEventListener(function (newSelection) {
         myEntity = newSelection;
       });
@@ -1032,19 +993,19 @@ describe(
     });
 
     it("raises an event when the tracked entity changes", function () {
-      const viewer = createViewer(container);
+      var viewer = createViewer(container);
 
-      const dataSource = new MockDataSource();
+      var dataSource = new MockDataSource();
       viewer.dataSources.add(dataSource);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(123456, 123456, 123456)
       );
 
       dataSource.entities.add(entity);
 
-      let myEntity;
+      var myEntity;
       viewer.trackedEntityChanged.addEventListener(function (newValue) {
         myEntity = newValue;
       });
@@ -1058,11 +1019,11 @@ describe(
     });
 
     it("selectedEntity sets InfoBox properties", function () {
-      const viewer = createViewer(container);
+      var viewer = createViewer(container);
 
-      const entity = new Entity();
+      var entity = new Entity();
 
-      const viewModel = viewer.infoBox.viewModel;
+      var viewModel = viewer.infoBox.viewModel;
       expect(viewModel.showInfo).toBe(false);
 
       viewer.selectedEntity = entity;
@@ -1093,7 +1054,7 @@ describe(
     it("home button resets tracked object", function () {
       viewer = createViewer(container);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantProperty(
         new Cartesian3(123456, 123456, 123456)
       );
@@ -1115,12 +1076,12 @@ describe(
     it("stops tracking when tracked object is removed", function () {
       viewer = createViewer(container);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantProperty(
         new Cartesian3(123456, 123456, 123456)
       );
 
-      const dataSource = new MockDataSource();
+      var dataSource = new MockDataSource();
       dataSource.entities.add(entity);
 
       viewer.dataSources.add(dataSource);
@@ -1170,7 +1131,7 @@ describe(
     it("does not crash when tracking an object with a position property whose value is undefined.", function () {
       viewer = createViewer(container);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantProperty(undefined);
       entity.polyline = {
         positions: [
@@ -1202,22 +1163,22 @@ describe(
     it("zoomTo zooms to Cesium3DTileset with default offset when offset not defined", function () {
       viewer = createViewer(container);
 
-      const path =
-        "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
-      const tileset = new Cesium3DTileset({
+      var path = "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
+      var tileset = new Cesium3DTileset({
         url: path,
       });
 
       // load the tileset then check tests
       return tileset.readyPromise.then(function () {
-        const expectedBoundingSphere = tileset.boundingSphere;
-        const expectedOffset = new HeadingPitchRange(
+        var expectedBoundingSphere = tileset.boundingSphere;
+        var expectedOffset = new HeadingPitchRange(
           0.0,
           -0.5,
           expectedBoundingSphere.radius
         );
 
-        let wasCompleted = false;
+        var promise = viewer.zoomTo(tileset);
+        var wasCompleted = false;
         spyOn(viewer.camera, "viewBoundingSphere").and.callFake(function (
           boundingSphere,
           offset
@@ -1226,7 +1187,6 @@ describe(
           expect(offset).toEqual(expectedOffset);
           wasCompleted = true;
         });
-        const promise = viewer.zoomTo(tileset);
 
         viewer._postRender();
 
@@ -1239,23 +1199,22 @@ describe(
     it("zoomTo zooms to Cesium3DTileset with offset", function () {
       viewer = createViewer(container);
 
-      const path =
-        "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
-      const tileset = new Cesium3DTileset({
+      var path = "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
+      var tileset = new Cesium3DTileset({
         url: path,
       });
 
       // load the tileset then check tests
       return tileset.readyPromise.then(function () {
-        const expectedBoundingSphere = tileset.boundingSphere;
-        const expectedOffset = new HeadingPitchRange(
+        var expectedBoundingSphere = tileset.boundingSphere;
+        var expectedOffset = new HeadingPitchRange(
           0.4,
           1.2,
           4.0 * expectedBoundingSphere.radius
         );
 
-        const promise = viewer.zoomTo(tileset, expectedOffset);
-        let wasCompleted = false;
+        var promise = viewer.zoomTo(tileset, expectedOffset);
+        var wasCompleted = false;
         spyOn(viewer.camera, "viewBoundingSphere").and.callFake(function (
           boundingSphere,
           offset
@@ -1274,12 +1233,11 @@ describe(
     });
 
     function loadTimeDynamicPointCloud(viewer) {
-      const scene = viewer.scene;
-      const clock = viewer.clock;
+      var scene = viewer.scene;
+      var clock = viewer.clock;
 
-      const uri =
-        "./Data/Cesium3DTiles/PointCloud/PointCloudTimeDynamic/0.pnts";
-      const dates = ["2018-07-19T15:18:00Z", "2018-07-19T15:18:00.5Z"];
+      var uri = "./Data/Cesium3DTiles/PointCloud/PointCloudTimeDynamic/0.pnts";
+      var dates = ["2018-07-19T15:18:00Z", "2018-07-19T15:18:00.5Z"];
 
       function dataCallback() {
         return {
@@ -1287,19 +1245,17 @@ describe(
         };
       }
 
-      const timeIntervalCollection = TimeIntervalCollection.fromIso8601DateArray(
-        {
-          iso8601Dates: dates,
-          dataCallback: dataCallback,
-        }
-      );
+      var timeIntervalCollection = TimeIntervalCollection.fromIso8601DateArray({
+        iso8601Dates: dates,
+        dataCallback: dataCallback,
+      });
 
-      const pointCloud = new TimeDynamicPointCloud({
+      var pointCloud = new TimeDynamicPointCloud({
         intervals: timeIntervalCollection,
         clock: clock,
       });
 
-      const start = JulianDate.fromIso8601(dates[0]);
+      var start = JulianDate.fromIso8601(dates[0]);
 
       clock.startTime = start;
       clock.currentTime = start;
@@ -1318,15 +1274,15 @@ describe(
     it("zoomTo zooms to TimeDynamicPointCloud with default offset when offset not defined", function () {
       viewer = createViewer(container);
       return loadTimeDynamicPointCloud(viewer).then(function (pointCloud) {
-        const expectedBoundingSphere = pointCloud.boundingSphere;
-        const expectedOffset = new HeadingPitchRange(
+        var expectedBoundingSphere = pointCloud.boundingSphere;
+        var expectedOffset = new HeadingPitchRange(
           0.0,
           -0.5,
           expectedBoundingSphere.radius
         );
 
-        const promise = viewer.zoomTo(pointCloud);
-        let wasCompleted = false;
+        var promise = viewer.zoomTo(pointCloud);
+        var wasCompleted = false;
         spyOn(viewer.camera, "viewBoundingSphere").and.callFake(function (
           boundingSphere,
           offset
@@ -1348,15 +1304,15 @@ describe(
     it("zoomTo zooms to TimeDynamicPointCloud with offset", function () {
       viewer = createViewer(container);
       return loadTimeDynamicPointCloud(viewer).then(function (pointCloud) {
-        const expectedBoundingSphere = pointCloud.boundingSphere;
-        const expectedOffset = new HeadingPitchRange(
+        var expectedBoundingSphere = pointCloud.boundingSphere;
+        var expectedOffset = new HeadingPitchRange(
           0.4,
           1.2,
           4.0 * expectedBoundingSphere.radius
         );
 
-        const promise = viewer.zoomTo(pointCloud, expectedOffset);
-        let wasCompleted = false;
+        var promise = viewer.zoomTo(pointCloud, expectedOffset);
+        var wasCompleted = false;
         spyOn(viewer.camera, "viewBoundingSphere").and.callFake(function (
           boundingSphere,
           offset
@@ -1386,10 +1342,10 @@ describe(
         },
       });
 
-      const entities = viewer.entities;
+      var entities = viewer.entities;
 
-      const promise = viewer.zoomTo(entities);
-      let wasCompleted = false;
+      var promise = viewer.zoomTo(entities);
+      var wasCompleted = false;
       spyOn(viewer._dataSourceDisplay, "getBoundingSphere").and.callFake(
         function () {
           return new BoundingSphere();
@@ -1424,12 +1380,12 @@ describe(
         },
       });
 
-      const entities = viewer.entities;
+      var entities = viewer.entities;
       // fake temp offset
-      const expectedOffset = new HeadingPitchRange(3.0, 0.2, 2.3);
+      var expectedOffset = new HeadingPitchRange(3.0, 0.2, 2.3);
 
-      const promise = viewer.zoomTo(entities, expectedOffset);
-      let wasCompleted = false;
+      var promise = viewer.zoomTo(entities, expectedOffset);
+      var wasCompleted = false;
       spyOn(viewer._dataSourceDisplay, "getBoundingSphere").and.callFake(
         function () {
           return new BoundingSphere();
@@ -1461,16 +1417,15 @@ describe(
     it("flyTo flies to Cesium3DTileset with default offset when options not defined", function () {
       viewer = createViewer(container);
 
-      const path =
-        "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
-      const tileset = new Cesium3DTileset({
+      var path = "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
+      var tileset = new Cesium3DTileset({
         url: path,
       });
 
       // load tileset to test
       return tileset.readyPromise.then(function () {
-        const promise = viewer.flyTo(tileset);
-        let wasCompleted = false;
+        var promise = viewer.flyTo(tileset);
+        var wasCompleted = false;
 
         spyOn(viewer.camera, "flyToBoundingSphere").and.callFake(function (
           target,
@@ -1494,18 +1449,17 @@ describe(
     it("flyTo flies to Cesium3DTileset with default offset when offset not defined", function () {
       viewer = createViewer(container);
 
-      const path =
-        "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
-      const tileset = new Cesium3DTileset({
+      var path = "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
+      var tileset = new Cesium3DTileset({
         url: path,
       });
 
-      const options = {};
+      var options = {};
 
       // load tileset to test
       return tileset.readyPromise.then(function () {
-        const promise = viewer.flyTo(tileset, options);
-        let wasCompleted = false;
+        var promise = viewer.flyTo(tileset, options);
+        var wasCompleted = false;
 
         spyOn(viewer.camera, "flyToBoundingSphere").and.callFake(function (
           target,
@@ -1529,23 +1483,22 @@ describe(
     it("flyTo flies to Cesium3DTileset when options are defined", function () {
       viewer = createViewer(container);
 
-      const path =
-        "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
-      const tileset = new Cesium3DTileset({
+      var path = "./Data/Cesium3DTiles/Tilesets/TilesetOfTilesets/tileset.json";
+      var tileset = new Cesium3DTileset({
         url: path,
       });
 
       // load tileset to test
       return tileset.readyPromise.then(function () {
-        const offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
-        const options = {
+        var offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
+        var options = {
           offset: offsetVal,
           duration: 3.0,
           maximumHeight: 5.0,
         };
 
-        const promise = viewer.flyTo(tileset, options);
-        let wasCompleted = false;
+        var promise = viewer.flyTo(tileset, options);
+        var wasCompleted = false;
 
         spyOn(viewer.camera, "flyToBoundingSphere").and.callFake(function (
           target,
@@ -1568,8 +1521,8 @@ describe(
     it("flyTo flies to TimeDynamicPointCloud with default offset when options not defined", function () {
       viewer = createViewer(container);
       return loadTimeDynamicPointCloud(viewer).then(function (pointCloud) {
-        const promise = viewer.flyTo(pointCloud);
-        let wasCompleted = false;
+        var promise = viewer.flyTo(pointCloud);
+        var wasCompleted = false;
 
         spyOn(viewer.camera, "flyToBoundingSphere").and.callFake(function (
           target,
@@ -1594,9 +1547,9 @@ describe(
     it("flyTo flies to TimeDynamicPointCloud with default offset when offset not defined", function () {
       viewer = createViewer(container);
       return loadTimeDynamicPointCloud(viewer).then(function (pointCloud) {
-        const options = {};
-        const promise = viewer.flyTo(pointCloud, options);
-        let wasCompleted = false;
+        var options = {};
+        var promise = viewer.flyTo(pointCloud, options);
+        var wasCompleted = false;
 
         spyOn(viewer.camera, "flyToBoundingSphere").and.callFake(function (
           target,
@@ -1621,14 +1574,14 @@ describe(
     it("flyTo flies to TimeDynamicPointCloud when options are defined", function () {
       viewer = createViewer(container);
       return loadTimeDynamicPointCloud(viewer).then(function (pointCloud) {
-        const offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
-        const options = {
+        var offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
+        var options = {
           offset: offsetVal,
           duration: 3.0,
           maximumHeight: 5.0,
         };
-        const promise = viewer.flyTo(pointCloud, options);
-        let wasCompleted = false;
+        var promise = viewer.flyTo(pointCloud, options);
+        var wasCompleted = false;
 
         spyOn(viewer.camera, "flyToBoundingSphere").and.callFake(function (
           target,
@@ -1661,9 +1614,9 @@ describe(
         },
       });
 
-      const entities = viewer.entities;
-      const promise = viewer.flyTo(entities);
-      let wasCompleted = false;
+      var entities = viewer.entities;
+      var promise = viewer.flyTo(entities);
+      var wasCompleted = false;
       spyOn(viewer._dataSourceDisplay, "getBoundingSphere").and.callFake(
         function () {
           return new BoundingSphere();
@@ -1698,11 +1651,11 @@ describe(
         },
       });
 
-      const entities = viewer.entities;
-      const options = {};
+      var entities = viewer.entities;
+      var options = {};
 
-      const promise = viewer.flyTo(entities, options);
-      let wasCompleted = false;
+      var promise = viewer.flyTo(entities, options);
+      var wasCompleted = false;
       spyOn(viewer._dataSourceDisplay, "getBoundingSphere").and.callFake(
         function () {
           return new BoundingSphere();
@@ -1737,16 +1690,16 @@ describe(
         },
       });
 
-      const entities = viewer.entities;
-      const offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
-      const options = {
+      var entities = viewer.entities;
+      var offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
+      var options = {
         offset: offsetVal,
         duration: 3.0,
         maximumHeight: 5.0,
       };
 
-      const promise = viewer.flyTo(entities, options);
-      let wasCompleted = false;
+      var promise = viewer.flyTo(entities, options);
+      var wasCompleted = false;
       spyOn(viewer._dataSourceDisplay, "getBoundingSphere").and.callFake(
         function () {
           return new BoundingSphere();
@@ -1781,14 +1734,14 @@ describe(
         },
       });
 
-      const entities = viewer.entities;
-      const offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
-      const options = {
+      var entities = viewer.entities;
+      var offsetVal = new HeadingPitchRange(3.0, 0.2, 2.3);
+      var options = {
         offset: offsetVal,
       };
 
-      const promise = viewer.flyTo(entities, options);
-      let wasCompleted = false;
+      var promise = viewer.flyTo(entities, options);
+      var wasCompleted = false;
       spyOn(viewer._dataSourceDisplay, "getBoundingSphere").and.callFake(
         function () {
           return new BoundingSphere();
@@ -1815,29 +1768,26 @@ describe(
       viewer = createViewer(container);
 
       //one data source that is added before mixing in
-      const preMixinDataSource = new MockDataSource();
+      var preMixinDataSource = new MockDataSource();
+      viewer.dataSources.add(preMixinDataSource);
+
       //one data source that is added after mixing in
-      const postMixinDataSource = new MockDataSource();
-      return viewer.dataSources
-        .add(preMixinDataSource)
-        .then(function () {
-          viewer.dataSources.add(postMixinDataSource);
-        })
-        .then(function () {
-          const preMixinListenerCount =
-            preMixinDataSource.entities.collectionChanged._listeners.length;
-          const postMixinListenerCount =
-            postMixinDataSource.entities.collectionChanged._listeners.length;
+      var postMixinDataSource = new MockDataSource();
+      viewer.dataSources.add(postMixinDataSource);
 
-          viewer = viewer.destroy();
+      var preMixinListenerCount =
+        preMixinDataSource.entities.collectionChanged._listeners.length;
+      var postMixinListenerCount =
+        postMixinDataSource.entities.collectionChanged._listeners.length;
 
-          expect(
-            preMixinDataSource.entities.collectionChanged._listeners.length
-          ).not.toEqual(preMixinListenerCount);
-          expect(
-            postMixinDataSource.entities.collectionChanged._listeners.length
-          ).not.toEqual(postMixinListenerCount);
-        });
+      viewer = viewer.destroy();
+
+      expect(
+        preMixinDataSource.entities.collectionChanged._listeners.length
+      ).not.toEqual(preMixinListenerCount);
+      expect(
+        postMixinDataSource.entities.collectionChanged._listeners.length
+      ).not.toEqual(postMixinListenerCount);
     });
   },
   "WebGL"

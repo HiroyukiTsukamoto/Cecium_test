@@ -5,9 +5,9 @@ import createScene from "../createScene.js";
 describe(
   "Scene/BatchTexture",
   function () {
-    let scene;
-    const mockOwner = {};
-    const mockTileset = {
+    var scene;
+    var mockOwner = {};
+    var mockTileset = {
       _statistics: {
         batchTableByteLength: 0,
       },
@@ -17,7 +17,7 @@ describe(
       scene = createScene();
     });
 
-    const result = new Color();
+    var result = new Color();
 
     it("throws without featuresLength", function () {
       expect(function () {
@@ -38,7 +38,7 @@ describe(
     });
 
     it("setShow throws with invalid batchId", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -54,7 +54,7 @@ describe(
     });
 
     it("setShow throws with undefined value", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -64,7 +64,7 @@ describe(
     });
 
     it("setShow sets show", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -96,7 +96,7 @@ describe(
     });
 
     it("getShow throws with invalid batchId", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -112,7 +112,7 @@ describe(
     });
 
     it("getShow", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -123,7 +123,7 @@ describe(
     });
 
     it("setColor throws with invalid batchId", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -139,7 +139,7 @@ describe(
     });
 
     it("setColor throws with undefined value", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -149,7 +149,7 @@ describe(
     });
 
     it("setColor", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -181,7 +181,7 @@ describe(
     });
 
     it("setAllColor throws with undefined value", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -191,7 +191,7 @@ describe(
     });
 
     it("setAllColor", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 2,
       });
@@ -201,7 +201,7 @@ describe(
     });
 
     it("setAllShow throws with undefined value", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -211,7 +211,7 @@ describe(
     });
 
     it("setAllShow", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 2,
       });
@@ -221,7 +221,7 @@ describe(
     });
 
     it("getColor throws with invalid batchId", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -237,7 +237,7 @@ describe(
     });
 
     it("getColor throws with undefined result", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });
@@ -247,7 +247,7 @@ describe(
     });
 
     it("getColor", function () {
-      const batchTexture = new BatchTexture({
+      var batchTexture = new BatchTexture({
         owner: mockOwner,
         featuresLength: 1,
       });

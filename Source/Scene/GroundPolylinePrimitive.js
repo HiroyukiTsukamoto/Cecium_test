@@ -1,7 +1,6 @@
 import ApproximateTerrainHeights from "../Core/ApproximateTerrainHeights.js";
 import ComponentDatatype from "../Core/ComponentDatatype.js";
 import defaultValue from "../Core/defaultValue.js";
-import defer from "../Core/defer.js";
 import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
 import DeveloperError from "../Core/DeveloperError.js";
@@ -17,6 +16,7 @@ import PolylineShadowVolumeFS from "../Shaders/PolylineShadowVolumeFS.js";
 import PolylineShadowVolumeMorphFS from "../Shaders/PolylineShadowVolumeMorphFS.js";
 import PolylineShadowVolumeMorphVS from "../Shaders/PolylineShadowVolumeMorphVS.js";
 import PolylineShadowVolumeVS from "../Shaders/PolylineShadowVolumeVS.js";
+import when from "../ThirdParty/when.js";
 import BlendingState from "./BlendingState.js";
 import ClassificationType from "./ClassificationType.js";
 import CullFace from "./CullFace.js";
@@ -52,7 +52,7 @@ import StencilOperation from "./StencilOperation.js";
  * @example
  * // 1. Draw a polyline on terrain with a basic color material
  *
- * const instance = new Cesium.GeometryInstance({
+ * var instance = new Cesium.GeometryInstance({
  *   geometry : new Cesium.GroundPolylineGeometry({
  *      positions : Cesium.Cartesian3.fromDegreesArray([
  *          -112.1340164450331, 36.05494287836128,
@@ -72,7 +72,7 @@ import StencilOperation from "./StencilOperation.js";
  * // Distance display conditions for polylines on terrain are based on an approximate terrain height
  * // instead of true terrain height.
  *
- * const instance2 = new Cesium.GeometryInstance({
+ * var instance = new Cesium.GeometryInstance({
  *   geometry : new Cesium.GroundPolylineGeometry({
  *      positions : Cesium.Cartesian3.fromDegreesArray([
  *          -112.1340164450331, 36.05494287836128,
@@ -90,7 +90,7 @@ import StencilOperation from "./StencilOperation.js";
  * });
  *
  * scene.groundPrimitives.add(new Cesium.GroundPolylinePrimitive({
- *   geometryInstances : instance2,
+ *   geometryInstances : instance,
  *   appearance : new Cesium.PolylineColorAppearance()
  * }));
  */
@@ -113,7 +113,7 @@ function GroundPolylinePrimitive(options) {
   this.geometryInstances = options.geometryInstances;
   this._hasPerInstanceColors = true;
 
-  let appearance = options.appearance;
+  var appearance = options.appearance;
   if (!defined(appearance)) {
     appearance = new PolylineMaterialAppearance();
   }
@@ -193,7 +193,7 @@ function GroundPolylinePrimitive(options) {
   this._zIndex = undefined;
 
   this._ready = false;
-  this._readyPromise = defer();
+  this._readyPromise = when.defer();
 
   this._primitive = undefined;
 
@@ -341,11 +341,11 @@ GroundPolylinePrimitive.initializeTerrainHeights = function () {
 };
 
 function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
-  const context = frameState.context;
-  const primitive = groundPolylinePrimitive._primitive;
-  const attributeLocations = primitive._attributeLocations;
+  var context = frameState.context;
+  var primitive = groundPolylinePrimitive._primitive;
+  var attributeLocations = primitive._attributeLocations;
 
-  let vs = primitive._batchTable.getVertexShaderCallback()(
+  var vs = primitive._batchTable.getVertexShaderCallback()(
     PolylineShadowVolumeVS
   );
   vs = Primitive._appendShowToShader(primitive, vs);
@@ -356,7 +356,7 @@ function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
     frameState.scene3DOnly
   );
 
-  let vsMorph = primitive._batchTable.getVertexShaderCallback()(
+  var vsMorph = primitive._batchTable.getVertexShaderCallback()(
     PolylineShadowVolumeMorphVS
   );
   vsMorph = Primitive._appendShowToShader(primitive, vsMorph);
@@ -372,17 +372,16 @@ function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
 
   // Access pick color from fragment shader.
   // Helps with varying budget.
-  let fs = primitive._batchTable.getVertexShaderCallback()(
+  var fs = primitive._batchTable.getVertexShaderCallback()(
     PolylineShadowVolumeFS
   );
 
-  const vsDefines = [
-    `GLOBE_MINIMUM_ALTITUDE ${frameState.mapProjection.ellipsoid.minimumRadius.toFixed(
-      1
-    )}`,
+  var vsDefines = [
+    "GLOBE_MINIMUM_ALTITUDE " +
+      frameState.mapProjection.ellipsoid.minimumRadius.toFixed(1),
   ];
-  let colorDefine = "";
-  let materialShaderSource = "";
+  var colorDefine = "";
+  var materialShaderSource = "";
   if (defined(appearance.material)) {
     materialShaderSource = defined(appearance.material)
       ? appearance.material.shaderSource
@@ -403,15 +402,15 @@ function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
   }
 
   vsDefines.push(colorDefine);
-  const fsDefines = groundPolylinePrimitive.debugShowShadowVolume
+  var fsDefines = groundPolylinePrimitive.debugShowShadowVolume
     ? ["DEBUG_SHOW_VOLUME", colorDefine]
     : [colorDefine];
 
-  const vsColor3D = new ShaderSource({
+  var vsColor3D = new ShaderSource({
     defines: vsDefines,
     sources: [vs],
   });
-  const fsColor3D = new ShaderSource({
+  var fsColor3D = new ShaderSource({
     defines: fsDefines,
     sources: [materialShaderSource, fs],
   });
@@ -424,12 +423,12 @@ function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
   });
 
   // Derive 2D/CV
-  let colorProgram2D = context.shaderCache.getDerivedShaderProgram(
+  var colorProgram2D = context.shaderCache.getDerivedShaderProgram(
     groundPolylinePrimitive._sp,
     "2dColor"
   );
   if (!defined(colorProgram2D)) {
-    const vsColor2D = new ShaderSource({
+    var vsColor2D = new ShaderSource({
       defines: vsDefines.concat(["COLUMBUS_VIEW_2D"]),
       sources: [vs],
     });
@@ -448,16 +447,15 @@ function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
   groundPolylinePrimitive._sp2D = colorProgram2D;
 
   // Derive Morph
-  let colorProgramMorph = context.shaderCache.getDerivedShaderProgram(
+  var colorProgramMorph = context.shaderCache.getDerivedShaderProgram(
     groundPolylinePrimitive._sp,
     "MorphColor"
   );
   if (!defined(colorProgramMorph)) {
-    const vsColorMorph = new ShaderSource({
+    var vsColorMorph = new ShaderSource({
       defines: vsDefines.concat([
-        `MAX_TERRAIN_HEIGHT ${ApproximateTerrainHeights._defaultMaxTerrainHeight.toFixed(
-          1
-        )}`,
+        "MAX_TERRAIN_HEIGHT " +
+          ApproximateTerrainHeights._defaultMaxTerrainHeight.toFixed(1),
       ]),
       sources: [vsMorph],
     });
@@ -465,7 +463,7 @@ function createShaderProgram(groundPolylinePrimitive, frameState, appearance) {
     fs = primitive._batchTable.getVertexShaderCallback()(
       PolylineShadowVolumeMorphFS
     );
-    const fsColorMorph = new ShaderSource({
+    var fsColorMorph = new ShaderSource({
       defines: fsDefines,
       sources: [materialShaderSource, fs],
     });
@@ -519,23 +517,22 @@ function createCommands(
   colorCommands,
   pickCommands
 ) {
-  const primitive = groundPolylinePrimitive._primitive;
-  const length = primitive._va.length;
+  var primitive = groundPolylinePrimitive._primitive;
+  var length = primitive._va.length;
   colorCommands.length = length;
   pickCommands.length = length;
 
-  const isPolylineColorAppearance =
-    appearance instanceof PolylineColorAppearance;
+  var isPolylineColorAppearance = appearance instanceof PolylineColorAppearance;
 
-  const materialUniforms = isPolylineColorAppearance ? {} : material._uniforms;
-  const uniformMap = primitive._batchTable.getUniformMapCallback()(
+  var materialUniforms = isPolylineColorAppearance ? {} : material._uniforms;
+  var uniformMap = primitive._batchTable.getUniformMapCallback()(
     materialUniforms
   );
 
-  for (let i = 0; i < length; i++) {
-    const vertexArray = primitive._va[i];
+  for (var i = 0; i < length; i++) {
+    var vertexArray = primitive._va[i];
 
-    let command = colorCommands[i];
+    var command = colorCommands[i];
     if (!defined(command)) {
       command = colorCommands[i] = new DrawCommand({
         owner: groundPolylinePrimitive,
@@ -550,7 +547,7 @@ function createCommands(
     command.pass = Pass.TERRAIN_CLASSIFICATION;
     command.pickId = "czm_batchTable_pickColor(v_endPlaneNormalEcAndBatchId.w)";
 
-    const derivedTilesetCommand = DrawCommand.shallowClone(
+    var derivedTilesetCommand = DrawCommand.shallowClone(
       command,
       command.derivedCommands.tileset
     );
@@ -560,14 +557,14 @@ function createCommands(
     command.derivedCommands.tileset = derivedTilesetCommand;
 
     // derive for 2D
-    const derived2DCommand = DrawCommand.shallowClone(
+    var derived2DCommand = DrawCommand.shallowClone(
       command,
       command.derivedCommands.color2D
     );
     derived2DCommand.shaderProgram = groundPolylinePrimitive._sp2D;
     command.derivedCommands.color2D = derived2DCommand;
 
-    const derived2DTilesetCommand = DrawCommand.shallowClone(
+    var derived2DTilesetCommand = DrawCommand.shallowClone(
       derivedTilesetCommand,
       derivedTilesetCommand.derivedCommands.color2D
     );
@@ -575,7 +572,7 @@ function createCommands(
     derivedTilesetCommand.derivedCommands.color2D = derived2DTilesetCommand;
 
     // derive for Morph
-    const derivedMorphCommand = DrawCommand.shallowClone(
+    var derivedMorphCommand = DrawCommand.shallowClone(
       command,
       command.derivedCommands.colorMorph
     );
@@ -618,11 +615,11 @@ function updateAndQueueCommands(
   cull,
   debugShowBoundingVolume
 ) {
-  const primitive = groundPolylinePrimitive._primitive;
+  var primitive = groundPolylinePrimitive._primitive;
 
   Primitive._updateBoundingVolumes(primitive, frameState, modelMatrix); // Expected to be identity - GroundPrimitives don't support other model matrices
 
-  let boundingSpheres;
+  var boundingSpheres;
   if (frameState.mode === SceneMode.SCENE3D) {
     boundingSpheres = primitive._boundingSphereWC;
   } else if (frameState.mode === SceneMode.COLUMBUS_VIEW) {
@@ -636,19 +633,19 @@ function updateAndQueueCommands(
     boundingSpheres = primitive._boundingSphereMorph;
   }
 
-  const morphing = frameState.mode === SceneMode.MORPHING;
-  const classificationType = groundPolylinePrimitive.classificationType;
-  const queueTerrainCommands =
+  var morphing = frameState.mode === SceneMode.MORPHING;
+  var classificationType = groundPolylinePrimitive.classificationType;
+  var queueTerrainCommands =
     classificationType !== ClassificationType.CESIUM_3D_TILE;
-  const queue3DTilesCommands =
+  var queue3DTilesCommands =
     classificationType !== ClassificationType.TERRAIN && !morphing;
 
-  let command;
-  const passes = frameState.passes;
+  var command;
+  var passes = frameState.passes;
   if (passes.render || (passes.pick && primitive.allowPicking)) {
-    const colorLength = colorCommands.length;
-    for (let j = 0; j < colorLength; ++j) {
-      const boundingVolume = boundingSpheres[j];
+    var colorLength = colorCommands.length;
+    for (var j = 0; j < colorLength; ++j) {
+      var boundingVolume = boundingSpheres[j];
       if (queueTerrainCommands) {
         command = colorCommands[j];
         updateAndQueueCommand(
@@ -706,18 +703,18 @@ GroundPolylinePrimitive.prototype.update = function (frameState) {
     return;
   }
 
-  let i;
+  var i;
 
-  const that = this;
-  const primitiveOptions = this._primitiveOptions;
+  var that = this;
+  var primitiveOptions = this._primitiveOptions;
   if (!defined(this._primitive)) {
-    const geometryInstances = Array.isArray(this.geometryInstances)
+    var geometryInstances = Array.isArray(this.geometryInstances)
       ? this.geometryInstances
       : [this.geometryInstances];
-    const geometryInstancesLength = geometryInstances.length;
-    const groundInstances = new Array(geometryInstancesLength);
+    var geometryInstancesLength = geometryInstances.length;
+    var groundInstances = new Array(geometryInstancesLength);
 
-    let attributes;
+    var attributes;
 
     // Check if each instance has a color attribute.
     for (i = 0; i < geometryInstancesLength; ++i) {
@@ -729,10 +726,10 @@ GroundPolylinePrimitive.prototype.update = function (frameState) {
     }
 
     for (i = 0; i < geometryInstancesLength; ++i) {
-      const geometryInstance = geometryInstances[i];
+      var geometryInstance = geometryInstances[i];
       attributes = {};
-      const instanceAttributes = geometryInstance.attributes;
-      for (const attributeKey in instanceAttributes) {
+      var instanceAttributes = geometryInstance.attributes;
+      for (var attributeKey in instanceAttributes) {
         if (instanceAttributes.hasOwnProperty(attributeKey)) {
           attributes[attributeKey] = instanceAttributes[attributeKey];
         }
@@ -819,7 +816,7 @@ GroundPolylinePrimitive.prototype.update = function (frameState) {
         that.geometryInstances = undefined;
       }
 
-      const error = primitive._error;
+      var error = primitive._error;
       if (!defined(error)) {
         that._readyPromise.resolve(that);
       } else {
@@ -852,7 +849,7 @@ GroundPolylinePrimitive.prototype.update = function (frameState) {
  * @exception {DeveloperError} must call update before calling getGeometryInstanceAttributes.
  *
  * @example
- * const attributes = primitive.getGeometryInstanceAttributes('an id');
+ * var attributes = primitive.getGeometryInstanceAttributes('an id');
  * attributes.color = Cesium.ColorGeometryInstanceAttribute.toValue(Cesium.Color.AQUA);
  * attributes.show = Cesium.ShowGeometryInstanceAttribute.toValue(true);
  */

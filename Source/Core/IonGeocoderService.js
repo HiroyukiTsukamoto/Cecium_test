@@ -25,20 +25,20 @@ function IonGeocoderService(options) {
   Check.typeOf.object("options.scene", options.scene);
   //>>includeEnd('debug');
 
-  const accessToken = defaultValue(options.accessToken, Ion.defaultAccessToken);
-  const server = Resource.createIfNeeded(
+  var accessToken = defaultValue(options.accessToken, Ion.defaultAccessToken);
+  var server = Resource.createIfNeeded(
     defaultValue(options.server, Ion.defaultServer)
   );
   server.appendForwardSlash();
 
-  const defaultTokenCredit = Ion.getDefaultTokenCredit(accessToken);
+  var defaultTokenCredit = Ion.getDefaultTokenCredit(accessToken);
   if (defined(defaultTokenCredit)) {
     options.scene.frameState.creditDisplay.addDefaultCredit(
       Credit.clone(defaultTokenCredit)
     );
   }
 
-  const searchEndpoint = server.getDerivedResource({
+  var searchEndpoint = server.getDerivedResource({
     url: "v1/geocode",
   });
 

@@ -29,7 +29,7 @@ import Cesium3DTileStyle from "./Cesium3DTileStyle.js";
  *
  * @example
  * // Create Cesium OSM Buildings with default styling
- * const viewer = new Cesium.Viewer('cesiumContainer');
+ * var viewer = new Cesium.Viewer('cesiumContainer');
  * viewer.scene.primitives.add(Cesium.createOsmBuildings());
  *
  * @example
@@ -52,17 +52,19 @@ function createOsmBuildings(options) {
     url: IonResource.fromAssetId(96188),
   });
 
-  const tileset = new Cesium3DTileset(options);
+  var tileset = new Cesium3DTileset(options);
 
-  let style = options.style;
+  var style = options.style;
 
   if (!defined(style)) {
-    const color = defaultValue(
+    var color = defaultValue(
       options.defaultColor,
       Color.WHITE
     ).toCssColorString();
     style = new Cesium3DTileStyle({
-      color: `Boolean(\${feature['cesium#color']}) ? color(\${feature['cesium#color']}) : ${color}`,
+      color:
+        "Boolean(${feature['cesium#color']}) ? color(${feature['cesium#color']}) : " +
+        color,
     });
   }
 

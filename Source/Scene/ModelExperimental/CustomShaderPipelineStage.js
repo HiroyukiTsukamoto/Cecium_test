@@ -5,11 +5,10 @@ import ShaderDestination from "../../Renderer/ShaderDestination.js";
 import Pass from "../../Renderer/Pass.js";
 import CustomShaderStageVS from "../../Shaders/ModelExperimental/CustomShaderStageVS.js";
 import CustomShaderStageFS from "../../Shaders/ModelExperimental/CustomShaderStageFS.js";
+import VertexAttributeSemantic from "../VertexAttributeSemantic.js";
+import AttributeType from "../AttributeType.js";
 import AlphaMode from "../AlphaMode.js";
 import CustomShaderMode from "./CustomShaderMode.js";
-import FeatureIdPipelineStage from "./FeatureIdPipelineStage.js";
-import MetadataPipelineStage from "./MetadataPipelineStage.js";
-import ModelExperimentalUtility from "./ModelExperimentalUtility.js";
 
 /**
  * The custom shader pipeline stage takes GLSL callbacks from the
@@ -22,7 +21,7 @@ import ModelExperimentalUtility from "./ModelExperimentalUtility.js";
  *
  * @private
  */
-const CustomShaderPipelineStage = {};
+var CustomShaderPipelineStage = {};
 CustomShaderPipelineStage.name = "CustomShaderPipelineStage"; // Helps with debugging
 
 CustomShaderPipelineStage.STRUCT_ID_ATTRIBUTES_VS = "AttributesVS";
@@ -69,32 +68,12 @@ CustomShaderPipelineStage.process = function (
   primitive,
   frameState
 ) {
-  const shaderBuilder = renderResources.shaderBuilder;
-  const customShader = renderResources.model.customShader;
-
-  // Check the lighting model and translucent options first, as sometimes
-  // these are used even if there is no vertex or fragment shader text.
-
-  // if present, the lighting model overrides the material's lighting model.
-  if (defined(customShader.lightingModel)) {
-    renderResources.lightingOptions.lightingModel = customShader.lightingModel;
-  }
-
-  const alphaOptions = renderResources.alphaOptions;
-  if (customShader.isTranslucent) {
-    alphaOptions.pass = Pass.TRANSLUCENT;
-    alphaOptions.alphaMode = AlphaMode.BLEND;
-  } else {
-    // Use the default pass (either OPAQUE or 3D_TILES), regardless of whether
-    // the material pipeline stage used translucent. The default is configured
-    // in AlphaPipelineStage
-    alphaOptions.pass = undefined;
-    alphaOptions.alphaMode = AlphaMode.OPAQUE;
-  }
+  var shaderBuilder = renderResources.shaderBuilder;
+  var customShader = renderResources.model.customShader;
 
   // Generate lines of code for the shader, but don't add them to the shader
   // yet.
-  const generatedCode = generateShaderLines(customShader, primitive);
+  var generatedCode = generateShaderLines(customShader, primitive);
 
   // In some corner cases, the primitive may not be compatible with the
   // shader. In this case, skip the custom shader.
@@ -108,7 +87,7 @@ CustomShaderPipelineStage.process = function (
     shaderBuilder.addDefine(
       "COMPUTE_POSITION_WC",
       undefined,
-      ShaderDestination.BOTH
+      ShaderDestination.VERTEX
     );
   }
 
@@ -128,7 +107,7 @@ CustomShaderPipelineStage.process = function (
     );
 
     // add defines like CUSTOM_SHADER_MODIFY_MATERIAL
-    const shaderModeDefine = CustomShaderMode.getDefineName(customShader.mode);
+    var shaderModeDefine = CustomShaderMode.getDefineName(customShader.mode);
     shaderBuilder.addDefine(
       shaderModeDefine,
       undefined,
@@ -136,20 +115,37 @@ CustomShaderPipelineStage.process = function (
     );
   }
 
-  const uniforms = customShader.uniforms;
-  for (const uniformName in uniforms) {
+  var uniforms = customShader.uniforms;
+  for (var uniformName in uniforms) {
     if (uniforms.hasOwnProperty(uniformName)) {
-      const uniform = uniforms[uniformName];
+      var uniform = uniforms[uniformName];
       shaderBuilder.addUniform(uniform.type, uniformName);
     }
   }
 
-  const varyings = customShader.varyings;
-  for (const varyingName in varyings) {
+  var varyings = customShader.varyings;
+  for (var varyingName in varyings) {
     if (varyings.hasOwnProperty(varyingName)) {
-      const varyingType = varyings[varyingName];
+      var varyingType = varyings[varyingName];
       shaderBuilder.addVarying(varyingType, varyingName);
     }
+  }
+
+  // if present, the lighting model overrides the material's lighting model.
+  if (defined(customShader.lightingModel)) {
+    renderResources.lightingOptions.lightingModel = customShader.lightingModel;
+  }
+
+  var alphaOptions = renderResources.alphaOptions;
+  if (customShader.isTranslucent) {
+    alphaOptions.pass = Pass.TRANSLUCENT;
+    alphaOptions.alphaMode = AlphaMode.BLEND;
+  } else {
+    // Use the default pass (either OPAQUE or 3D_TILES), regardless of whether
+    // the material pipeline stage used translucent. The default is configured
+    // in AlphaPipelineStage
+    alphaOptions.pass = undefined;
+    alphaOptions.alphaMode = AlphaMode.OPAQUE;
   }
 
   renderResources.uniformMap = combine(
@@ -158,31 +154,53 @@ CustomShaderPipelineStage.process = function (
   );
 };
 
-function getAttributesByName(attributes) {
-  const names = {};
-  for (let i = 0; i < attributes.length; i++) {
-    const attribute = attributes[i];
-    const attributeInfo = ModelExperimentalUtility.getAttributeInfo(attribute);
+function getAttributeNames(attributes) {
+  var names = {};
+  for (var i = 0; i < attributes.length; i++) {
+    var attribute = attributes[i];
+    var semantic = attribute.semantic;
+    var setIndex = attribute.setIndex;
 
-    names[attributeInfo.variableName] = attributeInfo;
+    var variableName;
+    if (defined(semantic)) {
+      variableName = VertexAttributeSemantic.getVariableName(
+        semantic,
+        setIndex
+      );
+    } else {
+      // Handle user defined vertex attributes. They must begin with an underscore
+      // For example, "_TEMPERATURE" will be converted to "temperature".
+      variableName = attribute.name.substring(1).toLowerCase();
+    }
+
+    names[variableName] = attribute;
   }
   return names;
 }
 
+function generateAttributeField(name, attribute) {
+  var attributeType = attribute.type;
+  var glslType = AttributeType.getGlslType(attributeType);
+
+  // Fields for the Attribute struct. for example:
+  // ["vec3", "normal"];
+  return [glslType, name];
+}
+
 // GLSL types of standard attribute types when uniquely defined
-const attributeTypeLUT = {
+var attributeTypeLUT = {
   position: "vec3",
   normal: "vec3",
   tangent: "vec3",
   bitangent: "vec3",
   texCoord: "vec2",
-  color: "vec4",
+  color: "vec3",
   joints: "ivec4",
   weights: "vec4",
 };
 
 // Corresponding attribute values
-const attributeDefaultValueLUT = {
+var attributeDefaultValueLUT = {
   position: "vec3(0.0)",
   normal: "vec3(0.0, 0.0, 1.0)",
   tangent: "vec3(1.0, 0.0, 0.0)",
@@ -195,12 +213,12 @@ const attributeDefaultValueLUT = {
 
 function inferAttributeDefaults(attributeName) {
   // remove trailing set indices. E.g. "texCoord_0" -> "texCoord"
-  let trimmed = attributeName.replace(/_[0-9]+$/, "");
+  var trimmed = attributeName.replace(/_[0-9]+$/, "");
   // also remove the MC/EC since they will have the same default value
   trimmed = trimmed.replace(/(MC|EC)$/, "");
 
-  const glslType = attributeTypeLUT[trimmed];
-  const value = attributeDefaultValueLUT[trimmed];
+  var glslType = attributeTypeLUT[trimmed];
+  var value = attributeDefaultValueLUT[trimmed];
 
   // - _CUSTOM_ATTRIBUTE has an unknown type.
   if (!defined(glslType)) {
@@ -213,44 +231,47 @@ function inferAttributeDefaults(attributeName) {
   };
 }
 
-function generateVertexShaderLines(
-  customShader,
-  attributesByName,
-  vertexLines
-) {
-  const categories = partitionAttributes(
-    attributesByName,
+function generateVertexShaderLines(customShader, namedAttributes, vertexLines) {
+  var categories = partitionAttributes(
+    namedAttributes,
     customShader.usedVariablesVertex.attributeSet,
     false
   );
-  const addToShader = categories.addToShader;
-  const needsDefault = categories.missingAttributes;
+  var addToShader = categories.addToShader;
+  var needsDefault = categories.missingAttributes;
 
-  let variableName;
-  let vertexInitialization;
-  const attributeFields = [];
-  const initializationLines = [];
+  var variableName;
+  var vertexInitialization;
+  var attributeFields = [];
+  var initializationLines = [];
   for (variableName in addToShader) {
     if (addToShader.hasOwnProperty(variableName)) {
-      const attributeInfo = addToShader[variableName];
-      const attributeField = [attributeInfo.glslType, variableName];
+      var attribute = addToShader[variableName];
+      var attributeField = generateAttributeField(variableName, attribute);
       attributeFields.push(attributeField);
 
       // Initializing attribute structs are just a matter of copying the
       // attribute or varying: E.g.:
       // "    vsInput.attributes.position = a_position;"
-      vertexInitialization = `vsInput.attributes.${variableName} = attributes.${variableName};`;
+      vertexInitialization =
+        "vsInput.attributes." +
+        variableName +
+        " = attributes." +
+        variableName +
+        ";";
       initializationLines.push(vertexInitialization);
     }
   }
 
-  for (let i = 0; i < needsDefault.length; i++) {
+  for (var i = 0; i < needsDefault.length; i++) {
     variableName = needsDefault[i];
-    const attributeDefaults = inferAttributeDefaults(variableName);
+    var attributeDefaults = inferAttributeDefaults(variableName);
     if (!defined(attributeDefaults)) {
       CustomShaderPipelineStage._oneTimeWarning(
         "CustomShaderPipelineStage.incompatiblePrimitiveVS",
-        `Primitive is missing attribute ${variableName}, disabling custom vertex shader`
+        "Primitive is missing attribute " +
+          variableName +
+          ", disabling custom vertex shader"
       );
       // This primitive isn't compatible with the shader. Return early
       // to skip the vertex shader
@@ -258,7 +279,12 @@ function generateVertexShaderLines(
     }
 
     attributeFields.push(attributeDefaults.attributeField);
-    vertexInitialization = `vsInput.attributes.${variableName} = ${attributeDefaults.value};`;
+    vertexInitialization =
+      "vsInput.attributes." +
+      variableName +
+      " = " +
+      attributeDefaults.value +
+      ";";
     initializationLines.push(vertexInitialization);
   }
 
@@ -268,9 +294,9 @@ function generateVertexShaderLines(
 }
 
 function generatePositionBuiltins(customShader) {
-  const attributeFields = [];
-  const initializationLines = [];
-  const usedVariables = customShader.usedVariablesFragment.attributeSet;
+  var attributeFields = [];
+  var initializationLines = [];
+  var usedVariables = customShader.usedVariablesFragment.attributeSet;
 
   // Model space position is the same position as in the glTF accessor,
   // this is already added to the shader with other attributes.
@@ -300,43 +326,50 @@ function generatePositionBuiltins(customShader) {
 
 function generateFragmentShaderLines(
   customShader,
-  attributesByName,
+  namedAttributes,
   fragmentLines
 ) {
-  const categories = partitionAttributes(
-    attributesByName,
+  var categories = partitionAttributes(
+    namedAttributes,
     customShader.usedVariablesFragment.attributeSet,
     true
   );
-  const addToShader = categories.addToShader;
-  const needsDefault = categories.missingAttributes;
+  var addToShader = categories.addToShader;
+  var needsDefault = categories.missingAttributes;
 
-  let variableName;
-  let fragmentInitialization;
-  const attributeFields = [];
-  const initializationLines = [];
+  var variableName;
+  var fragmentInitialization;
+  var attributeFields = [];
+  var initializationLines = [];
   for (variableName in addToShader) {
     if (addToShader.hasOwnProperty(variableName)) {
-      const attributeInfo = addToShader[variableName];
+      var attribute = addToShader[variableName];
 
-      const attributeField = [attributeInfo.glslType, variableName];
+      var attributeField = generateAttributeField(variableName, attribute);
       attributeFields.push(attributeField);
 
       // Initializing attribute structs are just a matter of copying the
       // value from the processed attributes
       // "    fsInput.attributes.positionMC = attributes.positionMC;"
-      fragmentInitialization = `fsInput.attributes.${variableName} = attributes.${variableName};`;
+      fragmentInitialization =
+        "fsInput.attributes." +
+        variableName +
+        " = attributes." +
+        variableName +
+        ";";
       initializationLines.push(fragmentInitialization);
     }
   }
 
-  for (let i = 0; i < needsDefault.length; i++) {
+  for (var i = 0; i < needsDefault.length; i++) {
     variableName = needsDefault[i];
-    const attributeDefaults = inferAttributeDefaults(variableName);
+    var attributeDefaults = inferAttributeDefaults(variableName);
     if (!defined(attributeDefaults)) {
       CustomShaderPipelineStage._oneTimeWarning(
         "CustomShaderPipelineStage.incompatiblePrimitiveFS",
-        `Primitive is missing attribute ${variableName}, disabling custom fragment shader.`
+        "Primitive is missing attribute " +
+          variableName +
+          ", disabling custom fragment shader."
       );
 
       // This primitive isn't compatible with the shader. Return early
@@ -345,12 +378,17 @@ function generateFragmentShaderLines(
     }
 
     attributeFields.push(attributeDefaults.attributeField);
-    fragmentInitialization = `fsInput.attributes.${variableName} = ${attributeDefaults.value};`;
+    fragmentInitialization =
+      "fsInput.attributes." +
+      variableName +
+      " = " +
+      attributeDefaults.value +
+      ";";
     initializationLines.push(fragmentInitialization);
   }
 
   // Built-ins for positions in various coordinate systems.
-  const positionBuiltins = generatePositionBuiltins(customShader);
+  var positionBuiltins = generatePositionBuiltins(customShader);
 
   fragmentLines.enabled = true;
   fragmentLines.attributeFields = attributeFields.concat(
@@ -363,7 +401,7 @@ function generateFragmentShaderLines(
 
 // These attributes are derived from positionMC, and are handled separately
 // from other attributes
-const builtinAttributes = {
+var builtinAttributes = {
   positionWC: true,
   positionEC: true,
 };
@@ -384,12 +422,12 @@ function partitionAttributes(
   // missingAttributes are attributes for which we need to provide a default value
   // unneededAttributes are other attributes that can be skipped.
 
-  let renamed;
-  let attributeName;
-  const addToShader = {};
+  var renamed;
+  var attributeName;
+  var addToShader = {};
   for (attributeName in primitiveAttributes) {
     if (primitiveAttributes.hasOwnProperty(attributeName)) {
-      const attribute = primitiveAttributes[attributeName];
+      var attribute = primitiveAttributes[attributeName];
 
       // normals and tangents are in model coordinates in the attributes but
       // in eye coordinates in the fragment shader.
@@ -406,7 +444,7 @@ function partitionAttributes(
     }
   }
 
-  const missingAttributes = [];
+  var missingAttributes = [];
   for (attributeName in shaderAttributeSet) {
     if (shaderAttributeSet.hasOwnProperty(attributeName)) {
       if (builtinAttributes.hasOwnProperty(attributeName)) {
@@ -437,30 +475,30 @@ function partitionAttributes(
 
 function generateShaderLines(customShader, primitive) {
   // Assume shader code is disabled unless proven otherwise
-  const vertexLines = {
+  var vertexLines = {
     enabled: false,
   };
-  const fragmentLines = {
+  var fragmentLines = {
     enabled: false,
   };
 
   // Attempt to generate vertex and fragment shader lines before adding any
   // code to the shader.
-  const attributesByName = getAttributesByName(primitive.attributes);
+  var namedAttributes = getAttributeNames(primitive.attributes);
   if (defined(customShader.vertexShaderText)) {
-    generateVertexShaderLines(customShader, attributesByName, vertexLines);
+    generateVertexShaderLines(customShader, namedAttributes, vertexLines);
   }
 
   if (defined(customShader.fragmentShaderText)) {
-    generateFragmentShaderLines(customShader, attributesByName, fragmentLines);
+    generateFragmentShaderLines(customShader, namedAttributes, fragmentLines);
   }
 
   // positionWC must be computed in the vertex shader
   // for use in the fragmentShader. However, this can be skipped if:
   // - positionWC isn't used in the fragment shader
   // - or the fragment shader is disabled
-  const attributeSetFS = customShader.usedVariablesFragment.attributeSet;
-  const shouldComputePositionWC =
+  var attributeSetFS = customShader.usedVariablesFragment.attributeSet;
+  var shouldComputePositionWC =
     attributeSetFS.hasOwnProperty("positionWC") && fragmentLines.enabled;
 
   // Return any generated shader code along with some flags to indicate which
@@ -478,19 +516,19 @@ function generateShaderLines(customShader, primitive) {
 function addVertexLinesToShader(shaderBuilder, vertexLines) {
   // Vertex Lines ---------------------------------------------------------
 
-  let i;
-  let structId = CustomShaderPipelineStage.STRUCT_ID_ATTRIBUTES_VS;
+  var i;
+  var structId = CustomShaderPipelineStage.STRUCT_ID_ATTRIBUTES_VS;
   shaderBuilder.addStruct(
     structId,
     CustomShaderPipelineStage.STRUCT_NAME_ATTRIBUTES,
     ShaderDestination.VERTEX
   );
 
-  const attributeFields = vertexLines.attributeFields;
+  var attributeFields = vertexLines.attributeFields;
   for (i = 0; i < attributeFields.length; i++) {
-    const field = attributeFields[i];
-    const glslType = field[0];
-    const variableName = field[1];
+    var field = attributeFields[i];
+    var glslType = field[0];
+    var variableName = field[1];
     shaderBuilder.addStructField(structId, glslType, variableName);
   }
 
@@ -507,20 +545,8 @@ function addVertexLinesToShader(shaderBuilder, vertexLines) {
     CustomShaderPipelineStage.STRUCT_NAME_ATTRIBUTES,
     "attributes"
   );
-  // Add FeatureIds struct from the Feature ID stage
-  shaderBuilder.addStructField(
-    structId,
-    FeatureIdPipelineStage.STRUCT_NAME_FEATURE_IDS,
-    "featureIds"
-  );
-  // Add Metadata struct from the metadata stage
-  shaderBuilder.addStructField(
-    structId,
-    MetadataPipelineStage.STRUCT_NAME_METADATA,
-    "metadata"
-  );
 
-  const functionId =
+  var functionId =
     CustomShaderPipelineStage.FUNCTION_ID_INITIALIZE_INPUT_STRUCT_VS;
   shaderBuilder.addFunction(
     functionId,
@@ -528,23 +554,23 @@ function addVertexLinesToShader(shaderBuilder, vertexLines) {
     ShaderDestination.VERTEX
   );
 
-  const initializationLines = vertexLines.initializationLines;
+  var initializationLines = vertexLines.initializationLines;
   shaderBuilder.addFunctionLines(functionId, initializationLines);
 }
 
 function addFragmentLinesToShader(shaderBuilder, fragmentLines) {
-  let i;
-  let structId = CustomShaderPipelineStage.STRUCT_ID_ATTRIBUTES_FS;
+  var i;
+  var structId = CustomShaderPipelineStage.STRUCT_ID_ATTRIBUTES_FS;
   shaderBuilder.addStruct(
     structId,
     CustomShaderPipelineStage.STRUCT_NAME_ATTRIBUTES,
     ShaderDestination.FRAGMENT
   );
 
-  let field;
-  let glslType;
-  let variableName;
-  const attributeFields = fragmentLines.attributeFields;
+  var field;
+  var glslType;
+  var variableName;
+  var attributeFields = fragmentLines.attributeFields;
   for (i = 0; i < attributeFields.length; i++) {
     field = attributeFields[i];
     glslType = field[0];
@@ -563,20 +589,8 @@ function addFragmentLinesToShader(shaderBuilder, fragmentLines) {
     CustomShaderPipelineStage.STRUCT_NAME_ATTRIBUTES,
     "attributes"
   );
-  // Add FeatureIds struct from the Feature ID stage
-  shaderBuilder.addStructField(
-    structId,
-    FeatureIdPipelineStage.STRUCT_NAME_FEATURE_IDS,
-    "featureIds"
-  );
-  // Add Metadata struct from the metadata stage
-  shaderBuilder.addStructField(
-    structId,
-    MetadataPipelineStage.STRUCT_NAME_METADATA,
-    "metadata"
-  );
 
-  const functionId =
+  var functionId =
     CustomShaderPipelineStage.FUNCTION_ID_INITIALIZE_INPUT_STRUCT_FS;
   shaderBuilder.addFunction(
     functionId,
@@ -584,12 +598,12 @@ function addFragmentLinesToShader(shaderBuilder, fragmentLines) {
     ShaderDestination.FRAGMENT
   );
 
-  const initializationLines = fragmentLines.initializationLines;
+  var initializationLines = fragmentLines.initializationLines;
   shaderBuilder.addFunctionLines(functionId, initializationLines);
 }
 
 function addLinesToShader(shaderBuilder, customShader, generatedCode) {
-  const vertexLines = generatedCode.vertexLines;
+  var vertexLines = generatedCode.vertexLines;
   if (vertexLines.enabled) {
     addVertexLinesToShader(shaderBuilder, vertexLines);
 
@@ -600,7 +614,7 @@ function addLinesToShader(shaderBuilder, customShader, generatedCode) {
     ]);
   }
 
-  const fragmentLines = generatedCode.fragmentLines;
+  var fragmentLines = generatedCode.fragmentLines;
   if (fragmentLines.enabled) {
     addFragmentLinesToShader(shaderBuilder, fragmentLines);
 

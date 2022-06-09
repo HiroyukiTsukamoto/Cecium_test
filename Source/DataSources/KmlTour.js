@@ -91,7 +91,7 @@ KmlTour.prototype.addPlaylistEntry = function (entry) {
 KmlTour.prototype.play = function (viewer, cameraOptions) {
   this.tourStart.raiseEvent();
 
-  const tour = this;
+  var tour = this;
   playEntry.call(this, viewer, cameraOptions, function (terminated) {
     tour.playlistIndex = 0;
     // Stop nonblocking entries
@@ -112,7 +112,7 @@ KmlTour.prototype.stop = function () {
 // Stop all activeEntries.
 function cancelAllEntries(activeEntries) {
   for (
-    let entry = activeEntries.pop();
+    var entry = activeEntries.pop();
     entry !== undefined;
     entry = activeEntries.pop()
   ) {
@@ -123,18 +123,18 @@ function cancelAllEntries(activeEntries) {
 // Play playlist entry.
 // This function is called recursevly with playNext and iterates over all entries from playlist.
 function playEntry(viewer, cameraOptions, allDone) {
-  const entry = this.playlist[this.playlistIndex];
+  var entry = this.playlist[this.playlistIndex];
   if (entry) {
-    const _playNext = playNext.bind(this, viewer, cameraOptions, allDone);
+    var _playNext = playNext.bind(this, viewer, cameraOptions, allDone);
     this._activeEntries.push(entry);
     this.entryStart.raiseEvent(entry);
     if (entry.blocking) {
       entry.play(_playNext, viewer.scene.camera, cameraOptions);
     } else {
-      const tour = this;
+      var tour = this;
       entry.play(function () {
         tour.entryEnd.raiseEvent(entry);
-        const indx = tour._activeEntries.indexOf(entry);
+        var indx = tour._activeEntries.indexOf(entry);
         if (indx >= 0) {
           tour._activeEntries.splice(indx, 1);
         }
@@ -148,13 +148,13 @@ function playEntry(viewer, cameraOptions, allDone) {
 
 // Increment playlistIndex and call playEntry if terminated isn't true.
 function playNext(viewer, cameraOptions, allDone, terminated) {
-  const entry = this.playlist[this.playlistIndex];
+  var entry = this.playlist[this.playlistIndex];
   this.entryEnd.raiseEvent(entry, terminated);
 
   if (terminated) {
     allDone(terminated);
   } else {
-    const indx = this._activeEntries.indexOf(entry);
+    var indx = this._activeEntries.indexOf(entry);
     if (indx >= 0) {
       this._activeEntries.splice(indx, 1);
     }

@@ -6,14 +6,15 @@ import { RequestScheduler } from "../../Source/Cesium.js";
 import { RequestType } from "../../Source/Cesium.js";
 import { TimeIntervalCollection } from "../../Source/Cesium.js";
 import { TimeDynamicImagery } from "../../Source/Cesium.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Scene/TimeDynamicImagery", function () {
-  const clock = new Clock({
+  var clock = new Clock({
     clockStep: ClockStep.TICK_DEPENDENT,
     shouldAnimate: true,
   });
 
-  const times = TimeIntervalCollection.fromIso8601({
+  var times = TimeIntervalCollection.fromIso8601({
     iso8601: "2017-04-26/2017-04-30/P1D",
     dataCallback: function (interval, index) {
       return {
@@ -68,13 +69,13 @@ describe("Scene/TimeDynamicImagery", function () {
   });
 
   it("initialization", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
       requestImageFunction: function () {},
       reloadFunction: function () {},
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
+    var timeDynamicImagery = new TimeDynamicImagery(options);
 
     expect(timeDynamicImagery._tileCache).toEqual({});
     expect(timeDynamicImagery._tilesRequestedForInterval).toEqual([]);
@@ -89,38 +90,38 @@ describe("Scene/TimeDynamicImagery", function () {
   });
 
   it("changing clock causes reload", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
       requestImageFunction: function () {},
       reloadFunction: jasmine.createSpy(),
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
+    var timeDynamicImagery = new TimeDynamicImagery(options);
     timeDynamicImagery.clock = new Clock();
     expect(options.reloadFunction).toHaveBeenCalled();
   });
 
   it("changing times causes reload", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
       requestImageFunction: function () {},
       reloadFunction: jasmine.createSpy(),
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
+    var timeDynamicImagery = new TimeDynamicImagery(options);
     timeDynamicImagery.times = new TimeIntervalCollection();
     expect(options.reloadFunction).toHaveBeenCalled();
   });
 
   it("clock.tick() causes reload", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
       requestImageFunction: jasmine.createSpy(),
       reloadFunction: jasmine.createSpy(),
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
-    const request = new Request();
+    var timeDynamicImagery = new TimeDynamicImagery(options);
+    var request = new Request();
     timeDynamicImagery.checkApproachingInterval(0, 1, 2, request);
 
     clock.currentTime = JulianDate.fromIso8601("2017-04-26T23:59:59Z");
@@ -131,18 +132,16 @@ describe("Scene/TimeDynamicImagery", function () {
   });
 
   it("clock.tick() causes preload", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
-      requestImageFunction: jasmine
-        .createSpy()
-        .and.returnValue(Promise.resolve()),
+      requestImageFunction: jasmine.createSpy().and.returnValue(when()),
       reloadFunction: jasmine.createSpy(),
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
+    var timeDynamicImagery = new TimeDynamicImagery(options);
     options.reloadFunction.calls.reset(); // Constructor calls reload
 
-    const request = new Request({
+    var request = new Request({
       throttle: false,
       throttleByServer: true,
       type: RequestType.IMAGERY,
@@ -164,18 +163,16 @@ describe("Scene/TimeDynamicImagery", function () {
   });
 
   it("checkApproachingInterval causes preload", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
-      requestImageFunction: jasmine
-        .createSpy()
-        .and.returnValue(Promise.resolve()),
+      requestImageFunction: jasmine.createSpy().and.returnValue(when()),
       reloadFunction: jasmine.createSpy(),
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
+    var timeDynamicImagery = new TimeDynamicImagery(options);
     options.reloadFunction.calls.reset(); // Constructor calls reload
 
-    const request = new Request({
+    var request = new Request({
       throttle: false,
       throttleByServer: true,
       type: RequestType.IMAGERY,
@@ -196,26 +193,24 @@ describe("Scene/TimeDynamicImagery", function () {
   });
 
   it("checkApproachingInterval limits number of requests", function () {
-    const options = {
+    var options = {
       clock: clock,
       times: times,
-      requestImageFunction: jasmine
-        .createSpy()
-        .and.returnValue(Promise.resolve()),
+      requestImageFunction: jasmine.createSpy().and.returnValue(when()),
       reloadFunction: jasmine.createSpy(),
     };
-    const timeDynamicImagery = new TimeDynamicImagery(options);
+    var timeDynamicImagery = new TimeDynamicImagery(options);
 
-    const request = new Request({
+    var request = new Request({
       throttle: true,
       throttleByServer: true,
       type: RequestType.IMAGERY,
     });
 
-    let count = 0;
-    for (let level = 0; level < 15; ++level) {
-      for (let x = 0; x < level + 1; ++x) {
-        for (let y = 0; y < level + 1; ++y) {
+    var count = 0;
+    for (var level = 0; level < 15; ++level) {
+      for (var x = 0; x < level + 1; ++x) {
+        for (var y = 0; y < level + 1; ++y) {
           timeDynamicImagery.checkApproachingInterval(x, y, level, request);
           ++count;
 
@@ -228,7 +223,7 @@ describe("Scene/TimeDynamicImagery", function () {
           );
           expect(
             timeDynamicImagery._tilesRequestedForInterval[count - 1].key
-          ).toEqual(`${x}-${y}-${level}`);
+          ).toEqual(x + "-" + y + "-" + level);
         }
       }
     }

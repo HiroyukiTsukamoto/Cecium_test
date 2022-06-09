@@ -20,13 +20,13 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "Scene/Material",
   function () {
-    let scene;
+    var scene;
 
-    const rectangle = Rectangle.fromDegrees(-10.0, -10.0, 10.0, 10.0);
-    let polygon;
-    const backgroundColor = [0, 0, 128, 255];
-    let polylines;
-    let polyline;
+    var rectangle = Rectangle.fromDegrees(-10.0, -10.0, 10.0, 10.0);
+    var polygon;
+    var backgroundColor = [0, 0, 128, 255];
+    var polylines;
+    var polyline;
 
     beforeAll(function () {
       scene = createScene();
@@ -46,7 +46,7 @@ describe(
     });
 
     beforeEach(function () {
-      const vertexFormat = MaterialAppearance.MaterialSupport.ALL.vertexFormat;
+      var vertexFormat = MaterialAppearance.MaterialSupport.ALL.vertexFormat;
 
       polygon = new Primitive({
         geometryInstances: new GeometryInstance({
@@ -105,7 +105,7 @@ describe(
       scene.primitives.removeAll();
       scene.primitives.add(polylines);
 
-      let result;
+      var result;
       expect(scene).toRenderAndCall(function (rgba) {
         result = rgba;
         expect(rgba).not.toEqual(backgroundColor);
@@ -114,7 +114,7 @@ describe(
     }
 
     function verifyMaterial(type) {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: type,
@@ -124,7 +124,7 @@ describe(
     }
 
     function verifyPolylineMaterial(type) {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: type,
@@ -210,7 +210,7 @@ describe(
     });
 
     it("gets the material type", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: "Color",
@@ -220,7 +220,7 @@ describe(
     });
 
     it("creates opaque/translucent materials", function () {
-      let material = new Material({
+      var material = new Material({
         translucent: true,
         strict: true,
         fabric: {
@@ -240,7 +240,7 @@ describe(
     });
 
     it("creates a new material type and builds off of it", function () {
-      const material1 = new Material({
+      var material1 = new Material({
         strict: true,
         fabric: {
           type: "New",
@@ -250,7 +250,7 @@ describe(
         },
       });
 
-      const material2 = new Material({
+      var material2 = new Material({
         strict: true,
         fabric: {
           materials: {
@@ -269,7 +269,7 @@ describe(
     });
 
     it("accesses material properties after construction", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           materials: {
@@ -296,7 +296,7 @@ describe(
     });
 
     it("creates a material inside a material inside a material", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           materials: {
@@ -322,7 +322,7 @@ describe(
     });
 
     it("creates a material with an image uniform", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: "DiffuseMap",
@@ -335,7 +335,7 @@ describe(
     });
 
     it("creates a material with an image resource uniform", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: "DiffuseMap",
@@ -348,14 +348,14 @@ describe(
     });
 
     it("creates a material with an image canvas uniform", function () {
-      const canvas = document.createElement("canvas");
-      const context2D = canvas.getContext("2d");
+      var canvas = document.createElement("canvas");
+      var context2D = canvas.getContext("2d");
       context2D.width = 1;
       context2D.height = 1;
       context2D.fillStyle = "rgb(0,0,255)";
       context2D.fillRect(0, 0, 1, 1);
 
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: "DiffuseMap",
@@ -369,14 +369,14 @@ describe(
     });
 
     it("creates a material with an KTX2 compressed image uniform", function () {
-      let compressedUrl;
+      var compressedUrl;
       if (FeatureDetection.supportsBasis(scene)) {
         compressedUrl = "./Data/Images/Green4x4.ktx2";
       } else {
         return;
       }
 
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           type: "DiffuseMap",
@@ -389,7 +389,7 @@ describe(
     });
 
     it("creates a material with a cube map uniform", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -416,7 +416,7 @@ describe(
     });
 
     it("does not crash if source uniform is formatted differently", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -443,7 +443,7 @@ describe(
     });
 
     it("creates a material with a boolean uniform", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -458,7 +458,7 @@ describe(
     });
 
     it("create a material with a matrix uniform", function () {
-      const material1 = new Material({
+      var material1 = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -472,7 +472,7 @@ describe(
       });
       renderMaterial(material1);
 
-      const material2 = new Material({
+      var material2 = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -486,7 +486,7 @@ describe(
       });
       renderMaterial(material2, true);
 
-      const material3 = new Material({
+      var material3 = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -519,7 +519,7 @@ describe(
     });
 
     it("creates a material using unusual uniform and material names", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           uniforms: {
@@ -543,12 +543,12 @@ describe(
     });
 
     it("create a material using fromType", function () {
-      const material = Material.fromType("Color");
+      var material = Material.fromType("Color");
       renderMaterial(material);
     });
 
     it("create material using fromType and overide default uniforms", function () {
-      const material1 = Material.fromType("Color", {
+      var material1 = Material.fromType("Color", {
         color: new Color(0.0, 1.0, 0.0, 1.0),
       });
 
@@ -558,11 +558,11 @@ describe(
     });
 
     it("create multiple materials from the same type", function () {
-      const material1 = Material.fromType("Color", {
+      var material1 = Material.fromType("Color", {
         color: new Color(0.0, 1.0, 0.0, 1.0),
       });
 
-      const material2 = Material.fromType("Color", {
+      var material2 = Material.fromType("Color", {
         color: new Color(1.0, 0.0, 0.0, 1.0),
       });
 
@@ -577,7 +577,7 @@ describe(
     });
 
     it("create material with sub-materials of the same type", function () {
-      const material = new Material({
+      var material = new Material({
         fabric: {
           materials: {
             color1: {
@@ -605,7 +605,7 @@ describe(
     });
 
     it("creates material with custom texture filter", function () {
-      const materialLinear = new Material({
+      var materialLinear = new Material({
         fabric: {
           type: "DiffuseMap",
           uniforms: {
@@ -616,7 +616,7 @@ describe(
         magnificationFilter: TextureMagnificationFilter.LINEAR,
       });
 
-      const materialNearest = new Material({
+      var materialNearest = new Material({
         fabric: {
           type: "DiffuseMap",
           uniforms: {
@@ -627,12 +627,12 @@ describe(
         magnificationFilter: TextureMagnificationFilter.NEAREST,
       });
 
-      const purple = [127, 0, 127, 255];
+      var purple = [127, 0, 127, 255];
 
-      const ignoreBackground = true;
+      var ignoreBackground = true;
       renderMaterial(materialLinear, ignoreBackground); // Populate the scene with the primitive prior to updating
       return pollToPromise(function () {
-        const imageLoaded = materialLinear._loadedImages.length !== 0;
+        var imageLoaded = materialLinear._loadedImages.length !== 0;
         scene.renderForSpecs();
         return imageLoaded;
       })
@@ -644,7 +644,7 @@ describe(
         .then(function () {
           renderMaterial(materialNearest, ignoreBackground); // Populate the scene with the primitive prior to updating
           return pollToPromise(function () {
-            const imageLoaded = materialNearest._loadedImages.length !== 0;
+            var imageLoaded = materialNearest._loadedImages.length !== 0;
             scene.renderForSpecs();
             return imageLoaded;
           }).then(function () {
@@ -656,7 +656,7 @@ describe(
     });
 
     it("handles when material image is undefined", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: undefined,
         color: Color.RED,
       });
@@ -666,7 +666,7 @@ describe(
     });
 
     it("handles when material image is set to default image", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: Material.DefaultImageId,
         color: Color.RED,
       });
@@ -676,7 +676,7 @@ describe(
     });
 
     it("handles when material image is changed from undefined to some image", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: undefined,
         color: Color.WHITE,
       });
@@ -697,7 +697,7 @@ describe(
     });
 
     it("handles when material image is changed from default to some image", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: Material.DefaultImageId,
         color: Color.WHITE,
       });
@@ -718,7 +718,7 @@ describe(
     });
 
     it("handles when material image is changed from some image to undefined", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: "./Data/Images/Green.png",
         color: Color.WHITE,
       });
@@ -738,7 +738,7 @@ describe(
     });
 
     it("handles when material image is changed from some image to default", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: "./Data/Images/Green.png",
         color: Color.WHITE,
       });
@@ -758,11 +758,11 @@ describe(
     });
 
     it("handles when material image is changed from some image to another", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: "./Data/Images/Green.png",
         color: Color.WHITE,
       });
-      let greenTextureId;
+      var greenTextureId;
 
       return pollToPromise(function () {
         renderMaterial(material, true);
@@ -785,11 +785,11 @@ describe(
     });
 
     it("handles when material image is changed from some image to invalid image", function () {
-      const material = Material.fromType(Material.ImageType, {
+      var material = Material.fromType(Material.ImageType, {
         image: "./Data/Images/Green.png",
         color: Color.WHITE,
       });
-      let greenTextureId;
+      var greenTextureId;
 
       return pollToPromise(function () {
         renderMaterial(material, true);
@@ -924,7 +924,7 @@ describe(
       }).toThrowDeveloperError();
 
       // If strict is false, unused uniform strings are ignored.
-      const material = new Material({
+      var material = new Material({
         strict: false,
         fabric: {
           uniforms: {
@@ -952,7 +952,7 @@ describe(
       }).toThrowDeveloperError();
 
       // If strict is false, unused uniforms are ignored.
-      const material = new Material({
+      var material = new Material({
         strict: false,
         fabric: {
           uniforms: {
@@ -982,7 +982,7 @@ describe(
       }).toThrowDeveloperError();
 
       // If strict is false, unused materials are ignored.
-      const material = new Material({
+      var material = new Material({
         strict: false,
         fabric: {
           materials: {
@@ -1002,13 +1002,13 @@ describe(
     });
 
     it("destroys material with texture", function () {
-      const material = Material.fromType(Material.DiffuseMapType);
+      var material = Material.fromType(Material.DiffuseMapType);
       material.uniforms.image = "./Data/Images/Green.png";
 
       renderMaterial(material);
 
       return pollToPromise(function () {
-        const result = material._loadedImages.length !== 0;
+        var result = material._loadedImages.length !== 0;
         scene.renderForSpecs();
         return result;
       }).then(function () {
@@ -1018,7 +1018,7 @@ describe(
     });
 
     it("destroys sub-materials", function () {
-      const material = new Material({
+      var material = new Material({
         strict: true,
         fabric: {
           materials: {
@@ -1043,11 +1043,11 @@ describe(
       renderMaterial(material);
 
       return pollToPromise(function () {
-        const result = material.materials.diffuseMap._loadedImages.length !== 0;
+        var result = material.materials.diffuseMap._loadedImages.length !== 0;
         scene.renderForSpecs();
         return result;
       }).then(function () {
-        const diffuseMap = material.materials.diffuseMap;
+        var diffuseMap = material.materials.diffuseMap;
         material.destroy();
         expect(material.isDestroyed()).toEqual(true);
         expect(diffuseMap.isDestroyed()).toEqual(true);
@@ -1055,7 +1055,7 @@ describe(
     });
 
     it("does not destroy default material", function () {
-      const material = Material.fromType(Material.DiffuseMapType);
+      var material = Material.fromType(Material.DiffuseMapType);
       renderMaterial(material);
       material.destroy();
     });

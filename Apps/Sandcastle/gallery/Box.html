@@ -29,12 +29,12 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
+        var viewer = new Cesium.Viewer("cesiumContainer");
 
-        const blueBox = viewer.entities.add({
+        var blueBox = viewer.entities.add({
           name: "Blue box",
           position: Cesium.Cartesian3.fromDegrees(-114.0, 40.0, 300000.0),
           box: {
@@ -43,7 +43,7 @@
           },
         });
 
-        const redBox = viewer.entities.add({
+        var redBox = viewer.entities.add({
           name: "Red box with black outline",
           position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 300000.0),
           box: {
@@ -54,7 +54,7 @@
           },
         });
 
-        const outlineOnly = viewer.entities.add({
+        var outlineOnly = viewer.entities.add({
           name: "Yellow box outline",
           position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 300000.0),
           box: {
@@ -68,10 +68,10 @@
         viewer.zoomTo(viewer.entities);
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

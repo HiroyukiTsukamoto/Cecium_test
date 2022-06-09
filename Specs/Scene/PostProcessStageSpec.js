@@ -12,11 +12,12 @@ import { PostProcessStage } from "../../Source/Cesium.js";
 import { PostProcessStageSampleMode } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 
 describe(
   "Scene/PostProcessStage",
   function () {
-    let scene;
+    var scene;
 
     beforeAll(function () {
       scene = createScene();
@@ -33,19 +34,19 @@ describe(
     });
 
     it("constructs", function () {
-      const fragmentShader =
+      var fragmentShader =
         "uniform vec4 color; void main() { gl_FragColor = color; }";
-      const uniforms = { color: Color.clone(Color.RED) };
-      const textureScale = 0.5;
-      const forcePowerOfTwo = true;
-      const sampleMode = PostProcessStageSampleMode.LINEAR;
-      const pixelFormat = PixelFormat.RGB;
-      const pixelDatatype = PixelDatatype.UNSIGNED_INT;
-      const clearColor = Color.clone(Color.BLUE);
-      const scissorRectangle = new BoundingRectangle(0, 0, 5, 5);
-      const name = "wonka vision";
+      var uniforms = { color: Color.clone(Color.RED) };
+      var textureScale = 0.5;
+      var forcePowerOfTwo = true;
+      var sampleMode = PostProcessStageSampleMode.LINEAR;
+      var pixelFormat = PixelFormat.RGB;
+      var pixelDatatype = PixelDatatype.UNSIGNED_INT;
+      var clearColor = Color.clone(Color.BLUE);
+      var scissorRectangle = new BoundingRectangle(0, 0, 5, 5);
+      var name = "wonka vision";
 
-      const stage = new PostProcessStage({
+      var stage = new PostProcessStage({
         fragmentShader: fragmentShader,
         uniforms: uniforms,
         textureScale: textureScale,
@@ -71,9 +72,9 @@ describe(
     });
 
     it("default constructs", function () {
-      const fragmentShader = "void main() { gl_FragColor = vec4(1.0); }";
+      var fragmentShader = "void main() { gl_FragColor = vec4(1.0); }";
 
-      const stage = new PostProcessStage({
+      var stage = new PostProcessStage({
         fragmentShader: fragmentShader,
       });
       expect(stage.fragmentShader).toEqual(fragmentShader);
@@ -96,7 +97,7 @@ describe(
     });
 
     it("throws with invalid texture scale", function () {
-      const fs = "void main() { gl_FragColor = vec4(1.0); }";
+      var fs = "void main() { gl_FragColor = vec4(1.0); }";
       expect(function () {
         return new PostProcessStage({
           fragmentShader: fs,
@@ -134,7 +135,7 @@ describe(
 
     it("can use a texture uniform", function () {
       expect(scene).toRender([0, 0, 0, 255]);
-      const stage = scene.postProcessStages.add(
+      var stage = scene.postProcessStages.add(
         new PostProcessStage({
           fragmentShader:
             "uniform sampler2D texture; varying vec2 v_textureCoordinates; void main() { gl_FragColor = texture2D(texture, v_textureCoordinates); }",
@@ -159,8 +160,8 @@ describe(
     });
 
     it("can use a image uniform", function () {
-      let ready = false;
-      const image = new Image();
+      var ready = false;
+      var image = new Image();
       image.src = "./Data/Images/Blue2x2.png";
       image.onload = function () {
         ready = true;
@@ -170,7 +171,7 @@ describe(
         return ready;
       }).then(function () {
         expect(scene).toRender([0, 0, 0, 255]);
-        const stage = scene.postProcessStages.add(
+        var stage = scene.postProcessStages.add(
           new PostProcessStage({
             fragmentShader:
               "uniform sampler2D texture; void main() { gl_FragColor = texture2D(texture, vec2(0.5)); }",
@@ -189,7 +190,7 @@ describe(
     });
 
     it("does not run a stage that requires depth textures when depth textures are not supported", function () {
-      const s = createScene();
+      var s = createScene();
       s.context._depthTexture = false;
 
       if (defined(s._view.globeDepth)) {
@@ -203,16 +204,17 @@ describe(
 
       expect(s).toRender([0, 0, 0, 255]);
       // Dummy Stage
-      const bgColor = 51; // Choose a factor of 255 to make sure there aren't rounding issues
+      var bgColor = 51; // Choose a factor of 255 to make sure there aren't rounding issues
       s.postProcessStages.add(
         new PostProcessStage({
-          fragmentShader: `void main() { gl_FragColor = vec4(vec3(${
-            bgColor / 255
-          }), 1.0); }`,
+          fragmentShader:
+            "void main() { gl_FragColor = vec4(vec3(" +
+            bgColor / 255 +
+            "), 1.0); }",
         })
       );
 
-      const stage = s.postProcessStages.add(
+      var stage = s.postProcessStages.add(
         new PostProcessStage({
           fragmentShader:
             "uniform sampler2D depthTexture; void main() { gl_FragColor = vec4(1.0); }",
@@ -225,15 +227,15 @@ describe(
         .then(function () {
           expect(s).toRender([bgColor, bgColor, bgColor, 255]);
         })
-        .finally(function (e) {
+        .always(function (e) {
           s.destroyForSpecs();
           if (e) {
-            return Promise.reject(e);
+            return when.reject(e);
           }
         });
     });
 
-    let model;
+    var model;
 
     function loadModel(url) {
       model = scene.primitives.add(
@@ -245,15 +247,14 @@ describe(
         })
       );
       model.zoomTo = function () {
-        const camera = scene.camera;
-        const center = Matrix4.multiplyByPoint(
+        var camera = scene.camera;
+        var center = Matrix4.multiplyByPoint(
           model.modelMatrix,
-          model.boundingSphereInternal.center,
+          model.boundingSphere.center,
           new Cartesian3()
         );
-        const r =
-          4.0 *
-          Math.max(model.boundingSphereInternal.radius, camera.frustum.near);
+        var r =
+          4.0 * Math.max(model.boundingSphere.radius, camera.frustum.near);
         camera.lookAt(center, new HeadingPitchRange(0.0, 0.0, r));
       };
 
@@ -268,8 +269,8 @@ describe(
         .then(function () {
           return model;
         })
-        .catch(function () {
-          return Promise.reject(model);
+        .otherwise(function () {
+          return when.reject(model);
         });
     }
 
@@ -277,7 +278,7 @@ describe(
       return loadModel("./Data/Models/Box/CesiumBoxTest.gltf").then(
         function () {
           model.zoomTo();
-          const fs =
+          var fs =
             "uniform sampler2D colorTexture; \n" +
             "varying vec2 v_textureCoordinates; \n" +
             "void main() { \n" +
@@ -287,7 +288,7 @@ describe(
             "        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
             "    } \n" +
             "} \n";
-          const stage = scene.postProcessStages.add(
+          var stage = scene.postProcessStages.add(
             new PostProcessStage({
               fragmentShader: fs,
             })
@@ -308,7 +309,7 @@ describe(
     });
 
     it("destroys", function () {
-      const stage = new PostProcessStage({
+      var stage = new PostProcessStage({
         fragmentShader: "void main() { gl_FragColor = vec4(1.0); }",
       });
       expect(stage.isDestroyed()).toEqual(false);

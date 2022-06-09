@@ -1,3 +1,4 @@
+import when from "../ThirdParty/when.js";
 import binarySearch from "./binarySearch.js";
 import defaultValue from "./defaultValue.js";
 import defined from "./defined.js";
@@ -45,7 +46,7 @@ import TimeStandard from "./TimeStandard.js";
  *
  * @example
  * // Loading the EOP data
- * const eop = new Cesium.EarthOrientationParameters({ url : 'Data/EOP.json' });
+ * var eop = new Cesium.EarthOrientationParameters({ url : 'Data/EOP.json' });
  * Cesium.Transforms.earthOrientationParameters = eop;
  *
  * @private
@@ -76,17 +77,20 @@ function EarthOrientationParameters(options) {
     // Use supplied EOP data.
     onDataReady(this, options.data);
   } else if (defined(options.url)) {
-    const resource = Resource.createIfNeeded(options.url);
+    var resource = Resource.createIfNeeded(options.url);
 
     // Download EOP data.
-    const that = this;
+    var that = this;
     this._downloadPromise = resource
       .fetchJson()
       .then(function (eopData) {
         onDataReady(that, eopData);
       })
-      .catch(function () {
-        that._dataError = `An error occurred while retrieving the EOP data from the URL ${resource.url}.`;
+      .otherwise(function () {
+        that._dataError =
+          "An error occurred while retrieving the EOP data from the URL " +
+          resource.url +
+          ".";
       });
   } else {
     // Use all zeros for EOP data.
@@ -112,7 +116,7 @@ function EarthOrientationParameters(options) {
  */
 EarthOrientationParameters.NONE = Object.freeze({
   getPromiseToLoad: function () {
-    return Promise.resolve();
+    return when.resolve();
   },
   compute: function (date, result) {
     if (!defined(result)) {
@@ -135,7 +139,7 @@ EarthOrientationParameters.NONE = Object.freeze({
  * @returns {Promise<void>} The promise.
  */
 EarthOrientationParameters.prototype.getPromiseToLoad = function () {
-  return Promise.resolve(this._downloadPromise);
+  return when(this._downloadPromise);
 };
 
 /**
@@ -176,20 +180,17 @@ EarthOrientationParameters.prototype.compute = function (date, result) {
     return result;
   }
 
-  const dates = this._dates;
-  const lastIndex = this._lastIndex;
+  var dates = this._dates;
+  var lastIndex = this._lastIndex;
 
-  let before = 0;
-  let after = 0;
+  var before = 0;
+  var after = 0;
   if (defined(lastIndex)) {
-    const previousIndexDate = dates[lastIndex];
-    const nextIndexDate = dates[lastIndex + 1];
-    const isAfterPrevious = JulianDate.lessThanOrEquals(
-      previousIndexDate,
-      date
-    );
-    const isAfterLastSample = !defined(nextIndexDate);
-    const isBeforeNext =
+    var previousIndexDate = dates[lastIndex];
+    var nextIndexDate = dates[lastIndex + 1];
+    var isAfterPrevious = JulianDate.lessThanOrEquals(previousIndexDate, date);
+    var isAfterLastSample = !defined(nextIndexDate);
+    var isBeforeNext =
       isAfterLastSample || JulianDate.greaterThanOrEquals(nextIndexDate, date);
 
     if (isAfterPrevious && isBeforeNext) {
@@ -205,7 +206,7 @@ EarthOrientationParameters.prototype.compute = function (date, result) {
     }
   }
 
-  let index = binarySearch(dates, date, JulianDate.compare, this._dateColumn);
+  var index = binarySearch(dates, date, JulianDate.compare, this._dateColumn);
   if (index >= 0) {
     // If the next entry is the same date, use the later entry.  This way, if two entries
     // describe the same moment, one before a leap second and the other after, then we will use
@@ -248,23 +249,23 @@ function onDataReady(eop, eopData) {
     return;
   }
 
-  const dateColumn = eopData.columnNames.indexOf("modifiedJulianDateUtc");
-  const xPoleWanderRadiansColumn = eopData.columnNames.indexOf(
+  var dateColumn = eopData.columnNames.indexOf("modifiedJulianDateUtc");
+  var xPoleWanderRadiansColumn = eopData.columnNames.indexOf(
     "xPoleWanderRadians"
   );
-  const yPoleWanderRadiansColumn = eopData.columnNames.indexOf(
+  var yPoleWanderRadiansColumn = eopData.columnNames.indexOf(
     "yPoleWanderRadians"
   );
-  const ut1MinusUtcSecondsColumn = eopData.columnNames.indexOf(
+  var ut1MinusUtcSecondsColumn = eopData.columnNames.indexOf(
     "ut1MinusUtcSeconds"
   );
-  const xCelestialPoleOffsetRadiansColumn = eopData.columnNames.indexOf(
+  var xCelestialPoleOffsetRadiansColumn = eopData.columnNames.indexOf(
     "xCelestialPoleOffsetRadians"
   );
-  const yCelestialPoleOffsetRadiansColumn = eopData.columnNames.indexOf(
+  var yCelestialPoleOffsetRadiansColumn = eopData.columnNames.indexOf(
     "yCelestialPoleOffsetRadians"
   );
-  const taiMinusUtcSecondsColumn = eopData.columnNames.indexOf(
+  var taiMinusUtcSecondsColumn = eopData.columnNames.indexOf(
     "taiMinusUtcSeconds"
   );
 
@@ -282,8 +283,8 @@ function onDataReady(eop, eopData) {
     return;
   }
 
-  const samples = (eop._samples = eopData.samples);
-  const dates = (eop._dates = []);
+  var samples = (eop._samples = eopData.samples);
+  var dates = (eop._dates = []);
 
   eop._dateColumn = dateColumn;
   eop._xPoleWanderRadiansColumn = xPoleWanderRadiansColumn;
@@ -296,30 +297,30 @@ function onDataReady(eop, eopData) {
   eop._columnCount = eopData.columnNames.length;
   eop._lastIndex = undefined;
 
-  let lastTaiMinusUtc;
+  var lastTaiMinusUtc;
 
-  const addNewLeapSeconds = eop._addNewLeapSeconds;
+  var addNewLeapSeconds = eop._addNewLeapSeconds;
 
   // Convert the ISO8601 dates to JulianDates.
-  for (let i = 0, len = samples.length; i < len; i += eop._columnCount) {
-    const mjd = samples[i + dateColumn];
-    const taiMinusUtc = samples[i + taiMinusUtcSecondsColumn];
-    const day = mjd + TimeConstants.MODIFIED_JULIAN_DATE_DIFFERENCE;
-    const date = new JulianDate(day, taiMinusUtc, TimeStandard.TAI);
+  for (var i = 0, len = samples.length; i < len; i += eop._columnCount) {
+    var mjd = samples[i + dateColumn];
+    var taiMinusUtc = samples[i + taiMinusUtcSecondsColumn];
+    var day = mjd + TimeConstants.MODIFIED_JULIAN_DATE_DIFFERENCE;
+    var date = new JulianDate(day, taiMinusUtc, TimeStandard.TAI);
     dates.push(date);
 
     if (addNewLeapSeconds) {
       if (taiMinusUtc !== lastTaiMinusUtc && defined(lastTaiMinusUtc)) {
         // We crossed a leap second boundary, so add the leap second
         // if it does not already exist.
-        const leapSeconds = JulianDate.leapSeconds;
-        const leapSecondIndex = binarySearch(
+        var leapSeconds = JulianDate.leapSeconds;
+        var leapSecondIndex = binarySearch(
           leapSeconds,
           date,
           compareLeapSecondDates
         );
         if (leapSecondIndex < 0) {
-          const leapSecond = new LeapSecond(date, taiMinusUtc);
+          var leapSecond = new LeapSecond(date, taiMinusUtc);
           leapSeconds.splice(~leapSecondIndex, 0, leapSecond);
         }
       }
@@ -329,7 +330,7 @@ function onDataReady(eop, eopData) {
 }
 
 function fillResultFromIndex(eop, samples, index, columnCount, result) {
-  const start = index * columnCount;
+  var start = index * columnCount;
   result.xPoleWander = samples[start + eop._xPoleWanderRadiansColumn];
   result.yPoleWander = samples[start + eop._yPoleWanderRadiansColumn];
   result.xPoleOffset = samples[start + eop._xCelestialPoleOffsetRadiansColumn];
@@ -342,7 +343,7 @@ function linearInterp(dx, y1, y2) {
 }
 
 function interpolate(eop, dates, samples, date, before, after, result) {
-  const columnCount = eop._columnCount;
+  var columnCount = eop._columnCount;
 
   // First check the bounds on the EOP data
   // If we are after the bounds of the data, return zeros.
@@ -356,8 +357,8 @@ function interpolate(eop, dates, samples, date, before, after, result) {
     return result;
   }
 
-  const beforeDate = dates[before];
-  const afterDate = dates[after];
+  var beforeDate = dates[before];
+  var afterDate = dates[after];
   if (beforeDate.equals(afterDate) || date.equals(beforeDate)) {
     fillResultFromIndex(eop, samples, before, columnCount, result);
     return result;
@@ -366,27 +367,26 @@ function interpolate(eop, dates, samples, date, before, after, result) {
     return result;
   }
 
-  const factor =
+  var factor =
     JulianDate.secondsDifference(date, beforeDate) /
     JulianDate.secondsDifference(afterDate, beforeDate);
 
-  const startBefore = before * columnCount;
-  const startAfter = after * columnCount;
+  var startBefore = before * columnCount;
+  var startAfter = after * columnCount;
 
   // Handle UT1 leap second edge case
-  let beforeUt1MinusUtc = samples[startBefore + eop._ut1MinusUtcSecondsColumn];
-  let afterUt1MinusUtc = samples[startAfter + eop._ut1MinusUtcSecondsColumn];
+  var beforeUt1MinusUtc = samples[startBefore + eop._ut1MinusUtcSecondsColumn];
+  var afterUt1MinusUtc = samples[startAfter + eop._ut1MinusUtcSecondsColumn];
 
-  const offsetDifference = afterUt1MinusUtc - beforeUt1MinusUtc;
+  var offsetDifference = afterUt1MinusUtc - beforeUt1MinusUtc;
   if (offsetDifference > 0.5 || offsetDifference < -0.5) {
     // The absolute difference between the values is more than 0.5, so we may have
     // crossed a leap second.  Check if this is the case and, if so, adjust the
     // afterValue to account for the leap second.  This way, our interpolation will
     // produce reasonable results.
-    const beforeTaiMinusUtc =
+    var beforeTaiMinusUtc =
       samples[startBefore + eop._taiMinusUtcSecondsColumn];
-    const afterTaiMinusUtc =
-      samples[startAfter + eop._taiMinusUtcSecondsColumn];
+    var afterTaiMinusUtc = samples[startAfter + eop._taiMinusUtcSecondsColumn];
     if (beforeTaiMinusUtc !== afterTaiMinusUtc) {
       if (afterDate.equals(date)) {
         // If we are at the end of the leap second interval, take the second value

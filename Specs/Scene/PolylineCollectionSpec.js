@@ -14,8 +14,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/PolylineCollection",
   function () {
-    let scene;
-    let polylines;
+    var scene;
+    var polylines;
 
     beforeAll(function () {
       scene = createScene();
@@ -41,7 +41,7 @@ describe(
     });
 
     it("default constructs a polyline", function () {
-      const p = polylines.add();
+      var p = polylines.add();
       expect(p.show).toEqual(true);
       expect(p.positions.length).toEqual(0);
       expect(p.width).toEqual(1.0);
@@ -51,8 +51,8 @@ describe(
     });
 
     it("explicitly constructs a polyline", function () {
-      const material = Material.fromType(Material.PolylineOutlineType);
-      const p = polylines.add({
+      var material = Material.fromType(Material.PolylineOutlineType);
+      var p = polylines.add({
         show: false,
         positions: [
           new Cartesian3(1.0, 2.0, 3.0),
@@ -83,8 +83,8 @@ describe(
     });
 
     it("sets polyline properties", function () {
-      const material = Material.fromType(Material.PolylineOutlineType);
-      const p = polylines.add();
+      var material = Material.fromType(Material.PolylineOutlineType);
+      var p = polylines.add();
       p.show = false;
       p.positions = [
         new Cartesian3(1.0, 2.0, 3.0),
@@ -112,7 +112,7 @@ describe(
     });
 
     it("constructor sets loop only when number of positions is greater than 2", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           new Cartesian3(0.0, 1.0, 2.0),
           new Cartesian3(3.0, 4.0, 5.0),
@@ -124,7 +124,7 @@ describe(
     });
 
     it("sets loop only when number of positions is greater than 2", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           new Cartesian3(0.0, 1.0, 2.0),
           new Cartesian3(3.0, 4.0, 5.0),
@@ -136,7 +136,7 @@ describe(
     });
 
     it("sets removed polyline properties", function () {
-      const p = polylines.add();
+      var p = polylines.add();
       polylines.remove(p);
       p.show = false;
       expect(p.show).toEqual(false);
@@ -147,7 +147,7 @@ describe(
     });
 
     it("adds a polyline", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -167,7 +167,7 @@ describe(
     });
 
     it("removes the first polyline", function () {
-      const one = polylines.add({
+      var one = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -181,7 +181,7 @@ describe(
           },
         ],
       });
-      const two = polylines.add({
+      var two = polylines.add({
         positions: [
           {
             x: 4.0,
@@ -205,7 +205,7 @@ describe(
     });
 
     it("removes the last polyline", function () {
-      const one = polylines.add({
+      var one = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -219,7 +219,7 @@ describe(
           },
         ],
       });
-      const two = polylines.add({
+      var two = polylines.add({
         positions: [
           {
             x: 4.0,
@@ -243,7 +243,7 @@ describe(
     });
 
     it("removes the same polyline twice", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -288,7 +288,7 @@ describe(
     });
 
     it("adds and removes polylines", function () {
-      const one = polylines.add({
+      var one = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -302,7 +302,7 @@ describe(
           },
         ],
       });
-      const two = polylines.add({
+      var two = polylines.add({
         positions: [
           {
             x: 4.0,
@@ -321,7 +321,7 @@ describe(
       expect(polylines.get(1) === two).toEqual(true);
 
       expect(polylines.remove(two)).toEqual(true);
-      const three = polylines.add({
+      var three = polylines.add({
         positions: [
           {
             x: 7.0,
@@ -376,8 +376,8 @@ describe(
     });
 
     it("removal of polyline from polyLinesToUpdate is deferred until scene is updated", function () {
-      const firstPolyline = polylines.add();
-      const secondPolyline = polylines.add();
+      var firstPolyline = polylines.add();
+      var secondPolyline = polylines.add();
 
       firstPolyline.width = 4;
       secondPolyline.width = 5;
@@ -390,8 +390,8 @@ describe(
     });
 
     it("removal of polyline from polylinesToUpdate after polyline is made dirty multiple times", function () {
-      const firstPolyline = polylines.add();
-      const secondPolyline = polylines.add();
+      var firstPolyline = polylines.add();
+      var secondPolyline = polylines.add();
 
       firstPolyline.width = 4;
       secondPolyline.width = 5;
@@ -406,13 +406,13 @@ describe(
     });
 
     it("can check if it contains a polyline", function () {
-      const polyline = polylines.add();
+      var polyline = polylines.add();
 
       expect(polylines.contains(polyline)).toEqual(true);
     });
 
     it("returns false when checking if it contains a polyline it does not contain", function () {
-      const polyline = polylines.add();
+      var polyline = polylines.add();
       polylines.remove(polyline);
 
       expect(polylines.contains(polyline)).toEqual(false);
@@ -435,8 +435,8 @@ describe(
     });
 
     it("renders polylines. one polyline with no positions", function () {
-      const positions = [];
-      for (let i = 0; i < 100; ++i) {
+      var positions = [];
+      for (var i = 0; i < 100; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -497,7 +497,7 @@ describe(
     });
 
     it("renders polylines with duplicate positions after setting positions", function () {
-      const p = polylines.add();
+      var p = polylines.add();
       p.positions = [
         new Cartesian3(0.0, -1000000.0, 0.0),
         new Cartesian3(0.0, 1000000.0, 0.0),
@@ -512,7 +512,7 @@ describe(
     });
 
     it("does not render polyline if show is false", function () {
-      const p = polylines.add();
+      var p = polylines.add();
       p.positions = [
         new Cartesian3(0.0, -1000000.0, 0.0),
         new Cartesian3(0.0, 1000000.0, 0.0),
@@ -531,7 +531,7 @@ describe(
       scene.mode = SceneMode.SCENE2D;
 
       //These positions cross the IDL
-      const positions = [];
+      var positions = [];
       positions.push({
         x: 12163600,
         y: -47362500,
@@ -544,7 +544,7 @@ describe(
       });
 
       //Create a line
-      const line = polylines.add({
+      var line = polylines.add({
         positions: positions,
       });
 
@@ -573,8 +573,8 @@ describe(
     });
 
     it("renders 64K vertices of same polyline", function () {
-      const positions = [];
-      for (let i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES / 2; ++i) {
+      var positions = [];
+      for (var i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES / 2; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -597,8 +597,8 @@ describe(
     });
 
     it("creates two vertex arrays and renders", function () {
-      const positions = [];
-      for (let i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES / 2; ++i) {
+      var positions = [];
+      for (var i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES / 2; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -611,7 +611,7 @@ describe(
         });
       }
 
-      const p1 = polylines.add({
+      var p1 = polylines.add({
         positions: positions,
       });
       expect(scene).toRender([0, 0, 0, 255]);
@@ -630,8 +630,8 @@ describe(
     });
 
     it("renders more than 64K vertices of same polyline", function () {
-      const positions = [];
-      for (let i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES; ++i) {
+      var positions = [];
+      for (var i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -664,8 +664,8 @@ describe(
     });
 
     it("renders a polyline with no positions", function () {
-      const positions = [];
-      for (let i = 0; i < 100; ++i) {
+      var positions = [];
+      for (var i = 0; i < 100; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -698,8 +698,8 @@ describe(
     });
 
     it("renders an updated polyline with no positions using set positions", function () {
-      const positions = [];
-      for (let i = 0; i < 100; ++i) {
+      var positions = [];
+      for (var i = 0; i < 100; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -720,7 +720,7 @@ describe(
       scene.primitives.add(polylines);
       expect(scene).notToRender([0, 0, 0, 255]);
 
-      const p2 = polylines.add({
+      var p2 = polylines.add({
         positions: [],
       });
 
@@ -736,8 +736,8 @@ describe(
     });
 
     it("renders an updated polyline with no positions using show", function () {
-      const positions = [];
-      for (let i = 0; i < 100; ++i) {
+      var positions = [];
+      for (var i = 0; i < 100; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -758,7 +758,7 @@ describe(
       scene.primitives.add(polylines);
       expect(scene).notToRender([0, 0, 0, 255]);
 
-      const p2 = polylines.add({
+      var p2 = polylines.add({
         positions: [],
       });
       expect(scene).notToRender([0, 0, 0, 255]);
@@ -773,8 +773,8 @@ describe(
     });
 
     it("renders an updated polyline with no positions using material", function () {
-      const positions = [];
-      for (let i = 0; i < 100; ++i) {
+      var positions = [];
+      for (var i = 0; i < 100; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -795,7 +795,7 @@ describe(
       scene.primitives.add(polylines);
       expect(scene).notToRender([0, 0, 0, 255]);
 
-      const p2 = polylines.add({
+      var p2 = polylines.add({
         positions: [],
       });
 
@@ -808,8 +808,8 @@ describe(
     });
 
     it("changes buffer usage after 100 iterations of not changing", function () {
-      const positions = [];
-      for (let i = 0; i < 100; ++i) {
+      var positions = [];
+      for (var i = 0; i < 100; ++i) {
         positions.push({
           x: 0,
           y: -1000000,
@@ -822,7 +822,7 @@ describe(
         });
       }
 
-      const p = polylines.add({
+      var p = polylines.add({
         positions: positions,
       });
       expect(scene).toRender([0, 0, 0, 255]);
@@ -832,15 +832,15 @@ describe(
 
       // changes buffer usage, recreates vertex arrays
       p.positions = positions;
-      for (let j = 0; j < 101; ++j) {
+      for (var j = 0; j < 101; ++j) {
         scene.render();
       }
       expect(scene).notToRender([0, 0, 0, 255]);
     });
 
     it("renders more than 64K vertices of different polylines", function () {
-      const positions = [];
-      for (let i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES; ++i) {
+      var positions = [];
+      for (var i = 0; i < CesiumMath.SIXTY_FOUR_KILOBYTES; ++i) {
         positions.push({
           x: -1000000,
           y: -1000000,
@@ -879,9 +879,9 @@ describe(
 
     it("renders bounding volume with debugShowBoundingVolume", function () {
       polylines.debugShowBoundingVolume = true;
-      const material = Material.fromType("Color");
+      var material = Material.fromType("Color");
       material.uniforms.color = new Color(1.0, 1.0, 1.0, 0.0);
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -896,7 +896,7 @@ describe(
         ],
         material: material,
       });
-      const bounds = BoundingSphere.fromPoints(p.positions);
+      var bounds = BoundingSphere.fromPoints(p.positions);
       scene.camera.viewBoundingSphere(bounds);
       expect(scene).toRender([0, 0, 0, 255]);
 
@@ -905,7 +905,7 @@ describe(
     });
 
     it("does not render", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -930,7 +930,7 @@ describe(
     });
 
     it("modifies and removes a polyline, then renders", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1031,7 +1031,7 @@ describe(
           },
         ],
       });
-      const bluePolyline = polylines.add({
+      var bluePolyline = polylines.add({
         positions: [
           {
             x: 500000.0,
@@ -1126,7 +1126,7 @@ describe(
     });
 
     it("renders using polyline positions property", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1176,7 +1176,7 @@ describe(
     });
 
     it("renders and updates one polyline from many polylines using show property", function () {
-      const positions = [
+      var positions = [
         {
           x: 0.0,
           y: -1000000.0,
@@ -1203,7 +1203,7 @@ describe(
         width: 2,
       });
 
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1232,7 +1232,7 @@ describe(
     });
 
     it("renders using polyline show property", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1261,8 +1261,8 @@ describe(
     });
 
     it("renders four polylines with different widths", function () {
-      const positions = [];
-      for (let i = 0; i < 200; ++i) {
+      var positions = [];
+      for (var i = 0; i < 200; ++i) {
         positions.push(
           {
             x: -1000000.0,
@@ -1310,8 +1310,8 @@ describe(
     });
 
     it("renders three polylines with different widths and updates one", function () {
-      const positions = [];
-      for (let i = 0; i < 200; ++i) {
+      var positions = [];
+      for (var i = 0; i < 200; ++i) {
         positions.push(
           {
             x: -1000000.0,
@@ -1333,7 +1333,7 @@ describe(
         positions: positions,
         width: 4,
       });
-      const p2 = polylines.add({
+      var p2 = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1361,7 +1361,7 @@ describe(
     });
 
     it("does not render with width 0.0", function () {
-      const line = polylines.add({
+      var line = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1387,10 +1387,10 @@ describe(
     });
 
     it("renders with a distance display condition", function () {
-      const near = 100.0;
-      const far = 10000.0;
+      var near = 100.0;
+      var far = 10000.0;
 
-      const line = polylines.add({
+      var line = polylines.add({
         positions: [
           {
             x: 10.0,
@@ -1410,9 +1410,9 @@ describe(
       scene.primitives.add(polylines);
       scene.renderForSpecs();
 
-      const boundingSphere = line._boundingVolumeWC;
-      const center = boundingSphere.center;
-      const radius = boundingSphere.radius;
+      var boundingSphere = line._boundingVolumeWC;
+      var center = boundingSphere.center;
+      var radius = boundingSphere.radius;
 
       scene.camera.lookAt(
         center,
@@ -1438,10 +1438,10 @@ describe(
     });
 
     it("renders with a distance display condition after creation", function () {
-      const near = 100.0;
-      const far = 10000.0;
+      var near = 100.0;
+      var far = 10000.0;
 
-      const line = polylines.add({
+      var line = polylines.add({
         positions: [
           {
             x: 10.0,
@@ -1462,9 +1462,9 @@ describe(
 
       line.distanceDisplayCondition = new DistanceDisplayCondition(near, far);
 
-      const boundingSphere = line._boundingVolumeWC;
-      const center = boundingSphere.center;
-      const radius = boundingSphere.radius;
+      var boundingSphere = line._boundingVolumeWC;
+      var center = boundingSphere.center;
+      var radius = boundingSphere.radius;
 
       scene.camera.lookAt(
         center,
@@ -1490,8 +1490,8 @@ describe(
     });
 
     it("changes polyline position size recreates vertex arrays", function () {
-      const positions = [];
-      for (let i = 0; i < 20; ++i) {
+      var positions = [];
+      for (var i = 0; i < 20; ++i) {
         positions.push(
           {
             x: 0.0,
@@ -1505,7 +1505,7 @@ describe(
           }
         );
       }
-      const p = polylines.add({
+      var p = polylines.add({
         positions: positions,
       });
 
@@ -1528,7 +1528,7 @@ describe(
     });
 
     it("changes polyline width property", function () {
-      const p1 = polylines.add({
+      var p1 = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1542,7 +1542,7 @@ describe(
           },
         ],
       });
-      const p2 = polylines.add({
+      var p2 = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1598,7 +1598,7 @@ describe(
     });
 
     it("is picked", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1622,7 +1622,7 @@ describe(
     });
 
     it("can change pick id", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1674,7 +1674,7 @@ describe(
     });
 
     it("is not picked (alpha === 0.0)", function () {
-      const p = polylines.add({
+      var p = polylines.add({
         positions: [
           {
             x: 0.0,
@@ -1695,7 +1695,7 @@ describe(
     });
 
     it("does not equal undefined", function () {
-      const polyline = polylines.add();
+      var polyline = polylines.add();
       expect(polyline).not.toEqual(undefined);
     });
 
@@ -1706,7 +1706,7 @@ describe(
     });
 
     it("computes bounding sphere in 3D", function () {
-      const one = polylines.add({
+      var one = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -1720,7 +1720,7 @@ describe(
           },
         ],
       });
-      const two = polylines.add({
+      var two = polylines.add({
         positions: [
           {
             x: 4.0,
@@ -1734,7 +1734,7 @@ describe(
           },
         ],
       });
-      const three = polylines.add({
+      var three = polylines.add({
         positions: [
           {
             x: 7.0,
@@ -1751,7 +1751,7 @@ describe(
 
       scene.primitives.add(polylines);
       scene.render();
-      const boundingVolume = scene.frameState.commandList[0].boundingVolume;
+      var boundingVolume = scene.frameState.commandList[0].boundingVolume;
 
       expect(one._boundingVolume).toEqual(
         BoundingSphere.fromPoints(one.positions)
@@ -1771,29 +1771,29 @@ describe(
     });
 
     function testBoundingSphere() {
-      const projection = scene.mapProjection;
-      const ellipsoid = projection.ellipsoid;
+      var projection = scene.mapProjection;
+      var ellipsoid = projection.ellipsoid;
 
-      const one = polylines.add({
+      var one = polylines.add({
         positions: Cartesian3.fromDegreesArray([-50.0, -50.0, 50.0, -50.0]),
       });
-      const two = polylines.add({
+      var two = polylines.add({
         positions: Cartesian3.fromDegreesArray([50.0, 50.0, -50.0, 50.0]),
       });
 
       scene.primitives.add(polylines);
       scene.render();
-      const boundingVolume = scene.frameState.commandList[0].boundingVolume;
+      var boundingVolume = scene.frameState.commandList[0].boundingVolume;
 
-      let positions = one.positions;
-      let projectedPositions = [];
-      let i;
+      var positions = one.positions;
+      var projectedPositions = [];
+      var i;
       for (i = 0; i < positions.length; ++i) {
         projectedPositions.push(
           projection.project(ellipsoid.cartesianToCartographic(positions[i]))
         );
       }
-      let bs = BoundingSphere.fromPoints(projectedPositions);
+      var bs = BoundingSphere.fromPoints(projectedPositions);
       bs.center = new Cartesian3(bs.center.z, bs.center.x, bs.center.y);
       expect(one._boundingVolume2D.center).toEqualEpsilon(
         bs.center,
@@ -1822,7 +1822,7 @@ describe(
         CesiumMath.EPSILON12
       );
 
-      const expected = BoundingSphere.union(
+      var expected = BoundingSphere.union(
         one._boundingVolume2D,
         two._boundingVolume2D
       );
@@ -1847,7 +1847,7 @@ describe(
     });
 
     it("computes optimized bounding volumes per material", function () {
-      const one = polylines.add({
+      var one = polylines.add({
         positions: [
           {
             x: 1.0,
@@ -1863,7 +1863,7 @@ describe(
       });
       one.material.uniforms.color = new Color(1.0, 0.0, 0.0, 1.0);
 
-      const two = polylines.add({
+      var two = polylines.add({
         positions: [
           {
             x: 2.0,

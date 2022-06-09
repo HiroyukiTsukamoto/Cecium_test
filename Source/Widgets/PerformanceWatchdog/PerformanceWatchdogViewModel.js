@@ -55,13 +55,13 @@ function PerformanceWatchdogViewModel(options) {
     "showingLowFrameRateMessage",
   ]);
 
-  const that = this;
+  var that = this;
   this._dismissMessage = createCommand(function () {
     that.showingLowFrameRateMessage = false;
     that.lowFrameRateMessageDismissed = true;
   });
 
-  const monitor = FrameRateMonitor.fromScene(options.scene);
+  var monitor = FrameRateMonitor.fromScene(options.scene);
 
   this._unsubscribeLowFrameRate = monitor.lowFrameRate.addEventListener(
     function () {

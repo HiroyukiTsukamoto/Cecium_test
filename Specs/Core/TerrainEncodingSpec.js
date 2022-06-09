@@ -11,13 +11,13 @@ import { TerrainQuantization } from "../../Source/Cesium.js";
 import { Transforms } from "../../Source/Cesium.js";
 
 describe("Core/TerrainEncoding", function () {
-  let center;
-  let maximum;
-  let minimum;
-  let aabox;
-  let fromENU;
-  let minimumHeight;
-  let maximumHeight;
+  var center;
+  var maximum;
+  var minimum;
+  var aabox;
+  var fromENU;
+  var minimumHeight;
+  var maximumHeight;
 
   beforeEach(function () {
     center = Cartesian3.fromDegrees(0.0, 0.0);
@@ -30,7 +30,7 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("default constructs", function () {
-    const encoding = new TerrainEncoding();
+    var encoding = new TerrainEncoding();
     expect(encoding.quantization).toBe(TerrainQuantization.NONE);
     expect(encoding.minimumHeight).not.toBeDefined();
     expect(encoding.maximumHeight).not.toBeDefined();
@@ -42,13 +42,13 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("constructs without quantization", function () {
-    const maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
-    const maximumHeight = 1.0e6;
-    const minimumHeight = maximumHeight;
-    const hasVertexNormals = false;
-    const encoding = new TerrainEncoding(
+    var maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var maximumHeight = 1.0e6;
+    var minimumHeight = maximumHeight;
+    var hasVertexNormals = false;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -71,13 +71,13 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("constructs with quantization", function () {
-    const maximum = new Cartesian3(100.0, 100.0, 100.0);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
-    const minimumHeight = -100.0;
-    const maximumHeight = 100.0;
-    const hasVertexNormals = false;
-    const encoding = new TerrainEncoding(
+    var maximum = new Cartesian3(100.0, 100.0, 100.0);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var minimumHeight = -100.0;
+    var maximumHeight = 100.0;
+    var hasVertexNormals = false;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -100,13 +100,13 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes without quantization or normals", function () {
-    const maximum = new Cartesian3(6.0e3, 6.0e3, 6.0e3);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
-    const maximumHeight = 6.0e3;
-    const minimumHeight = maximumHeight;
-    const hasVertexNormals = false;
-    const encoding = new TerrainEncoding(
+    var maximum = new Cartesian3(6.0e3, 6.0e3, 6.0e3);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var maximumHeight = 6.0e3;
+    var minimumHeight = maximumHeight;
+    var hasVertexNormals = false;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -115,10 +115,10 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const position = new Cartesian3(1.0e3, 1.0e3, 1.0e3);
+    var position = new Cartesian3(1.0e3, 1.0e3, 1.0e3);
     Matrix4.multiplyByPoint(fromENU, position, position);
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(buffer, 0, position, Cartesian2.ZERO, 100.0);
 
     expect(encoding.stride).toEqual(6);
@@ -128,13 +128,13 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes without quantization and with normals", function () {
-    const maximum = new Cartesian3(6.0e3, 6.0e3, 6.0e3);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
-    const maximumHeight = 6.0e3;
-    const minimumHeight = maximumHeight;
-    const hasVertexNormals = true;
-    const encoding = new TerrainEncoding(
+    var maximum = new Cartesian3(6.0e3, 6.0e3, 6.0e3);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var maximumHeight = 6.0e3;
+    var minimumHeight = maximumHeight;
+    var hasVertexNormals = true;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -143,11 +143,11 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const position = new Cartesian3(1.0e3, 1.0e3, 1.0e3);
+    var position = new Cartesian3(1.0e3, 1.0e3, 1.0e3);
     Matrix4.multiplyByPoint(fromENU, position, position);
-    const normal = Cartesian3.normalize(position, new Cartesian3());
+    var normal = Cartesian3.normalize(position, new Cartesian3());
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(buffer, 0, position, Cartesian2.ZERO, 100.0, normal);
 
     expect(encoding.stride).toEqual(7);
@@ -157,8 +157,8 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes position with quantization and without normals", function () {
-    const hasVertexNormals = false;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = false;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -167,10 +167,10 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const position = new Cartesian3(1.0e2, 1.0e2, 1.0e2);
+    var position = new Cartesian3(1.0e2, 1.0e2, 1.0e2);
     Matrix4.multiplyByPoint(fromENU, position, position);
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(buffer, 0, position, Cartesian2.ZERO, 100.0);
 
     expect(encoding.stride).toEqual(3);
@@ -180,8 +180,8 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes position with quantization and normals", function () {
-    const hasVertexNormals = true;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = true;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -190,11 +190,11 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const position = new Cartesian3(1.0e2, 1.0e2, 1.0e2);
+    var position = new Cartesian3(1.0e2, 1.0e2, 1.0e2);
     Matrix4.multiplyByPoint(fromENU, position, position);
-    const normal = Cartesian3.normalize(position, new Cartesian3());
+    var normal = Cartesian3.normalize(position, new Cartesian3());
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(buffer, 0, position, Cartesian2.ZERO, 100.0, normal);
 
     expect(encoding.stride).toEqual(4);
@@ -204,30 +204,30 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes position without quantization and with exaggeration", function () {
-    const hasVertexNormals = false;
-    const hasWebMercatorT = false;
-    const hasGeodeticSurfaceNormals = true;
+    var hasVertexNormals = false;
+    var hasWebMercatorT = false;
+    var hasGeodeticSurfaceNormals = true;
 
-    const height = 1000000.0;
-    const position = new Cartesian3(height, 0.0, 0.0);
-    const geodeticSurfaceNormal = new Cartesian3(1.0, 0.0, 0.0);
+    var height = 1000000.0;
+    var position = new Cartesian3(height, 0.0, 0.0);
+    var geodeticSurfaceNormal = new Cartesian3(1.0, 0.0, 0.0);
 
-    const exaggeration = 2.0;
-    const exaggerationRelativeHeight = 10.0;
-    const exaggeratedHeight = TerrainExaggeration.getHeight(
+    var exaggeration = 2.0;
+    var exaggerationRelativeHeight = 10.0;
+    var exaggeratedHeight = TerrainExaggeration.getHeight(
       height,
       exaggeration,
       exaggerationRelativeHeight
     );
-    const exaggeratedPosition = new Cartesian3(exaggeratedHeight, 0.0, 0.0);
+    var exaggeratedPosition = new Cartesian3(exaggeratedHeight, 0.0, 0.0);
 
-    const maximumHeight = height;
-    const minimumHeight = -height;
-    const maximum = new Cartesian3(height, height, height);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, Cartesian3.ZERO);
+    var maximumHeight = height;
+    var minimumHeight = -height;
+    var maximum = new Cartesian3(height, height, height);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, Cartesian3.ZERO);
 
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -240,7 +240,7 @@ describe("Core/TerrainEncoding", function () {
       exaggerationRelativeHeight
     );
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(
       buffer,
       0,
@@ -264,8 +264,8 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes texture coordinates with quantization and without normals", function () {
-    const hasVertexNormals = false;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = false;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -274,9 +274,9 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const texCoords = new Cartesian2(0.25, 0.75);
+    var texCoords = new Cartesian2(0.25, 0.75);
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(buffer, 0, Cartesian3.ZERO, texCoords, 100.0);
 
     expect(encoding.stride).toEqual(3);
@@ -289,8 +289,8 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes textureCoordinates with quantization and normals", function () {
-    const hasVertexNormals = true;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = true;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -299,9 +299,9 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const texCoords = new Cartesian2(0.75, 0.25);
+    var texCoords = new Cartesian2(0.75, 0.25);
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(
       buffer,
       0,
@@ -321,10 +321,10 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes height with quantization and without normals", function () {
-    const hasVertexNormals = false;
+    var hasVertexNormals = false;
     minimumHeight = 0.0;
     maximumHeight = 200.0;
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -333,8 +333,8 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const buffer = [];
-    const height = (maximumHeight + minimumHeight) * 0.5;
+    var buffer = [];
+    var height = (maximumHeight + minimumHeight) * 0.5;
     encoding.encode(buffer, 0, center, Cartesian2.ZERO, height);
 
     expect(encoding.stride).toEqual(3);
@@ -347,10 +347,10 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("encodes height with quantization and normals", function () {
-    const hasVertexNormals = true;
+    var hasVertexNormals = true;
     minimumHeight = 0.0;
     maximumHeight = 200.0;
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -359,8 +359,8 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const buffer = [];
-    const height = (maximumHeight + minimumHeight) * 0.5;
+    var buffer = [];
+    var height = (maximumHeight + minimumHeight) * 0.5;
     encoding.encode(
       buffer,
       0,
@@ -380,8 +380,8 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("gets oct-encoded normal", function () {
-    const hasVertexNormals = true;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = true;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -390,11 +390,11 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const normal = new Cartesian3(1.0, 1.0, 1.0);
+    var normal = new Cartesian3(1.0, 1.0, 1.0);
     Cartesian3.normalize(normal, normal);
-    const octNormal = AttributeCompression.octEncode(normal, new Cartesian2());
+    var octNormal = AttributeCompression.octEncode(normal, new Cartesian2());
 
-    const buffer = [];
+    var buffer = [];
     encoding.encode(
       buffer,
       0,
@@ -411,8 +411,8 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("adds geodetic surface normals", function () {
-    const hasVertexNormals = false;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = false;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -421,15 +421,15 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const oldBuffer = [];
+    var oldBuffer = [];
     encoding.encode(oldBuffer, 0, center, Cartesian2.ZERO, minimumHeight);
-    const oldStride = encoding.stride;
+    var oldStride = encoding.stride;
 
-    const newBuffer = [];
-    const ellipsoid = Ellipsoid.UNIT_SPHERE;
+    var newBuffer = [];
+    var ellipsoid = Ellipsoid.UNIT_SPHERE;
     encoding.addGeodeticSurfaceNormals(oldBuffer, newBuffer, ellipsoid);
-    const newStride = encoding.stride;
-    const strideDifference = newStride - oldStride;
+    var newStride = encoding.stride;
+    var strideDifference = newStride - oldStride;
 
     expect(strideDifference).toEqual(3);
     expect(oldBuffer.length).toEqual(oldStride);
@@ -437,10 +437,10 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("removes geodetic surface normals", function () {
-    const hasVertexNormals = false;
-    const hasWebMarcatorT = false;
-    const hasGeodeticSurfaceNormals = true;
-    const encoding = new TerrainEncoding(
+    var hasVertexNormals = false;
+    var hasWebMarcatorT = false;
+    var hasGeodeticSurfaceNormals = true;
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -451,8 +451,8 @@ describe("Core/TerrainEncoding", function () {
       hasGeodeticSurfaceNormals
     );
 
-    const geodeticSurfaceNormal = new Cartesian3(1.0, 0.0, 0.0);
-    const oldBuffer = [];
+    var geodeticSurfaceNormal = new Cartesian3(1.0, 0.0, 0.0);
+    var oldBuffer = [];
     encoding.encode(
       oldBuffer,
       0,
@@ -463,12 +463,12 @@ describe("Core/TerrainEncoding", function () {
       undefined,
       geodeticSurfaceNormal
     );
-    const oldStride = encoding.stride;
+    var oldStride = encoding.stride;
 
-    const newBuffer = [];
+    var newBuffer = [];
     encoding.removeGeodeticSurfaceNormals(oldBuffer, newBuffer);
-    const newStride = encoding.stride;
-    const strideDifference = newStride - oldStride;
+    var newStride = encoding.stride;
+    var strideDifference = newStride - oldStride;
 
     expect(strideDifference).toEqual(-3);
     expect(oldBuffer.length).toEqual(oldStride);
@@ -476,19 +476,19 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("gets attributes", function () {
-    const center = Cartesian3.fromDegrees(0.0, 0.0);
-    const maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var center = Cartesian3.fromDegrees(0.0, 0.0);
+    var maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
 
-    const maximumHeight = 1.0e6;
-    const minimumHeight = maximumHeight;
+    var maximumHeight = 1.0e6;
+    var minimumHeight = maximumHeight;
 
-    const fromENU = Transforms.eastNorthUpToFixedFrame(center);
+    var fromENU = Transforms.eastNorthUpToFixedFrame(center);
 
-    const hasVertexNormals = false;
+    var hasVertexNormals = false;
 
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -497,27 +497,27 @@ describe("Core/TerrainEncoding", function () {
       hasVertexNormals
     );
 
-    const buffer = [];
-    const attributes = encoding.getAttributes(buffer);
+    var buffer = [];
+    var attributes = encoding.getAttributes(buffer);
 
     expect(attributes).toBeDefined();
     expect(attributes.length).toEqual(2);
   });
 
   it("gets attribute locations", function () {
-    const center = Cartesian3.fromDegrees(0.0, 0.0);
-    const maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var center = Cartesian3.fromDegrees(0.0, 0.0);
+    var maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
 
-    const maximumHeight = 1.0e6;
-    const minimumHeight = maximumHeight;
+    var maximumHeight = 1.0e6;
+    var minimumHeight = maximumHeight;
 
-    const fromENU = Transforms.eastNorthUpToFixedFrame(center);
+    var fromENU = Transforms.eastNorthUpToFixedFrame(center);
 
-    const hasVertexNormals = false;
+    var hasVertexNormals = false;
 
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -525,25 +525,25 @@ describe("Core/TerrainEncoding", function () {
       fromENU,
       hasVertexNormals
     );
-    const attributeLocations = encoding.getAttributeLocations();
+    var attributeLocations = encoding.getAttributeLocations();
 
     expect(attributeLocations).toBeDefined();
   });
 
   it("clones", function () {
-    const center = Cartesian3.fromDegrees(0.0, 0.0);
-    const maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var center = Cartesian3.fromDegrees(0.0, 0.0);
+    var maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
 
-    const maximumHeight = 1.0e6;
-    const minimumHeight = maximumHeight;
+    var maximumHeight = 1.0e6;
+    var minimumHeight = maximumHeight;
 
-    const fromENU = Transforms.eastNorthUpToFixedFrame(center);
+    var fromENU = Transforms.eastNorthUpToFixedFrame(center);
 
-    const hasVertexNormals = false;
+    var hasVertexNormals = false;
 
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -551,7 +551,7 @@ describe("Core/TerrainEncoding", function () {
       fromENU,
       hasVertexNormals
     );
-    const cloned = TerrainEncoding.clone(encoding);
+    var cloned = TerrainEncoding.clone(encoding);
 
     expect(cloned.quantization).toEqual(encoding.quantization);
     expect(cloned.minimumHeight).toEqual(encoding.minimumHeight);
@@ -564,19 +564,19 @@ describe("Core/TerrainEncoding", function () {
   });
 
   it("clones with result", function () {
-    const center = Cartesian3.fromDegrees(0.0, 0.0);
-    const maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
-    const minimum = Cartesian3.negate(maximum, new Cartesian3());
-    const aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
+    var center = Cartesian3.fromDegrees(0.0, 0.0);
+    var maximum = new Cartesian3(1.0e6, 1.0e6, 1.0e6);
+    var minimum = Cartesian3.negate(maximum, new Cartesian3());
+    var aabox = new AxisAlignedBoundingBox(minimum, maximum, center);
 
-    const maximumHeight = 1.0e6;
-    const minimumHeight = maximumHeight;
+    var maximumHeight = 1.0e6;
+    var minimumHeight = maximumHeight;
 
-    const fromENU = Transforms.eastNorthUpToFixedFrame(center);
+    var fromENU = Transforms.eastNorthUpToFixedFrame(center);
 
-    const hasVertexNormals = false;
+    var hasVertexNormals = false;
 
-    const encoding = new TerrainEncoding(
+    var encoding = new TerrainEncoding(
       aabox.center,
       aabox,
       minimumHeight,
@@ -584,8 +584,8 @@ describe("Core/TerrainEncoding", function () {
       fromENU,
       hasVertexNormals
     );
-    const result = new TerrainEncoding();
-    const cloned = TerrainEncoding.clone(encoding, result);
+    var result = new TerrainEncoding();
+    var cloned = TerrainEncoding.clone(encoding, result);
 
     expect(cloned).toBe(result);
     expect(cloned.quantization).toEqual(encoding.quantization);

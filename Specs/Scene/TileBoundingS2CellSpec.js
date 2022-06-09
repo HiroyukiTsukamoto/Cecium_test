@@ -9,17 +9,17 @@ import { TileBoundingS2Cell } from "../../Source/Cesium.js";
 import createFrameState from "../createFrameState.js";
 
 describe("Scene/TileBoundingS2Cell", function () {
-  const s2Cell = S2Cell.fromToken("1");
-  const s2Options = {
+  var s2Cell = S2Cell.fromToken("1");
+  var s2Options = {
     token: "1",
     minimumHeight: 0,
     maximumHeight: 100000,
   };
 
-  const tileS2Cell = new TileBoundingS2Cell(s2Options);
+  var tileS2Cell = new TileBoundingS2Cell(s2Options);
 
-  let frameState;
-  let camera;
+  var frameState;
+  var camera;
 
   beforeEach(function () {
     frameState = createFrameState();
@@ -33,7 +33,7 @@ describe("Scene/TileBoundingS2Cell", function () {
   });
 
   it("can be instantiated with S2 cell", function () {
-    const tS2Cell = new TileBoundingS2Cell({
+    var tS2Cell = new TileBoundingS2Cell({
       token: "1",
     });
     expect(tS2Cell).toBeDefined();
@@ -46,7 +46,7 @@ describe("Scene/TileBoundingS2Cell", function () {
   });
 
   it("can be instantiated with S2 cell and heights", function () {
-    const tS2Cell = new TileBoundingS2Cell(s2Options);
+    var tS2Cell = new TileBoundingS2Cell(s2Options);
     expect(tS2Cell).toBeDefined();
     expect(tS2Cell.boundingVolume).toBeDefined();
     expect(tS2Cell.boundingSphere).toBeDefined();
@@ -67,20 +67,17 @@ describe("Scene/TileBoundingS2Cell", function () {
     expect(tileS2Cell.distanceToCamera(frameState)).toEqual(0.0);
   });
 
-  const edgeOneScratch = new Cartesian3();
-  const edgeTwoScratch = new Cartesian3();
-  const faceCenterScratch = new Cartesian3();
-  const topPlaneScratch = new Plane(Cartesian3.UNIT_X, 0.0, 0.0);
-  const sidePlane0Scratch = new Plane(Cartesian3.UNIT_X, 0.0, 0.0);
+  var edgeOneScratch = new Cartesian3();
+  var edgeTwoScratch = new Cartesian3();
+  var faceCenterScratch = new Cartesian3();
+  var topPlaneScratch = new Plane(Cartesian3.UNIT_X, 0.0, 0.0);
+  var sidePlane0Scratch = new Plane(Cartesian3.UNIT_X, 0.0, 0.0);
   // Testing for Case I
   it("distanceToCamera works when camera is facing only one plane", function () {
-    const testDistance = 100;
+    var testDistance = 100;
 
     // Test against the top plane.
-    const topPlane = Plane.clone(
-      tileS2Cell._boundingPlanes[0],
-      topPlaneScratch
-    );
+    var topPlane = Plane.clone(tileS2Cell._boundingPlanes[0], topPlaneScratch);
     topPlane.distance -= testDistance;
     camera.position = Plane.projectPointOntoPlane(topPlane, tileS2Cell.center);
     expect(tileS2Cell.distanceToCamera(frameState)).toEqualEpsilon(
@@ -89,23 +86,23 @@ describe("Scene/TileBoundingS2Cell", function () {
     );
 
     // Test against the first side plane.
-    const sidePlane0 = Plane.clone(
+    var sidePlane0 = Plane.clone(
       tileS2Cell._boundingPlanes[2],
       sidePlane0Scratch
     );
-    const edgeOne = Cartesian3.midpoint(
+    var edgeOne = Cartesian3.midpoint(
       tileS2Cell._vertices[0],
       tileS2Cell._vertices[1],
       edgeOneScratch
     );
 
-    const edgeTwo = Cartesian3.midpoint(
+    var edgeTwo = Cartesian3.midpoint(
       tileS2Cell._vertices[4],
       tileS2Cell._vertices[5],
       edgeTwoScratch
     );
 
-    const faceCenter = Cartesian3.midpoint(edgeOne, edgeTwo, faceCenterScratch);
+    var faceCenter = Cartesian3.midpoint(edgeOne, edgeTwo, faceCenterScratch);
 
     sidePlane0.distance -= testDistance;
     camera.position = Plane.projectPointOntoPlane(sidePlane0, faceCenter);
@@ -115,10 +112,10 @@ describe("Scene/TileBoundingS2Cell", function () {
     );
   });
 
-  const edgeMidpointScratch = new Cartesian3();
+  var edgeMidpointScratch = new Cartesian3();
   // Testing for Case II
   it("distanceToCamera works when camera is facing two planes", function () {
-    const testDistance = 5;
+    var testDistance = 5;
 
     // Test with the top plane and the first side plane.
     camera.position = Cartesian3.midpoint(
@@ -159,7 +156,7 @@ describe("Scene/TileBoundingS2Cell", function () {
     );
   });
 
-  const vertex2Scratch = new Cartesian3();
+  var vertex2Scratch = new Cartesian3();
   // Testing for Case III
   it("distanceToCamera works when camera is facing three planes", function () {
     camera.position = Cartesian3.clone(tileS2Cell._vertices[2], vertex2Scratch);
@@ -182,7 +179,7 @@ describe("Scene/TileBoundingS2Cell", function () {
   });
 
   it("can create a debug volume", function () {
-    const debugVolume = tileS2Cell.createDebugVolume(Color.BLUE);
+    var debugVolume = tileS2Cell.createDebugVolume(Color.BLUE);
     expect(debugVolume).toBeDefined();
   });
 
@@ -203,7 +200,7 @@ describe("Scene/TileBoundingS2Cell", function () {
       Intersect.INTERSECTING
     );
 
-    const outsidePlane = Plane.clone(Plane.ORIGIN_YZ_PLANE);
+    var outsidePlane = Plane.clone(Plane.ORIGIN_YZ_PLANE);
     outsidePlane.distance -= 2 * Ellipsoid.WGS84.maximumRadius;
     expect(tileS2Cell.intersectPlane(outsidePlane)).toEqual(Intersect.OUTSIDE);
 

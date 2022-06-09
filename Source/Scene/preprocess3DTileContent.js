@@ -25,8 +25,8 @@ import Cesium3DTileContentType from "./Cesium3DTileContentType.js";
  * @private
  */
 export default function preprocess3DTileContent(arrayBuffer) {
-  const uint8Array = new Uint8Array(arrayBuffer);
-  let contentType = getMagic(uint8Array);
+  var uint8Array = new Uint8Array(arrayBuffer);
+  var contentType = getMagic(uint8Array);
 
   // We use glTF for JSON glTF files. For binary glTF, we rename this
   // to glb to disambiguate
@@ -42,7 +42,7 @@ export default function preprocess3DTileContent(arrayBuffer) {
     };
   }
 
-  const json = getJsonContent(uint8Array);
+  var json = getJsonContent(uint8Array);
   if (defined(json.root)) {
     // Most likely a tileset JSON
     return {
@@ -60,27 +60,11 @@ export default function preprocess3DTileContent(arrayBuffer) {
     };
   }
 
-  if (defined(json.tileAvailability)) {
-    // Most likely a subtree JSON.
-    return {
-      contentType: Cesium3DTileContentType.IMPLICIT_SUBTREE_JSON,
-      jsonPayload: json,
-    };
-  }
-
-  if (defined(json.type)) {
-    // Most likely a GeoJSON
-    return {
-      contentType: Cesium3DTileContentType.GEOJSON,
-      jsonPayload: json,
-    };
-  }
-
   throw new RuntimeError("Invalid tile content.");
 }
 
 function getJsonContent(uint8Array) {
-  let json;
+  var json;
 
   try {
     json = getJsonFromTypedArray(uint8Array);

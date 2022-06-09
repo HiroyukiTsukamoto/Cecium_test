@@ -30,7 +30,7 @@ DiscardEmptyTileImagePolicy.prototype.shouldDiscardImage = function (image) {
   return DiscardEmptyTileImagePolicy.EMPTY_IMAGE === image;
 };
 
-let emptyImage;
+var emptyImage;
 
 Object.defineProperties(DiscardEmptyTileImagePolicy, {
   /**

@@ -1,8 +1,8 @@
 /* This file is automatically rebuilt by the Cesium build process. */
-define(['./defaultValue-94c3e563', './FrustumGeometry-5a4a4137', './Transforms-20594677', './Matrix2-fc7e9822', './RuntimeError-c581ca93', './ComponentDatatype-4a60b8d6', './WebGLConstants-7dccdc96', './_commonjsHelpers-3aae1032-f55dc0c4', './combine-761d9c3f', './GeometryAttribute-111bf6c7', './GeometryAttributes-7df9bef6', './Plane-e20fba8c', './VertexFormat-e46f29d6'], (function (defaultValue, FrustumGeometry, Transforms, Matrix2, RuntimeError, ComponentDatatype, WebGLConstants, _commonjsHelpers3aae1032, combine, GeometryAttribute, GeometryAttributes, Plane, VertexFormat) { 'use strict';
+define(['./when-8166c7dd', './FrustumGeometry-5e81e036', './Transforms-62a339c3', './Matrix2-92b7fb9d', './RuntimeError-4fdc4459', './ComponentDatatype-9ed50558', './WebGLConstants-0664004c', './combine-a5c4cc47', './GeometryAttribute-6f4c3b93', './GeometryAttributes-50becc99', './Plane-049255eb', './VertexFormat-c0801687'], (function (when, FrustumGeometry, Transforms, Matrix2, RuntimeError, ComponentDatatype, WebGLConstants, combine, GeometryAttribute, GeometryAttributes, Plane, VertexFormat) { 'use strict';
 
   function createFrustumGeometry(frustumGeometry, offset) {
-    if (defaultValue.defined(offset)) {
+    if (when.defined(offset)) {
       frustumGeometry = FrustumGeometry.FrustumGeometry.unpack(frustumGeometry, offset);
     }
     return FrustumGeometry.FrustumGeometry.createGeometry(frustumGeometry);

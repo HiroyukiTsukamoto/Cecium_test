@@ -11,7 +11,7 @@ import ProviderViewModel from "../BaseLayerPicker/ProviderViewModel.js";
  * @private
  */
 function createDefaultImageryProviderViewModels() {
-  const providerViewModels = [];
+  var providerViewModels = [];
   providerViewModels.push(
     new ProviderViewModel({
       name: "Bing Maps Aerial",

@@ -41,13 +41,13 @@ describe("Core/FrustumGeometry", function () {
   });
 
   it("constructor computes all vertex attributes", function () {
-    const frustum = new PerspectiveFrustum();
+    var frustum = new PerspectiveFrustum();
     frustum.fov = CesiumMath.toRadians(30.0);
     frustum.aspectRatio = 1920.0 / 1080.0;
     frustum.near = 1.0;
     frustum.far = 3.0;
 
-    const m = FrustumGeometry.createGeometry(
+    var m = FrustumGeometry.createGeometry(
       new FrustumGeometry({
         frustum: frustum,
         origin: Cartesian3.ZERO,
@@ -56,8 +56,8 @@ describe("Core/FrustumGeometry", function () {
       })
     );
 
-    const numVertices = 24; //3 components x 8 corners
-    const numTriangles = 12; //6 sides x 2 triangles per side
+    var numVertices = 24; //3 components x 8 corners
+    var numTriangles = 12; //6 sides x 2 triangles per side
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.attributes.normal.values.length).toEqual(numVertices * 3);
     expect(m.attributes.tangent.values.length).toEqual(numVertices * 3);
@@ -71,7 +71,7 @@ describe("Core/FrustumGeometry", function () {
     expect(m.boundingSphere.radius).toBeLessThan(2.0);
   });
 
-  const packableFrustum = new PerspectiveFrustum();
+  var packableFrustum = new PerspectiveFrustum();
   packableFrustum.fov = 1.0;
   packableFrustum.aspectRatio = 2.0;
   packableFrustum.near = 3.0;

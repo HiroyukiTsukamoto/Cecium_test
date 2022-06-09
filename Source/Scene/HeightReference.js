@@ -3,7 +3,7 @@
  *
  * @enum {Number}
  */
-const HeightReference = {
+var HeightReference = {
   /**
    * The position is absolute.
    * @type {Number}

@@ -21,17 +21,17 @@ import EllipsoidOutlineGeometry from "./EllipsoidOutlineGeometry.js";
  * @exception {DeveloperError} options.subdivisions must be greater than or equal to zero.
  *
  * @example
- * const sphere = new Cesium.SphereOutlineGeometry({
+ * var sphere = new Cesium.SphereOutlineGeometry({
  *   radius : 100.0,
  *   stackPartitions : 6,
  *   slicePartitions: 5
  * });
- * const geometry = Cesium.SphereOutlineGeometry.createGeometry(sphere);
+ * var geometry = Cesium.SphereOutlineGeometry.createGeometry(sphere);
  */
 function SphereOutlineGeometry(options) {
-  const radius = defaultValue(options.radius, 1.0);
-  const radii = new Cartesian3(radius, radius, radius);
-  const ellipsoidOptions = {
+  var radius = defaultValue(options.radius, 1.0);
+  var radii = new Cartesian3(radius, radius, radius);
+  var ellipsoidOptions = {
     radii: radii,
     stackPartitions: options.stackPartitions,
     slicePartitions: options.slicePartitions,
@@ -69,8 +69,8 @@ SphereOutlineGeometry.pack = function (value, array, startingIndex) {
   );
 };
 
-const scratchEllipsoidGeometry = new EllipsoidOutlineGeometry();
-const scratchOptions = {
+var scratchEllipsoidGeometry = new EllipsoidOutlineGeometry();
+var scratchOptions = {
   radius: undefined,
   radii: new Cartesian3(),
   stackPartitions: undefined,
@@ -87,7 +87,7 @@ const scratchOptions = {
  * @returns {SphereOutlineGeometry} The modified result parameter or a new SphereOutlineGeometry instance if one was not provided.
  */
 SphereOutlineGeometry.unpack = function (array, startingIndex, result) {
-  const ellipsoidGeometry = EllipsoidOutlineGeometry.unpack(
+  var ellipsoidGeometry = EllipsoidOutlineGeometry.unpack(
     array,
     startingIndex,
     scratchEllipsoidGeometry

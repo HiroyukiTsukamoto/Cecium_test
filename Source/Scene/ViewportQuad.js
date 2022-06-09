@@ -20,7 +20,7 @@ import Material from "./Material.js";
  * @param {Material} [material] The {@link Material} defining the surface appearance of the viewport quad.
  *
  * @example
- * const viewportQuad = new Cesium.ViewportQuad(new Cesium.BoundingRectangle(0, 0, 80, 40));
+ * var viewportQuad = new Cesium.ViewportQuad(new Cesium.BoundingRectangle(0, 0, 80, 40));
  * viewportQuad.material.uniforms.color = new Cesium.Color(1.0, 0.0, 0.0, 1.0);
  */
 function ViewportQuad(rectangle, material) {
@@ -102,7 +102,7 @@ ViewportQuad.prototype.update = function (frameState) {
   }
   //>>includeEnd('debug');
 
-  const rs = this._rs;
+  var rs = this._rs;
   if (!defined(rs) || !BoundingRectangle.equals(rs.viewport, this.rectangle)) {
     this._rs = RenderState.fromCache({
       blending: BlendingState.ALPHA_BLEND,
@@ -110,9 +110,9 @@ ViewportQuad.prototype.update = function (frameState) {
     });
   }
 
-  const pass = frameState.passes;
+  var pass = frameState.passes;
   if (pass.render) {
-    const context = frameState.context;
+    var context = frameState.context;
 
     if (this._material !== this.material || !defined(this._overlayCommand)) {
       // Recompile shader when material changes
@@ -122,7 +122,7 @@ ViewportQuad.prototype.update = function (frameState) {
         this._overlayCommand.shaderProgram.destroy();
       }
 
-      const fs = new ShaderSource({
+      var fs = new ShaderSource({
         sources: [this._material.shaderSource, ViewportQuadFS],
       });
       this._overlayCommand = context.createViewportQuadCommand(fs, {

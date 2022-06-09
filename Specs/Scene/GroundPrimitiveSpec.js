@@ -29,24 +29,24 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "Scene/GroundPrimitive",
   function () {
-    let scene;
-    let context;
+    var scene;
+    var context;
 
-    let ellipsoid;
-    let rectangle;
+    var ellipsoid;
+    var rectangle;
 
-    let depthColor;
-    let rectColor;
+    var depthColor;
+    var rectColor;
 
-    let rectangleInstance;
-    let primitive;
-    let globePrimitive;
-    let tilesetPrimitive;
-    let reusableGlobePrimitive;
-    let reusableTilesetPrimitive;
+    var rectangleInstance;
+    var primitive;
+    var globePrimitive;
+    var tilesetPrimitive;
+    var reusableGlobePrimitive;
+    var reusableTilesetPrimitive;
 
     function createPrimitive(rectangle, pass) {
-      let renderState;
+      var renderState;
       if (pass === Pass.CESIUM_3D_TILE) {
         renderState = RenderState.fromCache({
           stencilTest: StencilConstants.setCesium3DTileBit(),
@@ -56,7 +56,7 @@ describe(
           },
         });
       }
-      const depthColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var depthColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(0.0, 0.0, 1.0, 1.0)
       );
       depthColor = depthColorAttribute.value;
@@ -91,12 +91,12 @@ describe(
         return;
       }
 
-      const commandList = frameState.commandList;
-      const startLength = commandList.length;
+      var commandList = frameState.commandList;
+      var startLength = commandList.length;
       this._primitive.update(frameState);
 
-      for (let i = startLength; i < commandList.length; ++i) {
-        const command = commandList[i];
+      for (var i = startLength; i < commandList.length; ++i) {
+        var command = commandList[i];
         command.pass = this._pass;
       }
     };
@@ -118,7 +118,7 @@ describe(
 
       ellipsoid = Ellipsoid.WGS84;
 
-      const bigRectangle = Rectangle.fromDegrees(
+      var bigRectangle = Rectangle.fromDegrees(
         -180 + CesiumMath.EPSILON4,
         -90 + CesiumMath.EPSILON4,
         180 - CesiumMath.EPSILON4,
@@ -154,7 +154,7 @@ describe(
         Pass.CESIUM_3D_TILE
       );
 
-      const rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(1.0, 1.0, 0.0, 1.0)
       );
       rectColor = rectColorAttribute.value;
@@ -199,7 +199,7 @@ describe(
     });
 
     it("constructs with options", function () {
-      const geometryInstances = [];
+      var geometryInstances = [];
 
       primitive = new GroundPrimitive({
         geometryInstances: geometryInstances,
@@ -240,9 +240,7 @@ describe(
       expect(primitive.geometryInstances).toBeDefined();
       scene.groundPrimitives.add(primitive);
       scene.renderForSpecs();
-      return primitive.readyPromise.then(function () {
-        expect(primitive.geometryInstances).not.toBeDefined();
-      });
+      expect(primitive.geometryInstances).not.toBeDefined();
     });
 
     it("does not release geometry instances when releaseGeometryInstances is false", function () {
@@ -259,9 +257,7 @@ describe(
       expect(primitive.geometryInstances).toBeDefined();
       scene.groundPrimitives.add(primitive);
       scene.renderForSpecs();
-      return primitive.readyPromise.then(function () {
-        expect(primitive.geometryInstances).toBeDefined();
-      });
+      expect(primitive.geometryInstances).toBeDefined();
     });
 
     it("adds afterRender promise to frame state", function () {
@@ -331,7 +327,7 @@ describe(
         })
       );
 
-      let ready = false;
+      var ready = false;
       primitive.readyPromise.then(function () {
         ready = true;
       });
@@ -354,7 +350,7 @@ describe(
         asynchronous: false,
       });
 
-      const frameState = scene.frameState;
+      var frameState = scene.frameState;
       frameState.passes.render = false;
       frameState.passes.pick = false;
 
@@ -431,11 +427,11 @@ describe(
         return;
       }
 
-      const rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(1.0, 1.0, 0.0, 1.0)
       );
-      const bigIdlRectangle = Rectangle.fromDegrees(176.0, 30.0, -176.0, 34.0);
-      const bigIdlRectangleInstance = new GeometryInstance({
+      var bigIdlRectangle = Rectangle.fromDegrees(176.0, 30.0, -176.0, 34.0);
+      var bigIdlRectangleInstance = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: bigIdlRectangle,
@@ -468,16 +464,11 @@ describe(
         return;
       }
 
-      const rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(1.0, 1.0, 0.0, 1.0)
       );
-      const smallIdlRectangle = Rectangle.fromDegrees(
-        179.6,
-        30.0,
-        -179.6,
-        30.9
-      );
-      const smallIdlRectangleInstance = new GeometryInstance({
+      var smallIdlRectangle = Rectangle.fromDegrees(179.6, 30.0, -179.6, 30.9);
+      var smallIdlRectangleInstance = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: smallIdlRectangle,
@@ -535,15 +526,15 @@ describe(
 
     describe("larger scene", function () {
       // Screen space techniques may produce unexpected results with 1x1 canvasses
-      let largeScene;
-      let largeSceneReusableGlobePrimitive;
-      let largeSceneReusableTilesetPrimitive;
+      var largeScene;
+      var largeSceneReusableGlobePrimitive;
+      var largeSceneReusableTilesetPrimitive;
       beforeAll(function () {
         largeScene = createScene({
           canvas: createCanvas(2, 2),
         });
 
-        const bigRectangle = Rectangle.fromDegrees(
+        var bigRectangle = Rectangle.fromDegrees(
           -180 + CesiumMath.EPSILON4,
           -90 + CesiumMath.EPSILON4,
           180 - CesiumMath.EPSILON4,
@@ -574,11 +565,11 @@ describe(
         largeScene.postProcessStages.fxaa.enabled = false;
         largeScene.camera.setView({ destination: destination });
 
-        const largeSceneGlobePrimitive = new MockPrimitive(
+        var largeSceneGlobePrimitive = new MockPrimitive(
           largeSceneReusableGlobePrimitive,
           Pass.GLOBE
         );
-        const largeSceneTilesetPrimitive = new MockPrimitive(
+        var largeSceneTilesetPrimitive = new MockPrimitive(
           largeSceneReusableTilesetPrimitive,
           Pass.CESIUM_3D_TILE
         );
@@ -623,10 +614,10 @@ describe(
           return;
         }
 
-        const rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+        var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
           new Color(0.0, 1.0, 1.0, 1.0)
         );
-        const rectangleInstance1 = new GeometryInstance({
+        var rectangleInstance1 = new GeometryInstance({
           geometry: new RectangleGeometry({
             ellipsoid: ellipsoid,
             rectangle: new Rectangle(
@@ -641,7 +632,7 @@ describe(
             color: rectColorAttribute,
           },
         });
-        const rectangleInstance2 = new GeometryInstance({
+        var rectangleInstance2 = new GeometryInstance({
           geometry: new RectangleGeometry({
             ellipsoid: ellipsoid,
             rectangle: new Rectangle(
@@ -657,7 +648,7 @@ describe(
           },
         });
 
-        const batchedPrimitive = new GroundPrimitive({
+        var batchedPrimitive = new GroundPrimitive({
           geometryInstances: [rectangleInstance1, rectangleInstance2],
           asynchronous: false,
         });
@@ -673,19 +664,19 @@ describe(
           return;
         }
 
-        const whiteImageMaterial = Material.fromType(Material.DiffuseMapType);
+        var whiteImageMaterial = Material.fromType(Material.DiffuseMapType);
         whiteImageMaterial.uniforms.image = "./Data/Images/White.png";
 
-        const radians = CesiumMath.toRadians(0.1);
-        const west = rectangle.west;
-        const south = rectangle.south;
-        const smallRectangle = new Rectangle(
+        var radians = CesiumMath.toRadians(0.1);
+        var west = rectangle.west;
+        var south = rectangle.south;
+        var smallRectangle = new Rectangle(
           west,
           south,
           west + radians,
           south + radians
         );
-        const smallRectanglePrimitive = new GroundPrimitive({
+        var smallRectanglePrimitive = new GroundPrimitive({
           geometryInstances: new GeometryInstance({
             geometry: new RectangleGeometry({
               ellipsoid: ellipsoid,
@@ -716,19 +707,19 @@ describe(
           return;
         }
 
-        const whiteImageMaterial = Material.fromType(Material.DiffuseMapType);
+        var whiteImageMaterial = Material.fromType(Material.DiffuseMapType);
         whiteImageMaterial.uniforms.image = "./Data/Images/White.png";
 
-        const radians = CesiumMath.toRadians(1.1);
-        const west = rectangle.west;
-        const south = rectangle.south;
-        const largeRectangle = new Rectangle(
+        var radians = CesiumMath.toRadians(1.1);
+        var west = rectangle.west;
+        var south = rectangle.south;
+        var largeRectangle = new Rectangle(
           west,
           south,
           west + radians,
           south + radians
         );
-        const largeRectanglePrimitive = new GroundPrimitive({
+        var largeRectanglePrimitive = new GroundPrimitive({
           geometryInstances: new GeometryInstance({
             geometry: new RectangleGeometry({
               ellipsoid: ellipsoid,
@@ -759,11 +750,11 @@ describe(
           return;
         }
 
-        const whiteImageMaterial = Material.fromType(Material.DiffuseMapType);
+        var whiteImageMaterial = Material.fromType(Material.DiffuseMapType);
         whiteImageMaterial.uniforms.image = "./Data/Images/White.png";
 
-        const largeRectangle = Rectangle.fromDegrees(179.0, 30.0, -179.0, 31.0);
-        const largeRectanglePrimitive = new GroundPrimitive({
+        var largeRectangle = Rectangle.fromDegrees(179.0, 30.0, -179.0, 31.0);
+        var largeRectanglePrimitive = new GroundPrimitive({
           geometryInstances: new GeometryInstance({
             geometry: new RectangleGeometry({
               ellipsoid: ellipsoid,
@@ -806,7 +797,7 @@ describe(
 
       scene.camera.setView({ destination: rectangle });
 
-      const invertedColor = new Array(4);
+      var invertedColor = new Array(4);
       invertedColor[0] = Color.floatToByte(
         Color.byteToFloat(depthColor[0]) * scene.invertClassificationColor.red
       );
@@ -853,7 +844,7 @@ describe(
 
       scene.camera.setView({ destination: rectangle });
 
-      const invertedColor = new Array(4);
+      var invertedColor = new Array(4);
       invertedColor[0] = Color.floatToByte(
         Color.byteToFloat(depthColor[0]) *
           scene.invertClassificationColor.red *
@@ -897,9 +888,9 @@ describe(
       scene.groundPrimitives.add(primitive);
       scene.camera.setView({ destination: rectangle });
       expect(scene).toRenderAndCall(function (rgba) {
-        expect(rgba[1]).toBeGreaterThanOrEqual(0);
-        expect(rgba[1]).toBeGreaterThanOrEqual(0);
-        expect(rgba[2]).toBeGreaterThanOrEqual(0);
+        expect(rgba[1]).toBeGreaterThanOrEqualTo(0);
+        expect(rgba[1]).toBeGreaterThanOrEqualTo(0);
+        expect(rgba[2]).toBeGreaterThanOrEqualTo(0);
         expect(rgba[3]).toEqual(255);
       });
     });
@@ -918,9 +909,9 @@ describe(
       scene.groundPrimitives.add(primitive);
       scene.camera.setView({ destination: rectangle });
       expect(scene).toRenderAndCall(function (rgba) {
-        expect(rgba[1]).toBeGreaterThanOrEqual(0);
-        expect(rgba[1]).toBeGreaterThanOrEqual(0);
-        expect(rgba[2]).toBeGreaterThanOrEqual(0);
+        expect(rgba[1]).toBeGreaterThanOrEqualTo(0);
+        expect(rgba[1]).toBeGreaterThanOrEqualTo(0);
+        expect(rgba[2]).toBeGreaterThanOrEqualTo(0);
         expect(rgba[3]).toEqual(255);
       });
     });
@@ -937,7 +928,7 @@ describe(
 
       verifyGroundPrimitiveRender(primitive, rectColor);
 
-      const attributes = primitive.getGeometryInstanceAttributes("rectangle");
+      var attributes = primitive.getGeometryInstanceAttributes("rectangle");
       expect(attributes.color).toBeDefined();
     });
 
@@ -961,8 +952,8 @@ describe(
       scene.groundPrimitives.removeAll();
       scene.groundPrimitives.destroyPrimitives = true;
 
-      const newColor = [255, 255, 255, 255];
-      const attributes = primitive.getGeometryInstanceAttributes("rectangle");
+      var newColor = [255, 255, 255, 255];
+      var attributes = primitive.getGeometryInstanceAttributes("rectangle");
       expect(attributes.color).toBeDefined();
       attributes.color = newColor;
 
@@ -993,7 +984,7 @@ describe(
       scene.groundPrimitives.removeAll();
       scene.groundPrimitives.destroyPrimitives = true;
 
-      const attributes = primitive.getGeometryInstanceAttributes("rectangle");
+      var attributes = primitive.getGeometryInstanceAttributes("rectangle");
       expect(attributes.show).toBeDefined();
       attributes.show = [0];
 
@@ -1009,14 +1000,14 @@ describe(
         return;
       }
 
-      const near = 10000.0;
-      const far = 1000000.0;
-      const rect = Rectangle.fromDegrees(-1.0, -1.0, 1.0, 1.0);
+      var near = 10000.0;
+      var far = 1000000.0;
+      var rect = Rectangle.fromDegrees(-1.0, -1.0, 1.0, 1.0);
 
-      const rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(1.0, 1.0, 0.0, 1.0)
       );
-      const rectInstance = new GeometryInstance({
+      var rectInstance = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: rectangle,
@@ -1041,10 +1032,10 @@ describe(
       scene.camera.setView({ destination: rect });
       scene.renderForSpecs();
 
-      const boundingSphere = primitive.getGeometryInstanceAttributes("rect")
+      var boundingSphere = primitive.getGeometryInstanceAttributes("rect")
         .boundingSphere;
-      const center = boundingSphere.center;
-      const radius = boundingSphere.radius;
+      var center = boundingSphere.center;
+      var radius = boundingSphere.radius;
 
       scene.camera.lookAt(
         center,
@@ -1077,7 +1068,7 @@ describe(
 
       verifyGroundPrimitiveRender(primitive, rectColor);
 
-      const attributes = primitive.getGeometryInstanceAttributes("rectangle");
+      var attributes = primitive.getGeometryInstanceAttributes("rectangle");
       expect(attributes.boundingSphere).toBeDefined();
     });
 
@@ -1093,8 +1084,8 @@ describe(
 
       verifyGroundPrimitiveRender(primitive, rectColor);
 
-      const attributes = primitive.getGeometryInstanceAttributes("rectangle");
-      const attributes2 = primitive.getGeometryInstanceAttributes("rectangle");
+      var attributes = primitive.getGeometryInstanceAttributes("rectangle");
+      var attributes2 = primitive.getGeometryInstanceAttributes("rectangle");
       expect(attributes).toBe(attributes2);
     });
 
@@ -1257,10 +1248,10 @@ describe(
         return false;
       });
 
-      let rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(0.0, 1.0, 1.0, 1.0)
       );
-      const rectangleInstance1 = new GeometryInstance({
+      var rectangleInstance1 = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: new Rectangle(
@@ -1278,7 +1269,7 @@ describe(
       rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(1.0, 1.0, 0.0, 1.0)
       );
-      const rectangleInstance2 = new GeometryInstance({
+      var rectangleInstance2 = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: new Rectangle(
@@ -1309,10 +1300,10 @@ describe(
         return;
       }
 
-      const rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var rectColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(0.0, 1.0, 1.0, 1.0)
       );
-      const rectangleInstance1 = new GeometryInstance({
+      var rectangleInstance1 = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: new Rectangle(
@@ -1327,7 +1318,7 @@ describe(
           color: rectColorAttribute,
         },
       });
-      const rectangleInstance2 = new GeometryInstance({
+      var rectangleInstance2 = new GeometryInstance({
         geometry: new RectangleGeometry({
           ellipsoid: ellipsoid,
           rectangle: new Rectangle(
@@ -1362,7 +1353,7 @@ describe(
 
       verifyGroundPrimitiveRender(primitive, rectColor);
 
-      const attributes = primitive.getGeometryInstanceAttributes("rectangle");
+      var attributes = primitive.getGeometryInstanceAttributes("rectangle");
 
       expect(function () {
         attributes.color = undefined;
@@ -1386,7 +1377,7 @@ describe(
         scene.renderForSpecs();
         return primitive.ready;
       }).then(function () {
-        const attributes = primitive.getGeometryInstanceAttributes("rectangle");
+        var attributes = primitive.getGeometryInstanceAttributes("rectangle");
         expect(function () {
           attributes.color = undefined;
         }).toThrowDeveloperError();
@@ -1492,8 +1483,8 @@ describe(
 
     it("creating a synchronous primitive throws if initializeTerrainHeights wasn't called", function () {
       // Make it seem like initializeTerrainHeights was never called
-      const initPromise = ApproximateTerrainHeights._initPromise;
-      const terrainHeights = ApproximateTerrainHeights._terrainHeights;
+      var initPromise = ApproximateTerrainHeights._initPromise;
+      var terrainHeights = ApproximateTerrainHeights._terrainHeights;
       ApproximateTerrainHeights._initPromise = undefined;
       ApproximateTerrainHeights._terrainHeights = undefined;
 

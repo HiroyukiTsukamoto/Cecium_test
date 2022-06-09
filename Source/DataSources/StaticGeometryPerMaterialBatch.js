@@ -13,10 +13,10 @@ import ColorMaterialProperty from "./ColorMaterialProperty.js";
 import MaterialProperty from "./MaterialProperty.js";
 import Property from "./Property.js";
 
-const distanceDisplayConditionScratch = new DistanceDisplayCondition();
-const defaultDistanceDisplayCondition = new DistanceDisplayCondition();
-const defaultOffset = Cartesian3.ZERO;
-const offsetScratch = new Cartesian3();
+var distanceDisplayConditionScratch = new DistanceDisplayCondition();
+var defaultDistanceDisplayCondition = new DistanceDisplayCondition();
+var defaultOffset = Cartesian3.ZERO;
+var offsetScratch = new Cartesian3();
 
 function Batch(
   primitives,
@@ -57,10 +57,10 @@ Batch.prototype.onMaterialChanged = function () {
 };
 
 Batch.prototype.isMaterial = function (updater) {
-  const material = this.materialProperty;
-  const updaterMaterial = updater.fillMaterialProperty;
-  const depthFailMaterial = this.depthFailMaterialProperty;
-  const updaterDepthFailMaterial = updater.depthFailMaterialProperty;
+  var material = this.materialProperty;
+  var updaterMaterial = updater.fillMaterialProperty;
+  var depthFailMaterial = this.depthFailMaterialProperty;
+  var updaterDepthFailMaterial = updater.depthFailMaterialProperty;
 
   if (
     updaterMaterial === material &&
@@ -68,7 +68,7 @@ Batch.prototype.isMaterial = function (updater) {
   ) {
     return true;
   }
-  let equals = defined(material) && material.equals(updaterMaterial);
+  var equals = defined(material) && material.equals(updaterMaterial);
   equals =
     ((!defined(depthFailMaterial) && !defined(updaterDepthFailMaterial)) ||
       (defined(depthFailMaterial) &&
@@ -78,7 +78,7 @@ Batch.prototype.isMaterial = function (updater) {
 };
 
 Batch.prototype.add = function (time, updater) {
-  const id = updater.id;
+  var id = updater.id;
   this.updaters.set(id, updater);
   this.geometry.set(id, updater.createFillGeometryInstance(time));
   if (
@@ -89,7 +89,7 @@ Batch.prototype.add = function (time, updater) {
   ) {
     this.updatersWithAttributes.set(id, updater);
   } else {
-    const that = this;
+    var that = this;
     this.subscriptions.set(
       id,
       updater.entity.definitionChanged.addEventListener(function (
@@ -108,11 +108,11 @@ Batch.prototype.add = function (time, updater) {
 };
 
 Batch.prototype.remove = function (updater) {
-  const id = updater.id;
+  var id = updater.id;
   this.createPrimitive = this.geometry.remove(id) || this.createPrimitive;
   if (this.updaters.remove(id)) {
     this.updatersWithAttributes.remove(id);
-    const unsubscribe = this.subscriptions.get(id);
+    var unsubscribe = this.subscriptions.get(id);
     if (defined(unsubscribe)) {
       unsubscribe();
       this.subscriptions.remove(id);
@@ -123,17 +123,17 @@ Batch.prototype.remove = function (updater) {
   return false;
 };
 
-const colorScratch = new Color();
+var colorScratch = new Color();
 
 Batch.prototype.update = function (time) {
-  let isUpdated = true;
-  let primitive = this.primitive;
-  const primitives = this.primitives;
-  const geometries = this.geometry.values;
-  let i;
+  var isUpdated = true;
+  var primitive = this.primitive;
+  var primitives = this.primitives;
+  var geometries = this.geometry.values;
+  var i;
 
   if (this.createPrimitive) {
-    const geometriesLength = geometries.length;
+    var geometriesLength = geometries.length;
     if (geometriesLength > 0) {
       if (defined(primitive)) {
         if (!defined(this.oldPrimitive)) {
@@ -149,7 +149,7 @@ Batch.prototype.update = function (time) {
         this.material
       );
 
-      let depthFailAppearance;
+      var depthFailAppearance;
       if (defined(this.depthFailMaterialProperty)) {
         this.depthFailMaterial = MaterialProperty.getValue(
           time,
@@ -183,7 +183,7 @@ Batch.prototype.update = function (time) {
         primitives.remove(primitive);
         primitive = undefined;
       }
-      const oldPrimitive = this.oldPrimitive;
+      var oldPrimitive = this.oldPrimitive;
       if (defined(oldPrimitive)) {
         primitives.remove(oldPrimitive);
         this.oldPrimitive = undefined;
@@ -219,14 +219,14 @@ Batch.prototype.update = function (time) {
       this.primitive.depthFailAppearance.material = this.depthFailMaterial;
     }
 
-    const updatersWithAttributes = this.updatersWithAttributes.values;
-    const length = updatersWithAttributes.length;
+    var updatersWithAttributes = this.updatersWithAttributes.values;
+    var length = updatersWithAttributes.length;
     for (i = 0; i < length; i++) {
-      const updater = updatersWithAttributes[i];
-      const entity = updater.entity;
-      const instance = this.geometry.get(updater.id);
+      var updater = updatersWithAttributes[i];
+      var entity = updater.entity;
+      var instance = this.geometry.get(updater.id);
 
-      let attributes = this.attributes.get(instance.id.id);
+      var attributes = this.attributes.get(instance.id.id);
       if (!defined(attributes)) {
         attributes = primitive.getGeometryInstanceAttributes(instance.id);
         this.attributes.set(instance.id.id, attributes);
@@ -237,8 +237,8 @@ Batch.prototype.update = function (time) {
         this.depthFailMaterialProperty instanceof ColorMaterialProperty &&
         !updater.depthFailMaterialProperty.isConstant
       ) {
-        const depthFailColorProperty = updater.depthFailMaterialProperty.color;
-        const depthFailColor = Property.getValueOrDefault(
+        var depthFailColorProperty = updater.depthFailMaterialProperty.color;
+        var depthFailColor = Property.getValueOrDefault(
           depthFailColorProperty,
           time,
           Color.WHITE,
@@ -256,9 +256,9 @@ Batch.prototype.update = function (time) {
         }
       }
 
-      const show =
+      var show =
         entity.isShowing && (updater.hasConstantFill || updater.isFilled(time));
-      const currentShow = attributes.show[0] === 1;
+      var currentShow = attributes.show[0] === 1;
       if (show !== currentShow) {
         attributes.show = ShowGeometryInstanceAttribute.toValue(
           show,
@@ -266,10 +266,10 @@ Batch.prototype.update = function (time) {
         );
       }
 
-      const distanceDisplayConditionProperty =
+      var distanceDisplayConditionProperty =
         updater.distanceDisplayConditionProperty;
       if (!Property.isConstant(distanceDisplayConditionProperty)) {
-        const distanceDisplayCondition = Property.getValueOrDefault(
+        var distanceDisplayCondition = Property.getValueOrDefault(
           distanceDisplayConditionProperty,
           time,
           defaultDistanceDisplayCondition,
@@ -292,9 +292,9 @@ Batch.prototype.update = function (time) {
         }
       }
 
-      const offsetProperty = updater.terrainOffsetProperty;
+      var offsetProperty = updater.terrainOffsetProperty;
       if (!Property.isConstant(offsetProperty)) {
-        const offset = Property.getValueOrDefault(
+        var offset = Property.getValueOrDefault(
           offsetProperty,
           time,
           defaultOffset,
@@ -321,21 +321,21 @@ Batch.prototype.update = function (time) {
 };
 
 Batch.prototype.updateShows = function (primitive) {
-  const showsUpdated = this.showsUpdated.values;
-  const length = showsUpdated.length;
-  for (let i = 0; i < length; i++) {
-    const updater = showsUpdated[i];
-    const entity = updater.entity;
-    const instance = this.geometry.get(updater.id);
+  var showsUpdated = this.showsUpdated.values;
+  var length = showsUpdated.length;
+  for (var i = 0; i < length; i++) {
+    var updater = showsUpdated[i];
+    var entity = updater.entity;
+    var instance = this.geometry.get(updater.id);
 
-    let attributes = this.attributes.get(instance.id.id);
+    var attributes = this.attributes.get(instance.id.id);
     if (!defined(attributes)) {
       attributes = primitive.getGeometryInstanceAttributes(instance.id);
       this.attributes.set(instance.id.id, attributes);
     }
 
-    const show = entity.isShowing;
-    const currentShow = attributes.show[0] === 1;
+    var show = entity.isShowing;
+    var currentShow = attributes.show[0] === 1;
     if (show !== currentShow) {
       attributes.show = ShowGeometryInstanceAttribute.toValue(
         show,
@@ -352,11 +352,11 @@ Batch.prototype.contains = function (updater) {
 };
 
 Batch.prototype.getBoundingSphere = function (updater, result) {
-  const primitive = this.primitive;
+  var primitive = this.primitive;
   if (!primitive.ready) {
     return BoundingSphereState.PENDING;
   }
-  const attributes = primitive.getGeometryInstanceAttributes(updater.entity);
+  var attributes = primitive.getGeometryInstanceAttributes(updater.entity);
   if (
     !defined(attributes) ||
     !defined(attributes.boundingSphere) ||
@@ -369,12 +369,12 @@ Batch.prototype.getBoundingSphere = function (updater, result) {
 };
 
 Batch.prototype.destroy = function () {
-  const primitive = this.primitive;
-  const primitives = this.primitives;
+  var primitive = this.primitive;
+  var primitives = this.primitives;
   if (defined(primitive)) {
     primitives.remove(primitive);
   }
-  const oldPrimitive = this.oldPrimitive;
+  var oldPrimitive = this.oldPrimitive;
   if (defined(oldPrimitive)) {
     primitives.remove(oldPrimitive);
   }
@@ -400,16 +400,16 @@ function StaticGeometryPerMaterialBatch(
 }
 
 StaticGeometryPerMaterialBatch.prototype.add = function (time, updater) {
-  const items = this._items;
-  const length = items.length;
-  for (let i = 0; i < length; i++) {
-    const item = items[i];
+  var items = this._items;
+  var length = items.length;
+  for (var i = 0; i < length; i++) {
+    var item = items[i];
     if (item.isMaterial(updater)) {
       item.add(time, updater);
       return;
     }
   }
-  const batch = new Batch(
+  var batch = new Batch(
     this._primitives,
     this._appearanceType,
     updater.fillMaterialProperty,
@@ -423,10 +423,10 @@ StaticGeometryPerMaterialBatch.prototype.add = function (time, updater) {
 };
 
 StaticGeometryPerMaterialBatch.prototype.remove = function (updater) {
-  const items = this._items;
-  const length = items.length;
-  for (let i = length - 1; i >= 0; i--) {
-    const item = items[i];
+  var items = this._items;
+  var length = items.length;
+  for (var i = length - 1; i >= 0; i--) {
+    var item = items[i];
     if (item.remove(updater)) {
       if (item.updaters.length === 0) {
         items.splice(i, 1);
@@ -438,24 +438,24 @@ StaticGeometryPerMaterialBatch.prototype.remove = function (updater) {
 };
 
 StaticGeometryPerMaterialBatch.prototype.update = function (time) {
-  let i;
-  const items = this._items;
-  const length = items.length;
+  var i;
+  var items = this._items;
+  var length = items.length;
 
   for (i = length - 1; i >= 0; i--) {
-    const item = items[i];
+    var item = items[i];
     if (item.invalidated) {
       items.splice(i, 1);
-      const updaters = item.updaters.values;
-      const updatersLength = updaters.length;
-      for (let h = 0; h < updatersLength; h++) {
+      var updaters = item.updaters.values;
+      var updatersLength = updaters.length;
+      for (var h = 0; h < updatersLength; h++) {
         this.add(time, updaters[h]);
       }
       item.destroy();
     }
   }
 
-  let isUpdated = true;
+  var isUpdated = true;
   for (i = 0; i < items.length; i++) {
     isUpdated = items[i].update(time) && isUpdated;
   }
@@ -466,10 +466,10 @@ StaticGeometryPerMaterialBatch.prototype.getBoundingSphere = function (
   updater,
   result
 ) {
-  const items = this._items;
-  const length = items.length;
-  for (let i = 0; i < length; i++) {
-    const item = items[i];
+  var items = this._items;
+  var length = items.length;
+  for (var i = 0; i < length; i++) {
+    var item = items[i];
     if (item.contains(updater)) {
       return item.getBoundingSphere(updater, result);
     }
@@ -478,9 +478,9 @@ StaticGeometryPerMaterialBatch.prototype.getBoundingSphere = function (
 };
 
 StaticGeometryPerMaterialBatch.prototype.removeAllPrimitives = function () {
-  const items = this._items;
-  const length = items.length;
-  for (let i = 0; i < length; i++) {
+  var items = this._items;
+  var length = items.length;
+  for (var i = 0; i < length; i++) {
     items[i].destroy();
   }
   this._items.length = 0;

@@ -5,31 +5,23 @@ import DeveloperError from "../../Core/DeveloperError.js";
 import getElement from "../getElement.js";
 import subscribeAndEvaluate from "../subscribeAndEvaluate.js";
 
-const svgNS = "http://www.w3.org/2000/svg";
-const xlinkNS = "http://www.w3.org/1999/xlink";
+var svgNS = "http://www.w3.org/2000/svg";
+var xlinkNS = "http://www.w3.org/1999/xlink";
 
-let widgetForDrag;
+var widgetForDrag;
 
-const gradientEnabledColor0 = Color.fromCssColorString(
-  "rgba(247,250,255,0.384)"
-);
-const gradientEnabledColor1 = Color.fromCssColorString(
-  "rgba(143,191,255,0.216)"
-);
-const gradientEnabledColor2 = Color.fromCssColorString(
-  "rgba(153,197,255,0.098)"
-);
-const gradientEnabledColor3 = Color.fromCssColorString(
-  "rgba(255,255,255,0.086)"
-);
+var gradientEnabledColor0 = Color.fromCssColorString("rgba(247,250,255,0.384)");
+var gradientEnabledColor1 = Color.fromCssColorString("rgba(143,191,255,0.216)");
+var gradientEnabledColor2 = Color.fromCssColorString("rgba(153,197,255,0.098)");
+var gradientEnabledColor3 = Color.fromCssColorString("rgba(255,255,255,0.086)");
 
-const gradientDisabledColor0 = Color.fromCssColorString(
+var gradientDisabledColor0 = Color.fromCssColorString(
   "rgba(255,255,255,0.267)"
 );
-const gradientDisabledColor1 = Color.fromCssColorString("rgba(255,255,255,0)");
+var gradientDisabledColor1 = Color.fromCssColorString("rgba(255,255,255,0)");
 
-const gradientKnobColor = Color.fromCssColorString("rgba(66,67,68,0.3)");
-const gradientPointerColor = Color.fromCssColorString("rgba(0,0,0,0.5)");
+var gradientKnobColor = Color.fromCssColorString("rgba(66,67,68,0.3)");
+var gradientPointerColor = Color.fromCssColorString("rgba(0,0,0,0.5)");
 
 function getElementColor(element) {
   return Color.fromCssColorString(
@@ -37,7 +29,7 @@ function getElementColor(element) {
   );
 }
 
-const svgIconsById = {
+var svgIconsById = {
   animation_pathReset: {
     tagName: "path",
     transform: "translate(16,16) scale(0.85) translate(-16,-16)",
@@ -89,12 +81,13 @@ const svgIconsById = {
 
 //Dynamically builds an SVG element from a JSON object.
 function svgFromObject(obj) {
-  const ele = document.createElementNS(svgNS, obj.tagName);
-  for (const field in obj) {
+  var ele = document.createElementNS(svgNS, obj.tagName);
+  for (var field in obj) {
     if (obj.hasOwnProperty(field) && field !== "tagName") {
       if (field === "children") {
-        const len = obj.children.length;
-        for (let i = 0; i < len; ++i) {
+        var i;
+        var len = obj.children.length;
+        for (i = 0; i < len; ++i) {
           ele.appendChild(svgFromObject(obj.children[i]));
         }
       } else if (field.indexOf("xlink:") === 0) {
@@ -110,12 +103,12 @@ function svgFromObject(obj) {
 }
 
 function svgText(x, y, msg) {
-  const text = document.createElementNS(svgNS, "text");
+  var text = document.createElementNS(svgNS, "text");
   text.setAttribute("x", x);
   text.setAttribute("y", y);
   text.setAttribute("class", "cesium-animation-svgText");
 
-  const tspan = document.createElementNS(svgNS, "tspan");
+  var tspan = document.createElementNS(svgNS, "tspan");
   tspan.textContent = msg;
   text.appendChild(tspan);
   return text;
@@ -124,15 +117,15 @@ function svgText(x, y, msg) {
 function setShuttleRingPointer(shuttleRingPointer, knobOuter, angle) {
   shuttleRingPointer.setAttribute(
     "transform",
-    `translate(100,100) rotate(${angle})`
+    "translate(100,100) rotate(" + angle + ")"
   );
-  knobOuter.setAttribute("transform", `rotate(${angle})`);
+  knobOuter.setAttribute("transform", "rotate(" + angle + ")");
 }
 
-const makeColorStringScratch = new Color();
+var makeColorStringScratch = new Color();
 function makeColorString(background, gradient) {
-  const gradientAlpha = gradient.alpha;
-  const backgroundAlpha = 1.0 - gradientAlpha;
+  var gradientAlpha = gradient.alpha;
+  var backgroundAlpha = 1.0 - gradientAlpha;
   makeColorStringScratch.red =
     background.red * backgroundAlpha + gradient.red * gradientAlpha;
   makeColorStringScratch.green =
@@ -143,12 +136,12 @@ function makeColorString(background, gradient) {
 }
 
 function rectButton(x, y, path) {
-  const iconInfo = svgIconsById[path];
+  var iconInfo = svgIconsById[path];
 
-  const button = {
+  var button = {
     tagName: "g",
     class: "cesium-animation-rectButton",
-    transform: `translate(${x},${y})`,
+    transform: "translate(" + x + "," + y + ")",
     children: [
       {
         tagName: "rect",
@@ -183,13 +176,13 @@ function rectButton(x, y, path) {
 }
 
 function wingButton(x, y, path) {
-  const buttonIconInfo = svgIconsById[path];
-  const wingIconInfo = svgIconsById["animation_pathWingButton"];
+  var buttonIconInfo = svgIconsById[path];
+  var wingIconInfo = svgIconsById["animation_pathWingButton"];
 
-  const button = {
+  var button = {
     tagName: "g",
     class: "cesium-animation-rectButton",
-    transform: `translate(${x},${y})`,
+    transform: "translate(" + x + "," + y + ")",
     children: [
       {
         class: "cesium-animation-buttonGlow",
@@ -220,8 +213,8 @@ function wingButton(x, y, path) {
 }
 
 function setShuttleRingFromMouseOrTouch(widget, e) {
-  const viewModel = widget._viewModel;
-  const shuttleRingDragging = viewModel.shuttleRingDragging;
+  var viewModel = widget._viewModel;
+  var shuttleRingDragging = viewModel.shuttleRingDragging;
 
   if (shuttleRingDragging && widgetForDrag !== widget) {
     return;
@@ -233,12 +226,12 @@ function setShuttleRingFromMouseOrTouch(widget, e) {
     (e.type === "touchstart" && e.touches.length === 1) ||
     (shuttleRingDragging && e.type === "touchmove" && e.touches.length === 1)
   ) {
-    const centerX = widget._centerX;
-    const centerY = widget._centerY;
-    const svg = widget._svgNode;
-    const rect = svg.getBoundingClientRect();
-    let clientX;
-    let clientY;
+    var centerX = widget._centerX;
+    var centerY = widget._centerY;
+    var svg = widget._svgNode;
+    var rect = svg.getBoundingClientRect();
+    var clientX;
+    var clientY;
     if (e.type === "touchstart" || e.type === "touchmove") {
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
@@ -257,16 +250,16 @@ function setShuttleRingFromMouseOrTouch(widget, e) {
       return;
     }
 
-    const pointerRect = widget._shuttleRingPointer.getBoundingClientRect();
+    var pointerRect = widget._shuttleRingPointer.getBoundingClientRect();
 
-    const x = clientX - centerX - rect.left;
-    const y = clientY - centerY - rect.top;
+    var x = clientX - centerX - rect.left;
+    var y = clientY - centerY - rect.top;
 
-    let angle = (Math.atan2(y, x) * 180) / Math.PI + 90;
+    var angle = (Math.atan2(y, x) * 180) / Math.PI + 90;
     if (angle > 180) {
       angle -= 360;
     }
-    const shuttleRingAngle = viewModel.shuttleRingAngle;
+    var shuttleRingAngle = viewModel.shuttleRingAngle;
     if (
       shuttleRingDragging ||
       (clientX < pointerRect.right &&
@@ -299,9 +292,9 @@ function SvgButton(svgElement, viewModel) {
   this._enabled = undefined;
   this._toggled = undefined;
 
-  const that = this;
+  var that = this;
   this._clickFunction = function () {
-    const command = that._viewModel.command;
+    var command = that._viewModel.command;
     if (command.canExecute) {
       command();
     }
@@ -329,8 +322,8 @@ function SvgButton(svgElement, viewModel) {
 
 SvgButton.prototype.destroy = function () {
   this.svgElement.removeEventListener("click", this._clickFunction, true);
-  const subscriptions = this._subscriptions;
-  for (let i = 0, len = subscriptions.length; i < len; i++) {
+  var subscriptions = this._subscriptions;
+  for (var i = 0, len = subscriptions.length; i < len; i++) {
     subscriptions[i].dispose();
   }
   destroyObject(this);
@@ -417,10 +410,10 @@ SvgButton.prototype.setTooltip = function (tooltip) {
  * // In HTML head, include a link to Animation.css stylesheet,
  * // and in the body, include: <div id="animationContainer"></div>
  *
- * const clock = new Cesium.Clock();
- * const clockViewModel = new Cesium.ClockViewModel(clock);
- * const viewModel = new Cesium.AnimationViewModel(clockViewModel);
- * const widget = new Cesium.Animation('animationContainer', viewModel);
+ * var clock = new Cesium.Clock();
+ * var clockViewModel = new Cesium.ClockViewModel(clock);
+ * var viewModel = new Cesium.AnimationViewModel(clockViewModel);
+ * var widget = new Cesium.Animation('animationContainer', viewModel);
  *
  * function tick() {
  *     clock.tick();
@@ -452,11 +445,11 @@ function Animation(container, viewModel) {
   this._lastHeight = undefined;
   this._lastWidth = undefined;
 
-  const ownerDocument = container.ownerDocument;
+  var ownerDocument = container.ownerDocument;
 
   // Firefox requires SVG references to be included directly, not imported from external CSS.
   // Also, CSS minifiers get confused by this being in an external CSS file.
-  const cssStyle = document.createElement("style");
+  var cssStyle = document.createElement("style");
   cssStyle.textContent =
     ".cesium-animation-rectButton .cesium-animation-buttonGlow { filter: url(#animation_blurred); }\
 .cesium-animation-rectButton .cesium-animation-buttonMain { fill: url(#animation_buttonNormal); }\
@@ -472,7 +465,7 @@ function Animation(container, viewModel) {
 
   ownerDocument.head.insertBefore(cssStyle, ownerDocument.head.childNodes[0]);
 
-  const themeEle = document.createElement("div");
+  var themeEle = document.createElement("div");
   themeEle.className = "cesium-animation-theme";
   themeEle.innerHTML =
     '<div class="cesium-animation-themeNormal"></div>\
@@ -494,13 +487,13 @@ function Animation(container, viewModel) {
   this._themeSwoosh = themeEle.childNodes[6];
   this._themeSwooshHover = themeEle.childNodes[7];
 
-  const svg = document.createElementNS(svgNS, "svg:svg");
+  var svg = document.createElementNS(svgNS, "svg:svg");
   this._svgNode = svg;
 
   // Define the XLink namespace that SVG uses
   svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", xlinkNS);
 
-  const topG = document.createElementNS(svgNS, "g");
+  var topG = document.createElementNS(svgNS, "g");
   this._topG = topG;
 
   this._realtimeSVG = new SvgButton(
@@ -520,13 +513,13 @@ function Animation(container, viewModel) {
     viewModel.pauseViewModel
   );
 
-  const buttonsG = document.createElementNS(svgNS, "g");
+  var buttonsG = document.createElementNS(svgNS, "g");
   buttonsG.appendChild(this._realtimeSVG.svgElement);
   buttonsG.appendChild(this._playReverseSVG.svgElement);
   buttonsG.appendChild(this._playForwardSVG.svgElement);
   buttonsG.appendChild(this._pauseSVG.svgElement);
 
-  const shuttleRingBackPanel = svgFromObject({
+  var shuttleRingBackPanel = svgFromObject({
     tagName: "circle",
     class: "cesium-animation-shuttleRingBack",
     cx: 100,
@@ -535,10 +528,10 @@ function Animation(container, viewModel) {
   });
   this._shuttleRingBackPanel = shuttleRingBackPanel;
 
-  const swooshIconInfo = svgIconsById["animation_pathSwooshFX"];
-  const shuttleRingPointerIconInfo = svgIconsById["animation_pathPointer"];
+  var swooshIconInfo = svgIconsById["animation_pathSwooshFX"];
+  var shuttleRingPointerIconInfo = svgIconsById["animation_pathPointer"];
 
-  const shuttleRingSwooshG = svgFromObject({
+  var shuttleRingSwooshG = svgFromObject({
     tagName: "g",
     class: "cesium-animation-shuttleRingSwoosh",
     children: [
@@ -572,7 +565,7 @@ function Animation(container, viewModel) {
     d: shuttleRingPointerIconInfo.d,
   });
 
-  const knobG = svgFromObject({
+  var knobG = svgFromObject({
     tagName: "g",
     transform: "translate(100,100)",
   });
@@ -585,9 +578,9 @@ function Animation(container, viewModel) {
     r: 71,
   });
 
-  const knobInnerAndShieldSize = 61;
+  var knobInnerAndShieldSize = 61;
 
-  const knobInner = svgFromObject({
+  var knobInner = svgFromObject({
     tagName: "circle",
     class: "cesium-animation-knobInner",
     cx: 0,
@@ -600,7 +593,7 @@ function Animation(container, viewModel) {
   this._knobStatus = svgText(0, -41, "");
 
   // widget shield catches clicks on the knob itself (even while DOM elements underneath are changing).
-  const knobShield = svgFromObject({
+  var knobShield = svgFromObject({
     tagName: "circle",
     class: "cesium-animation-blank",
     cx: 0,
@@ -608,7 +601,7 @@ function Animation(container, viewModel) {
     r: knobInnerAndShieldSize,
   });
 
-  const shuttleRingBackG = document.createElementNS(svgNS, "g");
+  var shuttleRingBackG = document.createElementNS(svgNS, "g");
   shuttleRingBackG.setAttribute("class", "cesium-animation-shuttleRingG");
 
   container.appendChild(themeEle);
@@ -630,7 +623,7 @@ function Animation(container, viewModel) {
   svg.appendChild(topG);
   container.appendChild(svg);
 
-  const that = this;
+  var that = this;
   function mouseCallback(e) {
     setShuttleRingFromMouseOrTouch(that, e);
   }
@@ -655,10 +648,10 @@ function Animation(container, viewModel) {
   //bind to SVG, so we we figure that out we can modify our SVG
   //to include the binding information directly.
 
-  const timeNode = this._knobTime.childNodes[0];
-  const dateNode = this._knobDate.childNodes[0];
-  const statusNode = this._knobStatus.childNodes[0];
-  let isPaused;
+  var timeNode = this._knobTime.childNodes[0];
+  var dateNode = this._knobDate.childNodes[0];
+  var statusNode = this._knobStatus.childNodes[0];
+  var isPaused;
   this._subscriptions = [
     //
     subscribeAndEvaluate(viewModel.pauseViewModel, "toggled", function (value) {
@@ -750,9 +743,9 @@ Animation.prototype.destroy = function () {
     this._observer = undefined;
   }
 
-  const doc = this._container.ownerDocument;
+  var doc = this._container.ownerDocument;
 
-  const mouseCallback = this._mouseCallback;
+  var mouseCallback = this._mouseCallback;
   this._shuttleRingBackPanel.removeEventListener(
     "mousedown",
     mouseCallback,
@@ -798,8 +791,8 @@ Animation.prototype.destroy = function () {
   this._playForwardSVG.destroy();
   this._pauseSVG.destroy();
 
-  const subscriptions = this._subscriptions;
-  for (let i = 0, len = subscriptions.length; i < len; i++) {
+  var subscriptions = this._subscriptions;
+  for (var i = 0, len = subscriptions.length; i < len; i++) {
     subscriptions[i].dispose();
   }
 
@@ -811,20 +804,20 @@ Animation.prototype.destroy = function () {
  * This function should be called whenever the container size is changed.
  */
 Animation.prototype.resize = function () {
-  const parentWidth = this._container.clientWidth;
-  const parentHeight = this._container.clientHeight;
+  var parentWidth = this._container.clientWidth;
+  var parentHeight = this._container.clientHeight;
   if (parentWidth === this._lastWidth && parentHeight === this._lastHeight) {
     return;
   }
 
-  const svg = this._svgNode;
+  var svg = this._svgNode;
 
   //The width and height as the SVG was originally drawn.
-  const baseWidth = 200;
-  const baseHeight = 132;
+  var baseWidth = 200;
+  var baseHeight = 132;
 
-  let width = parentWidth;
-  let height = parentHeight;
+  var width = parentWidth;
+  var height = parentHeight;
 
   if (parentWidth === 0 && parentHeight === 0) {
     width = baseWidth;
@@ -837,15 +830,20 @@ Animation.prototype.resize = function () {
     height = baseHeight * (parentWidth / baseWidth);
   }
 
-  const scaleX = width / baseWidth;
-  const scaleY = height / baseHeight;
+  var scaleX = width / baseWidth;
+  var scaleY = height / baseHeight;
 
-  svg.style.cssText = `width: ${width}px; height: ${height}px; position: absolute; bottom: 0; left: 0; overflow: hidden;`;
+  svg.style.cssText =
+    "width: " +
+    width +
+    "px; height: " +
+    height +
+    "px; position: absolute; bottom: 0; left: 0; overflow: hidden;";
   svg.setAttribute("width", width);
   svg.setAttribute("height", height);
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("viewBox", "0 0 " + width + " " + height);
 
-  this._topG.setAttribute("transform", `scale(${scaleX},${scaleY})`);
+  this._topG.setAttribute("transform", "scale(" + scaleX + "," + scaleY + ")");
 
   this._centerX = Math.max(1, 100.0 * scaleX);
   this._centerY = Math.max(1, 100.0 * scaleY);
@@ -868,14 +866,14 @@ Animation.prototype.applyThemeChanges = function () {
   // Set up an observer to be notified when it is added and apply
   // the changes at that time.
 
-  const doc = this._container.ownerDocument;
+  var doc = this._container.ownerDocument;
 
   if (!doc.body.contains(this._container)) {
     if (defined(this._observer)) {
       //Already listening.
       return;
     }
-    const that = this;
+    var that = this;
     that._observer = new MutationObserver(function () {
       if (doc.body.contains(that._container)) {
         that._observer.disconnect();
@@ -887,16 +885,16 @@ Animation.prototype.applyThemeChanges = function () {
     return;
   }
 
-  const buttonNormalBackColor = getElementColor(this._themeNormal);
-  const buttonHoverBackColor = getElementColor(this._themeHover);
-  const buttonToggledBackColor = getElementColor(this._themeSelect);
-  const buttonDisabledBackColor = getElementColor(this._themeDisabled);
-  const knobBackColor = getElementColor(this._themeKnob);
-  const pointerColor = getElementColor(this._themePointer);
-  const swooshColor = getElementColor(this._themeSwoosh);
-  const swooshHoverColor = getElementColor(this._themeSwooshHover);
+  var buttonNormalBackColor = getElementColor(this._themeNormal);
+  var buttonHoverBackColor = getElementColor(this._themeHover);
+  var buttonToggledBackColor = getElementColor(this._themeSelect);
+  var buttonDisabledBackColor = getElementColor(this._themeDisabled);
+  var knobBackColor = getElementColor(this._themeKnob);
+  var pointerColor = getElementColor(this._themePointer);
+  var swooshColor = getElementColor(this._themeSwoosh);
+  var swooshHoverColor = getElementColor(this._themeSwooshHover);
 
-  const defsElement = svgFromObject({
+  var defsElement = svgFromObject({
     tagName: "defs",
     children: [
       {

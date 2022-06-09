@@ -11,7 +11,6 @@ import {
   CzmlDataSource,
   GeoJsonDataSource,
   KmlDataSource,
-  GpxDataSource,
   TileMapServiceImageryProvider,
   Viewer,
   viewerCesiumInspectorMixin,
@@ -38,19 +37,19 @@ function main() {
                            [height,heading,pitch,roll] default is looking straight down, [300,0,-90,0]
        saveCamera=false    Don't automatically update the camera view in the URL when it changes.
      */
-  const endUserOptions = queryToObject(window.location.search.substring(1));
+  var endUserOptions = queryToObject(window.location.search.substring(1));
 
-  let imageryProvider;
+  var imageryProvider;
   if (defined(endUserOptions.tmsImageryUrl)) {
     imageryProvider = new TileMapServiceImageryProvider({
       url: endUserOptions.tmsImageryUrl,
     });
   }
 
-  const loadingIndicator = document.getElementById("loadingIndicator");
-  let viewer;
+  var loadingIndicator = document.getElementById("loadingIndicator");
+  var viewer;
   try {
-    const hasBaseLayerPicker = !defined(imageryProvider);
+    var hasBaseLayerPicker = !defined(imageryProvider);
     viewer = new Viewer("cesiumContainer", {
       imageryProvider: imageryProvider,
       baseLayerPicker: hasBaseLayerPicker,
@@ -59,7 +58,7 @@ function main() {
     });
 
     if (hasBaseLayerPicker) {
-      const viewModel = viewer.baseLayerPicker.viewModel;
+      var viewModel = viewer.baseLayerPicker.viewModel;
       viewModel.selectedTerrain = viewModel.terrainProviderViewModels[1];
     } else {
       viewer.terrainProvider = createWorldTerrain({
@@ -69,7 +68,7 @@ function main() {
     }
   } catch (exception) {
     loadingIndicator.style.display = "none";
-    const message = formatError(exception);
+    var message = formatError(exception);
     console.error(message);
     if (!document.querySelector(".cesium-widget-errorPanel")) {
       //eslint-disable-next-line no-alert
@@ -83,9 +82,9 @@ function main() {
     viewer.extend(viewerCesiumInspectorMixin);
   }
 
-  const showLoadError = function (name, error) {
-    const title = `An error occurred while loading the file: ${name}`;
-    const message =
+  var showLoadError = function (name, error) {
+    var title = "An error occurred while loading the file: " + name;
+    var message =
       "An error occurred while loading the file, which may indicate that it is invalid.  A detailed error report is below:";
     viewer.cesiumWidget.showErrorPanel(title, message, error);
   };
@@ -94,8 +93,8 @@ function main() {
     showLoadError(name, error);
   });
 
-  const scene = viewer.scene;
-  const context = scene.context;
+  var scene = viewer.scene;
+  var context = scene.context;
   if (endUserOptions.debug) {
     context.validateShaderProgram = true;
     context.validateFramebuffer = true;
@@ -103,10 +102,10 @@ function main() {
     context.throwOnWebGLError = true;
   }
 
-  const view = endUserOptions.view;
-  const source = endUserOptions.source;
+  var view = endUserOptions.view;
+  var source = endUserOptions.source;
   if (defined(source)) {
-    let sourceType = endUserOptions.sourceType;
+    var sourceType = endUserOptions.sourceType;
     if (!defined(sourceType)) {
       // autodetect using file extension if not specified
       if (/\.czml$/i.test(source)) {
@@ -119,12 +118,10 @@ function main() {
         sourceType = "geojson";
       } else if (/\.kml$/i.test(source) || /\.kmz$/i.test(source)) {
         sourceType = "kml";
-      } else if (/\.gpx$/i.test(source) || /\.gpx$/i.test(source)) {
-        sourceType = "gpx";
       }
     }
 
-    let loadPromise;
+    var loadPromise;
     if (sourceType === "czml") {
       loadPromise = CzmlDataSource.load(source);
     } else if (sourceType === "geojson") {
@@ -133,10 +130,7 @@ function main() {
       loadPromise = KmlDataSource.load(source, {
         camera: scene.camera,
         canvas: scene.canvas,
-        screenOverlayContainer: viewer.container,
       });
-    } else if (sourceType === "gpx") {
-      loadPromise = GpxDataSource.load(source);
     } else {
       showLoadError(source, "Unknown format.");
     }
@@ -145,20 +139,23 @@ function main() {
       viewer.dataSources
         .add(loadPromise)
         .then(function (dataSource) {
-          const lookAt = endUserOptions.lookAt;
+          var lookAt = endUserOptions.lookAt;
           if (defined(lookAt)) {
-            const entity = dataSource.entities.getById(lookAt);
+            var entity = dataSource.entities.getById(lookAt);
             if (defined(entity)) {
               viewer.trackedEntity = entity;
             } else {
-              const error = `No entity with id "${lookAt}" exists in the provided data source.`;
+              var error =
+                'No entity with id "' +
+                lookAt +
+                '" exists in the provided data source.';
               showLoadError(source, error);
             }
           } else if (!defined(view) && endUserOptions.flyTo !== "false") {
             viewer.flyTo(dataSource);
           }
         })
-        .catch(function (error) {
+        .otherwise(function (error) {
           showLoadError(source, error);
         });
     }
@@ -168,35 +165,35 @@ function main() {
     scene.debugShowFramesPerSecond = true;
   }
 
-  const theme = endUserOptions.theme;
+  var theme = endUserOptions.theme;
   if (defined(theme)) {
     if (endUserOptions.theme === "lighter") {
       document.body.classList.add("cesium-lighter");
       viewer.animation.applyThemeChanges();
     } else {
-      const error = `Unknown theme: ${theme}`;
+      var error = "Unknown theme: " + theme;
       viewer.cesiumWidget.showErrorPanel(error, "");
     }
   }
 
   if (defined(view)) {
-    const splitQuery = view.split(/[ ,]+/);
+    var splitQuery = view.split(/[ ,]+/);
     if (splitQuery.length > 1) {
-      const longitude = !isNaN(+splitQuery[0]) ? +splitQuery[0] : 0.0;
-      const latitude = !isNaN(+splitQuery[1]) ? +splitQuery[1] : 0.0;
-      const height =
+      var longitude = !isNaN(+splitQuery[0]) ? +splitQuery[0] : 0.0;
+      var latitude = !isNaN(+splitQuery[1]) ? +splitQuery[1] : 0.0;
+      var height =
         splitQuery.length > 2 && !isNaN(+splitQuery[2])
           ? +splitQuery[2]
           : 300.0;
-      const heading =
+      var heading =
         splitQuery.length > 3 && !isNaN(+splitQuery[3])
           ? CesiumMath.toRadians(+splitQuery[3])
           : undefined;
-      const pitch =
+      var pitch =
         splitQuery.length > 4 && !isNaN(+splitQuery[4])
           ? CesiumMath.toRadians(+splitQuery[4])
           : undefined;
-      const roll =
+      var roll =
         splitQuery.length > 5 && !isNaN(+splitQuery[5])
           ? CesiumMath.toRadians(+splitQuery[5])
           : undefined;
@@ -212,22 +209,30 @@ function main() {
     }
   }
 
-  const camera = viewer.camera;
+  var camera = viewer.camera;
   function saveCamera() {
-    const position = camera.positionCartographic;
-    let hpr = "";
+    var position = camera.positionCartographic;
+    var hpr = "";
     if (defined(camera.heading)) {
-      hpr = `,${CesiumMath.toDegrees(camera.heading)},${CesiumMath.toDegrees(
-        camera.pitch
-      )},${CesiumMath.toDegrees(camera.roll)}`;
+      hpr =
+        "," +
+        CesiumMath.toDegrees(camera.heading) +
+        "," +
+        CesiumMath.toDegrees(camera.pitch) +
+        "," +
+        CesiumMath.toDegrees(camera.roll);
     }
-    endUserOptions.view = `${CesiumMath.toDegrees(
-      position.longitude
-    )},${CesiumMath.toDegrees(position.latitude)},${position.height}${hpr}`;
-    history.replaceState(undefined, "", `?${objectToQuery(endUserOptions)}`);
+    endUserOptions.view =
+      CesiumMath.toDegrees(position.longitude) +
+      "," +
+      CesiumMath.toDegrees(position.latitude) +
+      "," +
+      position.height +
+      hpr;
+    history.replaceState(undefined, "", "?" + objectToQuery(endUserOptions));
   }
 
-  let timeout;
+  var timeout;
   if (endUserOptions.saveCamera !== "false") {
     camera.changed.addEventListener(function () {
       window.clearTimeout(timeout);

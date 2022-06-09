@@ -8,7 +8,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  * @namespace TridiagonalSystemSolver
  */
-const TridiagonalSystemSolver = {};
+var TridiagonalSystemSolver = {};
 
 /**
  * Solves a tridiagonal system of linear equations.
@@ -25,10 +25,10 @@ const TridiagonalSystemSolver = {};
  * @performance Linear time.
  *
  * @example
- * const lowerDiagonal = [1.0, 1.0, 1.0, 1.0];
- * const diagonal = [2.0, 4.0, 4.0, 4.0, 2.0];
- * const upperDiagonal = [1.0, 1.0, 1.0, 1.0];
- * const rightHandSide = [
+ * var lowerDiagonal = [1.0, 1.0, 1.0, 1.0];
+ * var diagonal = [2.0, 4.0, 4.0, 4.0, 2.0];
+ * var upperDiagonal = [1.0, 1.0, 1.0, 1.0];
+ * var rightHandSide = [
  *     new Cesium.Cartesian3(410757.0, -1595711.0, 1375302.0),
  *     new Cesium.Cartesian3(-5986705.0, -2190640.0, 1099600.0),
  *     new Cesium.Cartesian3(-12593180.0, 288588.0, -1755549.0),
@@ -36,7 +36,7 @@ const TridiagonalSystemSolver = {};
  *     new Cesium.Cartesian3(845820.0, 1573488.0, -1205591.0)
  * ];
  *
- * const solution = Cesium.TridiagonalSystemSolver.solve(lowerDiagonal, diagonal, upperDiagonal, rightHandSide);
+ * var solution = Cesium.TridiagonalSystemSolver.solve(lowerDiagonal, diagonal, upperDiagonal, rightHandSide);
  *
  * @returns {Cartesian3[]} An array of Cartesians with length <code>n</code> that is the solution to the tridiagonal system of equations.
  */
@@ -66,11 +66,11 @@ TridiagonalSystemSolver.solve = function (lower, diagonal, upper, right) {
   }
   //>>includeEnd('debug');
 
-  const c = new Array(upper.length);
-  const d = new Array(right.length);
-  const x = new Array(right.length);
+  var c = new Array(upper.length);
+  var d = new Array(right.length);
+  var x = new Array(right.length);
 
-  let i;
+  var i;
   for (i = 0; i < d.length; i++) {
     d[i] = new Cartesian3();
     x[i] = new Cartesian3();
@@ -79,7 +79,7 @@ TridiagonalSystemSolver.solve = function (lower, diagonal, upper, right) {
   c[0] = upper[0] / diagonal[0];
   d[0] = Cartesian3.multiplyByScalar(right[0], 1.0 / diagonal[0], d[0]);
 
-  let scalar;
+  var scalar;
   for (i = 1; i < c.length; ++i) {
     scalar = 1.0 / (diagonal[i] - c[i - 1] * lower[i - 1]);
     c[i] = upper[i] * scalar;

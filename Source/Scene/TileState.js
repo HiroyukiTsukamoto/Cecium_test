@@ -1,7 +1,7 @@
 /**
  * @private
  */
-const TileState = {
+var TileState = {
   START: 0,
   LOADING: 1,
   READY: 2,

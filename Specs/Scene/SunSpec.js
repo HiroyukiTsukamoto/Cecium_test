@@ -8,8 +8,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/Sun",
   function () {
-    let scene;
-    const backgroundColor = [255, 0, 0, 255];
+    var scene;
+    var backgroundColor = [255, 0, 0, 255];
 
     beforeAll(function () {
       scene = createScene();
@@ -29,8 +29,8 @@ describe(
     });
 
     function viewSun(camera, uniformState) {
-      const sunPosition = uniformState.sunPositionWC;
-      const bounds = new BoundingSphere(sunPosition, CesiumMath.SOLAR_RADIUS);
+      var sunPosition = uniformState.sunPositionWC;
+      var bounds = new BoundingSphere(sunPosition, CesiumMath.SOLAR_RADIUS);
       camera.viewBoundingSphere(bounds);
     }
 
@@ -80,12 +80,12 @@ describe(
 
       viewSun(scene.camera, scene.context.uniformState);
       scene.frameState.passes.render = false;
-      const command = scene.sun.update(scene.frameState, scene.view.passState);
+      var command = scene.sun.update(scene.frameState, scene.view.passState);
       expect(command).not.toBeDefined();
     });
 
     it("can set glow factor", function () {
-      const sun = (scene.sun = new Sun());
+      var sun = (scene.sun = new Sun());
       sun.glowFactor = 0.0;
       expect(sun.glowFactor).toEqual(0.0);
       sun.glowFactor = 2.0;
@@ -103,7 +103,7 @@ describe(
     });
 
     it("isDestroyed", function () {
-      const sun = new Sun();
+      var sun = new Sun();
       expect(sun.isDestroyed()).toEqual(false);
       sun.destroy();
       expect(sun.isDestroyed()).toEqual(true);

@@ -6,10 +6,10 @@ import IndexDatatype from "../Core/IndexDatatype.js";
 import Rectangle from "../Core/Rectangle.js";
 import createTaskProcessorWorker from "./createTaskProcessorWorker.js";
 
-const scratchRectangle = new Rectangle();
-const scratchEllipsoid = new Ellipsoid();
-const scratchCenter = new Cartesian3();
-const scratchMinMaxHeights = {
+var scratchRectangle = new Rectangle();
+var scratchEllipsoid = new Ellipsoid();
+var scratchCenter = new Cartesian3();
+var scratchMinMaxHeights = {
   min: undefined,
   max: undefined,
 };
@@ -17,7 +17,7 @@ const scratchMinMaxHeights = {
 function unpackBuffer(packedBuffer) {
   packedBuffer = new Float64Array(packedBuffer);
 
-  let offset = 0;
+  var offset = 0;
   scratchMinMaxHeights.min = packedBuffer[offset++];
   scratchMinMaxHeights.max = packedBuffer[offset++];
 
@@ -31,10 +31,10 @@ function unpackBuffer(packedBuffer) {
 }
 
 function getPositionOffsets(counts) {
-  const countsLength = counts.length;
-  const positionOffsets = new Uint32Array(countsLength + 1);
-  let offset = 0;
-  for (let i = 0; i < countsLength; ++i) {
+  var countsLength = counts.length;
+  var positionOffsets = new Uint32Array(countsLength + 1);
+  var offset = 0;
+  for (var i = 0; i < countsLength; ++i) {
     positionOffsets[i] = offset;
     offset += counts[i];
   }
@@ -42,26 +42,26 @@ function getPositionOffsets(counts) {
   return positionOffsets;
 }
 
-const scratchP0 = new Cartesian3();
-const scratchP1 = new Cartesian3();
-const scratchPrev = new Cartesian3();
-const scratchCur = new Cartesian3();
-const scratchNext = new Cartesian3();
+var scratchP0 = new Cartesian3();
+var scratchP1 = new Cartesian3();
+var scratchPrev = new Cartesian3();
+var scratchCur = new Cartesian3();
+var scratchNext = new Cartesian3();
 
 function createVectorTilePolylines(parameters, transferableObjects) {
-  const encodedPositions = new Uint16Array(parameters.positions);
-  const widths = new Uint16Array(parameters.widths);
-  const counts = new Uint32Array(parameters.counts);
-  const batchIds = new Uint16Array(parameters.batchIds);
+  var encodedPositions = new Uint16Array(parameters.positions);
+  var widths = new Uint16Array(parameters.widths);
+  var counts = new Uint32Array(parameters.counts);
+  var batchIds = new Uint16Array(parameters.batchIds);
 
   unpackBuffer(parameters.packedBuffer);
-  const rectangle = scratchRectangle;
-  const ellipsoid = scratchEllipsoid;
-  const center = scratchCenter;
-  const minimumHeight = scratchMinMaxHeights.min;
-  const maximumHeight = scratchMinMaxHeights.max;
+  var rectangle = scratchRectangle;
+  var ellipsoid = scratchEllipsoid;
+  var center = scratchCenter;
+  var minimumHeight = scratchMinMaxHeights.min;
+  var maximumHeight = scratchMinMaxHeights.max;
 
-  const positions = decodeVectorPolylinePositions(
+  var positions = decodeVectorPolylinePositions(
     encodedPositions,
     rectangle,
     minimumHeight,
@@ -69,33 +69,33 @@ function createVectorTilePolylines(parameters, transferableObjects) {
     ellipsoid
   );
 
-  const positionsLength = positions.length / 3;
-  const size = positionsLength * 4 - 4;
+  var positionsLength = positions.length / 3;
+  var size = positionsLength * 4 - 4;
 
-  const curPositions = new Float32Array(size * 3);
-  const prevPositions = new Float32Array(size * 3);
-  const nextPositions = new Float32Array(size * 3);
-  const expandAndWidth = new Float32Array(size * 2);
-  const vertexBatchIds = new Uint16Array(size);
+  var curPositions = new Float32Array(size * 3);
+  var prevPositions = new Float32Array(size * 3);
+  var nextPositions = new Float32Array(size * 3);
+  var expandAndWidth = new Float32Array(size * 2);
+  var vertexBatchIds = new Uint16Array(size);
 
-  let positionIndex = 0;
-  let expandAndWidthIndex = 0;
-  let batchIdIndex = 0;
+  var positionIndex = 0;
+  var expandAndWidthIndex = 0;
+  var batchIdIndex = 0;
 
-  let i;
-  let offset = 0;
-  let length = counts.length;
+  var i;
+  var offset = 0;
+  var length = counts.length;
 
   for (i = 0; i < length; ++i) {
-    const count = counts[i];
-    const width = widths[i];
-    const batchId = batchIds[i];
+    var count = counts[i];
+    var width = widths[i];
+    var batchId = batchIds[i];
 
-    for (let j = 0; j < count; ++j) {
-      let previous;
+    for (var j = 0; j < count; ++j) {
+      var previous;
       if (j === 0) {
-        const p0 = Cartesian3.unpack(positions, offset * 3, scratchP0);
-        const p1 = Cartesian3.unpack(positions, (offset + 1) * 3, scratchP1);
+        var p0 = Cartesian3.unpack(positions, offset * 3, scratchP0);
+        var p1 = Cartesian3.unpack(positions, (offset + 1) * 3, scratchP1);
 
         previous = Cartesian3.subtract(p0, p1, scratchPrev);
         Cartesian3.add(p0, previous, previous);
@@ -107,20 +107,16 @@ function createVectorTilePolylines(parameters, transferableObjects) {
         );
       }
 
-      const current = Cartesian3.unpack(
-        positions,
-        (offset + j) * 3,
-        scratchCur
-      );
+      var current = Cartesian3.unpack(positions, (offset + j) * 3, scratchCur);
 
-      let next;
+      var next;
       if (j === count - 1) {
-        const p2 = Cartesian3.unpack(
+        var p2 = Cartesian3.unpack(
           positions,
           (offset + count - 1) * 3,
           scratchP0
         );
-        const p3 = Cartesian3.unpack(
+        var p3 = Cartesian3.unpack(
           positions,
           (offset + count - 2) * 3,
           scratchP1
@@ -136,16 +132,16 @@ function createVectorTilePolylines(parameters, transferableObjects) {
       Cartesian3.subtract(current, center, current);
       Cartesian3.subtract(next, center, next);
 
-      const startK = j === 0 ? 2 : 0;
-      const endK = j === count - 1 ? 2 : 4;
+      var startK = j === 0 ? 2 : 0;
+      var endK = j === count - 1 ? 2 : 4;
 
-      for (let k = startK; k < endK; ++k) {
+      for (var k = startK; k < endK; ++k) {
         Cartesian3.pack(current, curPositions, positionIndex);
         Cartesian3.pack(previous, prevPositions, positionIndex);
         Cartesian3.pack(next, nextPositions, positionIndex);
         positionIndex += 3;
 
-        const direction = k - 2 < 0 ? -1.0 : 1.0;
+        var direction = k - 2 < 0 ? -1.0 : 1.0;
         expandAndWidth[expandAndWidthIndex++] = 2 * (k % 2) - 1;
         expandAndWidth[expandAndWidthIndex++] = direction * width;
 
@@ -156,9 +152,9 @@ function createVectorTilePolylines(parameters, transferableObjects) {
     offset += count;
   }
 
-  const indices = IndexDatatype.createTypedArray(size, positionsLength * 6 - 6);
-  let index = 0;
-  let indicesIndex = 0;
+  var indices = IndexDatatype.createTypedArray(size, positionsLength * 6 - 6);
+  var index = 0;
+  var indicesIndex = 0;
   length = positionsLength - 1;
   for (i = 0; i < length; ++i) {
     indices[indicesIndex++] = index;
@@ -183,7 +179,7 @@ function createVectorTilePolylines(parameters, transferableObjects) {
     indices.buffer
   );
 
-  let results = {
+  var results = {
     indexDatatype:
       indices.BYTES_PER_ELEMENT === 2
         ? IndexDatatype.UNSIGNED_SHORT
@@ -197,7 +193,7 @@ function createVectorTilePolylines(parameters, transferableObjects) {
   };
 
   if (parameters.keepDecodedPositions) {
-    const positionOffsets = getPositionOffsets(counts);
+    var positionOffsets = getPositionOffsets(counts);
     transferableObjects.push(positions.buffer, positionOffsets.buffer);
     results = combine(results, {
       decodedPositions: positions.buffer,

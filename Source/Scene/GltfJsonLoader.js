@@ -11,6 +11,7 @@ import ForEach from "./GltfPipeline/ForEach.js";
 import parseGlb from "./GltfPipeline/parseGlb.js";
 import removePipelineExtras from "./GltfPipeline/removePipelineExtras.js";
 import updateVersion from "./GltfPipeline/updateVersion.js";
+import when from "../ThirdParty/when.js";
 import ResourceLoader from "./ResourceLoader.js";
 import ResourceLoaderState from "./ResourceLoaderState.js";
 
@@ -36,12 +37,12 @@ import ResourceLoaderState from "./ResourceLoaderState.js";
  */
 export default function GltfJsonLoader(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const resourceCache = options.resourceCache;
-  const gltfResource = options.gltfResource;
-  const baseResource = options.baseResource;
-  const typedArray = options.typedArray;
-  const gltfJson = options.gltfJson;
-  const cacheKey = options.cacheKey;
+  var resourceCache = options.resourceCache;
+  var gltfResource = options.gltfResource;
+  var baseResource = options.baseResource;
+  var typedArray = options.typedArray;
+  var gltfJson = options.gltfJson;
+  var cacheKey = options.cacheKey;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.func("options.resourceCache", resourceCache);
@@ -58,7 +59,7 @@ export default function GltfJsonLoader(options) {
   this._gltf = undefined;
   this._bufferLoaders = [];
   this._state = ResourceLoaderState.UNLOADED;
-  this._promise = undefined;
+  this._promise = when.defer();
 }
 
 if (defined(Object.create)) {
@@ -68,17 +69,17 @@ if (defined(Object.create)) {
 
 Object.defineProperties(GltfJsonLoader.prototype, {
   /**
-   * A promise that resolves to the resource when the resource is ready, or undefined if the resource hasn't started loading.
+   * A promise that resolves to the resource when the resource is ready.
    *
    * @memberof GltfJsonLoader.prototype
    *
-   * @type {Promise.<GltfJsonLoader>|undefined}
+   * @type {Promise.<GltfJsonLoader>}
    * @readonly
    * @private
    */
   promise: {
     get: function () {
-      return this._promise;
+      return this._promise.promise;
     },
   },
   /**
@@ -113,13 +114,12 @@ Object.defineProperties(GltfJsonLoader.prototype, {
 
 /**
  * Loads the resource.
- * @returns {Promise.<GltfJsonLoader>} A promise which resolves to the loader when the resource loading is completed.
  * @private
  */
 GltfJsonLoader.prototype.load = function () {
   this._state = ResourceLoaderState.LOADING;
 
-  let processPromise;
+  var processPromise;
   if (defined(this._gltfJson)) {
     processPromise = processGltfJson(this, this._gltfJson);
   } else if (defined(this._typedArray)) {
@@ -128,24 +128,23 @@ GltfJsonLoader.prototype.load = function () {
     processPromise = loadFromUri(this);
   }
 
-  const that = this;
-  this._promise = processPromise
+  var that = this;
+
+  return processPromise
     .then(function (gltf) {
       if (that.isDestroyed()) {
         return;
       }
       that._gltf = gltf;
       that._state = ResourceLoaderState.READY;
-      return that;
+      that._promise.resolve(that);
     })
-    .catch(function (error) {
+    .otherwise(function (error) {
       if (that.isDestroyed()) {
         return;
       }
-      return handleError(that, error);
+      handleError(that, error);
     });
-
-  return this._promise;
 };
 
 function loadFromUri(gltfJsonLoader) {
@@ -153,7 +152,7 @@ function loadFromUri(gltfJsonLoader) {
     if (gltfJsonLoader.isDestroyed()) {
       return;
     }
-    const typedArray = new Uint8Array(arrayBuffer);
+    var typedArray = new Uint8Array(arrayBuffer);
     return processGltfTypedArray(gltfJsonLoader, typedArray);
   });
 }
@@ -161,28 +160,28 @@ function loadFromUri(gltfJsonLoader) {
 function handleError(gltfJsonLoader, error) {
   gltfJsonLoader.unload();
   gltfJsonLoader._state = ResourceLoaderState.FAILED;
-  const errorMessage = `Failed to load glTF: ${gltfJsonLoader._gltfResource.url}`;
-  return Promise.reject(gltfJsonLoader.getError(errorMessage, error));
+  var errorMessage = "Failed to load glTF: " + gltfJsonLoader._gltfResource.url;
+  gltfJsonLoader._promise.reject(gltfJsonLoader.getError(errorMessage, error));
 }
 
 function upgradeVersion(gltfJsonLoader, gltf) {
   if (gltf.asset.version === "2.0") {
-    return Promise.resolve();
+    return when.resolve();
   }
 
   // Load all buffers into memory. updateVersion will read and in some cases modify
   // the buffer data, which it accesses from buffer.extras._pipeline.source
-  const promises = [];
+  var promises = [];
   ForEach.buffer(gltf, function (buffer) {
     if (
       !defined(buffer.extras._pipeline.source) && // Ignore uri if this buffer uses the glTF 1.0 KHR_binary_glTF extension
       defined(buffer.uri)
     ) {
-      const resource = gltfJsonLoader._baseResource.getDerivedResource({
+      var resource = gltfJsonLoader._baseResource.getDerivedResource({
         url: buffer.uri,
       });
-      const resourceCache = gltfJsonLoader._resourceCache;
-      const bufferLoader = resourceCache.loadExternalBuffer({
+      var resourceCache = gltfJsonLoader._resourceCache;
+      var bufferLoader = resourceCache.loadExternalBuffer({
         resource: resource,
       });
 
@@ -196,15 +195,15 @@ function upgradeVersion(gltfJsonLoader, gltf) {
     }
   });
 
-  return Promise.all(promises).then(function () {
+  return when.all(promises).then(function () {
     updateVersion(gltf);
   });
 }
 
 function decodeDataUris(gltf) {
-  const promises = [];
+  var promises = [];
   ForEach.buffer(gltf, function (buffer) {
-    const bufferUri = buffer.uri;
+    var bufferUri = buffer.uri;
     if (
       !defined(buffer.extras._pipeline.source) && // Ignore uri if this buffer uses the glTF 1.0 KHR_binary_glTF extension
       defined(bufferUri) &&
@@ -218,16 +217,16 @@ function decodeDataUris(gltf) {
       );
     }
   });
-  return Promise.all(promises);
+  return when.all(promises);
 }
 
 function loadEmbeddedBuffers(gltfJsonLoader, gltf) {
-  const promises = [];
+  var promises = [];
   ForEach.buffer(gltf, function (buffer, bufferId) {
-    const source = buffer.extras._pipeline.source;
+    var source = buffer.extras._pipeline.source;
     if (defined(source) && !defined(buffer.uri)) {
-      const resourceCache = gltfJsonLoader._resourceCache;
-      const bufferLoader = resourceCache.loadEmbeddedBuffer({
+      var resourceCache = gltfJsonLoader._resourceCache;
+      var bufferLoader = resourceCache.loadEmbeddedBuffer({
         parentResource: gltfJsonLoader._gltfResource,
         bufferId: bufferId,
         typedArray: source,
@@ -237,28 +236,25 @@ function loadEmbeddedBuffers(gltfJsonLoader, gltf) {
       promises.push(bufferLoader.promise);
     }
   });
-  return Promise.all(promises);
+  return when.all(promises);
 }
 
 function processGltfJson(gltfJsonLoader, gltf) {
   addPipelineExtras(gltf);
 
-  return decodeDataUris(gltf)
-    .then(function () {
-      return upgradeVersion(gltfJsonLoader, gltf);
-    })
-    .then(function () {
+  return decodeDataUris(gltf).then(function () {
+    return upgradeVersion(gltfJsonLoader, gltf).then(function () {
       addDefaults(gltf);
-      return loadEmbeddedBuffers(gltfJsonLoader, gltf);
-    })
-    .then(function () {
-      removePipelineExtras(gltf);
-      return gltf;
+      return loadEmbeddedBuffers(gltfJsonLoader, gltf).then(function () {
+        removePipelineExtras(gltf);
+        return gltf;
+      });
     });
+  });
 }
 
 function processGltfTypedArray(gltfJsonLoader, typedArray) {
-  let gltf;
+  var gltf;
   if (getMagic(typedArray) === "glTF") {
     gltf = parseGlb(typedArray);
   } else {
@@ -273,9 +269,9 @@ function processGltfTypedArray(gltfJsonLoader, typedArray) {
  * @private
  */
 GltfJsonLoader.prototype.unload = function () {
-  const bufferLoaders = this._bufferLoaders;
-  const bufferLoadersLength = bufferLoaders.length;
-  for (let i = 0; i < bufferLoadersLength; ++i) {
+  var bufferLoaders = this._bufferLoaders;
+  var bufferLoadersLength = bufferLoaders.length;
+  for (var i = 0; i < bufferLoadersLength; ++i) {
     this._resourceCache.unload(bufferLoaders[i]);
   }
   this._bufferLoaders.length = 0;

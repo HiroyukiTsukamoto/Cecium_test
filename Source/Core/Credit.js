@@ -3,8 +3,8 @@ import Check from "./Check.js";
 import defaultValue from "./defaultValue.js";
 import defined from "./defined.js";
 
-let nextCreditId = 0;
-const creditToId = {};
+var nextCreditId = 0;
+var creditToId = {};
 
 /**
  * A credit contains data pertaining to how to display attributions/credits for certain content on the screen.
@@ -18,14 +18,14 @@ const creditToId = {};
  *
  * @example
  * //Create a credit with a tooltip, image and link
- * const credit = new Cesium.Credit('<a href="https://cesium.com/" target="_blank"><img src="/images/cesium_logo.png" title="Cesium"/></a>');
+ * var credit = new Cesium.Credit('<a href="https://cesium.com/" target="_blank"><img src="/images/cesium_logo.png" title="Cesium"/></a>');
  */
 function Credit(html, showOnScreen) {
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.string("html", html);
   //>>includeEnd('debug');
-  let id;
-  const key = html;
+  var id;
+  var key = html;
 
   if (defined(creditToId[key])) {
     id = creditToId[key];
@@ -73,13 +73,11 @@ Object.defineProperties(Credit.prototype, {
    * Whether the credit should be displayed on screen or in a lightbox
    * @memberof Credit.prototype
    * @type {Boolean}
+   * @readonly
    */
   showOnScreen: {
     get: function () {
       return this._showOnScreen;
-    },
-    set: function (value) {
-      this._showOnScreen = value;
     },
   },
 
@@ -92,15 +90,15 @@ Object.defineProperties(Credit.prototype, {
   element: {
     get: function () {
       if (!defined(this._element)) {
-        const html = DOMPurify.sanitize(this._html);
+        var html = DOMPurify.sanitize(this._html);
 
-        const div = document.createElement("div");
+        var div = document.createElement("div");
         div._creditId = this._id;
         div.style.display = "inline";
         div.innerHTML = html;
 
-        const links = div.querySelectorAll("a");
-        for (let i = 0; i < links.length; i++) {
+        var links = div.querySelectorAll("a");
+        for (var i = 0; i < links.length; i++) {
           links[i].setAttribute("target", "_blank");
         }
 
@@ -121,10 +119,7 @@ Object.defineProperties(Credit.prototype, {
 Credit.equals = function (left, right) {
   return (
     left === right ||
-    (defined(left) &&
-      defined(right) &&
-      left._id === right._id &&
-      left._showOnScreen === right._showOnScreen)
+    (defined(left) && defined(right) && left._id === right._id)
   );
 };
 
@@ -144,9 +139,9 @@ Credit.prototype.equals = function (credit) {
  * @return {Credit}
  */
 Credit.getIonCredit = function (attribution) {
-  const showOnScreen =
+  var showOnScreen =
     defined(attribution.collapsible) && !attribution.collapsible;
-  const credit = new Credit(attribution.html, showOnScreen);
+  var credit = new Credit(attribution.html, showOnScreen);
 
   credit._isIon = credit.html.indexOf("ion-credit.png") !== -1;
   return credit;

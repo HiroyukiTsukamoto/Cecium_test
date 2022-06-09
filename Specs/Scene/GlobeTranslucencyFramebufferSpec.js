@@ -7,7 +7,7 @@ import { Texture } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 
 describe("Scene/GlobeTranslucencyFramebuffer", function () {
-  let scene;
+  var scene;
 
   beforeAll(function () {
     scene = createScene();
@@ -18,20 +18,20 @@ describe("Scene/GlobeTranslucencyFramebuffer", function () {
   });
 
   it("creates resources", function () {
-    const globeTranslucency = new GlobeTranslucencyFramebuffer();
-    const context = scene.context;
-    const viewport = new BoundingRectangle(0, 0, 100, 100);
-    const passState = new PassState(context);
+    var globeTranslucency = new GlobeTranslucencyFramebuffer();
+    var context = scene.context;
+    var viewport = new BoundingRectangle(0, 0, 100, 100);
+    var passState = new PassState(context);
     globeTranslucency.updateAndClear(false, viewport, context, passState);
-    expect(globeTranslucency.classificationTexture).toBeDefined();
-    expect(globeTranslucency.classificationFramebuffer).toBeDefined();
-    expect(globeTranslucency.packedDepthTexture).toBeDefined();
-    expect(globeTranslucency.packedDepthFramebuffer).toBeDefined();
+    expect(globeTranslucency._colorTexture).toBeDefined();
+    expect(globeTranslucency._framebuffer).toBeDefined();
+    expect(globeTranslucency._packedDepthTexture).toBeDefined();
+    expect(globeTranslucency._packedDepthFramebuffer).toBeDefined();
 
     if (context.depthTexture) {
-      expect(globeTranslucency.depthStencilTexture).toBeDefined();
+      expect(globeTranslucency._depthStencilTexture).toBeDefined();
     } else {
-      expect(globeTranslucency.depthStencilRenderbuffer).toBeDefined();
+      expect(globeTranslucency._depthStencilRenderbuffer).toBeDefined();
     }
 
     expect(globeTranslucency._packedDepthCommand).toBeDefined();
@@ -39,16 +39,15 @@ describe("Scene/GlobeTranslucencyFramebuffer", function () {
   });
 
   it("recreates resources when viewport changes", function () {
-    const globeTranslucency = new GlobeTranslucencyFramebuffer();
-    const frameState = scene.frameState;
-    const context = frameState.context;
-    const viewport = new BoundingRectangle(0, 0, 100, 100);
-    const passState = new PassState(context);
+    var globeTranslucency = new GlobeTranslucencyFramebuffer();
+    var frameState = scene.frameState;
+    var context = frameState.context;
+    var viewport = new BoundingRectangle(0, 0, 100, 100);
+    var passState = new PassState(context);
     globeTranslucency.updateAndClear(false, viewport, context, passState);
-    const firstColorTexture = globeTranslucency.classificationTexture;
-    const firstFramebuffer = globeTranslucency.classificationFramebuffer;
-    const firstPackedDepthFramebuffer =
-      globeTranslucency.packedDepthFramebuffer;
+    var firstColorTexture = globeTranslucency._colorTexture;
+    var firstFramebuffer = globeTranslucency._framebuffer;
+    var firstPackedDepthFramebuffer = globeTranslucency._packedDepthFramebuffer;
     expect(globeTranslucency._clearCommand.framebuffer).toBe(firstFramebuffer);
     expect(globeTranslucency._packedDepthCommand.framebuffer).toBe(
       firstPackedDepthFramebuffer
@@ -71,31 +70,31 @@ describe("Scene/GlobeTranslucencyFramebuffer", function () {
       return;
     }
 
-    const frameState = scene.frameState;
-    const context = frameState.context;
-    const globeTranslucency = new GlobeTranslucencyFramebuffer();
-    const viewport = new BoundingRectangle(0, 0, 100, 100);
-    const passState = new PassState(context);
+    var frameState = scene.frameState;
+    var context = frameState.context;
+    var globeTranslucency = new GlobeTranslucencyFramebuffer();
+    var viewport = new BoundingRectangle(0, 0, 100, 100);
+    var passState = new PassState(context);
     globeTranslucency.updateAndClear(false, viewport, context, passState);
-    const firstColorTexture = globeTranslucency.classificationTexture;
+    var firstColorTexture = globeTranslucency._colorTexture;
 
-    const expectedPixelDatatype = context.halfFloatingPointTexture
+    var expectedPixelDatatype = context.halfFloatingPointTexture
       ? PixelDatatype.HALF_FLOAT
       : PixelDatatype.FLOAT;
     globeTranslucency.updateAndClear(true, viewport, context, passState);
     expect(firstColorTexture.isDestroyed()).toBe(true);
-    expect(globeTranslucency.classificationTexture).not.toBe(firstColorTexture);
-    expect(globeTranslucency.classificationTexture.pixelDatatype).toBe(
+    expect(globeTranslucency._colorTexture).not.toBe(firstColorTexture);
+    expect(globeTranslucency._colorTexture.pixelDatatype).toBe(
       expectedPixelDatatype
     );
   });
 
   it("destroys", function () {
-    const globeTranslucency = new GlobeTranslucencyFramebuffer();
-    const frameState = scene.frameState;
-    const context = frameState.context;
-    const viewport = new BoundingRectangle(0, 0, 100, 100);
-    const passState = new PassState(context);
+    var globeTranslucency = new GlobeTranslucencyFramebuffer();
+    var frameState = scene.frameState;
+    var context = frameState.context;
+    var viewport = new BoundingRectangle(0, 0, 100, 100);
+    var passState = new PassState(context);
 
     globeTranslucency.updateAndClear(false, viewport, context, passState);
 

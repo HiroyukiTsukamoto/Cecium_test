@@ -38,7 +38,7 @@ function Cesium3DTilesetHeatmap(tilePropertyName) {
  * @private
  */
 function getHeatmapValue(tileValue, tilePropertyName) {
-  let value;
+  var value;
   if (tilePropertyName === "_loadTimestamp") {
     value = JulianDate.toDate(tileValue).getTime();
   } else {
@@ -70,9 +70,9 @@ Cesium3DTilesetHeatmap.prototype.setReferenceMinimumMaximum = function (
 };
 
 function getHeatmapValueAndUpdateMinimumMaximum(heatmap, tile) {
-  const tilePropertyName = heatmap.tilePropertyName;
+  var tilePropertyName = heatmap.tilePropertyName;
   if (defined(tilePropertyName)) {
-    const heatmapValue = getHeatmapValue(
+    var heatmapValue = getHeatmapValue(
       tile[tilePropertyName],
       tilePropertyName
     );
@@ -86,7 +86,7 @@ function getHeatmapValueAndUpdateMinimumMaximum(heatmap, tile) {
   }
 }
 
-const heatmapColors = [
+var heatmapColors = [
   new Color(0.1, 0.1, 0.1, 1), // Dark Gray
   new Color(0.153, 0.278, 0.878, 1), // Blue
   new Color(0.827, 0.231, 0.49, 1), // Pink
@@ -101,7 +101,7 @@ const heatmapColors = [
  * @param {FrameState} frameState The frame state.
  */
 Cesium3DTilesetHeatmap.prototype.colorize = function (tile, frameState) {
-  const tilePropertyName = this.tilePropertyName;
+  var tilePropertyName = this.tilePropertyName;
   if (
     !defined(tilePropertyName) ||
     !tile.contentAvailable ||
@@ -110,36 +110,32 @@ Cesium3DTilesetHeatmap.prototype.colorize = function (tile, frameState) {
     return;
   }
 
-  const heatmapValue = getHeatmapValueAndUpdateMinimumMaximum(this, tile);
-  const minimum = this._previousMinimum;
-  const maximum = this._previousMaximum;
+  var heatmapValue = getHeatmapValueAndUpdateMinimumMaximum(this, tile);
+  var minimum = this._previousMinimum;
+  var maximum = this._previousMaximum;
 
   if (minimum === Number.MAX_VALUE || maximum === -Number.MAX_VALUE) {
     return;
   }
 
   // Shift the minimum maximum window down to 0
-  const shiftedMax = maximum - minimum + CesiumMath.EPSILON7; // Prevent divide by 0
-  const shiftedValue = CesiumMath.clamp(
-    heatmapValue - minimum,
-    0.0,
-    shiftedMax
-  );
+  var shiftedMax = maximum - minimum + CesiumMath.EPSILON7; // Prevent divide by 0
+  var shiftedValue = CesiumMath.clamp(heatmapValue - minimum, 0.0, shiftedMax);
 
   // Get position between minimum and maximum and convert that to a position in the color array
-  const zeroToOne = shiftedValue / shiftedMax;
-  const lastIndex = heatmapColors.length - 1.0;
-  const colorPosition = zeroToOne * lastIndex;
+  var zeroToOne = shiftedValue / shiftedMax;
+  var lastIndex = heatmapColors.length - 1.0;
+  var colorPosition = zeroToOne * lastIndex;
 
   // Take floor and ceil of the value to get the two colors to lerp between, lerp using the fractional portion
-  const colorPositionFloor = Math.floor(colorPosition);
-  const colorPositionCeil = Math.ceil(colorPosition);
-  const t = colorPosition - colorPositionFloor;
-  const colorZero = heatmapColors[colorPositionFloor];
-  const colorOne = heatmapColors[colorPositionCeil];
+  var colorPositionFloor = Math.floor(colorPosition);
+  var colorPositionCeil = Math.ceil(colorPosition);
+  var t = colorPosition - colorPositionFloor;
+  var colorZero = heatmapColors[colorPositionFloor];
+  var colorOne = heatmapColors[colorPositionCeil];
 
   // Perform the lerp
-  const finalColor = Color.clone(Color.WHITE);
+  var finalColor = Color.clone(Color.WHITE);
   finalColor.red = CesiumMath.lerp(colorZero.red, colorOne.red, t);
   finalColor.green = CesiumMath.lerp(colorZero.green, colorOne.green, t);
   finalColor.blue = CesiumMath.lerp(colorZero.blue, colorOne.blue, t);
@@ -151,11 +147,11 @@ Cesium3DTilesetHeatmap.prototype.colorize = function (tile, frameState) {
  */
 Cesium3DTilesetHeatmap.prototype.resetMinimumMaximum = function () {
   // For heat map colorization
-  const tilePropertyName = this.tilePropertyName;
+  var tilePropertyName = this.tilePropertyName;
   if (defined(tilePropertyName)) {
-    const referenceMinimum = this._referenceMinimum[tilePropertyName];
-    const referenceMaximum = this._referenceMaximum[tilePropertyName];
-    const useReference = defined(referenceMinimum) && defined(referenceMaximum);
+    var referenceMinimum = this._referenceMinimum[tilePropertyName];
+    var referenceMaximum = this._referenceMaximum[tilePropertyName];
+    var useReference = defined(referenceMinimum) && defined(referenceMaximum);
     this._previousMinimum = useReference ? referenceMinimum : this._minimum;
     this._previousMaximum = useReference ? referenceMaximum : this._maximum;
     this._minimum = Number.MAX_VALUE;

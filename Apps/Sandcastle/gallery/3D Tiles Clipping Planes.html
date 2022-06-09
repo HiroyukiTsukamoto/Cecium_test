@@ -62,37 +62,37 @@
     </div>
 
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
         // Add a clipping plane, a plane geometry to show the representation of the
         // plane, and control the magnitude of the plane distance with the mouse.
 
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           infoBox: false,
           selectionIndicator: false,
         });
-        const scene = viewer.scene;
+        var scene = viewer.scene;
 
-        const clipObjects = ["BIM", "Point Cloud", "Instanced", "Model"];
-        const viewModel = {
+        var clipObjects = ["BIM", "Point Cloud", "Instanced", "Model"];
+        var viewModel = {
           debugBoundingVolumesEnabled: false,
           edgeStylingEnabled: true,
           exampleTypes: clipObjects,
           currentExampleType: clipObjects[0],
         };
 
-        let targetY = 0.0;
-        let planeEntities = [];
-        let selectedPlane;
-        let clippingPlanes;
+        var targetY = 0.0;
+        var planeEntities = [];
+        var selectedPlane;
+        var clippingPlanes;
 
         // Select plane when mouse down
-        const downHandler = new Cesium.ScreenSpaceEventHandler(
+        var downHandler = new Cesium.ScreenSpaceEventHandler(
           viewer.scene.canvas
         );
         downHandler.setInputAction(function (movement) {
-          const pickedObject = scene.pick(movement.position);
+          var pickedObject = scene.pick(movement.position);
           if (
             Cesium.defined(pickedObject) &&
             Cesium.defined(pickedObject.id) &&
@@ -106,9 +106,7 @@
         }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
         // Release plane on mouse up
-        const upHandler = new Cesium.ScreenSpaceEventHandler(
-          viewer.scene.canvas
-        );
+        var upHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
         upHandler.setInputAction(function () {
           if (Cesium.defined(selectedPlane)) {
             selectedPlane.material = Cesium.Color.WHITE.withAlpha(0.1);
@@ -120,12 +118,12 @@
         }, Cesium.ScreenSpaceEventType.LEFT_UP);
 
         // Update plane on mouse move
-        const moveHandler = new Cesium.ScreenSpaceEventHandler(
+        var moveHandler = new Cesium.ScreenSpaceEventHandler(
           viewer.scene.canvas
         );
         moveHandler.setInputAction(function (movement) {
           if (Cesium.defined(selectedPlane)) {
-            const deltaY = movement.startPosition.y - movement.endPosition.y;
+            var deltaY = movement.startPosition.y - movement.endPosition.y;
             targetY += deltaY;
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
@@ -137,7 +135,7 @@
           };
         }
 
-        let tileset;
+        var tileset;
         function loadTileset(url) {
           clippingPlanes = new Cesium.ClippingPlaneCollection({
             planes: [
@@ -160,8 +158,8 @@
             viewModel.debugBoundingVolumesEnabled;
           return tileset.readyPromise
             .then(function () {
-              const boundingSphere = tileset.boundingSphere;
-              const radius = boundingSphere.radius;
+              var boundingSphere = tileset.boundingSphere;
+              var radius = boundingSphere.radius;
 
               viewer.zoomTo(
                 tileset,
@@ -176,17 +174,17 @@
               ) {
                 // The clipping plane is initially positioned at the tileset's root transform.
                 // Apply an additional matrix to center the clipping plane on the bounding sphere center.
-                const transformCenter = Cesium.Matrix4.getTranslation(
+                var transformCenter = Cesium.Matrix4.getTranslation(
                   tileset.root.transform,
                   new Cesium.Cartesian3()
                 );
-                const transformCartographic = Cesium.Cartographic.fromCartesian(
+                var transformCartographic = Cesium.Cartographic.fromCartesian(
                   transformCenter
                 );
-                const boundingSphereCartographic = Cesium.Cartographic.fromCartesian(
+                var boundingSphereCartographic = Cesium.Cartographic.fromCartesian(
                   tileset.boundingSphere.center
                 );
-                const height =
+                var height =
                   boundingSphereCartographic.height -
                   transformCartographic.height;
                 clippingPlanes.modelMatrix = Cesium.Matrix4.fromTranslation(
@@ -194,9 +192,9 @@
                 );
               }
 
-              for (let i = 0; i < clippingPlanes.length; ++i) {
-                const plane = clippingPlanes.get(i);
-                const planeEntity = viewer.entities.add({
+              for (var i = 0; i < clippingPlanes.length; ++i) {
+                var plane = clippingPlanes.get(i);
+                var planeEntity = viewer.entities.add({
                   position: boundingSphere.center,
                   plane: {
                     dimensions: new Cesium.Cartesian2(
@@ -217,7 +215,7 @@
               }
               return tileset;
             })
-            .catch(function (error) {
+            .otherwise(function (error) {
               console.log(error);
             });
         }
@@ -233,20 +231,20 @@
             edgeWidth: viewModel.edgeStylingEnabled ? 1.0 : 0.0,
           });
 
-          const position = Cesium.Cartesian3.fromDegrees(
+          var position = Cesium.Cartesian3.fromDegrees(
             -123.0744619,
             44.0503706,
             300.0
           );
-          const heading = Cesium.Math.toRadians(135.0);
-          const pitch = 0.0;
-          const roll = 0.0;
-          const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-          const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+          var heading = Cesium.Math.toRadians(135.0);
+          var pitch = 0.0;
+          var roll = 0.0;
+          var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+          var orientation = Cesium.Transforms.headingPitchRollQuaternion(
             position,
             hpr
           );
-          const entity = viewer.entities.add({
+          var entity = viewer.entities.add({
             name: url,
             position: position,
             orientation: orientation,
@@ -260,9 +258,9 @@
 
           viewer.trackedEntity = entity;
 
-          for (let i = 0; i < clippingPlanes.length; ++i) {
-            const plane = clippingPlanes.get(i);
-            const planeEntity = viewer.entities.add({
+          for (var i = 0; i < clippingPlanes.length; ++i) {
+            var plane = clippingPlanes.get(i);
+            var planeEntity = viewer.entities.add({
               position: position,
               plane: {
                 dimensions: new Cesium.Cartesian2(300.0, 300.0),
@@ -281,16 +279,16 @@
         }
 
         // Power Plant design model provided by Bentley Systems
-        const bimUrl = Cesium.IonResource.fromAssetId(8564);
-        const pointCloudUrl = Cesium.IonResource.fromAssetId(16421);
-        const instancedUrl =
+        var bimUrl = Cesium.IonResource.fromAssetId(8564);
+        var pointCloudUrl = Cesium.IonResource.fromAssetId(16421);
+        var instancedUrl =
           "../../SampleData/Cesium3DTiles/Instanced/InstancedOrientation/tileset.json";
-        const modelUrl = "../../SampleData/models/CesiumAir/Cesium_Air.glb";
+        var modelUrl = "../../SampleData/models/CesiumAir/Cesium_Air.glb";
 
         loadTileset(bimUrl);
 
         // Track and create the bindings for the view model
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.track(viewModel);
         Cesium.knockout.applyBindings(viewModel, toolbar);
 
@@ -325,7 +323,7 @@
         Cesium.knockout
           .getObservable(viewModel, "edgeStylingEnabled")
           .subscribe(function (value) {
-            const edgeWidth = value ? 1.0 : 0.0;
+            var edgeWidth = value ? 1.0 : 0.0;
 
             clippingPlanes.edgeWidth = edgeWidth;
           });
@@ -340,10 +338,10 @@
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

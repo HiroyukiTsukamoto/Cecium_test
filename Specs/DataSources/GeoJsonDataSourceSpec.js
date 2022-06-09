@@ -10,15 +10,16 @@ import { ConstantProperty } from "../../Source/Cesium.js";
 import { EntityCollection } from "../../Source/Cesium.js";
 import { GeoJsonDataSource } from "../../Source/Cesium.js";
 import { HeightReference } from "../../Source/Cesium.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("DataSources/GeoJsonDataSource", function () {
-  let defaultMarkerSize;
-  let defaultSymbol;
-  let defaultMarkerColor;
-  let defaultStroke;
-  let defaultStrokeWidth;
-  let defaultFill;
-  let defaultClampToGround;
+  var defaultMarkerSize;
+  var defaultSymbol;
+  var defaultMarkerColor;
+  var defaultStroke;
+  var defaultStrokeWidth;
+  var defaultFill;
+  var defaultClampToGround;
 
   beforeAll(function () {
     defaultMarkerSize = GeoJsonDataSource.markerSize;
@@ -40,7 +41,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     GeoJsonDataSource.clampToGround = defaultClampToGround;
   });
 
-  const time = new JulianDate();
+  var time = new JulianDate();
 
   function coordinatesToCartesian(coordinates) {
     return Cartesian3.fromDegrees(
@@ -51,17 +52,17 @@ describe("DataSources/GeoJsonDataSource", function () {
   }
 
   function coordinatesArrayToCartesian(coordinates) {
-    const result = [];
-    for (let i = 0; i < coordinates.length; i++) {
+    var result = [];
+    for (var i = 0; i < coordinates.length; i++) {
       result.push(coordinatesToCartesian(coordinates[i]));
     }
     return result;
   }
 
   function multiLineToCartesian(geometry) {
-    const coordinates = geometry.coordinates;
-    const result = [];
-    for (let i = 0; i < coordinates.length; i++) {
+    var coordinates = geometry.coordinates;
+    var result = [];
+    for (var i = 0; i < coordinates.length; i++) {
       result.push(coordinatesArrayToCartesian(coordinates[i]));
     }
     return result;
@@ -72,19 +73,19 @@ describe("DataSources/GeoJsonDataSource", function () {
   }
 
   function multiPolygonCoordinatesToCartesian(coordinates) {
-    const result = [];
-    for (let i = 0; i < coordinates.length; i++) {
+    var result = [];
+    for (var i = 0; i < coordinates.length; i++) {
       result.push(coordinatesArrayToCartesian(coordinates[i][0]));
     }
     return result;
   }
 
-  const point = {
+  var point = {
     type: "Point",
     coordinates: [102.0, 0.5],
   };
 
-  const pointNamedCrs = {
+  var pointNamedCrs = {
     type: "Point",
     coordinates: [102.0, 0.5],
     crs: {
@@ -95,7 +96,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     },
   };
 
-  const pointNamedCrsOgc = {
+  var pointNamedCrsOgc = {
     type: "Point",
     coordinates: [102.0, 0.5],
     crs: {
@@ -106,7 +107,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     },
   };
 
-  const pointNamedCrsEpsg = {
+  var pointNamedCrsEpsg = {
     type: "Point",
     coordinates: [102.0, 0.5],
     crs: {
@@ -117,7 +118,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     },
   };
 
-  const pointCrsLinkHref = {
+  var pointCrsLinkHref = {
     type: "Point",
     coordinates: [102.0, 0.5],
     crs: {
@@ -128,7 +129,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     },
   };
 
-  const pointCrsEpsg = {
+  var pointCrsEpsg = {
     type: "Point",
     coordinates: [102.0, 0.5],
     crs: {
@@ -139,7 +140,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     },
   };
 
-  const lineString = {
+  var lineString = {
     type: "LineString",
     coordinates: [
       [100.0, 0.0],
@@ -147,7 +148,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const polygon = {
+  var polygon = {
     type: "Polygon",
     coordinates: [
       [
@@ -160,7 +161,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const polygonWithHoles = {
+  var polygonWithHoles = {
     type: "Polygon",
     coordinates: [
       [
@@ -180,7 +181,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const polygonWithHeights = {
+  var polygonWithHeights = {
     type: "Polygon",
     coordinates: [
       [
@@ -193,7 +194,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const multiPoint = {
+  var multiPoint = {
     type: "MultiPoint",
     coordinates: [
       [100.0, 0.0],
@@ -202,7 +203,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const multiLineString = {
+  var multiLineString = {
     type: "MultiLineString",
     coordinates: [
       [
@@ -216,7 +217,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const multiPolygon = {
+  var multiPolygon = {
     type: "MultiPolygon",
     coordinates: [
       [
@@ -240,7 +241,7 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const geometryCollection = {
+  var geometryCollection = {
     type: "GeometryCollection",
     geometries: [
       {
@@ -257,12 +258,12 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const feature = {
+  var feature = {
     type: "Feature",
     geometry: point,
   };
 
-  const featureWithNullName = {
+  var featureWithNullName = {
     type: "Feature",
     geometry: point,
     properties: {
@@ -270,37 +271,37 @@ describe("DataSources/GeoJsonDataSource", function () {
     },
   };
 
-  const featureWithId = {
+  var featureWithId = {
     id: "myId",
     type: "Feature",
     geometry: geometryCollection,
   };
 
-  const featureUndefinedGeometry = {
+  var featureUndefinedGeometry = {
     type: "Feature",
   };
 
-  const featureNullGeometry = {
+  var featureNullGeometry = {
     type: "Feature",
     geometry: null,
   };
 
-  const unknownGeometry = {
+  var unknownGeometry = {
     type: "TimeyWimey",
     coordinates: [0, 0],
   };
 
-  const featureUnknownGeometry = {
+  var featureUnknownGeometry = {
     type: "Feature",
     geometry: unknownGeometry,
   };
 
-  const geometryCollectionUnknownType = {
+  var geometryCollectionUnknownType = {
     type: "GeometryCollection",
     geometries: [unknownGeometry],
   };
 
-  const topoJson = {
+  var topoJson = {
     type: "Topology",
     transform: {
       scale: [1, 1],
@@ -345,13 +346,13 @@ describe("DataSources/GeoJsonDataSource", function () {
     ],
   };
 
-  const mixedGeometries = {
+  var mixedGeometries = {
     type: "GeometryCollection",
     geometries: [lineString, polygon, point],
   };
 
   it("default constructor has expected values", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     expect(dataSource.changedEvent).toBeInstanceOf(Event);
     expect(dataSource.errorEvent).toBeInstanceOf(Event);
     expect(dataSource.clock).toBeUndefined();
@@ -371,12 +372,12 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("setting name raises changed event", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
 
-    const spy = jasmine.createSpy("changedEvent");
+    var spy = jasmine.createSpy("changedEvent");
     dataSource.changedEvent.addEventListener(spy);
 
-    const newName = "chester";
+    var newName = "chester";
     dataSource.name = newName;
     expect(dataSource.name).toEqual(newName);
     expect(spy.calls.count()).toEqual(1);
@@ -384,7 +385,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("show sets underlying entity collection show.", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
 
     dataSource.show = false;
     expect(dataSource.show).toBe(false);
@@ -396,20 +397,20 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with null geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureNullGeometry).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(featureNullGeometry.properties);
       expect(entity.position).toBeUndefined();
     });
   });
 
   it("Works with feature", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(feature).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(feature.properties);
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(feature.geometry.coordinates)
@@ -418,18 +419,8 @@ describe("DataSources/GeoJsonDataSource", function () {
     });
   });
 
-  it("Adds a feature without removing existing entities", function () {
-    const dataSource = new GeoJsonDataSource();
-    return dataSource.load(feature).then(function () {
-      return dataSource.process(mixedGeometries).then(function () {
-        // `feature` has one Entity, `mixedGeometries` has 3
-        expect(dataSource.entities.values.length).toBe(4);
-      });
-    });
-  });
-
   it("Creates default description from properties", function () {
-    const featureWithProperties = {
+    var featureWithProperties = {
       type: "Feature",
       geometry: point,
       properties: {
@@ -439,12 +430,12 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithProperties).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.description).toBeDefined();
-      const description = entity.description.getValue(time);
+      var description = entity.description.getValue(time);
       expect(description).toContain("prop1");
       expect(description).toContain("prop2");
       expect(description).toContain("prop3");
@@ -455,7 +446,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Creates custom description string from properties", function () {
-    const featureWithProperties = {
+    var featureWithProperties = {
       type: "Feature",
       geometry: point,
       properties: {
@@ -465,32 +456,32 @@ describe("DataSources/GeoJsonDataSource", function () {
     };
 
     function testDescribe(properties) {
-      let desc = "";
-      for (const key in properties) {
+      var desc = "";
+      for (var key in properties) {
         if (properties.hasOwnProperty(key)) {
-          const value = properties[key];
-          desc += `${key} = ${value}. `;
+          var value = properties[key];
+          desc += key + " = " + value + ". ";
         }
       }
       return desc;
     }
 
-    const dataSource = new GeoJsonDataSource();
-    const options = {
+    var dataSource = new GeoJsonDataSource();
+    var options = {
       describe: testDescribe,
     };
     return dataSource.load(featureWithProperties, options).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.description).toBeDefined();
-      const description = entity.description.getValue(time);
+      var description = entity.description.getValue(time);
       expect(description).toContain("prop1 = dog.");
       expect(description).toContain("prop2 = cat.");
     });
   });
 
   it("Creates custom description from properties, using a describeProperty", function () {
-    const featureWithProperties = {
+    var featureWithProperties = {
       type: "Feature",
       geometry: point,
       properties: {
@@ -500,17 +491,17 @@ describe("DataSources/GeoJsonDataSource", function () {
     };
 
     function testDescribe(properties) {
-      let desc = "";
-      for (const key in properties) {
+      var desc = "";
+      for (var key in properties) {
         if (properties.hasOwnProperty(key)) {
-          const value = properties[key];
-          desc += `${key} = ${value}; `;
+          var value = properties[key];
+          desc += key + " = " + value + "; ";
         }
       }
       return desc;
     }
     function createDescriptionCallback(describe, properties, nameProperty) {
-      let description;
+      var description;
       return function (time, result) {
         if (!description) {
           description = describe(properties, nameProperty);
@@ -525,22 +516,22 @@ describe("DataSources/GeoJsonDataSource", function () {
       );
     }
 
-    const dataSource = new GeoJsonDataSource();
-    const options = {
+    var dataSource = new GeoJsonDataSource();
+    var options = {
       describe: testDescribeProperty,
     };
     return dataSource.load(featureWithProperties, options).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.description).toBeDefined();
-      const description = entity.description.getValue(time);
+      var description = entity.description.getValue(time);
       expect(description).toContain("prop1 = dog;");
       expect(description).toContain("prop2 = cat;");
     });
   });
 
   it("Uses description if present", function () {
-    const featureWithDescription = {
+    var featureWithDescription = {
       type: "Feature",
       geometry: point,
       properties: {
@@ -551,10 +542,10 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithDescription).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.description).toBeDefined();
       expect(entity.description.getValue(time)).toEqual(
         featureWithDescription.properties.description
@@ -563,7 +554,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Handles null description", function () {
-    const featureWithNullDescription = {
+    var featureWithNullDescription = {
       type: "Feature",
       geometry: point,
       properties: {
@@ -571,19 +562,19 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithNullDescription).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.description).toBeUndefined();
     });
   });
 
   it('Does not use "name" property as the object\'s name if it is null', function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithNullName).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.name).toBeUndefined();
       expect(entity.properties.name.getValue()).toBe(
         featureWithNullName.properties.name
@@ -599,68 +590,68 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with feature with id", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithId).then(function () {
-      const entityCollection = dataSource.entities;
-      let entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.id).toEqual(featureWithId.id);
       entity = entityCollection.values[1];
-      expect(entity.id).toEqual(`${featureWithId.id}_2`);
+      expect(entity.id).toEqual(featureWithId.id + "_2");
     });
   });
 
   it("Works with null id", function () {
-    const geojson = {
+    var geojson = {
       id: null,
       type: "Feature",
       geometry: null,
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geojson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.id).not.toEqual(null);
     });
   });
 
   it("Works with null properties", function () {
-    const geojson = {
+    var geojson = {
       type: "Feature",
       geometry: null,
       properties: null,
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geojson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBeUndefined();
     });
   });
 
   it("Has entity collection with link to data source", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithId).then(function () {
-      const entityCollection = dataSource.entities;
+      var entityCollection = dataSource.entities;
       expect(entityCollection.owner).toEqual(dataSource);
     });
   });
 
   it("Has entity with link to entity collection", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(featureWithId).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.entityCollection).toEqual(entityCollection);
     });
   });
 
   it("Works with point geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(point).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(point.properties);
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(point.coordinates)
@@ -671,14 +662,14 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with point geometry clamped to ground", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(point, {
         clampToGround: true,
       })
       .then(function () {
-        const entityCollection = dataSource.entities;
-        const entity = entityCollection.values[0];
+        var entityCollection = dataSource.entities;
+        var entity = entityCollection.values[0];
         expect(entity.properties).toBe(point.properties);
         expect(entity.position.getValue(time)).toEqual(
           coordinatesToCartesian(point.coordinates)
@@ -692,7 +683,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with point geometry with simplystyle", function () {
-    const geojson = {
+    var geojson = {
       type: "Point",
       coordinates: [102.0, 0.5],
       properties: {
@@ -702,12 +693,12 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geojson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.billboard).toBeDefined();
-      return Promise.resolve(
+      return when(
         dataSource._pinBuilder.fromMakiIconId("bus", Color.WHITE, 64)
       ).then(function (image) {
         expect(entity.billboard.image.getValue()).toBe(image);
@@ -716,7 +707,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with point geometry with null simplystyle", function () {
-    const geojson = {
+    var geojson = {
       type: "Point",
       coordinates: [102.0, 0.5],
       properties: {
@@ -726,21 +717,21 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geojson).then(function () {
-      const image = dataSource._pinBuilder.fromColor(
+      var image = dataSource._pinBuilder.fromColor(
         GeoJsonDataSource.markerColor,
         GeoJsonDataSource.markerSize
       );
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.billboard).toBeDefined();
       expect(entity.billboard.image.getValue()).toBe(image);
     });
   });
 
   it("Works with point geometry and unknown simplystyle", function () {
-    const geojson = {
+    var geojson = {
       type: "Point",
       coordinates: [102.0, 0.5],
       properties: {
@@ -750,29 +741,29 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geojson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.billboard).toBeDefined();
-      return Promise.resolve(
-        dataSource._pinBuilder.fromColor(Color.WHITE, 64)
-      ).then(function (image) {
-        expect(entity.billboard.image.getValue()).toBe(image);
-      });
+      return when(dataSource._pinBuilder.fromColor(Color.WHITE, 64)).then(
+        function (image) {
+          expect(entity.billboard.image.getValue()).toBe(image);
+        }
+      );
     });
   });
 
   it("Works with multipoint geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(multiPoint).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
-      const expectedPositions = coordinatesArrayToCartesian(
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
+      var expectedPositions = coordinatesArrayToCartesian(
         multiPoint.coordinates
       );
-      for (let i = 0; i < multiPoint.coordinates.length; i++) {
-        const entity = entities[i];
+      for (var i = 0; i < multiPoint.coordinates.length; i++) {
+        var entity = entities[i];
         expect(entity.properties).toBe(multiPoint.properties);
         expect(entity.position.getValue(time)).toEqual(expectedPositions[i]);
         expect(entity.billboard).toBeDefined();
@@ -783,15 +774,15 @@ describe("DataSources/GeoJsonDataSource", function () {
 
   it("Works with multipoint geometry clamped to ground", function () {
     GeoJsonDataSource.clampToGround = true;
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(multiPoint).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
-      const expectedPositions = coordinatesArrayToCartesian(
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
+      var expectedPositions = coordinatesArrayToCartesian(
         multiPoint.coordinates
       );
-      for (let i = 0; i < multiPoint.coordinates.length; i++) {
-        const entity = entities[i];
+      for (var i = 0; i < multiPoint.coordinates.length; i++) {
+        var entity = entities[i];
         expect(entity.properties).toBe(multiPoint.properties);
         expect(entity.position.getValue(time)).toEqual(expectedPositions[i]);
         expect(entity.billboard).toBeDefined();
@@ -804,10 +795,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with lineString geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(lineString).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(lineString.properties);
       expect(entity.polyline.positions.getValue(time)).toEqual(
         coordinatesArrayToCartesian(lineString.coordinates)
@@ -820,14 +811,14 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with lineString geometry clamped to ground", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(lineString, {
         clampToGround: true,
       })
       .then(function () {
-        const entityCollection = dataSource.entities;
-        const entity = entityCollection.values[0];
+        var entityCollection = dataSource.entities;
+        var entity = entityCollection.values[0];
         expect(entity.properties).toBe(lineString.properties);
         expect(entity.polyline.positions.getValue(time)).toEqual(
           coordinatesArrayToCartesian(lineString.coordinates)
@@ -841,13 +832,13 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with multiLineString geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(multiLineString).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
-      const lines = multiLineToCartesian(multiLineString);
-      for (let i = 0; i < multiLineString.coordinates.length; i++) {
-        const entity = entities[i];
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
+      var lines = multiLineToCartesian(multiLineString);
+      for (var i = 0; i < multiLineString.coordinates.length; i++) {
+        var entity = entities[i];
         expect(entity.properties).toBe(multiLineString.properties);
         expect(entity.polyline.positions.getValue(time)).toEqual(lines[i]);
         expect(entity.polyline.material.color.getValue(time)).toEqual(
@@ -859,17 +850,17 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with multiLineString geometry clamped to ground", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(multiLineString, {
         clampToGround: true,
       })
       .then(function () {
-        const entityCollection = dataSource.entities;
-        const entities = entityCollection.values;
-        const lines = multiLineToCartesian(multiLineString);
-        for (let i = 0; i < multiLineString.coordinates.length; i++) {
-          const entity = entities[i];
+        var entityCollection = dataSource.entities;
+        var entities = entityCollection.values;
+        var lines = multiLineToCartesian(multiLineString);
+        for (var i = 0; i < multiLineString.coordinates.length; i++) {
+          var entity = entities[i];
           expect(entity.properties).toBe(multiLineString.properties);
           expect(entity.polyline.positions.getValue(time)).toEqual(lines[i]);
           expect(entity.polyline.material.color.getValue(time)).toEqual(
@@ -882,10 +873,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polygon geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(polygon).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(polygon.properties);
       expect(entity.polygon.hierarchy.getValue(time)).toEqual(
         new PolygonHierarchy(
@@ -908,14 +899,14 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polygon geometry clamped to ground", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(polygon, {
         clampToGround: true,
       })
       .then(function () {
-        const entityCollection = dataSource.entities;
-        const entity = entityCollection.values[0];
+        var entityCollection = dataSource.entities;
+        var entity = entityCollection.values[0];
         expect(entity.properties).toBe(polygon.properties);
         expect(entity.polygon.hierarchy.getValue(time)).toEqual(
           new PolygonHierarchy(
@@ -938,10 +929,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polygon geometry with Heights", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(polygonWithHeights).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(polygonWithHeights.properties);
       expect(entity.polygon.hierarchy.getValue(time)).toEqual(
         new PolygonHierarchy(
@@ -963,10 +954,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polygon geometry with holes", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(polygonWithHoles).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(polygonWithHoles.properties);
       expect(entity.polygon.hierarchy.getValue(time)).toEqual(
         new PolygonHierarchy(
@@ -982,15 +973,15 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with multiPolygon geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(multiPolygon).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
-      const positions = multiPolygonCoordinatesToCartesian(
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
+      var positions = multiPolygonCoordinatesToCartesian(
         multiPolygon.coordinates
       );
-      for (let i = 0; i < multiPolygon.coordinates.length; i++) {
-        const entity = entities[i];
+      for (var i = 0; i < multiPolygon.coordinates.length; i++) {
+        var entity = entities[i];
         expect(entity.properties).toBe(multiPolygon.properties);
         expect(entity.polygon.hierarchy.getValue(time)).toEqual(
           new PolygonHierarchy(positions[i])
@@ -1000,12 +991,12 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with topojson geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(topoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
 
-      const polygon = entities[0];
+      var polygon = entities[0];
       expect(polygon.properties.myProps.getValue()).toBe(
         topoJson.objects.polygon.properties.myProps
       );
@@ -1015,7 +1006,7 @@ describe("DataSources/GeoJsonDataSource", function () {
 
       expect(polygon.polygon.hierarchy).toBeDefined();
 
-      const lineString = entities[1];
+      var lineString = entities[1];
       expect(lineString.properties.myProps.getValue()).toBe(
         topoJson.objects.lineString.properties.myProps
       );
@@ -1028,7 +1019,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Can provide base styling options", function () {
-    const options = {
+    var options = {
       markerSize: 10,
       markerSymbol: "bus",
       markerColor: Color.GREEN,
@@ -1037,12 +1028,12 @@ describe("DataSources/GeoJsonDataSource", function () {
       fill: Color.RED,
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(mixedGeometries, options).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
 
-      let entity = entities[0];
+      var entity = entities[0];
       expect(entity.polyline.material.color.getValue()).toEqual(options.stroke);
       expect(entity.polyline.width.getValue()).toEqual(options.strokeWidth);
 
@@ -1054,7 +1045,7 @@ describe("DataSources/GeoJsonDataSource", function () {
       );
 
       entity = entities[2];
-      const expectedImage = dataSource._pinBuilder.fromMakiIconId(
+      var expectedImage = dataSource._pinBuilder.fromMakiIconId(
         options.markerSymbol,
         options.markerColor,
         options.markerSize
@@ -1071,12 +1062,12 @@ describe("DataSources/GeoJsonDataSource", function () {
     GeoJsonDataSource.strokeWidth = 8;
     GeoJsonDataSource.fill = Color.RED;
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(mixedGeometries).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
 
-      let entity = entities[0];
+      var entity = entities[0];
       expect(entity.polyline.material.color.getValue()).toEqual(
         GeoJsonDataSource.stroke
       );
@@ -1096,7 +1087,7 @@ describe("DataSources/GeoJsonDataSource", function () {
       );
 
       entity = entities[2];
-      const expectedImage = dataSource._pinBuilder.fromMakiIconId(
+      var expectedImage = dataSource._pinBuilder.fromMakiIconId(
         GeoJsonDataSource.markerSymbol,
         GeoJsonDataSource.markerColor,
         GeoJsonDataSource.markerSize
@@ -1106,20 +1097,20 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Generates description", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(topoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entities = entityCollection.values;
-      const polygon = entities[0];
+      var entityCollection = dataSource.entities;
+      var entities = entityCollection.values;
+      var polygon = entities[0];
       expect(polygon.description).toBeDefined();
     });
   });
 
   it("Works with geometrycollection", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geometryCollection).then(function () {
-      const entityCollection = dataSource.entities;
-      let entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.properties).toBe(geometryCollection.properties);
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(geometryCollection.geometries[0].coordinates)
@@ -1137,10 +1128,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with named crs", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(pointNamedCrs).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(point.coordinates)
       );
@@ -1148,10 +1139,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with named crs OGC:1.3:CRS84", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(pointNamedCrsOgc).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(point.coordinates)
       );
@@ -1159,10 +1150,10 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with named crs EPSG::4326", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(pointNamedCrsEpsg).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(point.coordinates)
       );
@@ -1170,12 +1161,12 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with link crs href", function () {
-    const projectedPosition = new Cartesian3(1, 2, 3);
+    var projectedPosition = new Cartesian3(1, 2, 3);
     GeoJsonDataSource.crsLinkHrefs[
       pointCrsLinkHref.crs.properties.href
     ] = function (properties) {
       expect(properties).toBe(pointCrsLinkHref.crs.properties);
-      return Promise.resolve(properties.href).then(function (href) {
+      return when(properties.href).then(function (href) {
         return function (coordinate) {
           expect(coordinate).toBe(pointCrsLinkHref.coordinates);
           return projectedPosition;
@@ -1183,20 +1174,20 @@ describe("DataSources/GeoJsonDataSource", function () {
       });
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(pointCrsLinkHref).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.position.getValue(time)).toEqual(projectedPosition);
     });
   });
 
   it("Works with EPSG crs", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
 
     return dataSource.load(pointCrsEpsg).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.position.getValue(time)).toEqual(
         coordinatesToCartesian(point.coordinates)
       );
@@ -1204,7 +1195,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polyline using simplestyle", function () {
-    const geoJson = {
+    var geoJson = {
       type: "Feature",
       geometry: {
         type: "LineString",
@@ -1222,16 +1213,16 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.name).toEqual(geoJson.properties.title);
       expect(entity.description.getValue(time)).toEqual(
         geoJson.properties.description
       );
 
-      const expectedColor = Color.fromCssColorString(geoJson.properties.stroke);
+      var expectedColor = Color.fromCssColorString(geoJson.properties.stroke);
       expectedColor.alpha = geoJson.properties["stroke-opacity"];
       expect(entity.polyline.material.color.getValue(time)).toEqual(
         expectedColor
@@ -1243,7 +1234,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polyline using null simplestyle values", function () {
-    const geoJson = {
+    var geoJson = {
       type: "Feature",
       geometry: {
         type: "LineString",
@@ -1261,10 +1252,10 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.name).toBeUndefined();
       expect(entity.description).toBeUndefined();
       expect(entity.polyline.material.color.getValue(time)).toEqual(
@@ -1276,45 +1267,8 @@ describe("DataSources/GeoJsonDataSource", function () {
     });
   });
 
-  it("Works with polyline using null simplestyle values but with opacity", function () {
-    const geoJson = {
-      type: "Feature",
-      geometry: {
-        type: "LineString",
-        coordinates: [
-          [100.0, 0.0],
-          [101.0, 1.0],
-        ],
-      },
-      properties: {
-        title: null,
-        description: null,
-        stroke: null,
-        "stroke-opacity": 0.42,
-        "stroke-width": null,
-      },
-    };
-
-    const dataSource = new GeoJsonDataSource();
-    return dataSource.load(geoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
-      expect(entity.name).toBeUndefined();
-      expect(entity.description).toBeUndefined();
-
-      const expectedMaterialColor = GeoJsonDataSource.stroke.clone();
-      expectedMaterialColor.alpha = 0.42;
-      expect(entity.polyline.material.color.getValue(time)).toEqual(
-        expectedMaterialColor
-      );
-      expect(entity.polyline.width.getValue(time)).toEqual(
-        GeoJsonDataSource.strokeWidth
-      );
-    });
-  });
-
   it("Works with polygon using simplestyle", function () {
-    const geoJson = {
+    var geoJson = {
       type: "Feature",
       geometry: {
         type: "Polygon",
@@ -1339,19 +1293,19 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.name).toEqual(geoJson.properties.title);
       expect(entity.description.getValue(time)).toEqual(
         geoJson.properties.description
       );
 
-      const expectedFill = Color.fromCssColorString(geoJson.properties.fill);
+      var expectedFill = Color.fromCssColorString(geoJson.properties.fill);
       expectedFill.alpha = geoJson.properties["fill-opacity"];
 
-      const expectedOutlineColor = Color.fromCssColorString(
+      var expectedOutlineColor = Color.fromCssColorString(
         geoJson.properties.stroke
       );
       expectedOutlineColor.alpha = geoJson.properties["stroke-opacity"];
@@ -1368,7 +1322,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("Works with polygon using null simplestyle", function () {
-    const geoJson = {
+    var geoJson = {
       type: "Feature",
       geometry: {
         type: "Polygon",
@@ -1393,10 +1347,10 @@ describe("DataSources/GeoJsonDataSource", function () {
       },
     };
 
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load(geoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
+      var entityCollection = dataSource.entities;
+      var entity = entityCollection.values[0];
       expect(entity.name).toBeUndefined();
       expect(entity.description).toBeUndefined();
       expect(entity.polygon.material.color.getValue(time)).toEqual(
@@ -1412,96 +1366,45 @@ describe("DataSources/GeoJsonDataSource", function () {
     });
   });
 
-  it("Works with polygons using null simplestyle but with an opacity", function () {
-    const geoJson = {
-      type: "Feature",
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [100.0, 0.0],
-            [101.0, 0.0],
-            [101.0, 1.0],
-            [100.0, 1.0],
-            [100.0, 0.0],
-          ],
-        ],
-      },
-      properties: {
-        title: null,
-        description: null,
-        stroke: null,
-        "stroke-opacity": 0.42,
-        "stroke-width": null,
-        fill: null,
-        "fill-opacity": 0.42,
-      },
-    };
-
-    const dataSource = new GeoJsonDataSource();
-    return dataSource.load(geoJson).then(function () {
-      const entityCollection = dataSource.entities;
-      const entity = entityCollection.values[0];
-      expect(entity.name).toBeUndefined();
-      expect(entity.description).toBeUndefined();
-
-      const expectedFill = GeoJsonDataSource.fill.clone();
-      expectedFill.alpha = geoJson.properties["fill-opacity"];
-      expect(entity.polygon.material.color.getValue(time)).toEqual(
-        expectedFill
-      );
-
-      const expectedOutlineColor = GeoJsonDataSource.stroke.clone();
-      expectedOutlineColor.alpha = 0.42;
-      expect(entity.polygon.outline.getValue(time)).toEqual(true);
-      expect(entity.polygon.outlineWidth.getValue(time)).toEqual(
-        GeoJsonDataSource.strokeWidth
-      );
-      expect(entity.polygon.outlineColor.getValue(time)).toEqual(
-        expectedOutlineColor
-      );
-    });
-  });
-
   it("load works with a URL", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource.load("Data/test.geojson").then(function () {
       expect(dataSource.name).toEqual("test.geojson");
     });
   });
 
   it("Fails when encountering unknown geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(featureUnknownGeometry)
       .then(function () {
         fail("should not be called");
       })
-      .catch(function () {});
+      .otherwise(function () {});
   });
 
-  it("Fails with undefined geometry", function () {
-    const dataSource = new GeoJsonDataSource();
+  it("Fails with undefined geomeetry", function () {
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(featureUndefinedGeometry)
       .then(function () {
         fail("should not be called");
       })
-      .catch(function () {});
+      .otherwise(function () {});
   });
 
   it("Fails with unknown geomeetry in geometryCollection", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     return dataSource
       .load(geometryCollectionUnknownType)
       .then(function () {
         fail("should not be called");
       })
-      .catch(function () {});
+      .otherwise(function () {});
   });
 
   it("load throws with undefined geoJson", function () {
-    const dataSource = new GeoJsonDataSource();
+    var dataSource = new GeoJsonDataSource();
     expect(function () {
       dataSource.load(undefined);
     }).toThrowDeveloperError();
@@ -1512,7 +1415,7 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toBeInstanceOf(RuntimeError);
         expect(error.message).toContain(
           "Unsupported GeoJSON object type: TimeyWimey"
@@ -1525,13 +1428,13 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error.statusCode).toBe(404);
       });
   });
 
   it("rejects null CRS", function () {
-    const featureWithNullCrs = {
+    var featureWithNullCrs = {
       type: "Feature",
       geometry: point,
       crs: null,
@@ -1545,7 +1448,7 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("rejects unknown CRS", function () {
-    const featureWithUnknownCrsType = {
+    var featureWithUnknownCrsType = {
       type: "Feature",
       geometry: point,
       crs: {
@@ -1558,14 +1461,14 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toBeInstanceOf(RuntimeError);
         expect(error.message).toContain("Unknown crs type: potato");
       });
   });
 
   it("rejects undefined CRS properties", function () {
-    const featureWithUndefinedCrsProperty = {
+    var featureWithUndefinedCrsProperty = {
       type: "Feature",
       geometry: point,
       crs: {
@@ -1577,14 +1480,14 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toBeInstanceOf(RuntimeError);
         expect(error.message).toContain("crs.properties is undefined.");
       });
   });
 
   it("rejects unknown CRS name", function () {
-    const featureWithUnknownCrsType = {
+    var featureWithUnknownCrsType = {
       type: "Feature",
       geometry: point,
       crs: {
@@ -1599,14 +1502,14 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toBeInstanceOf(RuntimeError);
         expect(error.message).toContain("Unknown crs name: failMe");
       });
   });
 
   it("rejects unknown CRS link", function () {
-    const featureWithUnknownCrsType = {
+    var featureWithUnknownCrsType = {
       type: "Feature",
       geometry: point,
       crs: {
@@ -1622,7 +1525,7 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toBeInstanceOf(RuntimeError);
         expect(error.message).toContain(
           'Unable to resolve crs link: {"href":"failMe","type":"failMeTwice"}'
@@ -1631,8 +1534,8 @@ describe("DataSources/GeoJsonDataSource", function () {
   });
 
   it("load rejects loading non json file", function () {
-    const dataSource = new GeoJsonDataSource();
-    const spy = jasmine.createSpy("errorEvent");
+    var dataSource = new GeoJsonDataSource();
+    var spy = jasmine.createSpy("errorEvent");
     dataSource.errorEvent.addEventListener(spy);
 
     // Blue.png is not JSON
@@ -1641,17 +1544,17 @@ describe("DataSources/GeoJsonDataSource", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function () {
+      .otherwise(function () {
         expect(spy).toHaveBeenCalledWith(dataSource, jasmine.any(Error));
       });
   });
 
   it("load raises loading event", function () {
-    const dataSource = new GeoJsonDataSource();
-    const spy = jasmine.createSpy("loadingEvent");
+    var dataSource = new GeoJsonDataSource();
+    var spy = jasmine.createSpy("loadingEvent");
     dataSource.loadingEvent.addEventListener(spy);
 
-    const promise = dataSource.load("Data/test.geojson");
+    var promise = dataSource.load("Data/test.geojson");
     expect(spy).toHaveBeenCalledWith(dataSource, true);
     expect(dataSource.isLoading).toBe(true);
 

@@ -1,6 +1,6 @@
+import when from "../ThirdParty/when.js";
 import buildModuleUrl from "./buildModuleUrl.js";
 import defaultValue from "./defaultValue.js";
-import defer from "./defer.js";
 import defined from "./defined.js";
 import Iau2006XysSample from "./Iau2006XysSample.js";
 import JulianDate from "./JulianDate.js";
@@ -48,19 +48,19 @@ function Iau2006XysData(options) {
   this._samples = new Array(this._totalSamples * 3);
   this._chunkDownloadsInProgress = [];
 
-  const order = this._interpolationOrder;
+  var order = this._interpolationOrder;
 
   // Compute denominators and X values for interpolation.
-  const denom = (this._denominators = new Array(order + 1));
-  const xTable = (this._xTable = new Array(order + 1));
+  var denom = (this._denominators = new Array(order + 1));
+  var xTable = (this._xTable = new Array(order + 1));
 
-  const stepN = Math.pow(this._stepSizeDays, order);
+  var stepN = Math.pow(this._stepSizeDays, order);
 
-  for (let i = 0; i <= order; ++i) {
+  for (var i = 0; i <= order; ++i) {
     denom[i] = stepN;
     xTable[i] = i * this._stepSizeDays;
 
-    for (let j = 0; j <= order; ++j) {
+    for (var j = 0; j <= order; ++j) {
       if (j !== i) {
         denom[i] *= i - j;
       }
@@ -74,10 +74,10 @@ function Iau2006XysData(options) {
   this._coef = new Array(order + 1);
 }
 
-const julianDateScratch = new JulianDate(0, 0.0, TimeStandard.TAI);
+var julianDateScratch = new JulianDate(0, 0.0, TimeStandard.TAI);
 
 function getDaysSinceEpoch(xys, dayTT, secondTT) {
-  const dateTT = julianDateScratch;
+  var dateTT = julianDateScratch;
   dateTT.dayNumber = dayTT;
   dateTT.secondsOfDay = secondTT;
   return JulianDate.daysDifference(dateTT, xys._sampleZeroDateTT);
@@ -103,36 +103,32 @@ Iau2006XysData.prototype.preload = function (
   stopDayTT,
   stopSecondTT
 ) {
-  const startDaysSinceEpoch = getDaysSinceEpoch(
-    this,
-    startDayTT,
-    startSecondTT
-  );
-  const stopDaysSinceEpoch = getDaysSinceEpoch(this, stopDayTT, stopSecondTT);
+  var startDaysSinceEpoch = getDaysSinceEpoch(this, startDayTT, startSecondTT);
+  var stopDaysSinceEpoch = getDaysSinceEpoch(this, stopDayTT, stopSecondTT);
 
-  let startIndex =
+  var startIndex =
     (startDaysSinceEpoch / this._stepSizeDays - this._interpolationOrder / 2) |
     0;
   if (startIndex < 0) {
     startIndex = 0;
   }
 
-  let stopIndex =
+  var stopIndex =
     (stopDaysSinceEpoch / this._stepSizeDays - this._interpolationOrder / 2) |
     (0 + this._interpolationOrder);
   if (stopIndex >= this._totalSamples) {
     stopIndex = this._totalSamples - 1;
   }
 
-  const startChunk = (startIndex / this._samplesPerXysFile) | 0;
-  const stopChunk = (stopIndex / this._samplesPerXysFile) | 0;
+  var startChunk = (startIndex / this._samplesPerXysFile) | 0;
+  var stopChunk = (stopIndex / this._samplesPerXysFile) | 0;
 
-  const promises = [];
-  for (let i = startChunk; i <= stopChunk; ++i) {
+  var promises = [];
+  for (var i = startChunk; i <= stopChunk; ++i) {
     promises.push(requestXysChunk(this, i));
   }
 
-  return Promise.all(promises);
+  return when.all(promises);
 };
 
 /**
@@ -155,25 +151,25 @@ Iau2006XysData.prototype.computeXysRadians = function (
   secondTT,
   result
 ) {
-  const daysSinceEpoch = getDaysSinceEpoch(this, dayTT, secondTT);
+  var daysSinceEpoch = getDaysSinceEpoch(this, dayTT, secondTT);
   if (daysSinceEpoch < 0.0) {
     // Can't evaluate prior to the epoch of the data.
     return undefined;
   }
 
-  const centerIndex = (daysSinceEpoch / this._stepSizeDays) | 0;
+  var centerIndex = (daysSinceEpoch / this._stepSizeDays) | 0;
   if (centerIndex >= this._totalSamples) {
     // Can't evaluate after the last sample in the data.
     return undefined;
   }
 
-  const degree = this._interpolationOrder;
+  var degree = this._interpolationOrder;
 
-  let firstIndex = centerIndex - ((degree / 2) | 0);
+  var firstIndex = centerIndex - ((degree / 2) | 0);
   if (firstIndex < 0) {
     firstIndex = 0;
   }
-  let lastIndex = firstIndex + degree;
+  var lastIndex = firstIndex + degree;
   if (lastIndex >= this._totalSamples) {
     lastIndex = this._totalSamples - 1;
     firstIndex = lastIndex - degree;
@@ -184,8 +180,8 @@ Iau2006XysData.prototype.computeXysRadians = function (
 
   // Are all the samples we need present?
   // We can assume so if the first and last are present
-  let isDataMissing = false;
-  const samples = this._samples;
+  var isDataMissing = false;
+  var samples = this._samples;
   if (!defined(samples[firstIndex * 3])) {
     requestXysChunk(this, (firstIndex / this._samplesPerXysFile) | 0);
     isDataMissing = true;
@@ -208,14 +204,14 @@ Iau2006XysData.prototype.computeXysRadians = function (
     result.s = 0.0;
   }
 
-  const x = daysSinceEpoch - firstIndex * this._stepSizeDays;
+  var x = daysSinceEpoch - firstIndex * this._stepSizeDays;
 
-  const work = this._work;
-  const denom = this._denominators;
-  const coef = this._coef;
-  const xTable = this._xTable;
+  var work = this._work;
+  var denom = this._denominators;
+  var coef = this._coef;
+  var xTable = this._xTable;
 
-  let i, j;
+  var i, j;
   for (i = 0; i <= degree; ++i) {
     work[i] = x - xTable[i];
   }
@@ -231,7 +227,7 @@ Iau2006XysData.prototype.computeXysRadians = function (
 
     coef[i] *= denom[i];
 
-    let sampleIndex = (firstIndex + i) * 3;
+    var sampleIndex = (firstIndex + i) * 3;
     result.x += coef[i] * samples[sampleIndex++];
     result.y += coef[i] * samples[sampleIndex++];
     result.s += coef[i] * samples[sampleIndex];
@@ -246,12 +242,12 @@ function requestXysChunk(xysData, chunkIndex) {
     return xysData._chunkDownloadsInProgress[chunkIndex];
   }
 
-  const deferred = defer();
+  var deferred = when.defer();
 
   xysData._chunkDownloadsInProgress[chunkIndex] = deferred;
 
-  let chunkUrl;
-  const xysFileUrlTemplate = xysData._xysFileUrlTemplate;
+  var chunkUrl;
+  var xysFileUrlTemplate = xysData._xysFileUrlTemplate;
   if (defined(xysFileUrlTemplate)) {
     chunkUrl = xysFileUrlTemplate.getDerivedResource({
       templateValues: {
@@ -260,18 +256,20 @@ function requestXysChunk(xysData, chunkIndex) {
     });
   } else {
     chunkUrl = new Resource({
-      url: buildModuleUrl(`Assets/IAU2006_XYS/IAU2006_XYS_${chunkIndex}.json`),
+      url: buildModuleUrl(
+        "Assets/IAU2006_XYS/IAU2006_XYS_" + chunkIndex + ".json"
+      ),
     });
   }
 
-  chunkUrl.fetchJson().then(function (chunk) {
+  when(chunkUrl.fetchJson(), function (chunk) {
     xysData._chunkDownloadsInProgress[chunkIndex] = false;
 
-    const samples = xysData._samples;
-    const newSamples = chunk.samples;
-    const startIndex = chunkIndex * xysData._samplesPerXysFile * 3;
+    var samples = xysData._samples;
+    var newSamples = chunk.samples;
+    var startIndex = chunkIndex * xysData._samplesPerXysFile * 3;
 
-    for (let i = 0, len = newSamples.length; i < len; ++i) {
+    for (var i = 0, len = newSamples.length; i < len; ++i) {
       samples[startIndex + i] = newSamples[i];
     }
 

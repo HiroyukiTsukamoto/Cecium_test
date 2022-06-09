@@ -2,15 +2,15 @@ import { MetadataEnumValue } from "../../Source/Cesium.js";
 
 describe("Scene/MetadataEnumValue", function () {
   it("creates enum value", function () {
-    const extras = {
+    var extras = {
       gain: 0.5,
       offset: 0.1,
     };
-    const extensions = {
+    var extensions = {
       EXT_other_extension: {},
     };
 
-    const enumValue = new MetadataEnumValue({
+    var enumValue = new MetadataEnumValue({
       name: "RED",
       description: "Red color",
       value: 0,

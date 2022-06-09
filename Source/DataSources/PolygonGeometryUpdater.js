@@ -28,17 +28,17 @@ import GeometryUpdater from "./GeometryUpdater.js";
 import GroundGeometryUpdater from "./GroundGeometryUpdater.js";
 import Property from "./Property.js";
 
-const heightAndPerPositionHeightWarning =
+var heightAndPerPositionHeightWarning =
   "Entity polygons cannot have both height and perPositionHeight.  height will be ignored";
-const heightReferenceAndPerPositionHeightWarning =
+var heightReferenceAndPerPositionHeightWarning =
   "heightReference is not supported for entity polygons with perPositionHeight. heightReference will be ignored";
 
-const scratchColor = new Color();
-const defaultOffset = Cartesian3.ZERO;
-const offsetScratch = new Cartesian3();
-const scratchRectangle = new Rectangle();
-const scratch2DPositions = [];
-const cart2Scratch = new Cartesian2();
+var scratchColor = new Color();
+var defaultOffset = Cartesian3.ZERO;
+var offsetScratch = new Cartesian3();
+var scratchRectangle = new Rectangle();
+var scratch2DPositions = [];
+var cart2Scratch = new Cartesian2();
 
 function PolygonGeometryOptions(entity) {
   this.id = entity;
@@ -53,7 +53,6 @@ function PolygonGeometryOptions(entity) {
   this.stRotation = undefined;
   this.offsetAttribute = undefined;
   this.arcType = undefined;
-  this.textureCoordinates = undefined;
 }
 
 /**
@@ -103,11 +102,11 @@ PolygonGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
-  const options = this._options;
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
+  var options = this._options;
 
-  const attributes = {
+  var attributes = {
     show: new ShowGeometryInstanceAttribute(
       isAvailable &&
         entity.isShowing &&
@@ -122,7 +121,7 @@ PolygonGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
   };
 
   if (this._materialProperty instanceof ColorMaterialProperty) {
-    let currentColor;
+    var currentColor;
     if (
       defined(this._materialProperty.color) &&
       (this._materialProperty.color.isConstant || isAvailable)
@@ -145,7 +144,7 @@ PolygonGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
     );
   }
 
-  let geometry;
+  var geometry;
   if (options.perPositionHeight && !defined(options.extrudedHeight)) {
     geometry = new CoplanarPolygonGeometry(options);
   } else {
@@ -180,20 +179,20 @@ PolygonGeometryUpdater.prototype.createOutlineGeometryInstance = function (
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
-  const options = this._options;
-  const outlineColor = Property.getValueOrDefault(
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
+  var options = this._options;
+  var outlineColor = Property.getValueOrDefault(
     this._outlineColorProperty,
     time,
     Color.BLACK,
     scratchColor
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
 
-  const attributes = {
+  var attributes = {
     show: new ShowGeometryInstanceAttribute(
       isAvailable &&
         entity.isShowing &&
@@ -218,7 +217,7 @@ PolygonGeometryUpdater.prototype.createOutlineGeometryInstance = function (
     );
   }
 
-  let geometry;
+  var geometry;
   if (options.perPositionHeight && !defined(options.extrudedHeight)) {
     geometry = new CoplanarPolygonOutlineGeometry(options);
   } else {
@@ -232,42 +231,42 @@ PolygonGeometryUpdater.prototype.createOutlineGeometryInstance = function (
 };
 
 PolygonGeometryUpdater.prototype._computeCenter = function (time, result) {
-  const hierarchy = Property.getValueOrUndefined(
+  var hierarchy = Property.getValueOrUndefined(
     this._entity.polygon.hierarchy,
     time
   );
   if (!defined(hierarchy)) {
     return;
   }
-  const positions = hierarchy.positions;
+  var positions = hierarchy.positions;
   if (positions.length === 0) {
     return;
   }
-  const ellipsoid = this._scene.mapProjection.ellipsoid;
+  var ellipsoid = this._scene.mapProjection.ellipsoid;
 
-  const tangentPlane = EllipsoidTangentPlane.fromPoints(positions, ellipsoid);
-  const positions2D = tangentPlane.projectPointsOntoPlane(
+  var tangentPlane = EllipsoidTangentPlane.fromPoints(positions, ellipsoid);
+  var positions2D = tangentPlane.projectPointsOntoPlane(
     positions,
     scratch2DPositions
   );
 
-  const length = positions2D.length;
-  let area = 0;
-  let j = length - 1;
-  let centroid2D = new Cartesian2();
-  for (let i = 0; i < length; j = i++) {
-    const p1 = positions2D[i];
-    const p2 = positions2D[j];
-    const f = p1.x * p2.y - p2.x * p1.y;
+  var length = positions2D.length;
+  var area = 0;
+  var j = length - 1;
+  var centroid2D = new Cartesian2();
+  for (var i = 0; i < length; j = i++) {
+    var p1 = positions2D[i];
+    var p2 = positions2D[j];
+    var f = p1.x * p2.y - p2.x * p1.y;
 
-    let sum = Cartesian2.add(p1, p2, cart2Scratch);
+    var sum = Cartesian2.add(p1, p2, cart2Scratch);
     sum = Cartesian2.multiplyByScalar(sum, f, sum);
     centroid2D = Cartesian2.add(centroid2D, sum, centroid2D);
 
     area += f;
   }
 
-  const a = 1.0 / (area * 3.0);
+  var a = 1.0 / (area * 3.0);
   centroid2D = Cartesian2.multiplyByScalar(centroid2D, a, centroid2D);
   return tangentPlane.projectPointOntoEllipsoid(centroid2D, result);
 };
@@ -280,13 +279,13 @@ PolygonGeometryUpdater.prototype._isHidden = function (entity, polygon) {
 };
 
 PolygonGeometryUpdater.prototype._isOnTerrain = function (entity, polygon) {
-  const onTerrain = GroundGeometryUpdater.prototype._isOnTerrain.call(
+  var onTerrain = GroundGeometryUpdater.prototype._isOnTerrain.call(
     this,
     entity,
     polygon
   );
-  const perPositionHeightProperty = polygon.perPositionHeight;
-  const perPositionHeightEnabled =
+  var perPositionHeightProperty = polygon.perPositionHeight;
+  var perPositionHeightEnabled =
     defined(perPositionHeightProperty) &&
     (perPositionHeightProperty.isConstant
       ? perPositionHeightProperty.getValue(Iso8601.MINIMUM_VALUE)
@@ -301,7 +300,6 @@ PolygonGeometryUpdater.prototype._isDynamic = function (entity, polygon) {
     !Property.isConstant(polygon.extrudedHeight) || //
     !Property.isConstant(polygon.granularity) || //
     !Property.isConstant(polygon.stRotation) || //
-    !Property.isConstant(polygon.textureCoordinates) || //
     !Property.isConstant(polygon.outlineWidth) || //
     !Property.isConstant(polygon.perPositionHeight) || //
     !Property.isConstant(polygon.closeTop) || //
@@ -318,34 +316,33 @@ PolygonGeometryUpdater.prototype._setStaticOptions = function (
   entity,
   polygon
 ) {
-  const isColorMaterial =
-    this._materialProperty instanceof ColorMaterialProperty;
+  var isColorMaterial = this._materialProperty instanceof ColorMaterialProperty;
 
-  const options = this._options;
+  var options = this._options;
   options.vertexFormat = isColorMaterial
     ? PerInstanceColorAppearance.VERTEX_FORMAT
     : MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat;
 
-  const hierarchyValue = polygon.hierarchy.getValue(Iso8601.MINIMUM_VALUE);
-  let heightValue = Property.getValueOrUndefined(
+  var hierarchyValue = polygon.hierarchy.getValue(Iso8601.MINIMUM_VALUE);
+  var heightValue = Property.getValueOrUndefined(
     polygon.height,
     Iso8601.MINIMUM_VALUE
   );
-  const heightReferenceValue = Property.getValueOrDefault(
+  var heightReferenceValue = Property.getValueOrDefault(
     polygon.heightReference,
     Iso8601.MINIMUM_VALUE,
     HeightReference.NONE
   );
-  let extrudedHeightValue = Property.getValueOrUndefined(
+  var extrudedHeightValue = Property.getValueOrUndefined(
     polygon.extrudedHeight,
     Iso8601.MINIMUM_VALUE
   );
-  const extrudedHeightReferenceValue = Property.getValueOrDefault(
+  var extrudedHeightReferenceValue = Property.getValueOrDefault(
     polygon.extrudedHeightReference,
     Iso8601.MINIMUM_VALUE,
     HeightReference.NONE
   );
-  const perPositionHeightValue = Property.getValueOrDefault(
+  var perPositionHeightValue = Property.getValueOrDefault(
     polygon.perPositionHeight,
     Iso8601.MINIMUM_VALUE,
     false
@@ -356,7 +353,7 @@ PolygonGeometryUpdater.prototype._setStaticOptions = function (
     heightReferenceValue
   );
 
-  let offsetAttribute;
+  var offsetAttribute;
   if (perPositionHeightValue) {
     if (defined(heightValue)) {
       heightValue = undefined;
@@ -408,10 +405,6 @@ PolygonGeometryUpdater.prototype._setStaticOptions = function (
     Iso8601.MINIMUM_VALUE,
     ArcType.GEODESIC
   );
-  options.textureCoordinates = Property.getValueOrUndefined(
-    polygon.textureCoordinates,
-    Iso8601.MINIMUM_VALUE
-  );
 
   extrudedHeightValue = GroundGeometryUpdater.getGeometryExtrudedHeight(
     extrudedHeightValue,
@@ -427,9 +420,9 @@ PolygonGeometryUpdater.prototype._setStaticOptions = function (
 };
 
 PolygonGeometryUpdater.prototype._getIsClosed = function (options) {
-  const height = options.height;
-  const extrudedHeight = options.extrudedHeight;
-  const isExtruded = defined(extrudedHeight) && extrudedHeight !== height;
+  var height = options.height;
+  var extrudedHeight = options.extrudedHeight;
+  var isExtruded = defined(extrudedHeight) && extrudedHeight !== height;
   return (
     !options.perPositionHeight &&
     ((!isExtruded && height === 0) ||
@@ -478,29 +471,29 @@ DyanmicPolygonGeometryUpdater.prototype._setOptions = function (
   polygon,
   time
 ) {
-  const options = this._options;
+  var options = this._options;
 
   options.polygonHierarchy = Property.getValueOrUndefined(
     polygon.hierarchy,
     time
   );
 
-  let heightValue = Property.getValueOrUndefined(polygon.height, time);
-  const heightReferenceValue = Property.getValueOrDefault(
+  var heightValue = Property.getValueOrUndefined(polygon.height, time);
+  var heightReferenceValue = Property.getValueOrDefault(
     polygon.heightReference,
     time,
     HeightReference.NONE
   );
-  const extrudedHeightReferenceValue = Property.getValueOrDefault(
+  var extrudedHeightReferenceValue = Property.getValueOrDefault(
     polygon.extrudedHeightReference,
     time,
     HeightReference.NONE
   );
-  let extrudedHeightValue = Property.getValueOrUndefined(
+  var extrudedHeightValue = Property.getValueOrUndefined(
     polygon.extrudedHeight,
     time
   );
-  const perPositionHeightValue = Property.getValueOrUndefined(
+  var perPositionHeightValue = Property.getValueOrUndefined(
     polygon.perPositionHeight,
     time
   );
@@ -510,7 +503,7 @@ DyanmicPolygonGeometryUpdater.prototype._setOptions = function (
     extrudedHeightReferenceValue
   );
 
-  let offsetAttribute;
+  var offsetAttribute;
   if (perPositionHeightValue) {
     if (defined(heightValue)) {
       heightValue = undefined;
@@ -538,10 +531,6 @@ DyanmicPolygonGeometryUpdater.prototype._setOptions = function (
 
   options.granularity = Property.getValueOrUndefined(polygon.granularity, time);
   options.stRotation = Property.getValueOrUndefined(polygon.stRotation, time);
-  options.textureCoordinates = Property.getValueOrUndefined(
-    polygon.textureCoordinates,
-    time
-  );
   options.perPositionHeight = Property.getValueOrUndefined(
     polygon.perPositionHeight,
     time

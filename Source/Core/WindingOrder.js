@@ -5,7 +5,7 @@ import WebGLConstants from "./WebGLConstants.js";
  *
  * @enum {Number}
  */
-const WindingOrder = {
+var WindingOrder = {
   /**
    * Vertices are in clockwise order.
    *

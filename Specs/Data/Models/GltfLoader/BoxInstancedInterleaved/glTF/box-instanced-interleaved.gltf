@@ -3,15 +3,14 @@
     "version": "2.0"
   },
   "extensionsUsed": [
-    "EXT_instance_features",
-    "EXT_structural_metadata",
+    "EXT_feature_metadata",
     "EXT_mesh_gpu_instancing"
   ],
   "extensionsRequired": [
     "EXT_mesh_gpu_instancing"
   ],
   "extensions": {
-    "EXT_structural_metadata": {
+    "EXT_feature_metadata": {
       "schema": {
         "classes": {
           "box": {
@@ -20,8 +19,7 @@
                 "type": "STRING"
               },
               "volume": {
-                "type": "SCALAR",
-                "componentType": "FLOAT32"
+                "type": "FLOAT32"
               }
             }
           },
@@ -31,43 +29,42 @@
                 "type": "STRING"
               },
               "id": {
-                "type": "SCALAR",
-                "componentType": "UINT16"
+                "type": "UINT16"
               }
             }
           }
         }
       },
-      "propertyTables": [
-        {
+      "featureTables": {
+        "boxTable": {
           "class": "box",
           "count": 4,
           "properties": {
             "name": {
-              "stringOffsetType": "UINT16",
-              "values": 4,
-              "stringOffsets": 5
+              "offsetType": "UINT16",
+              "bufferView": 4,
+              "stringOffsetBufferView": 5
             },
             "volume": {
-              "values": 6
+              "bufferView": 6
             }
           }
         },
-        {
+        "sectionTable": {
           "class": "section",
           "count": 2,
           "properties": {
             "name": {
-              "stringOffsetType": "UINT16",
-              "values": 7,
-              "stringOffsets": 8
+              "offsetType": "UINT16",
+              "bufferView": 7,
+              "stringOffsetBufferView": 8
             },
             "id": {
-              "values": 9
+              "bufferView": 9
             }
           }
         }
-      ]
+      }
     }
   },
   "scene": 0,
@@ -90,15 +87,20 @@
             "_FEATURE_ID_0": 6
           },
           "extensions": {
-            "EXT_instance_features": {
-              "featureIds": [
+            "EXT_feature_metadata": {
+              "featureIdAttributes": [
                 {
-                  "propertyTable": 0,
-                  "featureCount": 4
+                  "featureTable": "boxTable",
+                  "featureIds": {
+                    "constant": 0,
+                    "divisor": 1
+                  }
                 },
                 {
-                  "propertyTable": 1,
-                  "attribute": 0
+                  "featureTable": "sectionTable",
+                  "featureIds": {
+                    "attribute": "_FEATURE_ID_0"
+                  }
                 }
               ]
             }

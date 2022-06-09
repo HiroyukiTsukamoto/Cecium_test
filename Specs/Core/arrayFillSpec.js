@@ -1,7 +1,7 @@
 import { arrayFill } from "../../Source/Cesium.js";
 
 describe("Core/arrayFill", function () {
-  let array;
+  var array;
 
   beforeEach(function () {
     array = [0, 0, 0, 0];

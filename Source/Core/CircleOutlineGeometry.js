@@ -28,21 +28,21 @@ import Ellipsoid from "./Ellipsoid.js";
  *
  * @example
  * // Create a circle.
- * const circle = new Cesium.CircleOutlineGeometry({
+ * var circle = new Cesium.CircleOutlineGeometry({
  *   center : Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883),
  *   radius : 100000.0
  * });
- * const geometry = Cesium.CircleOutlineGeometry.createGeometry(circle);
+ * var geometry = Cesium.CircleOutlineGeometry.createGeometry(circle);
  */
 function CircleOutlineGeometry(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const radius = options.radius;
+  var radius = options.radius;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number("radius", radius);
   //>>includeEnd('debug');
 
-  const ellipseGeometryOptions = {
+  var ellipseGeometryOptions = {
     center: options.center,
     semiMajorAxis: radius,
     semiMinorAxis: radius,
@@ -82,12 +82,12 @@ CircleOutlineGeometry.pack = function (value, array, startingIndex) {
   );
 };
 
-const scratchEllipseGeometry = new EllipseOutlineGeometry({
+var scratchEllipseGeometry = new EllipseOutlineGeometry({
   center: new Cartesian3(),
   semiMajorAxis: 1.0,
   semiMinorAxis: 1.0,
 });
-const scratchOptions = {
+var scratchOptions = {
   center: new Cartesian3(),
   radius: undefined,
   ellipsoid: Ellipsoid.clone(Ellipsoid.UNIT_SPHERE),
@@ -108,7 +108,7 @@ const scratchOptions = {
  * @returns {CircleOutlineGeometry} The modified result parameter or a new CircleOutlineGeometry instance if one was not provided.
  */
 CircleOutlineGeometry.unpack = function (array, startingIndex, result) {
-  const ellipseGeometry = EllipseOutlineGeometry.unpack(
+  var ellipseGeometry = EllipseOutlineGeometry.unpack(
     array,
     startingIndex,
     scratchEllipseGeometry

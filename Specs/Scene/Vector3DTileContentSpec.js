@@ -1,12 +1,10 @@
 import {
   Cartesian3,
-  Cesium3DContentGroup,
   Cesium3DTileset,
   Cesium3DTileStyle,
   ClassificationType,
   Color,
   ColorGeometryInstanceAttribute,
-  ContentMetadata,
   destroyObject,
   Ellipsoid,
   GeometryInstance,
@@ -28,60 +26,60 @@ import createScene from "../createScene.js";
 xdescribe(
   "Scene/Vector3DTileContent",
   function () {
-    const tilesetRectangle = Rectangle.fromDegrees(-0.01, -0.01, 0.01, 0.01);
-    const combinedRectangle = Rectangle.fromDegrees(-0.02, -0.01, 0.02, 0.01);
+    var tilesetRectangle = Rectangle.fromDegrees(-0.01, -0.01, 0.01, 0.01);
+    var combinedRectangle = Rectangle.fromDegrees(-0.02, -0.01, 0.02, 0.01);
 
-    const vectorPoints =
+    var vectorPoints =
       "./Data/Cesium3DTiles/Vector/VectorTilePoints/tileset.json";
-    const vectorPointsBatchedChildren =
+    var vectorPointsBatchedChildren =
       "./Data/Cesium3DTiles/Vector/VectorTilePointsBatchedChildren/tileset.json";
-    const vectorPointsBatchedChildrenWithBatchTable =
+    var vectorPointsBatchedChildrenWithBatchTable =
       "./Data/Cesium3DTiles/Vector/VectorTilePointsBatchedChildrenWithBatchTable/tileset.json";
-    const vectorPointsWithBatchTable =
+    var vectorPointsWithBatchTable =
       "./Data/Cesium3DTiles/Vector/VectorTilePointsWithBatchTable/tileset.json";
-    const vectorPointsWithBatchIds =
+    var vectorPointsWithBatchIds =
       "./Data/Cesium3DTiles/Vector/VectorTilePointsWithBatchIds/tileset.json";
 
-    const vectorPolygons =
+    var vectorPolygons =
       "./Data/Cesium3DTiles/Vector/VectorTilePolygons/tileset.json";
-    const vectorPolygonsBatchedChildren =
+    var vectorPolygonsBatchedChildren =
       "./Data/Cesium3DTiles/Vector/VectorTilePolygonsBatchedChildren/tileset.json";
-    const vectorPolygonsBatchedChildrenWithBatchTable =
+    var vectorPolygonsBatchedChildrenWithBatchTable =
       "./Data/Cesium3DTiles/Vector/VectorTilePolygonsBatchedChildrenWithBatchTable/tileset.json";
-    const vectorPolygonsWithBatchTable =
+    var vectorPolygonsWithBatchTable =
       "./Data/Cesium3DTiles/Vector/VectorTilePolygonsWithBatchTable/tileset.json";
-    const vectorPolygonsWithBatchIds =
+    var vectorPolygonsWithBatchIds =
       "./Data/Cesium3DTiles/Vector/VectorTilePolygonsWithBatchIds/tileset.json";
 
-    const vectorPolylines =
+    var vectorPolylines =
       "./Data/Cesium3DTiles/Vector/VectorTilePolylines/tileset.json";
-    const vectorPolylinesBatchedChildren =
+    var vectorPolylinesBatchedChildren =
       "./Data/Cesium3DTiles/Vector/VectorTilePolylinesBatchedChildren/tileset.json";
-    const vectorPolylinesBatchedChildrenWithBatchTable =
+    var vectorPolylinesBatchedChildrenWithBatchTable =
       "./Data/Cesium3DTiles/Vector/VectorTilePolylinesBatchedChildrenWithBatchTable/tileset.json";
-    const vectorPolylinesWithBatchTable =
+    var vectorPolylinesWithBatchTable =
       "./Data/Cesium3DTiles/Vector/VectorTilePolylinesWithBatchTable/tileset.json";
-    const vectorPolylinesWithBatchIds =
+    var vectorPolylinesWithBatchIds =
       "./Data/Cesium3DTiles/Vector/VectorTilePolylinesWithBatchIds/tileset.json";
 
-    const vectorCombined =
+    var vectorCombined =
       "./Data/Cesium3DTiles/Vector/VectorTileCombined/tileset.json";
-    const vectorCombinedWithBatchIds =
+    var vectorCombinedWithBatchIds =
       "./Data/Cesium3DTiles/Vector/VectorTileCombinedWithBatchIds/tileset.json";
 
-    let scene;
-    let rectangle;
-    let tileset;
-    let globePrimitive;
-    let tilesetPrimitive;
-    let reusableGlobePrimitive;
-    let reusableTilesetPrimitive;
-    let depthColor;
+    var scene;
+    var rectangle;
+    var tileset;
+    var globePrimitive;
+    var tilesetPrimitive;
+    var reusableGlobePrimitive;
+    var reusableTilesetPrimitive;
+    var depthColor;
 
-    const ellipsoid = Ellipsoid.WGS84;
+    var ellipsoid = Ellipsoid.WGS84;
 
     function createPrimitive(rectangle, pass) {
-      let renderState;
+      var renderState;
       if (pass === Pass.CESIUM_3D_TILE) {
         renderState = RenderState.fromCache({
           stencilTest: StencilConstants.setCesium3DTileBit(),
@@ -91,7 +89,7 @@ xdescribe(
           },
         });
       }
-      const depthColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var depthColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(1.0, 0.0, 0.0, 1.0)
       );
       depthColor = depthColorAttribute.value;
@@ -126,12 +124,12 @@ xdescribe(
         return;
       }
 
-      const commandList = frameState.commandList;
-      const startLength = commandList.length;
+      var commandList = frameState.commandList;
+      var startLength = commandList.length;
       this._primitive.update(frameState);
 
-      for (let i = startLength; i < commandList.length; ++i) {
-        const command = commandList[i];
+      for (var i = startLength; i < commandList.length; ++i) {
+        var command = commandList[i];
         command.pass = this._pass;
       }
     };
@@ -214,26 +212,26 @@ xdescribe(
     }
 
     function verifyPick(scene) {
-      const center = Rectangle.center(tilesetRectangle);
-      const ulRect = new Rectangle(
+      var center = Rectangle.center(tilesetRectangle);
+      var ulRect = new Rectangle(
         tilesetRectangle.west,
         center.latitude,
         center.longitude,
         tilesetRectangle.north
       );
-      const urRect = new Rectangle(
+      var urRect = new Rectangle(
         center.longitude,
         center.longitude,
         tilesetRectangle.east,
         tilesetRectangle.north
       );
-      const llRect = new Rectangle(
+      var llRect = new Rectangle(
         tilesetRectangle.west,
         tilesetRectangle.south,
         center.longitude,
         center.latitude
       );
-      const lrRect = new Rectangle(
+      var lrRect = new Rectangle(
         center.longitude,
         tilesetRectangle.south,
         tilesetRectangle.east,
@@ -263,26 +261,26 @@ xdescribe(
     }
 
     function expectRender(scene, color) {
-      const center = Rectangle.center(tilesetRectangle);
-      const ulRect = new Rectangle(
+      var center = Rectangle.center(tilesetRectangle);
+      var ulRect = new Rectangle(
         tilesetRectangle.west,
         center.latitude,
         center.longitude,
         tilesetRectangle.north
       );
-      const urRect = new Rectangle(
+      var urRect = new Rectangle(
         center.longitude,
         center.longitude,
         tilesetRectangle.east,
         tilesetRectangle.north
       );
-      const llRect = new Rectangle(
+      var llRect = new Rectangle(
         tilesetRectangle.west,
         tilesetRectangle.south,
         center.longitude,
         center.latitude
       );
-      const lrRect = new Rectangle(
+      var lrRect = new Rectangle(
         center.longitude,
         tilesetRectangle.south,
         tilesetRectangle.east,
@@ -357,26 +355,26 @@ xdescribe(
     }
 
     function verifyPickPoints(scene) {
-      const center = Rectangle.center(tilesetRectangle);
-      const ulRect = new Rectangle(
+      var center = Rectangle.center(tilesetRectangle);
+      var ulRect = new Rectangle(
         tilesetRectangle.west,
         center.latitude,
         center.longitude,
         tilesetRectangle.north
       );
-      const urRect = new Rectangle(
+      var urRect = new Rectangle(
         center.longitude,
         center.longitude,
         tilesetRectangle.east,
         tilesetRectangle.north
       );
-      const llRect = new Rectangle(
+      var llRect = new Rectangle(
         tilesetRectangle.west,
         tilesetRectangle.south,
         center.longitude,
         center.latitude
       );
-      const lrRect = new Rectangle(
+      var lrRect = new Rectangle(
         center.longitude,
         tilesetRectangle.south,
         tilesetRectangle.east,
@@ -406,26 +404,26 @@ xdescribe(
     }
 
     function expectRenderPoints(scene, callback) {
-      const center = Rectangle.center(tilesetRectangle);
-      const ulRect = new Rectangle(
+      var center = Rectangle.center(tilesetRectangle);
+      var ulRect = new Rectangle(
         tilesetRectangle.west,
         center.latitude,
         center.longitude,
         tilesetRectangle.north
       );
-      const urRect = new Rectangle(
+      var urRect = new Rectangle(
         center.longitude,
         center.longitude,
         tilesetRectangle.east,
         tilesetRectangle.north
       );
-      const llRect = new Rectangle(
+      var llRect = new Rectangle(
         tilesetRectangle.west,
         tilesetRectangle.south,
         center.longitude,
         center.latitude
       );
-      const lrRect = new Rectangle(
+      var lrRect = new Rectangle(
         center.longitude,
         tilesetRectangle.south,
         tilesetRectangle.east,
@@ -489,26 +487,26 @@ xdescribe(
     }
 
     function expectRenderPolylines(scene, color) {
-      const center = Rectangle.center(tilesetRectangle);
-      const ulRect = new Rectangle(
+      var center = Rectangle.center(tilesetRectangle);
+      var ulRect = new Rectangle(
         tilesetRectangle.west,
         center.latitude,
         center.longitude,
         tilesetRectangle.north
       );
-      const urRect = new Rectangle(
+      var urRect = new Rectangle(
         center.longitude,
         center.longitude,
         tilesetRectangle.east,
         tilesetRectangle.north
       );
-      const llRect = new Rectangle(
+      var llRect = new Rectangle(
         tilesetRectangle.west,
         tilesetRectangle.south,
         center.longitude,
         center.latitude
       );
-      const lrRect = new Rectangle(
+      var lrRect = new Rectangle(
         center.longitude,
         tilesetRectangle.south,
         tilesetRectangle.east,
@@ -557,21 +555,21 @@ xdescribe(
     }
 
     function expectRenderCombined(scene, color) {
-      const width = combinedRectangle.width;
-      const step = width / 3;
+      var width = combinedRectangle.width;
+      var step = width / 3;
 
-      const west = combinedRectangle.west;
-      const north = combinedRectangle.north;
-      const south = combinedRectangle.south;
+      var west = combinedRectangle.west;
+      var north = combinedRectangle.north;
+      var south = combinedRectangle.south;
 
-      const polygonRect = new Rectangle(west, south, west + step, north);
-      const polylineRect = new Rectangle(
+      var polygonRect = new Rectangle(west, south, west + step, north);
+      var polylineRect = new Rectangle(
         west + step,
         south,
         west + step * 2,
         north
       );
-      const pointRect = new Rectangle(
+      var pointRect = new Rectangle(
         west + step * 2,
         south,
         west + step * 3,
@@ -588,7 +586,7 @@ xdescribe(
         new Cartesian3(0.0, 0.0, 5.0)
       );
       expect(scene).toRenderAndCall(function (rgba) {
-        for (let i = 0; i < color.length; ++i) {
+        for (var i = 0; i < color.length; ++i) {
           if (color[i] === 0) {
             expect(rgba[i]).toEqual(0);
           } else {
@@ -805,13 +803,13 @@ xdescribe(
       return Cesium3DTilesTester.loadTileset(scene, vectorCombined, {
         debugColorizeTiles: true,
       }).then(function () {
-        const width = combinedRectangle.width;
-        const step = width / 3;
+        var width = combinedRectangle.width;
+        var step = width / 3;
 
-        const west = combinedRectangle.west;
-        const north = combinedRectangle.north;
-        const south = combinedRectangle.south;
-        const rect = new Rectangle(west, south, west + step, north);
+        var west = combinedRectangle.west;
+        var north = combinedRectangle.north;
+        var south = combinedRectangle.south;
+        var rect = new Rectangle(west, south, west + step, north);
 
         scene.camera.lookAt(
           ellipsoid.cartographicToCartesian(Rectangle.center(rect)),
@@ -896,7 +894,7 @@ xdescribe(
         scene,
         vectorPolygonsWithBatchTable
       ).then(function (tileset) {
-        const content = tileset.root.content;
+        var content = tileset.root.content;
         expect(content.featuresLength).toBe(1);
         expect(content.innerContents).toBeUndefined();
         expect(content.hasProperty(0, "name")).toBe(true);
@@ -912,8 +910,8 @@ xdescribe(
           vectorKeepDecodedPositions: true,
         }
       ).then(function (tileset) {
-        const content = tileset.root.content;
-        const polylinePositions = content.getPolylinePositions(0);
+        var content = tileset.root.content;
+        var polylinePositions = content.getPolylinePositions(0);
         expect(polylinePositions.length).toBe(60);
         expect(polylinePositions[0]).toEqualEpsilon(
           6378136.806372941,
@@ -938,7 +936,7 @@ xdescribe(
           vectorKeepDecodedPositions: true,
         }
       ).then(function (tileset) {
-        const content = tileset.root.children[0].content;
+        var content = tileset.root.children[0].content;
         expect(content.getPolylinePositions(0).length).toBe(60);
         expect(content.getPolylinePositions(1).length).toBe(60);
         expect(content.getPolylinePositions(2).length).toBe(60);
@@ -955,8 +953,8 @@ xdescribe(
           classificationType: ClassificationType.TERRAIN,
         }
       ).then(function (tileset) {
-        const content = tileset.root.content;
-        const polylinePositions = content.getPolylinePositions(0);
+        var content = tileset.root.content;
+        var polylinePositions = content.getPolylinePositions(0);
         expect(polylinePositions.length).toBe(54); // duplicate positions are removed
         expect(polylinePositions[0]).toEqualEpsilon(
           6378136.806372941,
@@ -981,8 +979,8 @@ xdescribe(
           vectorKeepDecodedPositions: true,
         }
       ).then(function (tileset) {
-        const content = tileset.root.content;
-        const polylinePositions = content.getPolylinePositions(1);
+        var content = tileset.root.content;
+        var polylinePositions = content.getPolylinePositions(1);
         expect(polylinePositions).toBeUndefined();
       });
     });
@@ -995,8 +993,8 @@ xdescribe(
           vectorKeepDecodedPositions: true,
         }
       ).then(function (tileset) {
-        const content = tileset.root.content;
-        const polylinePositions = content.getPolylinePositions(0);
+        var content = tileset.root.content;
+        var polylinePositions = content.getPolylinePositions(0);
         expect(polylinePositions).toBeUndefined();
       });
     });
@@ -1009,8 +1007,8 @@ xdescribe(
           vectorKeepDecodedPositions: false,
         }
       ).then(function (tileset) {
-        const content = tileset.root.content;
-        const polylinePositions = content.getPolylinePositions(0);
+        var content = tileset.root.content;
+        var polylinePositions = content.getPolylinePositions(0);
         expect(polylinePositions).toBeUndefined();
       });
     });
@@ -1020,7 +1018,7 @@ xdescribe(
         scene,
         vectorPolygonsWithBatchTable
       ).then(function (tileset) {
-        const content = tileset.root.content;
+        var content = tileset.root.content;
         expect(function () {
           content.getFeature(-1);
         }).toThrowDeveloperError();
@@ -1034,21 +1032,21 @@ xdescribe(
     });
 
     it("throws with invalid version", function () {
-      const arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
         version: 2,
       });
       Cesium3DTilesTester.loadTileExpectError(scene, arrayBuffer, "vctr");
     });
 
     it("throws with empty feature table", function () {
-      const arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
         defineFeatureTable: false,
       });
       Cesium3DTilesTester.loadTileExpectError(scene, arrayBuffer, "vctr");
     });
 
     it("throws without region", function () {
-      const arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
         defineRegion: false,
         polygonsLength: 1,
       });
@@ -1056,7 +1054,7 @@ xdescribe(
     });
 
     it("throws without all batch ids", function () {
-      const arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateVectorTileBuffer({
         polygonsLength: 1,
         pointsLength: 1,
         polylinesLength: 1,
@@ -1067,7 +1065,7 @@ xdescribe(
     });
 
     it("destroys", function () {
-      const tileset = new Cesium3DTileset({
+      var tileset = new Cesium3DTileset({
         url: vectorCombined,
       });
       expect(tileset.isDestroyed()).toEqual(false);
@@ -1075,83 +1073,37 @@ xdescribe(
       expect(tileset.isDestroyed()).toEqual(true);
     });
 
-    describe("metadata", function () {
-      let metadataClass;
-      let groupMetadata;
-      let contentMetadataClass;
-      let contentMetadata;
-
-      beforeAll(function () {
-        metadataClass = new MetadataClass({
-          id: "test",
-          class: {
-            properties: {
-              name: {
-                type: "STRING",
-              },
-              height: {
-                type: "SCALAR",
-                componentType: "FLOAT32",
-              },
+    describe("3DTILES_metadata", function () {
+      var metadataClass = new MetadataClass({
+        id: "test",
+        class: {
+          properties: {
+            name: {
+              type: "STRING",
+            },
+            height: {
+              type: "FLOAT32",
             },
           },
-        });
-
-        groupMetadata = new GroupMetadata({
-          id: "testGroup",
-          group: {
-            properties: {
-              name: "Test Group",
-              height: 35.6,
-            },
+        },
+      });
+      var groupMetadata = new GroupMetadata({
+        id: "testGroup",
+        group: {
+          properties: {
+            name: "Test Group",
+            height: 35.6,
           },
-          class: metadataClass,
-        });
-
-        contentMetadataClass = new MetadataClass({
-          id: "contentTest",
-          class: {
-            properties: {
-              author: {
-                type: "STRING",
-              },
-              color: {
-                type: "VEC3",
-                componentType: "UINT8",
-              },
-            },
-          },
-        });
-
-        contentMetadata = new ContentMetadata({
-          content: {
-            properties: {
-              author: "Test Author",
-              color: [255, 0, 0],
-            },
-          },
-          class: contentMetadataClass,
-        });
+        },
+        class: metadataClass,
       });
 
-      it("assigns group metadata", function () {
+      it("assigns groupMetadata", function () {
         return Cesium3DTilesTester.loadTileset(scene, vectorPoints).then(
           function (tileset) {
-            const content = tileset.root.content;
-            content.group = new Cesium3DContentGroup({
-              metadata: groupMetadata,
-            });
-            expect(content.group.metadata).toBe(groupMetadata);
-          }
-        );
-      });
-
-      it("assigns metadata", function () {
-        return Cesium3DTilesTester.loadTileset(scene, vectorPoints).then(
-          function (tileset) {
-            const content = tileset.root.content;
-            content.metadata = contentMetadata;
-            expect(content.metadata).toBe(contentMetadata);
+            var content = tileset.root.content;
+            content.groupMetadata = groupMetadata;
+            expect(content.groupMetadata).toBe(groupMetadata);
           }
         );
       });

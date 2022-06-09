@@ -40,8 +40,8 @@ function fetchTexture2D(textureManager, textureId, textureUniform) {
         textureUniform: textureUniform,
       });
     })
-    .catch(function () {
-      const texture = textureManager._textures[textureId];
+    .otherwise(function () {
+      var texture = textureManager._textures[textureId];
       if (defined(texture) && texture !== textureManager._defaultTexture) {
         texture.destroy();
       }
@@ -71,13 +71,13 @@ TextureManager.prototype.loadTexture2D = function (textureId, textureUniform) {
 };
 
 function createTexture(textureManager, loadedImage, context) {
-  const id = loadedImage.id;
-  const textureUniform = loadedImage.textureUniform;
+  var id = loadedImage.id;
+  var textureUniform = loadedImage.textureUniform;
 
-  const typedArray = textureUniform.typedArray;
-  const sampler = textureUniform.sampler;
+  var typedArray = textureUniform.typedArray;
+  var sampler = textureUniform.sampler;
 
-  let texture;
+  var texture;
   if (defined(typedArray)) {
     texture = new Texture({
       context: context,
@@ -101,7 +101,7 @@ function createTexture(textureManager, loadedImage, context) {
 
   // Destroy the old texture once the new one is loaded for more seamless
   // transitions between values
-  const oldTexture = textureManager._textures[id];
+  var oldTexture = textureManager._textures[id];
   if (defined(oldTexture) && oldTexture !== context.defaultTexture) {
     oldTexture.destroy();
   }
@@ -115,14 +115,14 @@ TextureManager.prototype.update = function (frameState) {
   }
   this._lastUpdatedFrame = frameState.frameNumber;
 
-  const context = frameState.context;
+  var context = frameState.context;
   this._defaultTexture = context.defaultTexture;
 
   // If any images were loaded since the last frame, create Textures
   // for them and store in the uniform dictionary
-  const loadedImages = this._loadedImages;
-  for (let i = 0; i < loadedImages.length; i++) {
-    const loadedImage = loadedImages[i];
+  var loadedImages = this._loadedImages;
+  for (var i = 0; i < loadedImages.length; i++) {
+    var loadedImage = loadedImages[i];
     createTexture(this, loadedImage, context);
   }
   loadedImages.length = 0;
@@ -160,10 +160,10 @@ TextureManager.prototype.isDestroyed = function () {
  * @private
  */
 TextureManager.prototype.destroy = function () {
-  const textures = this._textures;
-  for (const texture in textures) {
+  var textures = this._textures;
+  for (var texture in textures) {
     if (textures.hasOwnProperty(texture)) {
-      const instance = textures[texture];
+      var instance = textures[texture];
       if (instance !== this._defaultTexture) {
         instance.destroy();
       }

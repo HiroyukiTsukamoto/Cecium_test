@@ -16,26 +16,26 @@ import { TileBoundingRegion } from "../../Source/Cesium.js";
 import { TileSelectionResult } from "../../Source/Cesium.js";
 
 describe("Scene/TerrainFillMesh", function () {
-  let processor;
-  let scene;
-  let camera;
-  let frameState;
-  let imageryLayerCollection;
-  let surfaceShaderSet;
-  let mockTerrain;
-  let tileProvider;
-  let quadtree;
-  let rootTiles;
+  var processor;
+  var scene;
+  var camera;
+  var frameState;
+  var imageryLayerCollection;
+  var surfaceShaderSet;
+  var mockTerrain;
+  var tileProvider;
+  var quadtree;
+  var rootTiles;
 
-  let center;
-  let west;
-  let south;
-  let east;
-  let north;
-  let southwest;
-  let southeast;
-  let northwest;
-  let northeast;
+  var center;
+  var west;
+  var south;
+  var east;
+  var north;
+  var southwest;
+  var southeast;
+  var northwest;
+  var northeast;
 
   beforeEach(function () {
     scene = {
@@ -291,7 +291,7 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("propagates edges and corners to an unloaded tile", function () {
-      const tiles = [
+      var tiles = [
         center,
         west,
         south,
@@ -310,7 +310,7 @@ describe("Scene/TerrainFillMesh", function () {
 
         TerrainFillMesh.updateFillTiles(tileProvider, tiles, frameState);
 
-        const fill = center.data.fill;
+        var fill = center.data.fill;
         expect(fill).toBeDefined();
         expect(fill.westTiles).toEqual([west]);
         expect(fill.westMeshes).toEqual([west.data.mesh]);
@@ -332,12 +332,12 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("propagates fill tile edges to an unloaded tile", function () {
-      const centerSW = center.southwestChild;
-      const centerSE = center.southeastChild;
-      const centerNW = center.northwestChild;
-      const centerNE = center.northeastChild;
+      var centerSW = center.southwestChild;
+      var centerSE = center.southeastChild;
+      var centerNW = center.northwestChild;
+      var centerNE = center.northeastChild;
 
-      const tiles = [
+      var tiles = [
         centerSW,
         centerSE,
         centerNW,
@@ -359,10 +359,10 @@ describe("Scene/TerrainFillMesh", function () {
 
         TerrainFillMesh.updateFillTiles(tileProvider, tiles, frameState);
 
-        const sw = centerSW.data.fill;
-        const se = centerSE.data.fill;
-        const nw = centerNW.data.fill;
-        const ne = centerNE.data.fill;
+        var sw = centerSW.data.fill;
+        var se = centerSE.data.fill;
+        var nw = centerNW.data.fill;
+        var ne = centerNE.data.fill;
 
         expect(sw).toBeDefined();
         expect(sw.westTiles).toEqual([west]);
@@ -436,9 +436,9 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("does not touch disconnected tiles", function () {
-      const disconnected = center.southwestChild.northeastChild;
+      var disconnected = center.southwestChild.northeastChild;
 
-      const tiles = [
+      var tiles = [
         disconnected,
         west,
         south,
@@ -462,7 +462,7 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("propagates multiple adjacent source tiles to a destination edge", function () {
-      const tiles = [center, west, south, east, north];
+      var tiles = [center, west, south, east, north];
       [west, south, east, north].forEach(function (tile) {
         tile.children.forEach(function (child) {
           mockTerrain.willBeUnavailable(child);
@@ -476,7 +476,7 @@ describe("Scene/TerrainFillMesh", function () {
 
         TerrainFillMesh.updateFillTiles(tileProvider, tiles, frameState);
 
-        const fill = center.data.fill;
+        var fill = center.data.fill;
         expect(fill).toBeDefined();
         expect(fill.westTiles).toEqual([
           west.northeastChild,
@@ -498,7 +498,7 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("adjusts existing fill tiles when adjacent tiles are loaded", function () {
-      const tiles = [center, west, south, north];
+      var tiles = [center, west, south, north];
 
       tiles.forEach(mockTerrain.createMeshWillSucceed.bind(mockTerrain));
 
@@ -509,7 +509,7 @@ describe("Scene/TerrainFillMesh", function () {
 
           TerrainFillMesh.updateFillTiles(tileProvider, tiles, frameState);
 
-          const fill = center.data.fill;
+          var fill = center.data.fill;
           expect(fill).toBeDefined();
           expect(fill.westTiles).toEqual([west]);
           expect(fill.westMeshes).toEqual([west.data.mesh]);
@@ -533,7 +533,7 @@ describe("Scene/TerrainFillMesh", function () {
 
           TerrainFillMesh.updateFillTiles(tileProvider, tiles, frameState);
 
-          const fill = center.data.fill;
+          var fill = center.data.fill;
           expect(fill).toBeDefined();
           expect(fill.westTiles).toEqual([west]);
           expect(fill.westMeshes).toEqual([west.data.mesh]);
@@ -552,12 +552,12 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("adjusts existing fill tiles when an adjacent fill tile changes", function () {
-      const dontLoad = [east, south, southeast];
+      var dontLoad = [east, south, southeast];
       dontLoad.forEach(
         mockTerrain.requestTileGeometryWillDefer.bind(mockTerrain)
       );
 
-      const tiles = [
+      var tiles = [
         center,
         west,
         south,
@@ -684,7 +684,7 @@ describe("Scene/TerrainFillMesh", function () {
       tile._lastSelectionResultFrame = frameState.frameNumber;
       tile._lastSelectionResult = TileSelectionResult.RENDERED;
 
-      let parent = tile.parent;
+      var parent = tile.parent;
       while (parent) {
         if (parent._lastSelectionResultFrame !== frameState.frameNumber) {
           parent._lastSelectionResultFrame = frameState.frameNumber;
@@ -705,7 +705,7 @@ describe("Scene/TerrainFillMesh", function () {
           computeBoundingVolumes: false,
         });
 
-        const fill = (center.data.fill = new TerrainFillMesh(center));
+        var fill = (center.data.fill = new TerrainFillMesh(center));
         fill.update(tileProvider, frameState);
 
         expectVertexCount(fill, 5);
@@ -719,7 +719,7 @@ describe("Scene/TerrainFillMesh", function () {
 
     it("puts zero height at the four corners and center when there are no adjacent tiles and no bounding region", function () {
       return processor.process([center]).then(function () {
-        const fill = (center.data.fill = new TerrainFillMesh(center));
+        var fill = (center.data.fill = new TerrainFillMesh(center));
         fill.update(tileProvider, frameState);
 
         expectVertexCount(fill, 5);
@@ -735,7 +735,7 @@ describe("Scene/TerrainFillMesh", function () {
       return processor
         .process([center, west, south, east, north])
         .then(function () {
-          const fill = (center.data.fill = new TerrainFillMesh(center));
+          var fill = (center.data.fill = new TerrainFillMesh(center));
 
           fill.westTiles.push(west);
           fill.westMeshes.push(west.data.mesh);
@@ -765,7 +765,7 @@ describe("Scene/TerrainFillMesh", function () {
       return processor
         .process([center, southwest, southeast, northwest, northeast])
         .then(function () {
-          const fill = (center.data.fill = new TerrainFillMesh(center));
+          var fill = (center.data.fill = new TerrainFillMesh(center));
 
           fill.southwestTile = southwest;
           fill.southwestMesh = southwest.data.mesh;
@@ -788,18 +788,18 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("finds a suitable corner vertex in a less detailed tile", function () {
-      const sw = center.southwestChild;
-      const se = center.southeastChild;
-      const nw = center.northwestChild;
-      const ne = center.northeastChild;
+      var sw = center.southwestChild;
+      var se = center.southeastChild;
+      var nw = center.northwestChild;
+      var ne = center.northeastChild;
 
       return processor
         .process([sw, se, nw, ne, west, south, east, north])
         .then(function () {
-          const fillSW = (sw.data.fill = new TerrainFillMesh(sw));
-          const fillSE = (se.data.fill = new TerrainFillMesh(se));
-          const fillNW = (nw.data.fill = new TerrainFillMesh(nw));
-          const fillNE = (ne.data.fill = new TerrainFillMesh(ne));
+          var fillSW = (sw.data.fill = new TerrainFillMesh(sw));
+          var fillSE = (se.data.fill = new TerrainFillMesh(se));
+          var fillNW = (nw.data.fill = new TerrainFillMesh(nw));
+          var fillNE = (ne.data.fill = new TerrainFillMesh(ne));
 
           fillSW.westTiles.push(west);
           fillSW.westMeshes.push(west.data.mesh);
@@ -857,18 +857,18 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("interpolates a suitable corner vertex from a less detailed tile", function () {
-      const sw = center.southwestChild.southwestChild;
-      const se = center.southeastChild.southeastChild;
-      const nw = center.northwestChild.northwestChild;
-      const ne = center.northeastChild.northeastChild;
+      var sw = center.southwestChild.southwestChild;
+      var se = center.southeastChild.southeastChild;
+      var nw = center.northwestChild.northwestChild;
+      var ne = center.northeastChild.northeastChild;
 
       return processor
         .process([sw, se, nw, ne, west, south, east, north])
         .then(function () {
-          const fillSW = (sw.data.fill = new TerrainFillMesh(sw));
-          const fillSE = (se.data.fill = new TerrainFillMesh(se));
-          const fillNW = (nw.data.fill = new TerrainFillMesh(nw));
-          const fillNE = (ne.data.fill = new TerrainFillMesh(ne));
+          var fillSW = (sw.data.fill = new TerrainFillMesh(sw));
+          var fillSE = (se.data.fill = new TerrainFillMesh(se));
+          var fillNW = (nw.data.fill = new TerrainFillMesh(nw));
+          var fillNE = (ne.data.fill = new TerrainFillMesh(ne));
 
           fillSW.westTiles.push(west);
           fillSW.westMeshes.push(west.data.mesh);
@@ -956,14 +956,14 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     it("uses the height of the closest vertex when an edge does not include the corner", function () {
-      const westN = west.northeastChild.southeastChild;
-      const westS = west.southeastChild.northeastChild;
-      const eastN = east.northwestChild.southwestChild;
-      const eastS = east.southwestChild.northwestChild;
-      const northW = north.southwestChild.southeastChild;
-      const northE = north.southeastChild.southwestChild;
-      const southW = south.northwestChild.northeastChild;
-      const southE = south.northeastChild.northwestChild;
+      var westN = west.northeastChild.southeastChild;
+      var westS = west.southeastChild.northeastChild;
+      var eastN = east.northwestChild.southwestChild;
+      var eastS = east.southwestChild.northwestChild;
+      var northW = north.southwestChild.southeastChild;
+      var northE = north.southeastChild.southwestChild;
+      var southW = south.northwestChild.northeastChild;
+      var southE = south.northeastChild.northwestChild;
 
       mockTerrain
         .requestTileGeometryWillSucceedWith(
@@ -1074,7 +1074,7 @@ describe("Scene/TerrainFillMesh", function () {
           southW,
         ])
         .then(function () {
-          const fill = (center.data.fill = new TerrainFillMesh(center));
+          var fill = (center.data.fill = new TerrainFillMesh(center));
 
           fill.westTiles.push(westN, westS);
           fill.westMeshes.push(westN.data.mesh, westS.data.mesh);
@@ -1102,8 +1102,8 @@ describe("Scene/TerrainFillMesh", function () {
     });
 
     describe("correctly transforms texture coordinates across the anti-meridian", function () {
-      let westernHemisphere;
-      let easternHemisphere;
+      var westernHemisphere;
+      var easternHemisphere;
 
       beforeEach(function () {
         westernHemisphere =
@@ -1147,7 +1147,7 @@ describe("Scene/TerrainFillMesh", function () {
         return processor
           .process([westernHemisphere, easternHemisphere])
           .then(function () {
-            const fill = (easternHemisphere.data.fill = new TerrainFillMesh(
+            var fill = (easternHemisphere.data.fill = new TerrainFillMesh(
               easternHemisphere
             ));
 
@@ -1190,7 +1190,7 @@ describe("Scene/TerrainFillMesh", function () {
         return processor
           .process([westernHemisphere, easternHemisphere])
           .then(function () {
-            const fill = (westernHemisphere.data.fill = new TerrainFillMesh(
+            var fill = (westernHemisphere.data.fill = new TerrainFillMesh(
               westernHemisphere
             ));
 
@@ -1208,26 +1208,26 @@ describe("Scene/TerrainFillMesh", function () {
     });
   });
 
-  const textureCoordinateScratch = new Cartesian2();
-  const positionScratch = new Cartesian3();
-  const expectedPositionScratch = new Cartesian3();
+  var textureCoordinateScratch = new Cartesian2();
+  var positionScratch = new Cartesian3();
+  var expectedPositionScratch = new Cartesian3();
 
   function getHeight(fill, u, v) {
-    const mesh = fill.mesh;
-    const rectangle = fill.tile.rectangle;
-    const encoding = mesh.encoding;
-    const vertices = mesh.vertices;
-    const stride = encoding.stride;
-    const count = mesh.vertices.length / stride;
+    var mesh = fill.mesh;
+    var rectangle = fill.tile.rectangle;
+    var encoding = mesh.encoding;
+    var vertices = mesh.vertices;
+    var stride = encoding.stride;
+    var count = mesh.vertices.length / stride;
 
-    for (let i = 0; i < count; ++i) {
-      const tc = encoding.decodeTextureCoordinates(
+    for (var i = 0; i < count; ++i) {
+      var tc = encoding.decodeTextureCoordinates(
         vertices,
         i,
         textureCoordinateScratch
       );
-      const vertexHeight = encoding.decodeHeight(vertices, i);
-      const vertexPosition = encoding.decodePosition(
+      var vertexHeight = encoding.decodeHeight(vertices, i);
+      var vertexPosition = encoding.decodePosition(
         vertices,
         i,
         positionScratch
@@ -1236,9 +1236,9 @@ describe("Scene/TerrainFillMesh", function () {
         Math.abs(u - tc.x) < 1e-5 &&
         Math.abs(v - tc.y) < CesiumMath.EPSILON5
       ) {
-        const longitude = CesiumMath.lerp(rectangle.west, rectangle.east, u);
-        const latitude = CesiumMath.lerp(rectangle.south, rectangle.north, v);
-        const expectedPosition = Cartesian3.fromRadians(
+        var longitude = CesiumMath.lerp(rectangle.west, rectangle.east, u);
+        var latitude = CesiumMath.lerp(rectangle.south, rectangle.north, v);
+        var expectedPosition = Cartesian3.fromRadians(
           longitude,
           latitude,
           vertexHeight,
@@ -1250,11 +1250,11 @@ describe("Scene/TerrainFillMesh", function () {
       }
     }
 
-    fail(`Vertex with u=${u}, v=${v} does not exist.`);
+    fail("Vertex with u=" + u + ", v=" + v + " does not exist.");
   }
 
   function expectVertex(fill, u, v, height) {
-    const vertexHeight = getHeight(fill, u, v);
+    var vertexHeight = getHeight(fill, u, v);
     expect(vertexHeight).toEqualEpsilon(height, CesiumMath.EPSILON5);
   }
 

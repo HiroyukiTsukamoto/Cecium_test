@@ -1,12 +1,12 @@
 import Check from "../Core/Check.js";
 import defaultValue from "../Core/defaultValue.js";
 import MetadataEnumValue from "./MetadataEnumValue.js";
-import MetadataComponentType from "./MetadataComponentType.js";
+import MetadataType from "./MetadataType.js";
 
 /**
  * A metadata enum.
  * <p>
- * See the {@link https://github.com/CesiumGS/3d-tiles/tree/main/extensions/3DTILES_metadata|3DTILES_metadata Extension} for 3D Tiles
+ * See the {@link https://github.com/CesiumGS/3d-tiles/tree/3d-tiles-next/extensions/3DTILES_metadata|3DTILES_metadata Extension} for 3D Tiles
  * </p>
  *
  * @param {Object} options Object with the following properties:
@@ -20,25 +20,25 @@ import MetadataComponentType from "./MetadataComponentType.js";
  */
 function MetadataEnum(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const id = options.id;
-  const enumDefinition = options.enum;
+  var id = options.id;
+  var enumDefinition = options.enum;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.string("options.id", id);
   Check.typeOf.object("options.enum", enumDefinition);
   //>>includeEnd('debug');
 
-  const namesByValue = {};
-  const valuesByName = {};
-  const values = enumDefinition.values.map(function (value) {
+  var namesByValue = {};
+  var valuesByName = {};
+  var values = enumDefinition.values.map(function (value) {
     namesByValue[value.value] = value.name;
     valuesByName[value.name] = value.value;
     return new MetadataEnumValue(value);
   });
 
-  const valueType = defaultValue(
-    MetadataComponentType[enumDefinition.valueType],
-    MetadataComponentType.UINT16
+  var valueType = defaultValue(
+    MetadataType[enumDefinition.valueType],
+    MetadataType.UINT16
   );
 
   this._values = values;
@@ -101,7 +101,7 @@ Object.defineProperties(MetadataEnum.prototype, {
    * The enum value type.
    *
    * @memberof MetadataEnum.prototype
-   * @type {MetadataComponentType}
+   * @type {MetadataType}
    * @readonly
    *
    * @private

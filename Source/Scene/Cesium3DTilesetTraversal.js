@@ -13,29 +13,29 @@ function isVisible(tile) {
   return tile._visible && tile._inRequestVolume;
 }
 
-const traversal = {
+var traversal = {
   stack: new ManagedArray(),
   stackMaximumLength: 0,
 };
 
-const emptyTraversal = {
+var emptyTraversal = {
   stack: new ManagedArray(),
   stackMaximumLength: 0,
 };
 
-const descendantTraversal = {
+var descendantTraversal = {
   stack: new ManagedArray(),
   stackMaximumLength: 0,
 };
 
-const selectionTraversal = {
+var selectionTraversal = {
   stack: new ManagedArray(),
   stackMaximumLength: 0,
   ancestorStack: new ManagedArray(),
   ancestorStackMaximumLength: 0,
 };
 
-const descendantSelectionDepth = 2;
+var descendantSelectionDepth = 2;
 
 Cesium3DTilesetTraversal.selectTiles = function (tileset, frameState) {
   tileset._requestedTiles.length = 0;
@@ -49,7 +49,7 @@ Cesium3DTilesetTraversal.selectTiles = function (tileset, frameState) {
   tileset._emptyTiles.length = 0;
   tileset._hasMixedContent = false;
 
-  const root = tileset.root;
+  var root = tileset.root;
   updateTile(tileset, root, frameState);
 
   // The root tile is not visible
@@ -83,16 +83,16 @@ Cesium3DTilesetTraversal.selectTiles = function (tileset, frameState) {
 
   // Update the priority for any requests found during traversal
   // Update after traversal so that min and max values can be used to normalize priority values
-  const requestedTiles = tileset._requestedTiles;
-  const length = requestedTiles.length;
-  for (let i = 0; i < length; ++i) {
+  var requestedTiles = tileset._requestedTiles;
+  var length = requestedTiles.length;
+  for (var i = 0; i < length; ++i) {
     requestedTiles[i].updatePriority();
   }
 };
 
 function executeBaseTraversal(tileset, root, frameState) {
-  const baseScreenSpaceError = tileset._maximumScreenSpaceError;
-  const maximumScreenSpaceError = tileset._maximumScreenSpaceError;
+  var baseScreenSpaceError = tileset._maximumScreenSpaceError;
+  var maximumScreenSpaceError = tileset._maximumScreenSpaceError;
   executeTraversal(
     tileset,
     root,
@@ -103,8 +103,8 @@ function executeBaseTraversal(tileset, root, frameState) {
 }
 
 function executeSkipTraversal(tileset, root, frameState) {
-  const baseScreenSpaceError = Number.MAX_VALUE;
-  const maximumScreenSpaceError = tileset._maximumScreenSpaceError;
+  var baseScreenSpaceError = Number.MAX_VALUE;
+  var maximumScreenSpaceError = tileset._maximumScreenSpaceError;
   executeTraversal(
     tileset,
     root,
@@ -116,11 +116,11 @@ function executeSkipTraversal(tileset, root, frameState) {
 }
 
 function executeBaseAndSkipTraversal(tileset, root, frameState) {
-  const baseScreenSpaceError = Math.max(
+  var baseScreenSpaceError = Math.max(
     tileset.baseScreenSpaceError,
     tileset.maximumScreenSpaceError
   );
-  const maximumScreenSpaceError = tileset.maximumScreenSpaceError;
+  var maximumScreenSpaceError = tileset.maximumScreenSpaceError;
   executeTraversal(
     tileset,
     root,
@@ -141,7 +141,7 @@ function addEmptyTile(tileset, tile) {
 
 function selectTile(tileset, tile, frameState) {
   if (tile.contentVisibility(frameState) !== Intersect.OUTSIDE) {
-    const tileContent = tile.content;
+    var tileContent = tile.content;
     if (tileContent.featurePropertiesDirty) {
       // A feature's property in this tile changed, the tile needs to be re-styled.
       tileContent.featurePropertiesDirty = false;
@@ -157,18 +157,18 @@ function selectTile(tileset, tile, frameState) {
 }
 
 function selectDescendants(tileset, root, frameState) {
-  const stack = descendantTraversal.stack;
+  var stack = descendantTraversal.stack;
   stack.push(root);
   while (stack.length > 0) {
     descendantTraversal.stackMaximumLength = Math.max(
       descendantTraversal.stackMaximumLength,
       stack.length
     );
-    const tile = stack.pop();
-    const children = tile.children;
-    const childrenLength = children.length;
-    for (let i = 0; i < childrenLength; ++i) {
-      const child = children[i];
+    var tile = stack.pop();
+    var children = tile.children;
+    var childrenLength = children.length;
+    for (var i = 0; i < childrenLength; ++i) {
+      var child = children[i];
       if (isVisible(child)) {
         if (child.contentAvailable) {
           updateTile(tileset, child, frameState);
@@ -193,7 +193,7 @@ function selectDesiredTile(tileset, tile, frameState) {
   }
 
   // If this tile is not loaded attempt to select its ancestor instead
-  const loadedTile = tile.contentAvailable
+  var loadedTile = tile.contentAvailable
     ? tile
     : tile._ancestorWithContentAvailable;
   if (defined(loadedTile)) {
@@ -261,15 +261,15 @@ function isOnScreenLongEnough(tileset, tile, frameState) {
     return true;
   }
 
-  const sphere = tile.boundingSphere;
-  const diameter = Math.max(sphere.radius * 2.0, 1.0);
+  var sphere = tile.boundingSphere;
+  var diameter = Math.max(sphere.radius * 2.0, 1.0);
 
-  const camera = frameState.camera;
-  const deltaMagnitude =
+  var camera = frameState.camera;
+  var deltaMagnitude =
     camera.positionWCDeltaMagnitude !== 0.0
       ? camera.positionWCDeltaMagnitude
       : camera.positionWCDeltaMagnitudeLastFrame;
-  const movementRatio =
+  var movementRatio =
     (tileset.cullRequestsWhileMovingMultiplier * deltaMagnitude) / diameter; // How do n frames of this movement compare to the tile's physical size.
   return movementRatio < 1.0;
 }
@@ -286,7 +286,7 @@ function loadTile(tileset, tile, frameState) {
     return;
   }
 
-  const cameraHasNotStoppedMovingLongEnough =
+  var cameraHasNotStoppedMovingLongEnough =
     frameState.camera.timeSinceMoved < tileset.foveatedTimeDelay;
   if (tile.priorityDeferred && cameraHasNotStoppedMovingLongEnough) {
     return;
@@ -308,11 +308,11 @@ function updateVisibility(tileset, tile, frameState) {
 }
 
 function anyChildrenVisible(tileset, tile, frameState) {
-  let anyVisible = false;
-  const children = tile.children;
-  const length = children.length;
-  for (let i = 0; i < length; ++i) {
-    const child = children[i];
+  var anyVisible = false;
+  var children = tile.children;
+  var length = children.length;
+  for (var i = 0; i < length; ++i) {
+    var child = children[i];
     updateVisibility(tileset, child, frameState);
     anyVisible = anyVisible || isVisible(child);
   }
@@ -320,7 +320,7 @@ function anyChildrenVisible(tileset, tile, frameState) {
 }
 
 function meetsScreenSpaceErrorEarly(tileset, tile, frameState) {
-  const parent = tile.parent;
+  var parent = tile.parent;
   if (
     !defined(parent) ||
     parent.hasTilesetContent ||
@@ -344,12 +344,12 @@ function updateTileVisibility(tileset, tile, frameState) {
     return;
   }
 
-  const hasChildren = tile.children.length > 0;
+  var hasChildren = tile.children.length > 0;
   if ((tile.hasTilesetContent || tile.hasImplicitContent) && hasChildren) {
     // Use the root tile's visibility instead of this tile's visibility.
     // The root tile may be culled by the children bounds optimization in which
     // case this tile should also be culled.
-    const child = tile.children[0];
+    var child = tile.children[0];
     updateTileVisibility(tileset, child, frameState);
     tile._visible = child._visible;
     return;
@@ -361,8 +361,8 @@ function updateTileVisibility(tileset, tile, frameState) {
   }
 
   // Optimization - if none of the tile's children are visible then this tile isn't visible
-  const replace = tile.refine === Cesium3DTileRefine.REPLACE;
-  const useOptimization =
+  var replace = tile.refine === Cesium3DTileRefine.REPLACE;
+  var useOptimization =
     tile._optimChildrenWithinParent ===
     Cesium3DTileOptimizationHint.USE_OPTIMIZATION;
   if (replace && useOptimization && hasChildren) {
@@ -393,12 +393,12 @@ function updateTileAncestorContentLinks(tile, frameState) {
   tile._ancestorWithContent = undefined;
   tile._ancestorWithContentAvailable = undefined;
 
-  const parent = tile.parent;
+  var parent = tile.parent;
   if (defined(parent)) {
     // ancestorWithContent is an ancestor that has content or has the potential to have
     // content. Used in conjunction with tileset.skipLevels to know when to skip a tile.
     // ancestorWithContentAvailable is an ancestor that is rendered if a desired tile is not loaded.
-    const hasContent =
+    var hasContent =
       !hasUnloadedContent(parent) ||
       parent._requestedFrame === frameState.frameNumber;
     tile._ancestorWithContent = hasContent
@@ -421,7 +421,7 @@ function hasUnloadedContent(tile) {
 }
 
 function reachedSkippingThreshold(tileset, tile) {
-  const ancestor = tile._ancestorWithContent;
+  var ancestor = tile._ancestorWithContent;
   return (
     !tileset.immediatelyLoadDesiredLevelOfDetail &&
     (tile._priorityProgressiveResolutionScreenSpaceErrorLeaf ||
@@ -442,10 +442,10 @@ function sortChildrenByDistanceToCamera(a, b) {
 }
 
 function updateAndPushChildren(tileset, tile, stack, frameState) {
-  let i;
-  const replace = tile.refine === Cesium3DTileRefine.REPLACE;
-  const children = tile.children;
-  const length = children.length;
+  var i;
+  var replace = tile.refine === Cesium3DTileRefine.REPLACE;
+  var children = tile.children;
+  var length = children.length;
 
   for (i = 0; i < length; ++i) {
     updateTile(tileset, children[i], frameState);
@@ -456,17 +456,17 @@ function updateAndPushChildren(tileset, tile, stack, frameState) {
 
   // For traditional replacement refinement only refine if all children are loaded.
   // Empty tiles are exempt since it looks better if children stream in as they are loaded to fill the empty space.
-  const checkRefines =
+  var checkRefines =
     !skipLevelOfDetail(tileset) && replace && !hasEmptyContent(tile);
-  let refines = true;
+  var refines = true;
 
-  let anyChildrenVisible = false;
+  var anyChildrenVisible = false;
 
   // Determining min child
-  let minIndex = -1;
-  let minimumPriority = Number.MAX_VALUE;
+  var minIndex = -1;
+  var minimumPriority = Number.MAX_VALUE;
 
-  let child;
+  var child;
   for (i = 0; i < length; ++i) {
     child = children[i];
     if (isVisible(child)) {
@@ -487,7 +487,7 @@ function updateAndPushChildren(tileset, tile, stack, frameState) {
       touchTile(tileset, child, frameState);
     }
     if (checkRefines) {
-      let childRefines;
+      var childRefines;
       if (!child._inRequestVolume) {
         childRefines = false;
       } else if (hasEmptyContent(child)) {
@@ -506,9 +506,9 @@ function updateAndPushChildren(tileset, tile, stack, frameState) {
   if (minIndex !== -1 && !skipLevelOfDetail(tileset) && replace) {
     // An ancestor will hold the _foveatedFactor and _distanceToCamera for descendants between itself and its highest priority descendant. Siblings of a min children along the way use this ancestor as their priority holder as well.
     // Priority of all tiles that refer to the _foveatedFactor and _distanceToCamera stored in the common ancestor will be differentiated based on their _depth.
-    const minPriorityChild = children[minIndex];
+    var minPriorityChild = children[minIndex];
     minPriorityChild._wasMinPriorityChild = true;
-    const priorityHolder =
+    var priorityHolder =
       (tile._wasMinPriorityChild || tile === tileset.root) &&
       minimumPriority <= tile._priorityHolder._foveatedFactor
         ? tile._priorityHolder
@@ -574,7 +574,7 @@ function executeTraversal(
   // Tiles that have a greater screen space error than the base screen space error are part of the base traversal,
   // all other tiles are part of the skip traversal. The skip traversal allows for skipping levels of the tree
   // and rendering children and parent tiles simultaneously.
-  const stack = traversal.stack;
+  var stack = traversal.stack;
   stack.push(root);
 
   while (stack.length > 0) {
@@ -583,15 +583,15 @@ function executeTraversal(
       stack.length
     );
 
-    const tile = stack.pop();
+    var tile = stack.pop();
 
     updateTileAncestorContentLinks(tile, frameState);
-    const baseTraversal = inBaseTraversal(tileset, tile, baseScreenSpaceError);
-    const add = tile.refine === Cesium3DTileRefine.ADD;
-    const replace = tile.refine === Cesium3DTileRefine.REPLACE;
-    const parent = tile.parent;
-    const parentRefines = !defined(parent) || parent._refines;
-    let refines = false;
+    var baseTraversal = inBaseTraversal(tileset, tile, baseScreenSpaceError);
+    var add = tile.refine === Cesium3DTileRefine.ADD;
+    var replace = tile.refine === Cesium3DTileRefine.REPLACE;
+    var parent = tile.parent;
+    var parentRefines = !defined(parent) || parent._refines;
+    var refines = false;
 
     if (canTraverse(tileset, tile)) {
       refines =
@@ -599,7 +599,7 @@ function executeTraversal(
         parentRefines;
     }
 
-    const stoppedRefining = !refines && parentRefines;
+    var stoppedRefining = !refines && parentRefines;
 
     if (hasEmptyContent(tile)) {
       // Add empty tile just to show its debug bounding volume
@@ -640,8 +640,8 @@ function executeTraversal(
 
 function executeEmptyTraversal(tileset, root, frameState) {
   // Depth-first traversal that checks if all nearest descendants with content are loaded. Ignores visibility.
-  let allDescendantsLoaded = true;
-  const stack = emptyTraversal.stack;
+  var allDescendantsLoaded = true;
+  var stack = emptyTraversal.stack;
   stack.push(root);
 
   while (stack.length > 0) {
@@ -650,14 +650,14 @@ function executeEmptyTraversal(tileset, root, frameState) {
       stack.length
     );
 
-    const tile = stack.pop();
-    const children = tile.children;
-    const childrenLength = children.length;
+    var tile = stack.pop();
+    var children = tile.children;
+    var childrenLength = children.length;
 
     // Only traverse if the tile is empty - traversal stop at descendants with content
-    const emptyContent = hasEmptyContent(tile);
-    const traverse = emptyContent && canTraverse(tileset, tile);
-    const emptyLeaf = emptyContent && tile.children.length === 0;
+    var emptyContent = hasEmptyContent(tile);
+    var traverse = emptyContent && canTraverse(tileset, tile);
+    var emptyLeaf = emptyContent && tile.children.length === 0;
 
     // Traversal stops but the tile does not have content yet
     // There will be holes if the parent tries to refine to its children, so don't refine
@@ -674,8 +674,8 @@ function executeEmptyTraversal(tileset, root, frameState) {
     }
 
     if (traverse) {
-      for (let i = 0; i < childrenLength; ++i) {
-        const child = children[i];
+      for (var i = 0; i < childrenLength; ++i) {
+        var child = children[i];
         stack.push(child);
       }
     }
@@ -702,9 +702,9 @@ function executeEmptyTraversal(tileset, root, frameState) {
  * @private
  */
 function traverseAndSelect(tileset, root, frameState) {
-  const stack = selectionTraversal.stack;
-  const ancestorStack = selectionTraversal.ancestorStack;
-  let lastAncestor;
+  var stack = selectionTraversal.stack;
+  var ancestorStack = selectionTraversal.ancestorStack;
+  var lastAncestor;
 
   stack.push(root);
 
@@ -719,7 +719,7 @@ function traverseAndSelect(tileset, root, frameState) {
     );
 
     if (ancestorStack.length > 0) {
-      const waitingTile = ancestorStack.peek();
+      var waitingTile = ancestorStack.peek();
       if (waitingTile._stackLength === stack.length) {
         ancestorStack.pop();
         if (waitingTile !== lastAncestor) {
@@ -730,17 +730,17 @@ function traverseAndSelect(tileset, root, frameState) {
       }
     }
 
-    const tile = stack.pop();
+    var tile = stack.pop();
     if (!defined(tile)) {
       // stack is empty but ancestorStack isn't
       continue;
     }
 
-    const add = tile.refine === Cesium3DTileRefine.ADD;
-    const shouldSelect = tile._shouldSelect;
-    const children = tile.children;
-    const childrenLength = children.length;
-    const traverse = canTraverse(tileset, tile);
+    var add = tile.refine === Cesium3DTileRefine.ADD;
+    var shouldSelect = tile._shouldSelect;
+    var children = tile.children;
+    var childrenLength = children.length;
+    var traverse = canTraverse(tileset, tile);
 
     if (shouldSelect) {
       if (add) {
@@ -761,8 +761,8 @@ function traverseAndSelect(tileset, root, frameState) {
     }
 
     if (traverse) {
-      for (let i = 0; i < childrenLength; ++i) {
-        const child = children[i];
+      for (var i = 0; i < childrenLength; ++i) {
+        var child = children[i];
         if (isVisible(child)) {
           stack.push(child);
         }

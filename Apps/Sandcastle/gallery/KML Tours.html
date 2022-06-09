@@ -30,16 +30,16 @@
     <div id="toolbar"></div>
 
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
-        const options = {
+        var viewer = new Cesium.Viewer("cesiumContainer");
+        var options = {
           camera: viewer.scene.camera,
           canvas: viewer.scene.canvas,
         };
 
-        let tour = null;
+        var tour = null;
         viewer.dataSources
           .add(
             Cesium.KmlDataSource.load(
@@ -53,13 +53,15 @@
               console.log("Start tour");
             });
             tour.tourEnd.addEventListener(function (terminated) {
-              console.log(`${terminated ? "Terminate" : "End"} tour`);
+              console.log((terminated ? "Terminate" : "End") + " tour");
             });
             tour.entryStart.addEventListener(function (entry) {
-              console.log(`Play ${entry.type} (${entry.duration})`);
+              console.log("Play " + entry.type + " (" + entry.duration + ")");
             });
             tour.entryEnd.addEventListener(function (entry, terminated) {
-              console.log(`${terminated ? "Terminate" : "End"} ${entry.type}`);
+              console.log(
+                (terminated ? "Terminate" : "End") + " " + entry.type
+              );
             });
           });
 
@@ -78,10 +80,10 @@
         };
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

@@ -75,8 +75,8 @@ function QuadtreePrimitive(options) {
     suspendLodUpdate: false,
   };
 
-  const tilingScheme = this._tileProvider.tilingScheme;
-  const ellipsoid = tilingScheme.ellipsoid;
+  var tilingScheme = this._tileProvider.tilingScheme;
+  var ellipsoid = tilingScheme.ellipsoid;
 
   this._tilesToRender = [];
   this._tileLoadQueueHigh = []; // high priority tiles are preventing refinement
@@ -208,7 +208,7 @@ QuadtreePrimitive.prototype.invalidateAllTiles = function () {
 
 function invalidateAllTiles(primitive) {
   // Clear the replacement queue
-  const replacementQueue = primitive._tileReplacementQueue;
+  var replacementQueue = primitive._tileReplacementQueue;
   replacementQueue.head = undefined;
   replacementQueue.tail = undefined;
   replacementQueue.count = 0;
@@ -216,15 +216,15 @@ function invalidateAllTiles(primitive) {
   clearTileLoadQueue(primitive);
 
   // Free and recreate the level zero tiles.
-  const levelZeroTiles = primitive._levelZeroTiles;
+  var levelZeroTiles = primitive._levelZeroTiles;
   if (defined(levelZeroTiles)) {
-    for (let i = 0; i < levelZeroTiles.length; ++i) {
-      const tile = levelZeroTiles[i];
-      const customData = tile.customData;
-      const customDataLength = customData.length;
+    for (var i = 0; i < levelZeroTiles.length; ++i) {
+      var tile = levelZeroTiles[i];
+      var customData = tile.customData;
+      var customDataLength = customData.length;
 
-      for (let j = 0; j < customDataLength; ++j) {
-        const data = customData[j];
+      for (var j = 0; j < customDataLength; ++j) {
+        var data = customData[j];
         data.level = 0;
         primitive._addHeightCallbacks.push(data);
       }
@@ -246,7 +246,7 @@ function invalidateAllTiles(primitive) {
  *        function is passed a reference to the tile as its only parameter.
  */
 QuadtreePrimitive.prototype.forEachLoadedTile = function (tileFunction) {
-  let tile = this._tileReplacementQueue.head;
+  var tile = this._tileReplacementQueue.head;
   while (defined(tile)) {
     if (tile.state !== QuadtreeTileLoadState.START) {
       tileFunction(tile);
@@ -263,8 +263,8 @@ QuadtreePrimitive.prototype.forEachLoadedTile = function (tileFunction) {
  *        function is passed a reference to the tile as its only parameter.
  */
 QuadtreePrimitive.prototype.forEachRenderedTile = function (tileFunction) {
-  const tilesRendered = this._tilesToRender;
-  for (let i = 0, len = tilesRendered.length; i < len; ++i) {
+  var tilesRendered = this._tilesToRender;
+  for (var i = 0, len = tilesRendered.length; i < len; ++i) {
     tileFunction(tilesRendered[i]);
   }
 };
@@ -278,8 +278,8 @@ QuadtreePrimitive.prototype.forEachRenderedTile = function (tileFunction) {
  * @returns {Function} The function to remove this callback from the quadtree.
  */
 QuadtreePrimitive.prototype.updateHeight = function (cartographic, callback) {
-  const primitive = this;
-  const object = {
+  var primitive = this;
+  var object = {
     positionOnEllipsoidSurface: undefined,
     positionCartographic: cartographic,
     level: -1,
@@ -287,18 +287,15 @@ QuadtreePrimitive.prototype.updateHeight = function (cartographic, callback) {
   };
 
   object.removeFunc = function () {
-    const addedCallbacks = primitive._addHeightCallbacks;
-    const length = addedCallbacks.length;
-    for (let i = 0; i < length; ++i) {
+    var addedCallbacks = primitive._addHeightCallbacks;
+    var length = addedCallbacks.length;
+    for (var i = 0; i < length; ++i) {
       if (addedCallbacks[i] === object) {
         addedCallbacks.splice(i, 1);
         break;
       }
     }
     primitive._removeHeightCallbacks.push(object);
-    if (object.callback) {
-      object.callback = undefined;
-    }
   };
 
   primitive._addHeightCallbacks.push(object);
@@ -316,7 +313,7 @@ QuadtreePrimitive.prototype.update = function (frameState) {
 };
 
 function clearTileLoadQueue(primitive) {
-  const debug = primitive._debug;
+  var debug = primitive._debug;
   debug.maxDepth = 0;
   debug.maxDepthVisited = 0;
   debug.tilesVisited = 0;
@@ -334,7 +331,7 @@ function clearTileLoadQueue(primitive) {
  * @private
  */
 QuadtreePrimitive.prototype.beginFrame = function (frameState) {
-  const passes = frameState.passes;
+  var passes = frameState.passes;
   if (!passes.render) {
     return;
   }
@@ -361,8 +358,8 @@ QuadtreePrimitive.prototype.beginFrame = function (frameState) {
  * @private
  */
 QuadtreePrimitive.prototype.render = function (frameState) {
-  const passes = frameState.passes;
-  const tileProvider = this._tileProvider;
+  var passes = frameState.passes;
+  var tileProvider = this._tileProvider;
 
   if (passes.render) {
     tileProvider.beginUpdate(frameState);
@@ -384,7 +381,7 @@ QuadtreePrimitive.prototype.render = function (frameState) {
  * @private
  */
 function updateTileLoadProgress(primitive, frameState) {
-  const currentLoadQueueLength =
+  var currentLoadQueueLength =
     primitive._tileLoadQueueHigh.length +
     primitive._tileLoadQueueMedium.length +
     primitive._tileLoadQueueLow.length;
@@ -402,7 +399,7 @@ function updateTileLoadProgress(primitive, frameState) {
     primitive._lastTileLoadQueueLength = currentLoadQueueLength;
   }
 
-  const debug = primitive._debug;
+  var debug = primitive._debug;
   if (debug.enableDebugOutput && !debug.suspendLodUpdate) {
     debug.maxDepth = primitive._tilesToRender.reduce(function (max, tile) {
       return Math.max(max, tile.level);
@@ -418,7 +415,18 @@ function updateTileLoadProgress(primitive, frameState) {
       debug.maxDepthVisited !== debug.lastMaxDepthVisited
     ) {
       console.log(
-        `Visited ${debug.tilesVisited}, Rendered: ${debug.tilesRendered}, Culled: ${debug.tilesCulled}, Max Depth Rendered: ${debug.maxDepth}, Max Depth Visited: ${debug.maxDepthVisited}, Waiting for children: ${debug.tilesWaitingForChildren}`
+        "Visited " +
+          debug.tilesVisited +
+          ", Rendered: " +
+          debug.tilesRendered +
+          ", Culled: " +
+          debug.tilesCulled +
+          ", Max Depth Rendered: " +
+          debug.maxDepth +
+          ", Max Depth Visited: " +
+          debug.maxDepthVisited +
+          ", Waiting for children: " +
+          debug.tilesWaitingForChildren
       );
 
       debug.lastTilesVisited = debug.tilesVisited;
@@ -436,7 +444,7 @@ function updateTileLoadProgress(primitive, frameState) {
  * @private
  */
 QuadtreePrimitive.prototype.endFrame = function (frameState) {
-  const passes = frameState.passes;
+  var passes = frameState.passes;
   if (!passes.render || frameState.mode === SceneMode.MORPHING) {
     // Only process the load queue for a single pass.
     // Don't process the load queue or update heights during the morph flights.
@@ -487,43 +495,43 @@ QuadtreePrimitive.prototype.destroy = function () {
   this._tileProvider = this._tileProvider && this._tileProvider.destroy();
 };
 
-let comparisonPoint;
-const centerScratch = new Cartographic();
+var comparisonPoint;
+var centerScratch = new Cartographic();
 function compareDistanceToPoint(a, b) {
-  let center = Rectangle.center(a.rectangle, centerScratch);
-  const alon = center.longitude - comparisonPoint.longitude;
-  const alat = center.latitude - comparisonPoint.latitude;
+  var center = Rectangle.center(a.rectangle, centerScratch);
+  var alon = center.longitude - comparisonPoint.longitude;
+  var alat = center.latitude - comparisonPoint.latitude;
 
   center = Rectangle.center(b.rectangle, centerScratch);
-  const blon = center.longitude - comparisonPoint.longitude;
-  const blat = center.latitude - comparisonPoint.latitude;
+  var blon = center.longitude - comparisonPoint.longitude;
+  var blat = center.latitude - comparisonPoint.latitude;
 
   return alon * alon + alat * alat - (blon * blon + blat * blat);
 }
 
-const cameraOriginScratch = new Cartesian3();
-let rootTraversalDetails = [];
+var cameraOriginScratch = new Cartesian3();
+var rootTraversalDetails = [];
 
 function selectTilesForRendering(primitive, frameState) {
-  const debug = primitive._debug;
+  var debug = primitive._debug;
   if (debug.suspendLodUpdate) {
     return;
   }
 
   // Clear the render list.
-  const tilesToRender = primitive._tilesToRender;
+  var tilesToRender = primitive._tilesToRender;
   tilesToRender.length = 0;
 
   // We can't render anything before the level zero tiles exist.
-  let i;
-  const tileProvider = primitive._tileProvider;
+  var i;
+  var tileProvider = primitive._tileProvider;
   if (!defined(primitive._levelZeroTiles)) {
     if (tileProvider.ready) {
-      const tilingScheme = tileProvider.tilingScheme;
+      var tilingScheme = tileProvider.tilingScheme;
       primitive._levelZeroTiles = QuadtreeTile.createLevelZeroTiles(
         tilingScheme
       );
-      const numberOfRootTiles = primitive._levelZeroTiles.length;
+      var numberOfRootTiles = primitive._levelZeroTiles.length;
       if (rootTraversalDetails.length < numberOfRootTiles) {
         rootTraversalDetails = new Array(numberOfRootTiles);
         for (i = 0; i < numberOfRootTiles; ++i) {
@@ -540,10 +548,9 @@ function selectTilesForRendering(primitive, frameState) {
 
   primitive._occluders.ellipsoid.cameraPosition = frameState.camera.positionWC;
 
-  let tile;
-  const levelZeroTiles = primitive._levelZeroTiles;
-  const occluders =
-    levelZeroTiles.length > 1 ? primitive._occluders : undefined;
+  var tile;
+  var levelZeroTiles = primitive._levelZeroTiles;
+  var occluders = levelZeroTiles.length > 1 ? primitive._occluders : undefined;
 
   // Sort the level zero tiles by the distance from the center to the camera.
   // The level zero tiles aren't necessarily a nice neat quad, so we can't use the
@@ -551,11 +558,11 @@ function selectTilesForRendering(primitive, frameState) {
   comparisonPoint = frameState.camera.positionCartographic;
   levelZeroTiles.sort(compareDistanceToPoint);
 
-  const customDataAdded = primitive._addHeightCallbacks;
-  const customDataRemoved = primitive._removeHeightCallbacks;
-  const frameNumber = frameState.frameNumber;
+  var customDataAdded = primitive._addHeightCallbacks;
+  var customDataRemoved = primitive._removeHeightCallbacks;
+  var frameNumber = frameState.frameNumber;
 
-  let len;
+  var len;
   if (customDataAdded.length > 0 || customDataRemoved.length > 0) {
     for (i = 0, len = levelZeroTiles.length; i < len; ++i) {
       tile = levelZeroTiles[i];
@@ -566,10 +573,10 @@ function selectTilesForRendering(primitive, frameState) {
     customDataRemoved.length = 0;
   }
 
-  const camera = frameState.camera;
+  var camera = frameState.camera;
 
   primitive._cameraPositionCartographic = camera.positionCartographic;
-  const cameraFrameOrigin = Matrix4.getTranslation(
+  var cameraFrameOrigin = Matrix4.getTranslation(
     camera.transform,
     cameraOriginScratch
   );
@@ -663,10 +670,10 @@ function TraversalQuadDetails() {
 }
 
 TraversalQuadDetails.prototype.combine = function (result) {
-  const southwest = this.southwest;
-  const southeast = this.southeast;
-  const northwest = this.northwest;
-  const northeast = this.northeast;
+  var southwest = this.southwest;
+  var southeast = this.southeast;
+  var northwest = this.northwest;
+  var northeast = this.northeast;
 
   result.allAreRenderable =
     southwest.allAreRenderable &&
@@ -685,8 +692,8 @@ TraversalQuadDetails.prototype.combine = function (result) {
     northeast.notYetRenderableCount;
 };
 
-const traversalQuadsByLevel = new Array(31); // level 30 tiles are ~2cm wide at the equator, should be good enough.
-for (let i = 0; i < traversalQuadsByLevel.length; ++i) {
+var traversalQuadsByLevel = new Array(31); // level 30 tiles are ~2cm wide at the equator, should be good enough.
+for (var i = 0; i < traversalQuadsByLevel.length; ++i) {
   traversalQuadsByLevel[i] = new TraversalQuadDetails();
 }
 
@@ -713,7 +720,7 @@ function visitTile(
   ancestorMeetsSse,
   traversalDetails
 ) {
-  const debug = primitive._debug;
+  var debug = primitive._debug;
 
   ++debug.tilesVisited;
 
@@ -724,22 +731,22 @@ function visitTile(
     debug.maxDepthVisited = tile.level;
   }
 
-  const meetsSse =
+  var meetsSse =
     screenSpaceError(primitive, frameState, tile) <
     primitive.maximumScreenSpaceError;
 
-  const southwestChild = tile.southwestChild;
-  const southeastChild = tile.southeastChild;
-  const northwestChild = tile.northwestChild;
-  const northeastChild = tile.northeastChild;
+  var southwestChild = tile.southwestChild;
+  var southeastChild = tile.southeastChild;
+  var northwestChild = tile.northwestChild;
+  var northeastChild = tile.northeastChild;
 
-  const lastFrame = primitive._lastSelectionFrameNumber;
-  const lastFrameSelectionResult =
+  var lastFrame = primitive._lastSelectionFrameNumber;
+  var lastFrameSelectionResult =
     tile._lastSelectionResultFrame === lastFrame
       ? tile._lastSelectionResult
       : TileSelectionResult.NONE;
 
-  const tileProvider = primitive.tileProvider;
+  var tileProvider = primitive.tileProvider;
 
   if (meetsSse || ancestorMeetsSse) {
     // This tile (or an ancestor) is the one we want to render this frame, but we'll do different things depending
@@ -758,16 +765,16 @@ function visitTile(
     //
     // Note that even if we decide to render a tile here, it may later get "kicked" in favor of an ancestor.
 
-    const oneRenderedLastFrame =
+    var oneRenderedLastFrame =
       TileSelectionResult.originalResult(lastFrameSelectionResult) ===
       TileSelectionResult.RENDERED;
-    const twoCulledOrNotVisited =
+    var twoCulledOrNotVisited =
       TileSelectionResult.originalResult(lastFrameSelectionResult) ===
         TileSelectionResult.CULLED ||
       lastFrameSelectionResult === TileSelectionResult.NONE;
-    const threeCompletelyLoaded = tile.state === QuadtreeTileLoadState.DONE;
+    var threeCompletelyLoaded = tile.state === QuadtreeTileLoadState.DONE;
 
-    let renderable =
+    var renderable =
       oneRenderedLastFrame || twoCulledOrNotVisited || threeCompletelyLoaded;
 
     if (!renderable) {
@@ -821,7 +828,7 @@ function visitTile(
   }
 
   if (tileProvider.canRefine(tile)) {
-    const allAreUpsampled =
+    var allAreUpsampled =
       southwestChild.upsampledFromParent &&
       southeastChild.upsampledFromParent &&
       northwestChild.upsampledFromParent &&
@@ -865,11 +872,11 @@ function visitTile(
     tile._lastSelectionResultFrame = frameState.frameNumber;
     tile._lastSelectionResult = TileSelectionResult.REFINED;
 
-    const firstRenderedDescendantIndex = primitive._tilesToRender.length;
-    const loadIndexLow = primitive._tileLoadQueueLow.length;
-    const loadIndexMedium = primitive._tileLoadQueueMedium.length;
-    const loadIndexHigh = primitive._tileLoadQueueHigh.length;
-    const tilesToUpdateHeightsIndex = primitive._tileToUpdateHeights.length;
+    var firstRenderedDescendantIndex = primitive._tilesToRender.length;
+    var loadIndexLow = primitive._tileLoadQueueLow.length;
+    var loadIndexMedium = primitive._tileLoadQueueMedium.length;
+    var loadIndexHigh = primitive._tileLoadQueueHigh.length;
+    var tilesToUpdateHeightsIndex = primitive._tileToUpdateHeights.length;
 
     // No need to add the children to the load queue because they'll be added (if necessary) when they're visited.
     visitVisibleChildrenNearToFar(
@@ -890,20 +897,19 @@ function visitTile(
       // At least one descendant tile was added to the render list.
       // The traversalDetails tell us what happened while visiting the children.
 
-      const allAreRenderable = traversalDetails.allAreRenderable;
-      const anyWereRenderedLastFrame =
-        traversalDetails.anyWereRenderedLastFrame;
-      const notYetRenderableCount = traversalDetails.notYetRenderableCount;
-      let queuedForLoad = false;
+      var allAreRenderable = traversalDetails.allAreRenderable;
+      var anyWereRenderedLastFrame = traversalDetails.anyWereRenderedLastFrame;
+      var notYetRenderableCount = traversalDetails.notYetRenderableCount;
+      var queuedForLoad = false;
 
       if (!allAreRenderable && !anyWereRenderedLastFrame) {
         // Some of our descendants aren't ready to render yet, and none were rendered last frame,
         // so kick them all out of the render list and render this tile instead. Continue to load them though!
 
         // Mark the rendered descendants and their ancestors - up to this tile - as kicked.
-        const renderList = primitive._tilesToRender;
-        for (let i = firstRenderedDescendantIndex; i < renderList.length; ++i) {
-          let workTile = renderList[i];
+        var renderList = primitive._tilesToRender;
+        for (var i = firstRenderedDescendantIndex; i < renderList.length; ++i) {
+          var workTile = renderList[i];
           while (
             workTile !== undefined &&
             workTile._lastSelectionResult !== TileSelectionResult.KICKED &&
@@ -926,7 +932,7 @@ function visitTile(
         // If we're waiting on heaps of descendants, the above will take too long. So in that case,
         // load this tile INSTEAD of loading any of the descendants, and tell the up-level we're only waiting
         // on this tile. Keep doing this until we actually manage to render this tile.
-        const wasRenderedLastFrame =
+        var wasRenderedLastFrame =
           lastFrameSelectionResult === TileSelectionResult.RENDERED;
         if (
           !wasRenderedLastFrame &&
@@ -991,15 +997,15 @@ function visitVisibleChildrenNearToFar(
   ancestorMeetsSse,
   traversalDetails
 ) {
-  const cameraPosition = frameState.camera.positionCartographic;
-  const tileProvider = primitive._tileProvider;
-  const occluders = primitive._occluders;
+  var cameraPosition = frameState.camera.positionCartographic;
+  var tileProvider = primitive._tileProvider;
+  var occluders = primitive._occluders;
 
-  const quadDetails = traversalQuadsByLevel[southwest.level];
-  const southwestDetails = quadDetails.southwest;
-  const southeastDetails = quadDetails.southeast;
-  const northwestDetails = quadDetails.northwest;
-  const northeastDetails = quadDetails.northeast;
+  var quadDetails = traversalQuadsByLevel[southwest.level];
+  var southwestDetails = quadDetails.southwest;
+  var southeastDetails = quadDetails.southeast;
+  var northwestDetails = quadDetails.northwest;
+  var northeastDetails = quadDetails.northeast;
 
   if (cameraPosition.longitude < southwest.rectangle.east) {
     if (cameraPosition.latitude < southwest.rectangle.north) {
@@ -1161,7 +1167,7 @@ function visitVisibleChildrenNearToFar(
 }
 
 function containsNeededPosition(primitive, tile) {
-  const rectangle = tile.rectangle;
+  var rectangle = tile.rectangle;
   return (
     (defined(primitive._cameraPositionCartographic) &&
       Rectangle.contains(rectangle, primitive._cameraPositionCartographic)) ||
@@ -1215,8 +1221,8 @@ function visitIfVisible(
       );
     }
 
-    const lastFrame = primitive._lastSelectionFrameNumber;
-    const lastFrameSelectionResult =
+    var lastFrame = primitive._lastSelectionFrameNumber;
+    var lastFrameSelectionResult =
       tile._lastSelectionResultFrame === lastFrame
         ? tile._lastSelectionResult
         : TileSelectionResult.NONE;
@@ -1249,15 +1255,15 @@ function screenSpaceError(primitive, frameState, tile) {
     return screenSpaceError2D(primitive, frameState, tile);
   }
 
-  const maxGeometricError = primitive._tileProvider.getLevelMaximumGeometricError(
+  var maxGeometricError = primitive._tileProvider.getLevelMaximumGeometricError(
     tile.level
   );
 
-  const distance = tile._distance;
-  const height = frameState.context.drawingBufferHeight;
-  const sseDenominator = frameState.camera.frustum.sseDenominator;
+  var distance = tile._distance;
+  var height = frameState.context.drawingBufferHeight;
+  var sseDenominator = frameState.camera.frustum.sseDenominator;
 
-  let error = (maxGeometricError * height) / (distance * sseDenominator);
+  var error = (maxGeometricError * height) / (distance * sseDenominator);
 
   if (frameState.fog.enabled) {
     error -=
@@ -1270,23 +1276,23 @@ function screenSpaceError(primitive, frameState, tile) {
 }
 
 function screenSpaceError2D(primitive, frameState, tile) {
-  const camera = frameState.camera;
-  let frustum = camera.frustum;
+  var camera = frameState.camera;
+  var frustum = camera.frustum;
   if (defined(frustum._offCenterFrustum)) {
     frustum = frustum._offCenterFrustum;
   }
 
-  const context = frameState.context;
-  const width = context.drawingBufferWidth;
-  const height = context.drawingBufferHeight;
+  var context = frameState.context;
+  var width = context.drawingBufferWidth;
+  var height = context.drawingBufferHeight;
 
-  const maxGeometricError = primitive._tileProvider.getLevelMaximumGeometricError(
+  var maxGeometricError = primitive._tileProvider.getLevelMaximumGeometricError(
     tile.level
   );
-  const pixelSize =
+  var pixelSize =
     Math.max(frustum.top - frustum.bottom, frustum.right - frustum.left) /
     Math.max(width, height);
-  let error = maxGeometricError / pixelSize;
+  var error = maxGeometricError / pixelSize;
 
   if (frameState.fog.enabled && frameState.mode !== SceneMode.SCENE2D) {
     error -=
@@ -1304,9 +1310,9 @@ function addTileToRenderList(primitive, tile) {
 }
 
 function processTileLoadQueue(primitive, frameState) {
-  const tileLoadQueueHigh = primitive._tileLoadQueueHigh;
-  const tileLoadQueueMedium = primitive._tileLoadQueueMedium;
-  const tileLoadQueueLow = primitive._tileLoadQueueLow;
+  var tileLoadQueueHigh = primitive._tileLoadQueueHigh;
+  var tileLoadQueueMedium = primitive._tileLoadQueueMedium;
+  var tileLoadQueueLow = primitive._tileLoadQueueLow;
 
   if (
     tileLoadQueueHigh.length === 0 &&
@@ -1320,10 +1326,10 @@ function processTileLoadQueue(primitive, frameState) {
   // we're allowed to keep.
   primitive._tileReplacementQueue.trimTiles(primitive.tileCacheSize);
 
-  const endTime = getTimestamp() + primitive._loadQueueTimeSlice;
-  const tileProvider = primitive._tileProvider;
+  var endTime = getTimestamp() + primitive._loadQueueTimeSlice;
+  var tileProvider = primitive._tileProvider;
 
-  let didSomeLoading = processSinglePriorityLoadQueue(
+  var didSomeLoading = processSinglePriorityLoadQueue(
     primitive,
     frameState,
     tileProvider,
@@ -1366,11 +1372,11 @@ function processSinglePriorityLoadQueue(
   }
 
   for (
-    let i = 0, len = loadQueue.length;
+    var i = 0, len = loadQueue.length;
     i < len && (getTimestamp() < endTime || !didSomeLoading);
     ++i
   ) {
-    const tile = loadQueue[i];
+    var tile = loadQueue[i];
     primitive._tileReplacementQueue.markTileRendered(tile);
     tileProvider.loadTile(frameState, tile);
     didSomeLoading = true;
@@ -1379,35 +1385,35 @@ function processSinglePriorityLoadQueue(
   return didSomeLoading;
 }
 
-const scratchRay = new Ray();
-const scratchCartographic = new Cartographic();
-const scratchPosition = new Cartesian3();
-const scratchArray = [];
+var scratchRay = new Ray();
+var scratchCartographic = new Cartographic();
+var scratchPosition = new Cartesian3();
+var scratchArray = [];
 
 function updateHeights(primitive, frameState) {
   if (!primitive.tileProvider.ready) {
     return;
   }
 
-  const tryNextFrame = scratchArray;
+  var tryNextFrame = scratchArray;
   tryNextFrame.length = 0;
-  const tilesToUpdateHeights = primitive._tileToUpdateHeights;
+  var tilesToUpdateHeights = primitive._tileToUpdateHeights;
 
-  const startTime = getTimestamp();
-  const timeSlice = primitive._updateHeightsTimeSlice;
-  const endTime = startTime + timeSlice;
+  var startTime = getTimestamp();
+  var timeSlice = primitive._updateHeightsTimeSlice;
+  var endTime = startTime + timeSlice;
 
-  const mode = frameState.mode;
-  const projection = frameState.mapProjection;
-  const ellipsoid = primitive.tileProvider.tilingScheme.ellipsoid;
-  let i;
+  var mode = frameState.mode;
+  var projection = frameState.mapProjection;
+  var ellipsoid = primitive.tileProvider.tilingScheme.ellipsoid;
+  var i;
 
   while (tilesToUpdateHeights.length > 0) {
-    const tile = tilesToUpdateHeights[0];
+    var tile = tilesToUpdateHeights[0];
     if (!defined(tile.data) || !defined(tile.data.mesh)) {
       // Tile isn't loaded enough yet, so try again next frame if this tile is still
       // being rendered.
-      const selectionResult =
+      var selectionResult =
         tile._lastSelectionResultFrame === primitive._lastSelectionFrameNumber
           ? tile._lastSelectionResult
           : TileSelectionResult.NONE;
@@ -1421,16 +1427,16 @@ function updateHeights(primitive, frameState) {
       primitive._lastTileIndex = 0;
       continue;
     }
-    const customData = tile.customData;
-    const customDataLength = customData.length;
+    var customData = tile.customData;
+    var customDataLength = customData.length;
 
-    let timeSliceMax = false;
+    var timeSliceMax = false;
     for (i = primitive._lastTileIndex; i < customDataLength; ++i) {
-      const data = customData[i];
+      var data = customData[i];
 
       // No need to run this code when the tile is upsampled, because the height will be the same as its parent.
-      const terrainData = tile.data.terrainData;
-      const upsampledGeometryFromParent =
+      var terrainData = tile.data.terrainData;
+      var upsampledGeometryFromParent =
         defined(terrainData) && terrainData.wasCreatedByUpsampling();
 
       if (tile.level > data.level && !upsampledGeometryFromParent) {
@@ -1445,7 +1451,7 @@ function updateHeights(primitive, frameState) {
         }
 
         if (mode === SceneMode.SCENE3D) {
-          const surfaceNormal = ellipsoid.geodeticSurfaceNormal(
+          var surfaceNormal = ellipsoid.geodeticSurfaceNormal(
             data.positionOnEllipsoidSurface,
             scratchRay.direction
           );
@@ -1454,7 +1460,7 @@ function updateHeights(primitive, frameState) {
 
           // Try to find the intersection point between the surface normal and z-axis.
           // minimum height (-11500.0) for the terrain set, need to get this information from the terrain provider
-          const rayOrigin = ellipsoid.getSurfaceNormalIntersectionWithZAxis(
+          var rayOrigin = ellipsoid.getSurfaceNormalIntersectionWithZAxis(
             data.positionOnEllipsoidSurface,
             11500.0,
             scratchRay.origin
@@ -1464,14 +1470,17 @@ function updateHeights(primitive, frameState) {
           if (!defined(rayOrigin)) {
             // intersection point is outside the ellipsoid, try other value
             // minimum height (-11500.0) for the terrain set, need to get this information from the terrain provider
-            let minimumHeight = 0.0;
+            var minimumHeight;
             if (defined(tile.data.tileBoundingRegion)) {
               minimumHeight = tile.data.tileBoundingRegion.minimumHeight;
             }
-            const magnitude = Math.min(minimumHeight, -11500.0);
+            var magnitude = Math.min(
+              defaultValue(minimumHeight, 0.0),
+              -11500.0
+            );
 
             // multiply by the *positive* value of the magnitude
-            const vectorToMinimumPoint = Cartesian3.multiplyByScalar(
+            var vectorToMinimumPoint = Cartesian3.multiplyByScalar(
               surfaceNormal,
               Math.abs(magnitude) + 1,
               scratchPosition
@@ -1498,7 +1507,7 @@ function updateHeights(primitive, frameState) {
           Cartesian3.clone(Cartesian3.UNIT_X, scratchRay.direction);
         }
 
-        const position = tile.data.pick(
+        var position = tile.data.pick(
           scratchRay,
           mode,
           projection,
@@ -1506,9 +1515,7 @@ function updateHeights(primitive, frameState) {
           scratchPosition
         );
         if (defined(position)) {
-          if (defined(data.callback)) {
-            data.callback(position);
-          }
+          data.callback(position);
           data.level = tile.level;
         }
       }
@@ -1533,11 +1540,11 @@ function updateHeights(primitive, frameState) {
 }
 
 function createRenderCommandsForSelectedTiles(primitive, frameState) {
-  const tileProvider = primitive._tileProvider;
-  const tilesToRender = primitive._tilesToRender;
+  var tileProvider = primitive._tileProvider;
+  var tilesToRender = primitive._tilesToRender;
 
-  for (let i = 0, len = tilesToRender.length; i < len; ++i) {
-    const tile = tilesToRender[i];
+  for (var i = 0, len = tilesToRender.length; i < len; ++i) {
+    var tile = tilesToRender[i];
     tileProvider.showTileThisFrame(tile, frameState);
   }
 }

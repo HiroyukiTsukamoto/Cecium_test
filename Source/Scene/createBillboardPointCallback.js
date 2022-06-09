@@ -18,12 +18,12 @@ function createBillboardPointCallback(
   pixelSize
 ) {
   return function () {
-    const canvas = document.createElement("canvas");
+    var canvas = document.createElement("canvas");
 
-    const length = pixelSize + 2 * cssOutlineWidth;
+    var length = pixelSize + 2 * cssOutlineWidth;
     canvas.height = canvas.width = length;
 
-    const context2D = canvas.getContext("2d");
+    var context2D = canvas.getContext("2d");
     context2D.clearRect(0, 0, length, length);
 
     if (cssOutlineWidth !== 0) {

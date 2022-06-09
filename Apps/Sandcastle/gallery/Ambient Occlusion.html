@@ -110,10 +110,10 @@
       </table>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
+        var viewer = new Cesium.Viewer("cesiumContainer");
 
         if (
           !Cesium.PostProcessStageLibrary.isAmbientOcclusionSupported(
@@ -126,18 +126,18 @@
         }
 
         // Power Plant design model provided by Bentley Systems
-        const tileset = new Cesium.Cesium3DTileset({
+        var tileset = new Cesium.Cesium3DTileset({
           url: Cesium.IonResource.fromAssetId(8564),
         });
         tileset.readyPromise
           .then(function (tileset) {
             viewer.scene.primitives.add(tileset);
           })
-          .catch(function (error) {
+          .otherwise(function (error) {
             console.log(error);
           });
 
-        const viewModel = {
+        var viewModel = {
           show: true,
           ambientOcclusionOnly: false,
           intensity: 3.0,
@@ -148,9 +148,9 @@
         };
 
         Cesium.knockout.track(viewModel);
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
-        for (const name in viewModel) {
+        for (var name in viewModel) {
           if (viewModel.hasOwnProperty(name)) {
             Cesium.knockout
               .getObservable(viewModel, name)
@@ -159,7 +159,7 @@
         }
 
         function updatePostProcess() {
-          const ambientOcclusion =
+          var ambientOcclusion =
             viewer.scene.postProcessStages.ambientOcclusion;
           ambientOcclusion.enabled =
             Boolean(viewModel.show) || Boolean(viewModel.ambientOcclusionOnly);
@@ -176,7 +176,7 @@
         }
         updatePostProcess();
 
-        const camera = viewer.scene.camera;
+        var camera = viewer.scene.camera;
         camera.position = new Cesium.Cartesian3(
           1234127.2294710164,
           -5086011.666443127,
@@ -200,10 +200,10 @@
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

@@ -13,20 +13,20 @@ import knockout from "../../ThirdParty/knockout.js";
 import createCommand from "../createCommand.js";
 
 function frustumStatisticsToString(statistics) {
-  let str;
+  var str;
   if (defined(statistics)) {
     str = "Command Statistics";
-    const com = statistics.commandsInFrustums;
-    for (const n in com) {
+    var com = statistics.commandsInFrustums;
+    for (var n in com) {
       if (com.hasOwnProperty(n)) {
-        let num = parseInt(n, 10);
-        let s;
+        var num = parseInt(n, 10);
+        var s;
         if (num === 7) {
           s = "1, 2 and 3";
         } else {
-          const f = [];
-          for (let i = 2; i >= 0; i--) {
-            const p = Math.pow(2, i);
+          var f = [];
+          for (var i = 2; i >= 0; i--) {
+            var p = Math.pow(2, i);
             if (num >= p) {
               f.push(i + 1);
               num -= p;
@@ -34,23 +34,23 @@ function frustumStatisticsToString(statistics) {
           }
           s = f.reverse().join(" and ");
         }
-        str += `<br>&nbsp;&nbsp;&nbsp;&nbsp;${com[n]} in frustum ${s}`;
+        str += "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + com[n] + " in frustum " + s;
       }
     }
-    str += `<br>Total: ${statistics.totalCommands}`;
+    str += "<br>Total: " + statistics.totalCommands;
   }
 
   return str;
 }
 
 function boundDepthFrustum(lower, upper, proposed) {
-  let bounded = Math.min(proposed, upper);
+  var bounded = Math.min(proposed, upper);
   bounded = Math.max(bounded, lower);
   return bounded;
 }
 
-const scratchPickRay = new Ray();
-const scratchPickCartesian = new Cartesian3();
+var scratchPickRay = new Ray();
+var scratchPickCartesian = new Cartesian3();
 
 /**
  * The view model for {@link CesiumInspector}.
@@ -71,9 +71,9 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
   }
   //>>includeEnd('debug');
 
-  const that = this;
-  const canvas = scene.canvas;
-  const eventHandler = new ScreenSpaceEventHandler(canvas);
+  var that = this;
+  var canvas = scene.canvas;
+  var eventHandler = new ScreenSpaceEventHandler(canvas);
   this._eventHandler = eventHandler;
   this._scene = scene;
   this._canvas = canvas;
@@ -83,7 +83,7 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
   this._performanceDisplay = undefined;
   this._performanceContainer = performanceContainer;
 
-  const globe = this._scene.globe;
+  var globe = this._scene.globe;
   globe.depthTestAgainstTerrain = true;
 
   /**
@@ -155,6 +155,20 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
    * @default false
    */
   this.wireframe = false;
+
+  /**
+   * Gets or sets the show globe depth state.  This property is observable.
+   * @type {Boolean}
+   * @default false
+   */
+  this.globeDepth = false;
+
+  /**
+   * Gets or sets the show pick depth state.  This property is observable.
+   * @type {Boolean}
+   * @default false
+   */
+  this.pickDepth = false;
 
   /**
    * Gets or sets the index of the depth frustum to display.  This property is observable.
@@ -266,6 +280,8 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
     "tileBoundingSphere",
     "filterTile",
     "wireframe",
+    "globeDepth",
+    "pickDepth",
     "depthFrustum",
     "suspendUpdates",
     "tileCoordinates",
@@ -338,7 +354,7 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
 
   this._showPrimitiveReferenceFrame = createCommand(function () {
     if (that.primitiveReferenceFrame) {
-      const modelMatrix = that._primitive.modelMatrix;
+      var modelMatrix = that._primitive.modelMatrix;
       that._modelMatrixPrimitive = new DebugModelMatrixPrimitive({
         modelMatrix: modelMatrix,
       });
@@ -394,6 +410,20 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
       that._scene.requestRender();
     });
 
+  this._globeDepthSubscription = knockout
+    .getObservable(this, "globeDepth")
+    .subscribe(function (val) {
+      that._scene.debugShowGlobeDepth = val;
+      that._scene.requestRender();
+    });
+
+  this._pickDepthSubscription = knockout
+    .getObservable(this, "pickDepth")
+    .subscribe(function (val) {
+      that._scene.debugShowPickDepth = val;
+      that._scene.requestRender();
+    });
+
   this._depthFrustumSubscription = knockout
     .getObservable(this, "depthFrustum")
     .subscribe(function (val) {
@@ -402,14 +432,14 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
     });
 
   this._incrementDepthFrustum = createCommand(function () {
-    const next = that.depthFrustum + 1;
+    var next = that.depthFrustum + 1;
     that.depthFrustum = boundDepthFrustum(1, that._numberOfFrustums, next);
     that._scene.requestRender();
     return true;
   });
 
   this._decrementDepthFrustum = createCommand(function () {
-    const next = that.depthFrustum - 1;
+    var next = that.depthFrustum - 1;
     that.depthFrustum = boundDepthFrustum(1, that._numberOfFrustums, next);
     that._scene.requestRender();
     return true;
@@ -424,7 +454,7 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
       }
     });
 
-  let tileBoundariesLayer;
+  var tileBoundariesLayer;
   this._showTileCoordinates = createCommand(function () {
     if (that.tileCoordinates && !defined(tileBoundariesLayer)) {
       tileBoundariesLayer = scene.imageryLayers.addImageryProvider(
@@ -486,7 +516,7 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
     });
 
   function pickPrimitive(e) {
-    const newPick = that._scene.pick({
+    var newPick = that._scene.pick({
       x: e.position.x,
       y: e.position.y,
     });
@@ -518,32 +548,32 @@ function CesiumInspectorViewModel(scene, performanceContainer) {
     });
 
   function selectTile(e) {
-    let selectedTile;
-    const ellipsoid = globe.ellipsoid;
+    var selectedTile;
+    var ellipsoid = globe.ellipsoid;
 
-    const ray = that._scene.camera.getPickRay(e.position, scratchPickRay);
-    const cartesian = globe.pick(ray, that._scene, scratchPickCartesian);
+    var ray = that._scene.camera.getPickRay(e.position, scratchPickRay);
+    var cartesian = globe.pick(ray, that._scene, scratchPickCartesian);
 
     if (defined(cartesian)) {
-      const cartographic = ellipsoid.cartesianToCartographic(cartesian);
-      const tilesRendered =
+      var cartographic = ellipsoid.cartesianToCartographic(cartesian);
+      var tilesRendered =
         globe._surface.tileProvider._tilesToRenderByTextureCount;
       for (
-        let textureCount = 0;
+        var textureCount = 0;
         !selectedTile && textureCount < tilesRendered.length;
         ++textureCount
       ) {
-        const tilesRenderedByTextureCount = tilesRendered[textureCount];
+        var tilesRenderedByTextureCount = tilesRendered[textureCount];
         if (!defined(tilesRenderedByTextureCount)) {
           continue;
         }
 
         for (
-          let tileIndex = 0;
+          var tileIndex = 0;
           !selectedTile && tileIndex < tilesRenderedByTextureCount.length;
           ++tileIndex
         ) {
-          const tile = tilesRenderedByTextureCount[tileIndex];
+          var tile = tilesRenderedByTextureCount[tileIndex];
           if (Rectangle.contains(tile.rectangle, cartographic)) {
             selectedTile = tile;
           }
@@ -779,7 +809,7 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
    */
   selectParent: {
     get: function () {
-      const that = this;
+      var that = this;
       return createCommand(function () {
         that.tile = that.tile.parent;
       });
@@ -794,7 +824,7 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
    */
   selectNW: {
     get: function () {
-      const that = this;
+      var that = this;
       return createCommand(function () {
         that.tile = that.tile.northwestChild;
       });
@@ -809,7 +839,7 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
    */
   selectNE: {
     get: function () {
-      const that = this;
+      var that = this;
       return createCommand(function () {
         that.tile = that.tile.northeastChild;
       });
@@ -824,7 +854,7 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
    */
   selectSW: {
     get: function () {
-      const that = this;
+      var that = this;
       return createCommand(function () {
         that.tile = that.tile.southwestChild;
       });
@@ -839,7 +869,7 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
    */
   selectSE: {
     get: function () {
-      const that = this;
+      var that = this;
       return createCommand(function () {
         that.tile = that.tile.southeastChild;
       });
@@ -857,7 +887,7 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
       return this._primitive;
     },
     set: function (newPrimitive) {
-      const oldPrimitive = this._primitive;
+      var oldPrimitive = this._primitive;
       if (newPrimitive !== oldPrimitive) {
         this.hasPickedPrimitive = true;
         if (defined(oldPrimitive)) {
@@ -893,14 +923,27 @@ Object.defineProperties(CesiumInspectorViewModel.prototype, {
     set: function (newTile) {
       if (defined(newTile)) {
         this.hasPickedTile = true;
-        const oldTile = this._tile;
+        var oldTile = this._tile;
         if (newTile !== oldTile) {
-          this.tileText = `L: ${newTile.level} X: ${newTile.x} Y: ${newTile.y}`;
-          this.tileText += `<br>SW corner: ${newTile.rectangle.west}, ${newTile.rectangle.south}`;
-          this.tileText += `<br>NE corner: ${newTile.rectangle.east}, ${newTile.rectangle.north}`;
-          const data = newTile.data;
+          this.tileText =
+            "L: " + newTile.level + " X: " + newTile.x + " Y: " + newTile.y;
+          this.tileText +=
+            "<br>SW corner: " +
+            newTile.rectangle.west +
+            ", " +
+            newTile.rectangle.south;
+          this.tileText +=
+            "<br>NE corner: " +
+            newTile.rectangle.east +
+            ", " +
+            newTile.rectangle.north;
+          var data = newTile.data;
           if (defined(data) && defined(data.tileBoundingRegion)) {
-            this.tileText += `<br>Min: ${data.tileBoundingRegion.minimumHeight} Max: ${data.tileBoundingRegion.maximumHeight}`;
+            this.tileText +=
+              "<br>Min: " +
+              data.tileBoundingRegion.minimumHeight +
+              " Max: " +
+              data.tileBoundingRegion.maximumHeight;
           } else {
             this.tileText += "<br>(Tile is not loaded)";
           }
@@ -928,12 +971,12 @@ CesiumInspectorViewModel.prototype._update = function () {
   }
 
   // Determine the number of frustums being used.
-  const numberOfFrustums = this._scene.numberOfFrustums;
+  var numberOfFrustums = this._scene.numberOfFrustums;
   this._numberOfFrustums = numberOfFrustums;
   // Bound the frustum to be displayed.
   this.depthFrustum = boundDepthFrustum(1, numberOfFrustums, this.depthFrustum);
   // Update the displayed text.
-  this.depthFrustumText = `${this.depthFrustum} of ${numberOfFrustums}`;
+  this.depthFrustumText = this.depthFrustum + " of " + numberOfFrustums;
 
   if (this.performance) {
     this._performanceDisplay.update();
@@ -942,7 +985,8 @@ CesiumInspectorViewModel.prototype._update = function () {
     this._modelMatrixPrimitive.modelMatrix = this._primitive.modelMatrix;
   }
 
-  this.shaderCacheText = `Cached shaders: ${this._scene.context.shaderCache.numberOfShaders}`;
+  this.shaderCacheText =
+    "Cached shaders: " + this._scene.context.shaderCache.numberOfShaders;
 };
 
 /**
@@ -966,6 +1010,8 @@ CesiumInspectorViewModel.prototype.destroy = function () {
   this._primitiveReferenceFrameSubscription.dispose();
   this._filterPrimitiveSubscription.dispose();
   this._wireframeSubscription.dispose();
+  this._globeDepthSubscription.dispose();
+  this._pickDepthSubscription.dispose();
   this._depthFrustumSubscription.dispose();
   this._suspendUpdatesSubscription.dispose();
   this._tileCoordinatesSubscription.dispose();

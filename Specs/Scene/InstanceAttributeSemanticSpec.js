@@ -2,7 +2,7 @@ import { InstanceAttributeSemantic } from "../../Source/Cesium.js";
 
 describe("Scene/InstanceAttributeSemantic", function () {
   it("fromGltfSemantic", function () {
-    const gltfSemantics = [
+    var gltfSemantics = [
       "TRANSLATION",
       "ROTATION",
       "SCALE",
@@ -10,7 +10,7 @@ describe("Scene/InstanceAttributeSemantic", function () {
       "_FEATURE_ID_1",
       "_OTHER",
     ];
-    const expectedSemantics = [
+    var expectedSemantics = [
       InstanceAttributeSemantic.TRANSLATION,
       InstanceAttributeSemantic.ROTATION,
       InstanceAttributeSemantic.SCALE,
@@ -19,8 +19,8 @@ describe("Scene/InstanceAttributeSemantic", function () {
       undefined,
     ];
 
-    const semanticsLength = gltfSemantics.length;
-    for (let i = 0; i < semanticsLength; ++i) {
+    var semanticsLength = gltfSemantics.length;
+    for (var i = 0; i < semanticsLength; ++i) {
       expect(
         InstanceAttributeSemantic.fromGltfSemantic(
           gltfSemantics[i],

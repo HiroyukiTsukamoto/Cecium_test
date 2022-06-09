@@ -3,7 +3,7 @@
  * @enum {Number}
  * @private
  */
-const QuadtreeTileLoadState = {
+var QuadtreeTileLoadState = {
   /**
    * The tile is new and loading has not yet begun.
    * @type QuadtreeTileLoadState

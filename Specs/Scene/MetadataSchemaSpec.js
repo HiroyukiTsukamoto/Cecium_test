@@ -2,7 +2,7 @@ import { MetadataSchema } from "../../Source/Cesium.js";
 
 describe("Scene/MetadataSchema", function () {
   it("creates schema with default values", function () {
-    const schema = new MetadataSchema({});
+    var schema = new MetadataSchema({});
 
     expect(schema.classes).toEqual({});
     expect(schema.enums).toEqual({});
@@ -13,15 +13,15 @@ describe("Scene/MetadataSchema", function () {
   });
 
   it("creates schema", function () {
-    const extras = {
+    var extras = {
       description: "Extra",
     };
 
-    const extensions = {
+    var extensions = {
       EXT_other_extension: {},
     };
 
-    const schema = new MetadataSchema({
+    var schema = new MetadataSchema({
       enums: {
         color: {
           values: [
@@ -71,28 +71,25 @@ describe("Scene/MetadataSchema", function () {
               enumType: "color",
             },
             coordinates: {
-              type: "SCALAR",
+              type: "ARRAY",
               componentType: "FLOAT64",
-              array: true,
-              count: 2,
+              componentCount: 2,
             },
           },
         },
         tree: {
           properties: {
             species: {
-              type: "ENUM",
-              array: true,
+              type: "ARRAY",
+              componentType: "ENUM",
               enumType: "species",
             },
             height: {
-              type: "SCALAR",
-              componentType: "FLOAT32",
+              type: "FLOAT32",
             },
           },
         },
       },
-      id: "mySchema",
       name: "My Schema",
       description: "My Schema Description",
       version: "3.1.0",
@@ -100,13 +97,13 @@ describe("Scene/MetadataSchema", function () {
       extensions: extensions,
     });
 
-    const cityClass = schema.classes.city;
-    const neighborhoodClass = schema.classes.neighborhood;
-    const treeClass = schema.classes.tree;
+    var cityClass = schema.classes.city;
+    var neighborhoodClass = schema.classes.neighborhood;
+    var treeClass = schema.classes.tree;
 
-    const cityProperties = cityClass.properties;
-    const neighborhoodProperties = neighborhoodClass.properties;
-    const treeProperties = treeClass.properties;
+    var cityProperties = cityClass.properties;
+    var neighborhoodProperties = neighborhoodClass.properties;
+    var treeProperties = treeClass.properties;
 
     expect(cityClass.id).toBe("city");
     expect(neighborhoodClass.id).toBe("neighborhood");
@@ -118,7 +115,6 @@ describe("Scene/MetadataSchema", function () {
     expect(treeProperties.species.enumType.id).toBe("species");
     expect(treeProperties.height.id).toBe("height");
 
-    expect(schema.id).toBe("mySchema");
     expect(schema.name).toBe("My Schema");
     expect(schema.description).toBe("My Schema Description");
     expect(schema.version).toBe("3.1.0");

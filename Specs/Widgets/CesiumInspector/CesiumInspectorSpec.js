@@ -6,11 +6,11 @@ import { CesiumInspector } from "../../../Source/Cesium.js";
 describe(
   "Widgets/CesiumInspector/CesiumInspector",
   function () {
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
-      const ellipsoid = Ellipsoid.UNIT_SPHERE;
-      const globe = new Globe(ellipsoid);
+      var ellipsoid = Ellipsoid.UNIT_SPHERE;
+      var globe = new Globe(ellipsoid);
       scene.globe = globe;
     });
 
@@ -19,11 +19,11 @@ describe(
     });
 
     it("can create and destroy", function () {
-      const container = document.createElement("div");
+      var container = document.createElement("div");
       container.id = "testContainer";
       document.body.appendChild(container);
 
-      const widget = new CesiumInspector("testContainer", scene);
+      var widget = new CesiumInspector("testContainer", scene);
       expect(widget.container).toBe(container);
       expect(widget.viewModel.scene).toBe(scene);
       expect(widget.isDestroyed()).toEqual(false);

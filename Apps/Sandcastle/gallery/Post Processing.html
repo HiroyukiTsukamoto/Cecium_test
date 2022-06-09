@@ -77,18 +77,15 @@
       </table>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           shouldAnimate: true,
         });
 
-        const position = Cesium.Cartesian3.fromDegrees(
-          -123.0744619,
-          44.0503706
-        );
-        const url = "../../SampleData/models/CesiumMan/Cesium_Man.glb";
+        var position = Cesium.Cartesian3.fromDegrees(-123.0744619, 44.0503706);
+        var url = "../../SampleData/models/CesiumMan/Cesium_Man.glb";
         viewer.trackedEntity = viewer.entities.add({
           name: url,
           position: position,
@@ -97,7 +94,7 @@
           },
         });
 
-        const viewModel = {
+        var viewModel = {
           blackAndWhiteShow: false,
           blackAndWhiteGradations: 5.0,
           brightnessShow: false,
@@ -107,9 +104,9 @@
         };
 
         Cesium.knockout.track(viewModel);
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
-        for (const name in viewModel) {
+        for (var name in viewModel) {
           if (viewModel.hasOwnProperty(name)) {
             Cesium.knockout
               .getObservable(viewModel, name)
@@ -125,17 +122,17 @@
           );
         }
 
-        const stages = viewer.scene.postProcessStages;
-        const silhouette = stages.add(
+        var stages = viewer.scene.postProcessStages;
+        var silhouette = stages.add(
           Cesium.PostProcessStageLibrary.createSilhouetteStage()
         );
-        const blackAndWhite = stages.add(
+        var blackAndWhite = stages.add(
           Cesium.PostProcessStageLibrary.createBlackAndWhiteStage()
         );
-        const brightness = stages.add(
+        var brightness = stages.add(
           Cesium.PostProcessStageLibrary.createBrightnessStage()
         );
-        const nightVision = stages.add(
+        var nightVision = stages.add(
           Cesium.PostProcessStageLibrary.createNightVisionStage()
         );
 
@@ -153,10 +150,10 @@
         updatePostProcess();
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

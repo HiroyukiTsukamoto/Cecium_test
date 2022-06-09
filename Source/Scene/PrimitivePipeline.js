@@ -19,12 +19,12 @@ function transformToWorldCoordinates(
   primitiveModelMatrix,
   scene3DOnly
 ) {
-  let toWorld = !scene3DOnly;
-  const length = instances.length;
-  let i;
+  var toWorld = !scene3DOnly;
+  var length = instances.length;
+  var i;
 
   if (!toWorld && length > 1) {
-    const modelMatrix = instances[0].modelMatrix;
+    var modelMatrix = instances[0].modelMatrix;
 
     for (i = 1; i < length; ++i) {
       if (!Matrix4.equals(modelMatrix, instances[i].modelMatrix)) {
@@ -51,9 +51,9 @@ function transformToWorldCoordinates(
 }
 
 function addGeometryBatchId(geometry, batchId) {
-  const attributes = geometry.attributes;
-  const positionAttr = attributes.position;
-  const numberOfComponents =
+  var attributes = geometry.attributes;
+  var positionAttr = attributes.position;
+  var numberOfComponents =
     positionAttr.values.length / positionAttr.componentsPerAttribute;
 
   attributes.batchId = new GeometryAttribute({
@@ -62,17 +62,17 @@ function addGeometryBatchId(geometry, batchId) {
     values: new Float32Array(numberOfComponents),
   });
 
-  const values = attributes.batchId.values;
-  for (let j = 0; j < numberOfComponents; ++j) {
+  var values = attributes.batchId.values;
+  for (var j = 0; j < numberOfComponents; ++j) {
     values[j] = batchId;
   }
 }
 
 function addBatchIds(instances) {
-  const length = instances.length;
+  var length = instances.length;
 
-  for (let i = 0; i < length; ++i) {
-    const instance = instances[i];
+  for (var i = 0; i < length; ++i) {
+    var instance = instances[i];
     if (defined(instance.geometry)) {
       addGeometryBatchId(instance.geometry, i);
     } else if (
@@ -86,18 +86,18 @@ function addBatchIds(instances) {
 }
 
 function geometryPipeline(parameters) {
-  const instances = parameters.instances;
-  const projection = parameters.projection;
-  const uintIndexSupport = parameters.elementIndexUintSupported;
-  const scene3DOnly = parameters.scene3DOnly;
-  const vertexCacheOptimize = parameters.vertexCacheOptimize;
-  const compressVertices = parameters.compressVertices;
-  const modelMatrix = parameters.modelMatrix;
+  var instances = parameters.instances;
+  var projection = parameters.projection;
+  var uintIndexSupport = parameters.elementIndexUintSupported;
+  var scene3DOnly = parameters.scene3DOnly;
+  var vertexCacheOptimize = parameters.vertexCacheOptimize;
+  var compressVertices = parameters.compressVertices;
+  var modelMatrix = parameters.modelMatrix;
 
-  let i;
-  let geometry;
-  let primitiveType;
-  let length = instances.length;
+  var i;
+  var geometry;
+  var primitiveType;
+  var length = instances.length;
 
   for (i = 0; i < length; ++i) {
     if (defined(instances[i].geometry)) {
@@ -136,7 +136,7 @@ function geometryPipeline(parameters) {
   // Optimize for vertex shader caches
   if (vertexCacheOptimize) {
     for (i = 0; i < length; ++i) {
-      const instance = instances[i];
+      var instance = instances[i];
       if (defined(instance.geometry)) {
         GeometryPipeline.reorderForPostVertexCache(instance.geometry);
         GeometryPipeline.reorderForPreVertexCache(instance.geometry);
@@ -162,22 +162,23 @@ function geometryPipeline(parameters) {
   }
 
   // Combine into single geometry for better rendering performance.
-  let geometries = GeometryPipeline.combineInstances(instances);
+  var geometries = GeometryPipeline.combineInstances(instances);
 
   length = geometries.length;
   for (i = 0; i < length; ++i) {
     geometry = geometries[i];
 
     // Split positions for GPU RTE
-    const attributes = geometry.attributes;
+    var attributes = geometry.attributes;
+    var name;
     if (!scene3DOnly) {
-      for (const name in attributes) {
+      for (name in attributes) {
         if (
           attributes.hasOwnProperty(name) &&
           attributes[name].componentDatatype === ComponentDatatype.DOUBLE
         ) {
-          const name3D = `${name}3D`;
-          const name2D = `${name}2D`;
+          var name3D = name + "3D";
+          var name2D = name + "2D";
 
           // Compute 2D positions
           GeometryPipeline.projectTo2D(
@@ -196,19 +197,19 @@ function geometryPipeline(parameters) {
           GeometryPipeline.encodeAttribute(
             geometry,
             name3D,
-            `${name3D}High`,
-            `${name3D}Low`
+            name3D + "High",
+            name3D + "Low"
           );
           GeometryPipeline.encodeAttribute(
             geometry,
             name2D,
-            `${name2D}High`,
-            `${name2D}Low`
+            name2D + "High",
+            name2D + "Low"
           );
         }
       }
     } else {
-      for (const name in attributes) {
+      for (name in attributes) {
         if (
           attributes.hasOwnProperty(name) &&
           attributes[name].componentDatatype === ComponentDatatype.DOUBLE
@@ -216,8 +217,8 @@ function geometryPipeline(parameters) {
           GeometryPipeline.encodeAttribute(
             geometry,
             name,
-            `${name}3DHigh`,
-            `${name}3DLow`
+            name + "3DHigh",
+            name + "3DLow"
           );
         }
       }
@@ -231,7 +232,7 @@ function geometryPipeline(parameters) {
 
   if (!uintIndexSupport) {
     // Break into multiple geometries to fit within unsigned short indices if needed
-    let splitGeometries = [];
+    var splitGeometries = [];
     length = geometries.length;
     for (i = 0; i < length; ++i) {
       geometry = geometries[i];
@@ -247,13 +248,13 @@ function geometryPipeline(parameters) {
 }
 
 function createPickOffsets(instances, geometryName, geometries, pickOffsets) {
-  let offset;
-  let indexCount;
-  let geometryIndex;
+  var offset;
+  var indexCount;
+  var geometryIndex;
 
-  const offsetIndex = pickOffsets.length - 1;
+  var offsetIndex = pickOffsets.length - 1;
   if (offsetIndex >= 0) {
-    const pickOffset = pickOffsets[offsetIndex];
+    var pickOffset = pickOffsets[offsetIndex];
     offset = pickOffset.offset + pickOffset.count;
     geometryIndex = pickOffset.index;
     indexCount = geometries[geometryIndex].indices.length;
@@ -263,15 +264,15 @@ function createPickOffsets(instances, geometryName, geometries, pickOffsets) {
     indexCount = geometries[geometryIndex].indices.length;
   }
 
-  const length = instances.length;
-  for (let i = 0; i < length; ++i) {
-    const instance = instances[i];
-    const geometry = instance[geometryName];
+  var length = instances.length;
+  for (var i = 0; i < length; ++i) {
+    var instance = instances[i];
+    var geometry = instance[geometryName];
     if (!defined(geometry)) {
       continue;
     }
 
-    const count = geometry.indices.length;
+    var count = geometry.indices.length;
 
     if (offset + count > indexCount) {
       offset = 0;
@@ -288,7 +289,7 @@ function createPickOffsets(instances, geometryName, geometries, pickOffsets) {
 }
 
 function createInstancePickOffsets(instances, geometries) {
-  const pickOffsets = [];
+  var pickOffsets = [];
   createPickOffsets(instances, "geometry", geometries, pickOffsets);
   createPickOffsets(
     instances,
@@ -308,20 +309,20 @@ function createInstancePickOffsets(instances, geometries) {
 /**
  * @private
  */
-const PrimitivePipeline = {};
+var PrimitivePipeline = {};
 
 /**
  * @private
  */
 PrimitivePipeline.combineGeometry = function (parameters) {
-  let geometries;
-  let attributeLocations;
-  const instances = parameters.instances;
-  const length = instances.length;
-  let pickOffsets;
+  var geometries;
+  var attributeLocations;
+  var instances = parameters.instances;
+  var length = instances.length;
+  var pickOffsets;
 
-  let offsetInstanceExtend;
-  let hasOffset = false;
+  var offsetInstanceExtend;
+  var hasOffset = false;
   if (length > 0) {
     geometries = geometryPipeline(parameters);
     if (geometries.length > 0) {
@@ -341,11 +342,11 @@ PrimitivePipeline.combineGeometry = function (parameters) {
     }
   }
 
-  const boundingSpheres = new Array(length);
-  const boundingSpheresCV = new Array(length);
-  for (let i = 0; i < length; ++i) {
-    const instance = instances[i];
-    const geometry = instance.geometry;
+  var boundingSpheres = new Array(length);
+  var boundingSpheresCV = new Array(length);
+  for (var i = 0; i < length; ++i) {
+    var instance = instances[i];
+    var geometry = instance.geometry;
     if (defined(geometry)) {
       boundingSpheres[i] = geometry.boundingSphere;
       boundingSpheresCV[i] = geometry.boundingSphereCV;
@@ -354,8 +355,8 @@ PrimitivePipeline.combineGeometry = function (parameters) {
       }
     }
 
-    const eastHemisphereGeometry = instance.eastHemisphereGeometry;
-    const westHemisphereGeometry = instance.westHemisphereGeometry;
+    var eastHemisphereGeometry = instance.eastHemisphereGeometry;
+    var westHemisphereGeometry = instance.westHemisphereGeometry;
     if (defined(eastHemisphereGeometry) && defined(westHemisphereGeometry)) {
       if (
         defined(eastHemisphereGeometry.boundingSphere) &&
@@ -390,10 +391,10 @@ PrimitivePipeline.combineGeometry = function (parameters) {
 };
 
 function transferGeometry(geometry, transferableObjects) {
-  const attributes = geometry.attributes;
-  for (const name in attributes) {
+  var attributes = geometry.attributes;
+  for (var name in attributes) {
     if (attributes.hasOwnProperty(name)) {
-      const attribute = attributes[name];
+      var attribute = attributes[name];
 
       if (defined(attribute) && defined(attribute.values)) {
         transferableObjects.push(attribute.values.buffer);
@@ -407,37 +408,37 @@ function transferGeometry(geometry, transferableObjects) {
 }
 
 function transferGeometries(geometries, transferableObjects) {
-  const length = geometries.length;
-  for (let i = 0; i < length; ++i) {
+  var length = geometries.length;
+  for (var i = 0; i < length; ++i) {
     transferGeometry(geometries[i], transferableObjects);
   }
 }
 
 // This function was created by simplifying packCreateGeometryResults into a count-only operation.
 function countCreateGeometryResults(items) {
-  let count = 1;
-  const length = items.length;
-  for (let i = 0; i < length; i++) {
-    const geometry = items[i];
+  var count = 1;
+  var length = items.length;
+  for (var i = 0; i < length; i++) {
+    var geometry = items[i];
     ++count;
 
     if (!defined(geometry)) {
       continue;
     }
 
-    const attributes = geometry.attributes;
+    var attributes = geometry.attributes;
 
     count +=
       7 +
       2 * BoundingSphere.packedLength +
       (defined(geometry.indices) ? geometry.indices.length : 0);
 
-    for (const property in attributes) {
+    for (var property in attributes) {
       if (
         attributes.hasOwnProperty(property) &&
         defined(attributes[property])
       ) {
-        const attribute = attributes[property];
+        var attribute = attributes[property];
         count += 5 + attribute.values.length;
       }
     }
@@ -453,17 +454,17 @@ PrimitivePipeline.packCreateGeometryResults = function (
   items,
   transferableObjects
 ) {
-  const packedData = new Float64Array(countCreateGeometryResults(items));
-  const stringTable = [];
-  const stringHash = {};
+  var packedData = new Float64Array(countCreateGeometryResults(items));
+  var stringTable = [];
+  var stringHash = {};
 
-  const length = items.length;
-  let count = 0;
+  var length = items.length;
+  var count = 0;
   packedData[count++] = length;
-  for (let i = 0; i < length; i++) {
-    const geometry = items[i];
+  for (var i = 0; i < length; i++) {
+    var geometry = items[i];
 
-    const validGeometry = defined(geometry);
+    var validGeometry = defined(geometry);
     packedData[count++] = validGeometry ? 1.0 : 0.0;
 
     if (!validGeometry) {
@@ -474,7 +475,7 @@ PrimitivePipeline.packCreateGeometryResults = function (
     packedData[count++] = geometry.geometryType;
     packedData[count++] = defaultValue(geometry.offsetAttribute, -1);
 
-    const validBoundingSphere = defined(geometry.boundingSphere) ? 1.0 : 0.0;
+    var validBoundingSphere = defined(geometry.boundingSphere) ? 1.0 : 0.0;
     packedData[count++] = validBoundingSphere;
     if (validBoundingSphere) {
       BoundingSphere.pack(geometry.boundingSphere, packedData, count);
@@ -482,9 +483,7 @@ PrimitivePipeline.packCreateGeometryResults = function (
 
     count += BoundingSphere.packedLength;
 
-    const validBoundingSphereCV = defined(geometry.boundingSphereCV)
-      ? 1.0
-      : 0.0;
+    var validBoundingSphereCV = defined(geometry.boundingSphereCV) ? 1.0 : 0.0;
     packedData[count++] = validBoundingSphereCV;
     if (validBoundingSphereCV) {
       BoundingSphere.pack(geometry.boundingSphereCV, packedData, count);
@@ -492,9 +491,9 @@ PrimitivePipeline.packCreateGeometryResults = function (
 
     count += BoundingSphere.packedLength;
 
-    const attributes = geometry.attributes;
-    const attributesToWrite = [];
-    for (const property in attributes) {
+    var attributes = geometry.attributes;
+    var attributesToWrite = [];
+    for (var property in attributes) {
       if (
         attributes.hasOwnProperty(property) &&
         defined(attributes[property])
@@ -508,9 +507,9 @@ PrimitivePipeline.packCreateGeometryResults = function (
     }
 
     packedData[count++] = attributesToWrite.length;
-    for (let q = 0; q < attributesToWrite.length; q++) {
-      const name = attributesToWrite[q];
-      const attribute = attributes[name];
+    for (var q = 0; q < attributesToWrite.length; q++) {
+      var name = attributesToWrite[q];
+      var attribute = attributes[name];
       packedData[count++] = stringHash[name];
       packedData[count++] = attribute.componentDatatype;
       packedData[count++] = attribute.componentsPerAttribute;
@@ -520,9 +519,7 @@ PrimitivePipeline.packCreateGeometryResults = function (
       count += attribute.values.length;
     }
 
-    const indicesLength = defined(geometry.indices)
-      ? geometry.indices.length
-      : 0;
+    var indicesLength = defined(geometry.indices) ? geometry.indices.length : 0;
     packedData[count++] = indicesLength;
 
     if (indicesLength > 0) {
@@ -545,32 +542,32 @@ PrimitivePipeline.packCreateGeometryResults = function (
 PrimitivePipeline.unpackCreateGeometryResults = function (
   createGeometryResult
 ) {
-  const stringTable = createGeometryResult.stringTable;
-  const packedGeometry = createGeometryResult.packedData;
+  var stringTable = createGeometryResult.stringTable;
+  var packedGeometry = createGeometryResult.packedData;
 
-  let i;
-  const result = new Array(packedGeometry[0]);
-  let resultIndex = 0;
+  var i;
+  var result = new Array(packedGeometry[0]);
+  var resultIndex = 0;
 
-  let packedGeometryIndex = 1;
+  var packedGeometryIndex = 1;
   while (packedGeometryIndex < packedGeometry.length) {
-    const valid = packedGeometry[packedGeometryIndex++] === 1.0;
+    var valid = packedGeometry[packedGeometryIndex++] === 1.0;
     if (!valid) {
       result[resultIndex++] = undefined;
       continue;
     }
 
-    const primitiveType = packedGeometry[packedGeometryIndex++];
-    const geometryType = packedGeometry[packedGeometryIndex++];
-    let offsetAttribute = packedGeometry[packedGeometryIndex++];
+    var primitiveType = packedGeometry[packedGeometryIndex++];
+    var geometryType = packedGeometry[packedGeometryIndex++];
+    var offsetAttribute = packedGeometry[packedGeometryIndex++];
     if (offsetAttribute === -1) {
       offsetAttribute = undefined;
     }
 
-    let boundingSphere;
-    let boundingSphereCV;
+    var boundingSphere;
+    var boundingSphereCV;
 
-    const validBoundingSphere = packedGeometry[packedGeometryIndex++] === 1.0;
+    var validBoundingSphere = packedGeometry[packedGeometryIndex++] === 1.0;
     if (validBoundingSphere) {
       boundingSphere = BoundingSphere.unpack(
         packedGeometry,
@@ -580,7 +577,7 @@ PrimitivePipeline.unpackCreateGeometryResults = function (
 
     packedGeometryIndex += BoundingSphere.packedLength;
 
-    const validBoundingSphereCV = packedGeometry[packedGeometryIndex++] === 1.0;
+    var validBoundingSphereCV = packedGeometry[packedGeometryIndex++] === 1.0;
     if (validBoundingSphereCV) {
       boundingSphereCV = BoundingSphere.unpack(
         packedGeometry,
@@ -590,20 +587,20 @@ PrimitivePipeline.unpackCreateGeometryResults = function (
 
     packedGeometryIndex += BoundingSphere.packedLength;
 
-    let length;
-    let values;
-    let componentsPerAttribute;
-    const attributes = new GeometryAttributes();
-    const numAttributes = packedGeometry[packedGeometryIndex++];
+    var length;
+    var values;
+    var componentsPerAttribute;
+    var attributes = new GeometryAttributes();
+    var numAttributes = packedGeometry[packedGeometryIndex++];
     for (i = 0; i < numAttributes; i++) {
-      const name = stringTable[packedGeometry[packedGeometryIndex++]];
-      const componentDatatype = packedGeometry[packedGeometryIndex++];
+      var name = stringTable[packedGeometry[packedGeometryIndex++]];
+      var componentDatatype = packedGeometry[packedGeometryIndex++];
       componentsPerAttribute = packedGeometry[packedGeometryIndex++];
-      const normalize = packedGeometry[packedGeometryIndex++] !== 0;
+      var normalize = packedGeometry[packedGeometryIndex++] !== 0;
 
       length = packedGeometry[packedGeometryIndex++];
       values = ComponentDatatype.createTypedArray(componentDatatype, length);
-      for (let valuesIndex = 0; valuesIndex < length; valuesIndex++) {
+      for (var valuesIndex = 0; valuesIndex < length; valuesIndex++) {
         values[valuesIndex] = packedGeometry[packedGeometryIndex++];
       }
 
@@ -615,11 +612,11 @@ PrimitivePipeline.unpackCreateGeometryResults = function (
       });
     }
 
-    let indices;
+    var indices;
     length = packedGeometry[packedGeometryIndex++];
 
     if (length > 0) {
-      const numberOfVertices = values.length / componentsPerAttribute;
+      var numberOfVertices = values.length / componentsPerAttribute;
       indices = IndexDatatype.createTypedArray(numberOfVertices, length);
       for (i = 0; i < length; i++) {
         indices[i] = packedGeometry[packedGeometryIndex++];
@@ -641,16 +638,16 @@ PrimitivePipeline.unpackCreateGeometryResults = function (
 };
 
 function packInstancesForCombine(instances, transferableObjects) {
-  const length = instances.length;
-  const packedData = new Float64Array(1 + length * 19);
-  let count = 0;
+  var length = instances.length;
+  var packedData = new Float64Array(1 + length * 19);
+  var count = 0;
   packedData[count++] = length;
-  for (let i = 0; i < length; i++) {
-    const instance = instances[i];
+  for (var i = 0; i < length; i++) {
+    var instance = instances[i];
     Matrix4.pack(instance.modelMatrix, packedData, count);
     count += Matrix4.packedLength;
     if (defined(instance.attributes) && defined(instance.attributes.offset)) {
-      const values = instance.attributes.offset.value;
+      var values = instance.attributes.offset.value;
       packedData[count] = values[0];
       packedData[count + 1] = values[1];
       packedData[count + 2] = values[2];
@@ -663,14 +660,14 @@ function packInstancesForCombine(instances, transferableObjects) {
 }
 
 function unpackInstancesForCombine(data) {
-  const packedInstances = data;
-  const result = new Array(packedInstances[0]);
-  let count = 0;
+  var packedInstances = data;
+  var result = new Array(packedInstances[0]);
+  var count = 0;
 
-  let i = 1;
+  var i = 1;
   while (i < packedInstances.length) {
-    const modelMatrix = Matrix4.unpack(packedInstances, i);
-    let attributes;
+    var modelMatrix = Matrix4.unpack(packedInstances, i);
+    var attributes;
     i += Matrix4.packedLength;
     if (defined(packedInstances[i])) {
       attributes = {
@@ -699,10 +696,10 @@ PrimitivePipeline.packCombineGeometryParameters = function (
   parameters,
   transferableObjects
 ) {
-  const createGeometryResults = parameters.createGeometryResults;
-  const length = createGeometryResults.length;
+  var createGeometryResults = parameters.createGeometryResults;
+  var length = createGeometryResults.length;
 
-  for (let i = 0; i < length; i++) {
+  for (var i = 0; i < length; i++) {
     transferableObjects.push(createGeometryResults[i].packedData.buffer);
   }
 
@@ -729,30 +726,30 @@ PrimitivePipeline.packCombineGeometryParameters = function (
 PrimitivePipeline.unpackCombineGeometryParameters = function (
   packedParameters
 ) {
-  const instances = unpackInstancesForCombine(packedParameters.packedInstances);
-  const createGeometryResults = packedParameters.createGeometryResults;
-  const length = createGeometryResults.length;
-  let instanceIndex = 0;
+  var instances = unpackInstancesForCombine(packedParameters.packedInstances);
+  var createGeometryResults = packedParameters.createGeometryResults;
+  var length = createGeometryResults.length;
+  var instanceIndex = 0;
 
-  for (let resultIndex = 0; resultIndex < length; resultIndex++) {
-    const geometries = PrimitivePipeline.unpackCreateGeometryResults(
+  for (var resultIndex = 0; resultIndex < length; resultIndex++) {
+    var geometries = PrimitivePipeline.unpackCreateGeometryResults(
       createGeometryResults[resultIndex]
     );
-    const geometriesLength = geometries.length;
+    var geometriesLength = geometries.length;
     for (
-      let geometryIndex = 0;
+      var geometryIndex = 0;
       geometryIndex < geometriesLength;
       geometryIndex++
     ) {
-      const geometry = geometries[geometryIndex];
-      const instance = instances[instanceIndex];
+      var geometry = geometries[geometryIndex];
+      var instance = instances[instanceIndex];
       instance.geometry = geometry;
       ++instanceIndex;
     }
   }
 
-  const ellipsoid = Ellipsoid.clone(packedParameters.ellipsoid);
-  const projection = packedParameters.isGeographic
+  var ellipsoid = Ellipsoid.clone(packedParameters.ellipsoid);
+  var projection = packedParameters.isGeographic
     ? new GeographicProjection(ellipsoid)
     : new WebMercatorProjection(ellipsoid);
 
@@ -770,15 +767,15 @@ PrimitivePipeline.unpackCombineGeometryParameters = function (
 };
 
 function packBoundingSpheres(boundingSpheres) {
-  const length = boundingSpheres.length;
-  const bufferLength = 1 + (BoundingSphere.packedLength + 1) * length;
-  const buffer = new Float32Array(bufferLength);
+  var length = boundingSpheres.length;
+  var bufferLength = 1 + (BoundingSphere.packedLength + 1) * length;
+  var buffer = new Float32Array(bufferLength);
 
-  let bufferIndex = 0;
+  var bufferIndex = 0;
   buffer[bufferIndex++] = length;
 
-  for (let i = 0; i < length; ++i) {
-    const bs = boundingSpheres[i];
+  for (var i = 0; i < length; ++i) {
+    var bs = boundingSpheres[i];
     if (!defined(bs)) {
       buffer[bufferIndex++] = 0.0;
     } else {
@@ -792,10 +789,10 @@ function packBoundingSpheres(boundingSpheres) {
 }
 
 function unpackBoundingSpheres(buffer) {
-  const result = new Array(buffer[0]);
-  let count = 0;
+  var result = new Array(buffer[0]);
+  var count = 0;
 
-  let i = 1;
+  var i = 1;
   while (i < buffer.length) {
     if (buffer[i++] === 1.0) {
       result[count] = BoundingSphere.unpack(buffer, i);
@@ -818,10 +815,8 @@ PrimitivePipeline.packCombineGeometryResults = function (
     transferGeometries(results.geometries, transferableObjects);
   }
 
-  const packedBoundingSpheres = packBoundingSpheres(results.boundingSpheres);
-  const packedBoundingSpheresCV = packBoundingSpheres(
-    results.boundingSpheresCV
-  );
+  var packedBoundingSpheres = packBoundingSpheres(results.boundingSpheres);
+  var packedBoundingSpheresCV = packBoundingSpheres(results.boundingSpheresCV);
   transferableObjects.push(
     packedBoundingSpheres.buffer,
     packedBoundingSpheresCV.buffer

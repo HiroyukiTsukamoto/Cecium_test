@@ -3,7 +3,7 @@
  *
  * @private
  */
-const SDFSettings = {
+var SDFSettings = {
   /**
    * The font size in pixels
    *

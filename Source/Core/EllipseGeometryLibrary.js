@@ -3,12 +3,12 @@ import CesiumMath from "./Math.js";
 import Matrix3 from "./Matrix3.js";
 import Quaternion from "./Quaternion.js";
 
-const EllipseGeometryLibrary = {};
+var EllipseGeometryLibrary = {};
 
-const rotAxis = new Cartesian3();
-const tempVec = new Cartesian3();
-const unitQuat = new Quaternion();
-const rotMtx = new Matrix3();
+var rotAxis = new Cartesian3();
+var tempVec = new Cartesian3();
+var unitQuat = new Quaternion();
+var rotMtx = new Matrix3();
 
 function pointOnEllipsoid(
   theta,
@@ -22,21 +22,20 @@ function pointOnEllipsoid(
   unitPos,
   result
 ) {
-  const azimuth = theta + rotation;
+  var azimuth = theta + rotation;
 
   Cartesian3.multiplyByScalar(eastVec, Math.cos(azimuth), rotAxis);
   Cartesian3.multiplyByScalar(northVec, Math.sin(azimuth), tempVec);
   Cartesian3.add(rotAxis, tempVec, rotAxis);
 
-  let cosThetaSquared = Math.cos(theta);
+  var cosThetaSquared = Math.cos(theta);
   cosThetaSquared = cosThetaSquared * cosThetaSquared;
 
-  let sinThetaSquared = Math.sin(theta);
+  var sinThetaSquared = Math.sin(theta);
   sinThetaSquared = sinThetaSquared * sinThetaSquared;
 
-  const radius =
-    ab / Math.sqrt(bSqr * cosThetaSquared + aSqr * sinThetaSquared);
-  const angle = radius / mag;
+  var radius = ab / Math.sqrt(bSqr * cosThetaSquared + aSqr * sinThetaSquared);
+  var angle = radius / mag;
 
   // Create the quaternion to rotate the position vector to the boundary of the ellipse.
   Quaternion.fromAxisAngle(rotAxis, angle, unitQuat);
@@ -48,10 +47,10 @@ function pointOnEllipsoid(
   return result;
 }
 
-const scratchCartesian1 = new Cartesian3();
-const scratchCartesian2 = new Cartesian3();
-const scratchCartesian3 = new Cartesian3();
-const scratchNormal = new Cartesian3();
+var scratchCartesian1 = new Cartesian3();
+var scratchCartesian2 = new Cartesian3();
+var scratchCartesian3 = new Cartesian3();
+var scratchNormal = new Cartesian3();
 /**
  * Returns the positions raised to the given heights
  * @private
@@ -61,25 +60,25 @@ EllipseGeometryLibrary.raisePositionsToHeight = function (
   options,
   extrude
 ) {
-  const ellipsoid = options.ellipsoid;
-  const height = options.height;
-  const extrudedHeight = options.extrudedHeight;
-  const size = extrude ? (positions.length / 3) * 2 : positions.length / 3;
+  var ellipsoid = options.ellipsoid;
+  var height = options.height;
+  var extrudedHeight = options.extrudedHeight;
+  var size = extrude ? (positions.length / 3) * 2 : positions.length / 3;
 
-  const finalPositions = new Float64Array(size * 3);
+  var finalPositions = new Float64Array(size * 3);
 
-  const length = positions.length;
-  const bottomOffset = extrude ? length : 0;
-  for (let i = 0; i < length; i += 3) {
-    const i1 = i + 1;
-    const i2 = i + 2;
+  var length = positions.length;
+  var bottomOffset = extrude ? length : 0;
+  for (var i = 0; i < length; i += 3) {
+    var i1 = i + 1;
+    var i2 = i + 2;
 
-    const position = Cartesian3.fromArray(positions, i, scratchCartesian1);
+    var position = Cartesian3.fromArray(positions, i, scratchCartesian1);
     ellipsoid.scaleToGeodeticSurface(position, position);
 
-    const extrudedPosition = Cartesian3.clone(position, scratchCartesian2);
-    const normal = ellipsoid.geodeticSurfaceNormal(position, scratchNormal);
-    const scaledNormal = Cartesian3.multiplyByScalar(
+    var extrudedPosition = Cartesian3.clone(position, scratchCartesian2);
+    var normal = ellipsoid.geodeticSurfaceNormal(position, scratchNormal);
+    var scaledNormal = Cartesian3.multiplyByScalar(
       normal,
       height,
       scratchCartesian3
@@ -103,9 +102,9 @@ EllipseGeometryLibrary.raisePositionsToHeight = function (
   return finalPositions;
 };
 
-const unitPosScratch = new Cartesian3();
-const eastVecScratch = new Cartesian3();
-const northVecScratch = new Cartesian3();
+var unitPosScratch = new Cartesian3();
+var eastVecScratch = new Cartesian3();
+var northVecScratch = new Cartesian3();
 /**
  * Returns an array of positions that make up the ellipse.
  * @private
@@ -115,33 +114,33 @@ EllipseGeometryLibrary.computeEllipsePositions = function (
   addFillPositions,
   addEdgePositions
 ) {
-  const semiMinorAxis = options.semiMinorAxis;
-  const semiMajorAxis = options.semiMajorAxis;
-  const rotation = options.rotation;
-  const center = options.center;
+  var semiMinorAxis = options.semiMinorAxis;
+  var semiMajorAxis = options.semiMajorAxis;
+  var rotation = options.rotation;
+  var center = options.center;
 
   // Computing the arc-length of the ellipse is too expensive to be practical. Estimating it using the
   // arc length of the sphere is too inaccurate and creates sharp edges when either the semi-major or
   // semi-minor axis is much bigger than the other. Instead, scale the angle delta to make
   // the distance along the ellipse boundary more closely match the granularity.
-  const granularity = options.granularity * 8.0;
+  var granularity = options.granularity * 8.0;
 
-  const aSqr = semiMinorAxis * semiMinorAxis;
-  const bSqr = semiMajorAxis * semiMajorAxis;
-  const ab = semiMajorAxis * semiMinorAxis;
+  var aSqr = semiMinorAxis * semiMinorAxis;
+  var bSqr = semiMajorAxis * semiMajorAxis;
+  var ab = semiMajorAxis * semiMinorAxis;
 
-  const mag = Cartesian3.magnitude(center);
+  var mag = Cartesian3.magnitude(center);
 
-  const unitPos = Cartesian3.normalize(center, unitPosScratch);
-  let eastVec = Cartesian3.cross(Cartesian3.UNIT_Z, center, eastVecScratch);
+  var unitPos = Cartesian3.normalize(center, unitPosScratch);
+  var eastVec = Cartesian3.cross(Cartesian3.UNIT_Z, center, eastVecScratch);
   eastVec = Cartesian3.normalize(eastVec, eastVec);
-  const northVec = Cartesian3.cross(unitPos, eastVec, northVecScratch);
+  var northVec = Cartesian3.cross(unitPos, eastVec, northVecScratch);
 
   // The number of points in the first quadrant
-  let numPts = 1 + Math.ceil(CesiumMath.PI_OVER_TWO / granularity);
+  var numPts = 1 + Math.ceil(CesiumMath.PI_OVER_TWO / granularity);
 
-  const deltaTheta = CesiumMath.PI_OVER_TWO / (numPts - 1);
-  let theta = CesiumMath.PI_OVER_TWO - numPts * deltaTheta;
+  var deltaTheta = CesiumMath.PI_OVER_TWO / (numPts - 1);
+  var theta = CesiumMath.PI_OVER_TWO - numPts * deltaTheta;
   if (theta < 0.0) {
     numPts -= Math.ceil(Math.abs(theta) / deltaTheta);
   }
@@ -162,24 +161,24 @@ EllipseGeometryLibrary.computeEllipsePositions = function (
   //         *---*
   // The first and last column have one position and fan to connect to the adjacent column.
   // Each other vertical column contains an even number of positions.
-  const size = 2 * (numPts * (numPts + 2));
-  const positions = addFillPositions ? new Array(size * 3) : undefined;
-  let positionIndex = 0;
-  let position = scratchCartesian1;
-  let reflectedPosition = scratchCartesian2;
+  var size = 2 * (numPts * (numPts + 2));
+  var positions = addFillPositions ? new Array(size * 3) : undefined;
+  var positionIndex = 0;
+  var position = scratchCartesian1;
+  var reflectedPosition = scratchCartesian2;
 
-  const outerPositionsLength = numPts * 4 * 3;
-  let outerRightIndex = outerPositionsLength - 1;
-  let outerLeftIndex = 0;
-  const outerPositions = addEdgePositions
+  var outerPositionsLength = numPts * 4 * 3;
+  var outerRightIndex = outerPositionsLength - 1;
+  var outerLeftIndex = 0;
+  var outerPositions = addEdgePositions
     ? new Array(outerPositionsLength)
     : undefined;
 
-  let i;
-  let j;
-  let numInterior;
-  let t;
-  let interiorPosition;
+  var i;
+  var j;
+  var numInterior;
+  var t;
+  var interiorPosition;
 
   // Compute points in the 'eastern' half of the ellipse
   theta = CesiumMath.PI_OVER_TWO;
@@ -345,7 +344,7 @@ EllipseGeometryLibrary.computeEllipsePositions = function (
     position
   );
 
-  const r = {};
+  var r = {};
   if (addFillPositions) {
     positions[positionIndex++] = position.x;
     positions[positionIndex++] = position.y;

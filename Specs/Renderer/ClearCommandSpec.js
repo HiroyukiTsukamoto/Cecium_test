@@ -3,7 +3,7 @@ import { ClearCommand } from "../../Source/Cesium.js";
 
 describe("Renderer/ClearCommand", function () {
   it("constructs with defaults", function () {
-    const c = new ClearCommand();
+    var c = new ClearCommand();
     expect(c.color).toBeUndefined();
     expect(c.depth).toBeUndefined();
     expect(c.stencil).toBeUndefined();
@@ -12,9 +12,9 @@ describe("Renderer/ClearCommand", function () {
   });
 
   it("constructs with options", function () {
-    const renderState = {};
-    const framebuffer = {};
-    const c = new ClearCommand({
+    var renderState = {};
+    var framebuffer = {};
+    var c = new ClearCommand({
       color: new Color(1.0, 2.0, 3.0, 4.0),
       depth: 1.0,
       stencil: 2,

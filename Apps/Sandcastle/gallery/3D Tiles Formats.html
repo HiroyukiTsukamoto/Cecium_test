@@ -38,21 +38,21 @@
       <div><input type="checkbox" data-bind="checked: shadows" /> Shadows</div>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           shadows: true,
         });
         viewer.extend(Cesium.viewerCesium3DTilesInspectorMixin);
-        const inspectorViewModel = viewer.cesium3DTilesInspector.viewModel;
+        var inspectorViewModel = viewer.cesium3DTilesInspector.viewModel;
 
         viewer.clock.currentTime = new Cesium.JulianDate(2457522.154792);
 
-        const scene = viewer.scene;
-        let tileset;
+        var scene = viewer.scene;
+        var tileset;
 
-        const viewModel = {
+        var viewModel = {
           tilesets: [
             {
               name: "Tileset",
@@ -131,7 +131,7 @@
 
         Cesium.knockout.track(viewModel);
 
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
 
         Cesium.knockout
@@ -169,7 +169,7 @@
                   )
                 );
 
-                const properties = tileset.properties;
+                var properties = tileset.properties;
                 if (
                   Cesium.defined(properties) &&
                   Cesium.defined(properties.Height)
@@ -189,41 +189,41 @@
                   });
                 }
               })
-              .catch(function (error) {
+              .otherwise(function (error) {
                 throw error;
               });
           });
 
         viewModel.selectedTileset = viewModel.tilesets[0];
 
-        const handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+        var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
 
         handler.setInputAction(function (movement) {
-          const feature = inspectorViewModel.feature;
+          var feature = inspectorViewModel.feature;
           if (Cesium.defined(feature)) {
-            const propertyNames = feature.getPropertyNames();
-            const length = propertyNames.length;
-            for (let i = 0; i < length; ++i) {
-              const propertyName = propertyNames[i];
+            var propertyNames = feature.getPropertyNames();
+            var length = propertyNames.length;
+            for (var i = 0; i < length; ++i) {
+              var propertyName = propertyNames[i];
               console.log(
-                `${propertyName}: ${feature.getProperty(propertyName)}`
+                propertyName + ": " + feature.getProperty(propertyName)
               );
             }
           }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
         handler.setInputAction(function (movement) {
-          const feature = inspectorViewModel.feature;
+          var feature = inspectorViewModel.feature;
           if (Cesium.defined(feature)) {
             feature.show = false;
           }
         }, Cesium.ScreenSpaceEventType.MIDDLE_CLICK);
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

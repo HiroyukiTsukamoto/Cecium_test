@@ -12,19 +12,19 @@ import createPackableSpecs from "../createPackableSpecs.js";
 
 describe("Core/RectangleOutlineGeometry", function () {
   it("computes positions", function () {
-    const rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         granularity: 1.0,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(8 * 3);
     expect(m.indices.length).toEqual(8 * 2);
 
-    const expectedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
+    var expectedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
       Rectangle.northwest(rectangle)
     );
     expect(
@@ -33,18 +33,18 @@ describe("Core/RectangleOutlineGeometry", function () {
   });
 
   it("computes positions across IDL", function () {
-    const rectangle = Rectangle.fromDegrees(179.0, -1.0, -179.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = Rectangle.fromDegrees(179.0, -1.0, -179.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(8 * 3);
     expect(m.indices.length).toEqual(8 * 2);
 
-    const expectedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
+    var expectedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
       Rectangle.northwest(rectangle)
     );
     expect(
@@ -53,57 +53,57 @@ describe("Core/RectangleOutlineGeometry", function () {
   });
 
   it("computes positions at north pole", function () {
-    const rectangle = Rectangle.fromDegrees(-180.0, 89.0, -179.0, 90.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = Rectangle.fromDegrees(-180.0, 89.0, -179.0, 90.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(5 * 3);
     expect(m.indices.length).toEqual(5 * 2);
   });
 
   it("computes positions at south pole", function () {
-    const rectangle = Rectangle.fromDegrees(-180.0, -90.0, -179.0, -89.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = Rectangle.fromDegrees(-180.0, -90.0, -179.0, -89.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(5 * 3);
     expect(m.indices.length).toEqual(5 * 2);
   });
 
   it("compute positions with rotation", function () {
-    const rectangle = new Rectangle(-1, -1, 1, 1);
-    const angle = CesiumMath.PI_OVER_TWO;
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-1, -1, 1, 1);
+    var angle = CesiumMath.PI_OVER_TWO;
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         rotation: angle,
         granularity: 1.0,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(8 * 3);
     expect(m.indices.length).toEqual(8 * 2);
 
-    const unrotatedNWCorner = Rectangle.northwest(rectangle);
-    const projection = new GeographicProjection();
-    const projectedNWCorner = projection.project(unrotatedNWCorner);
-    const rotation = Matrix2.fromRotation(angle);
-    const rotatedNWCornerCartographic = projection.unproject(
+    var unrotatedNWCorner = Rectangle.northwest(rectangle);
+    var projection = new GeographicProjection();
+    var projectedNWCorner = projection.project(unrotatedNWCorner);
+    var rotation = Matrix2.fromRotation(angle);
+    var rotatedNWCornerCartographic = projection.unproject(
       Matrix2.multiplyByVector(rotation, projectedNWCorner, new Cartesian2())
     );
-    const rotatedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
+    var rotatedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
       rotatedNWCornerCartographic
     );
-    const actual = new Cartesian3(positions[0], positions[1], positions[2]);
+    var actual = new Cartesian3(positions[0], positions[1], positions[2]);
     expect(actual).toEqualEpsilon(rotatedNWCorner, CesiumMath.EPSILON6);
   });
 
@@ -143,52 +143,52 @@ describe("Core/RectangleOutlineGeometry", function () {
   });
 
   it("computes positions extruded", function () {
-    const rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         granularity: 1.0,
         extrudedHeight: 2,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(16 * 3); // 8 top + 8 bottom
     expect(m.indices.length).toEqual(20 * 2); // 8 top + 8 bottom + 4 edges
   });
 
   it("computes positions extruded at north pole", function () {
-    const rectangle = Rectangle.fromDegrees(-180.0, 89.0, -179.0, 90.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = Rectangle.fromDegrees(-180.0, 89.0, -179.0, 90.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         extrudedHeight: 2,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(10 * 3); // 5 top + 5 bottom
     expect(m.indices.length).toEqual(13 * 2); // 5 top + 5 bottom + 3 edges
   });
 
   it("computes positions extruded at south pole", function () {
-    const rectangle = Rectangle.fromDegrees(-180.0, -90.0, -179.0, -89.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = Rectangle.fromDegrees(-180.0, -90.0, -179.0, -89.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         extrudedHeight: 2,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(10 * 3); // 5 top + 5 bottom
     expect(m.indices.length).toEqual(13 * 2); // 5 top + 5 bottom + 3 edges
   });
 
   it("compute positions with rotation extruded", function () {
-    const rectangle = new Rectangle(-1, -1, 1, 1);
-    const angle = CesiumMath.PI_OVER_TWO;
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-1, -1, 1, 1);
+    var angle = CesiumMath.PI_OVER_TWO;
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         rotation: angle,
@@ -196,61 +196,55 @@ describe("Core/RectangleOutlineGeometry", function () {
         extrudedHeight: 2,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(16 * 3);
     expect(m.indices.length).toEqual(20 * 2);
 
-    const unrotatedNWCorner = Rectangle.northwest(rectangle);
-    const projection = new GeographicProjection();
-    const projectedNWCorner = projection.project(unrotatedNWCorner);
-    const rotation = Matrix2.fromRotation(angle);
-    const rotatedNWCornerCartographic = projection.unproject(
+    var unrotatedNWCorner = Rectangle.northwest(rectangle);
+    var projection = new GeographicProjection();
+    var projectedNWCorner = projection.project(unrotatedNWCorner);
+    var rotation = Matrix2.fromRotation(angle);
+    var rotatedNWCornerCartographic = projection.unproject(
       Matrix2.multiplyByVector(rotation, projectedNWCorner, new Cartesian2())
     );
     rotatedNWCornerCartographic.height = 2;
-    const rotatedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
+    var rotatedNWCorner = Ellipsoid.WGS84.cartographicToCartesian(
       rotatedNWCornerCartographic
     );
-    const actual = new Cartesian3(positions[0], positions[1], positions[2]);
+    var actual = new Cartesian3(positions[0], positions[1], positions[2]);
     expect(actual).toEqualEpsilon(rotatedNWCorner, CesiumMath.EPSILON6);
   });
 
   it("computes non-extruded rectangle if height is small", function () {
-    const rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         granularity: 1.0,
         extrudedHeight: CesiumMath.EPSILON14,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
     expect(positions.length).toEqual(8 * 3);
     expect(m.indices.length).toEqual(8 * 2);
   });
 
   it("undefined is returned if any side are of length zero", function () {
-    const rectangleOutline0 = new RectangleOutlineGeometry({
+    var rectangleOutline0 = new RectangleOutlineGeometry({
       rectangle: Rectangle.fromDegrees(-80.0, 39.0, -80.0, 42.0),
     });
-    const rectangleOutline1 = new RectangleOutlineGeometry({
+    var rectangleOutline1 = new RectangleOutlineGeometry({
       rectangle: Rectangle.fromDegrees(-81.0, 42.0, -80.0, 42.0),
     });
-    const rectangleOutline2 = new RectangleOutlineGeometry({
+    var rectangleOutline2 = new RectangleOutlineGeometry({
       rectangle: Rectangle.fromDegrees(-80.0, 39.0, -80.0, 39.0),
     });
 
-    const geometry0 = RectangleOutlineGeometry.createGeometry(
-      rectangleOutline0
-    );
-    const geometry1 = RectangleOutlineGeometry.createGeometry(
-      rectangleOutline1
-    );
-    const geometry2 = RectangleOutlineGeometry.createGeometry(
-      rectangleOutline2
-    );
+    var geometry0 = RectangleOutlineGeometry.createGeometry(rectangleOutline0);
+    var geometry1 = RectangleOutlineGeometry.createGeometry(rectangleOutline1);
+    var geometry2 = RectangleOutlineGeometry.createGeometry(rectangleOutline2);
 
     expect(geometry0).toBeUndefined();
     expect(geometry1).toBeUndefined();
@@ -258,29 +252,29 @@ describe("Core/RectangleOutlineGeometry", function () {
   });
 
   it("computes offset attribute", function () {
-    const rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         granularity: 1.0,
         offsetAttribute: GeometryOffsetAttribute.TOP,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
-    const numVertices = 8;
+    var numVertices = 8;
     expect(positions.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
   it("computes offset attribute extruded for top vertices", function () {
-    const rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         granularity: 1.0,
@@ -288,22 +282,22 @@ describe("Core/RectangleOutlineGeometry", function () {
         offsetAttribute: GeometryOffsetAttribute.TOP,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
-    const numVertices = 16;
+    var numVertices = 16;
     expect(positions.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 0);
     expected = arrayFill(expected, 1, 0, 8);
     expect(offset).toEqual(expected);
   });
 
   it("computes offset attribute extruded for all vertices", function () {
-    const rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
-    const m = RectangleOutlineGeometry.createGeometry(
+    var rectangle = new Rectangle(-2.0, -1.0, 0.0, 1.0);
+    var m = RectangleOutlineGeometry.createGeometry(
       new RectangleOutlineGeometry({
         rectangle: rectangle,
         granularity: 1.0,
@@ -311,19 +305,19 @@ describe("Core/RectangleOutlineGeometry", function () {
         offsetAttribute: GeometryOffsetAttribute.ALL,
       })
     );
-    const positions = m.attributes.position.values;
+    var positions = m.attributes.position.values;
 
-    const numVertices = 16;
+    var numVertices = 16;
     expect(positions.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
-  let rectangle = new RectangleOutlineGeometry({
+  var rectangle = new RectangleOutlineGeometry({
     rectangle: new Rectangle(0.1, 0.2, 0.3, 0.4),
     ellipsoid: new Ellipsoid(5, 6, 7),
     granularity: 8,
@@ -331,7 +325,7 @@ describe("Core/RectangleOutlineGeometry", function () {
     rotation: 10,
     extrudedHeight: 11,
   });
-  let packedInstance = [0.1, 0.2, 0.3, 0.4, 5, 6, 7, 8, 11, 10, 9, -1];
+  var packedInstance = [0.1, 0.2, 0.3, 0.4, 5, 6, 7, 8, 11, 10, 9, -1];
   createPackableSpecs(
     RectangleOutlineGeometry,
     rectangle,

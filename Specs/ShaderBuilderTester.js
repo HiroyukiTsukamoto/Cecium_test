@@ -81,7 +81,7 @@ ShaderBuilderTester.expectHasVertexStruct = function (
   expectedFields
 ) {
   expectHasLine(shaderBuilder._vertexShaderParts.structIds, structId);
-  const struct = shaderBuilder._structs[structId];
+  var struct = shaderBuilder._structs[structId];
 
   expect(struct.name).toEqual(structName);
   expectEqualUnordered(struct.fields, expectedFields);
@@ -94,7 +94,7 @@ ShaderBuilderTester.expectHasFragmentStruct = function (
   expectedFields
 ) {
   expectHasLine(shaderBuilder._fragmentShaderParts.structIds, structId);
-  const struct = shaderBuilder._structs[structId];
+  var struct = shaderBuilder._structs[structId];
 
   expect(struct.name).toEqual(structName);
   expectEqualUnordered(struct.fields, expectedFields);
@@ -107,20 +107,7 @@ ShaderBuilderTester.expectHasVertexFunction = function (
   bodyLines
 ) {
   expectHasLine(shaderBuilder._vertexShaderParts.functionIds, functionId);
-  const func = shaderBuilder._functions[functionId];
-
-  expect(func.signature).toEqual(signature);
-  expect(func.body).toEqual(bodyLines);
-};
-
-ShaderBuilderTester.expectHasVertexFunctionUnordered = function (
-  shaderBuilder,
-  functionId,
-  signature,
-  bodyLines
-) {
-  expectHasLine(shaderBuilder._vertexShaderParts.functionIds, functionId);
-  const func = shaderBuilder._functions[functionId];
+  var func = shaderBuilder._functions[functionId];
 
   expect(func.signature).toEqual(signature);
   expectEqualUnordered(func.body, bodyLines);
@@ -133,20 +120,7 @@ ShaderBuilderTester.expectHasFragmentFunction = function (
   bodyLines
 ) {
   expectHasLine(shaderBuilder._fragmentShaderParts.functionIds, functionId);
-  const func = shaderBuilder._functions[functionId];
-
-  expect(func.signature).toEqual(signature);
-  expect(func.body).toEqual(bodyLines);
-};
-
-ShaderBuilderTester.expectHasFragmentFunctionUnordered = function (
-  shaderBuilder,
-  functionId,
-  signature,
-  bodyLines
-) {
-  expectHasLine(shaderBuilder._fragmentShaderParts.functionIds, functionId);
-  const func = shaderBuilder._functions[functionId];
+  var func = shaderBuilder._functions[functionId];
 
   expect(func.signature).toEqual(signature);
   expectEqualUnordered(func.body, bodyLines);

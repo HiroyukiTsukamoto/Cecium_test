@@ -34,7 +34,7 @@ function TimeDynamicImagery(options) {
   this._tileCache = {};
   this._tilesRequestedForInterval = [];
 
-  const clock = (this._clock = options.clock);
+  var clock = (this._clock = options.clock);
   this._times = options.times;
   this._requestImageFunction = options.requestImageFunction;
   this._reloadFunction = options.reloadFunction;
@@ -115,12 +115,12 @@ Object.defineProperties(TimeDynamicImagery.prototype, {
  *          undefined if the tile is not in the cache.
  */
 TimeDynamicImagery.prototype.getFromCache = function (x, y, level, request) {
-  const key = getKey(x, y, level);
-  let result;
-  const cache = this._tileCache[this._currentIntervalIndex];
+  var key = getKey(x, y, level);
+  var result;
+  var cache = this._tileCache[this._currentIntervalIndex];
   if (defined(cache) && defined(cache[key])) {
-    const item = cache[key];
-    result = item.promise.catch(function (e) {
+    var item = cache[key];
+    result = item.promise.otherwise(function (e) {
       // Set the correct state in case it was cancelled
       request.state = item.request.state;
       throw e;
@@ -146,12 +146,12 @@ TimeDynamicImagery.prototype.checkApproachingInterval = function (
   level,
   request
 ) {
-  const key = getKey(x, y, level);
-  const tilesRequestedForInterval = this._tilesRequestedForInterval;
+  var key = getKey(x, y, level);
+  var tilesRequestedForInterval = this._tilesRequestedForInterval;
 
   // If we are approaching an interval, preload this tile in the next interval
-  const approachingInterval = getApproachingInterval(this);
-  const tile = {
+  var approachingInterval = getApproachingInterval(this);
+  var tile = {
     key: key,
     // Determines priority based on camera distance to the tile.
     // Since the imagery regardless of time will be attached to the same tile we can just steal it.
@@ -172,15 +172,15 @@ TimeDynamicImagery.prototype.checkApproachingInterval = function (
 };
 
 TimeDynamicImagery.prototype._clockOnTick = function (clock) {
-  const time = clock.currentTime;
-  const times = this._times;
-  const index = times.indexOf(time);
-  const currentIntervalIndex = this._currentIntervalIndex;
+  var time = clock.currentTime;
+  var times = this._times;
+  var index = times.indexOf(time);
+  var currentIntervalIndex = this._currentIntervalIndex;
 
   if (index !== currentIntervalIndex) {
     // Cancel all outstanding requests and clear out caches not from current time interval
-    const currentCache = this._tileCache[currentIntervalIndex];
-    for (const t in currentCache) {
+    var currentCache = this._tileCache[currentIntervalIndex];
+    for (var t in currentCache) {
       if (currentCache.hasOwnProperty(t)) {
         currentCache[t].request.cancel();
       }
@@ -194,18 +194,18 @@ TimeDynamicImagery.prototype._clockOnTick = function (clock) {
     return;
   }
 
-  const approachingInterval = getApproachingInterval(this);
+  var approachingInterval = getApproachingInterval(this);
   if (defined(approachingInterval)) {
     // Start loading recent tiles from end of this._tilesRequestedForInterval
     //  We keep preloading until we hit a throttling limit.
-    const tilesRequested = this._tilesRequestedForInterval;
-    let success = true;
+    var tilesRequested = this._tilesRequestedForInterval;
+    var success = true;
     while (success) {
       if (tilesRequested.length === 0) {
         break;
       }
 
-      const tile = tilesRequested.pop();
+      var tile = tilesRequested.pop();
       success = addToCache(this, tile, approachingInterval);
       if (!success) {
         tilesRequested.push(tile);
@@ -215,11 +215,11 @@ TimeDynamicImagery.prototype._clockOnTick = function (clock) {
 };
 
 function getKey(x, y, level) {
-  return `${x}-${y}-${level}`;
+  return x + "-" + y + "-" + level;
 }
 
 function getKeyElements(key) {
-  const s = key.split("-");
+  var s = key.split("-");
   if (s.length !== 3) {
     return undefined;
   }
@@ -232,26 +232,26 @@ function getKeyElements(key) {
 }
 
 function getApproachingInterval(that) {
-  const times = that._times;
+  var times = that._times;
   if (!defined(times)) {
     return undefined;
   }
-  const clock = that._clock;
-  const time = clock.currentTime;
-  const isAnimating = clock.canAnimate && clock.shouldAnimate;
-  const multiplier = clock.multiplier;
+  var clock = that._clock;
+  var time = clock.currentTime;
+  var isAnimating = clock.canAnimate && clock.shouldAnimate;
+  var multiplier = clock.multiplier;
 
   if (!isAnimating && multiplier !== 0) {
     return undefined;
   }
 
-  let seconds;
-  let index = times.indexOf(time);
+  var seconds;
+  var index = times.indexOf(time);
   if (index < 0) {
     return undefined;
   }
 
-  const interval = times.get(index);
+  var interval = times.get(index);
   if (multiplier > 0) {
     // animating forward
     seconds = JulianDate.secondsDifference(interval.stop, time);
@@ -268,26 +268,26 @@ function getApproachingInterval(that) {
 }
 
 function addToCache(that, tile, interval) {
-  const index = that._times.indexOf(interval.start);
-  const tileCache = that._tileCache;
-  let intervalTileCache = tileCache[index];
+  var index = that._times.indexOf(interval.start);
+  var tileCache = that._tileCache;
+  var intervalTileCache = tileCache[index];
   if (!defined(intervalTileCache)) {
     intervalTileCache = tileCache[index] = {};
   }
 
-  const key = tile.key;
+  var key = tile.key;
   if (defined(intervalTileCache[key])) {
     return true; // Already in the cache
   }
 
-  const keyElements = getKeyElements(key);
-  const request = new Request({
+  var keyElements = getKeyElements(key);
+  var request = new Request({
     throttle: false,
     throttleByServer: true,
     type: RequestType.IMAGERY,
     priorityFunction: tile.priorityFunction,
   });
-  const promise = that._requestImageFunction(
+  var promise = that._requestImageFunction(
     keyElements.x,
     keyElements.y,
     keyElements.level,

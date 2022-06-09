@@ -3,7 +3,7 @@
  *
  * @enum {Number}
  */
-const ScreenSpaceEventType = {
+var ScreenSpaceEventType = {
   /**
    * Represents a mouse left button down event.
    *

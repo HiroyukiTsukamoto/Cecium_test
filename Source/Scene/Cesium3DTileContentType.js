@@ -9,7 +9,7 @@
  *
  * @private
  */
-const Cesium3DTileContentType = {
+var Cesium3DTileContentType = {
   /**
    * A Batched 3D Model. This is a binary format with
    * magic number <code>b3dm</code>
@@ -86,7 +86,8 @@ const Cesium3DTileContentType = {
    */
   GLTF_BINARY: "glb",
   /**
-   * For implicit tiling, availability bitstreams are stored in binary subtree files.
+   * For the <code>3DTILES_implicit_tiling</code> extension,
+   * availability bitstreams are stored in binary subtree files.
    * The magic number is <code>subt</code>
    *
    * @type {String}
@@ -95,15 +96,6 @@ const Cesium3DTileContentType = {
    * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
    */
   IMPLICIT_SUBTREE: "subt",
-  /**
-   * For implicit tiling. Subtrees can also be represented as JSON files.
-   *
-   * @type {String}
-   * @constant
-   * @private
-   * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
-   */
-  IMPLICIT_SUBTREE_JSON: "subtreeJson",
   /**
    * Contents can reference another tileset.json to use
    * as an external tileset. This is a JSON-based format.
@@ -114,7 +106,8 @@ const Cesium3DTileContentType = {
    */
   EXTERNAL_TILESET: "externalTileset",
   /**
-   * Multiple contents are handled separately from the other content types
+   * <code>3DTILES_multiple_contents</code> is a 3D Tiles
+   * extensions. This is handled separately from the other content types
    * due to differences in request scheduling.
    *
    * @type {String}
@@ -123,15 +116,6 @@ const Cesium3DTileContentType = {
    * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
    */
   MULTIPLE_CONTENT: "multipleContent",
-  /**
-   * GeoJSON content for <code>MAXAR_content_geojson</code> extension.
-   *
-   * @type {String}
-   * @constant
-   * @private
-   * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
-   */
-  GEOJSON: "geoJson",
 };
 
 /**

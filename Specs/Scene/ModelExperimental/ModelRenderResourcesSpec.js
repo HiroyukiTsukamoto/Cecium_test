@@ -1,7 +1,7 @@
 import { ModelRenderResources } from "../../../Source/Cesium.js";
 
 describe("Scene/ModelExperimental/ModelRenderResources", function () {
-  const mockModel = {};
+  var mockModel = {};
 
   function checkShaderDefines(shaderBuilder, expectedDefines) {
     expect(shaderBuilder._fragmentShaderParts.defineLines).toEqual(
@@ -16,11 +16,10 @@ describe("Scene/ModelExperimental/ModelRenderResources", function () {
   });
 
   it("constructs", function () {
-    const modelResources = new ModelRenderResources(mockModel);
+    var modelResources = new ModelRenderResources(mockModel);
 
     expect(modelResources.model).toBe(mockModel);
     expect(modelResources.shaderBuilder).toBeDefined();
-    expect(modelResources.renderStateOptions).toEqual({});
     checkShaderDefines(modelResources.shaderBuilder, []);
   });
 });

@@ -1,7 +1,7 @@
 /**
  * @private
  */
-const PrimitiveState = {
+var PrimitiveState = {
   READY: 0,
   CREATING: 1,
   CREATED: 2,

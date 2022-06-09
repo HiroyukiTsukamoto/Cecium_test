@@ -4,7 +4,7 @@ import { DistanceDisplayConditionGeometryInstanceAttribute } from "../../Source/
 
 describe("Core/DistanceDisplayConditionGeometryInstanceAttribute", function () {
   it("constructor", function () {
-    const attribute = new DistanceDisplayConditionGeometryInstanceAttribute(
+    var attribute = new DistanceDisplayConditionGeometryInstanceAttribute(
       10.0,
       100.0
     );
@@ -12,7 +12,7 @@ describe("Core/DistanceDisplayConditionGeometryInstanceAttribute", function () {
     expect(attribute.componentsPerAttribute).toEqual(2);
     expect(attribute.normalize).toEqual(false);
 
-    const value = new Float32Array([10.0, 100.0]);
+    var value = new Float32Array([10.0, 100.0]);
     expect(attribute.value).toEqual(value);
   });
 
@@ -23,15 +23,15 @@ describe("Core/DistanceDisplayConditionGeometryInstanceAttribute", function () {
   });
 
   it("fromDistanceDisplayCondition", function () {
-    const dc = new DistanceDisplayCondition(10.0, 100.0);
-    const attribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
+    var dc = new DistanceDisplayCondition(10.0, 100.0);
+    var attribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
       dc
     );
     expect(attribute.componentDatatype).toEqual(ComponentDatatype.FLOAT);
     expect(attribute.componentsPerAttribute).toEqual(2);
     expect(attribute.normalize).toEqual(false);
 
-    const value = new Float32Array([dc.near, dc.far]);
+    var value = new Float32Array([dc.near, dc.far]);
     expect(attribute.value).toEqual(value);
   });
 
@@ -50,18 +50,18 @@ describe("Core/DistanceDisplayConditionGeometryInstanceAttribute", function () {
   });
 
   it("toValue", function () {
-    const dc = new DistanceDisplayCondition(10.0, 200.0);
-    const expectedResult = new Float32Array([dc.near, dc.far]);
+    var dc = new DistanceDisplayCondition(10.0, 200.0);
+    var expectedResult = new Float32Array([dc.near, dc.far]);
     expect(
       DistanceDisplayConditionGeometryInstanceAttribute.toValue(dc)
     ).toEqual(expectedResult);
   });
 
   it("toValue works with result parameter", function () {
-    const dc = new DistanceDisplayCondition(10.0, 200.0);
-    const expectedResult = new Float32Array([dc.near, dc.far]);
-    const result = new Float32Array(2);
-    const returnedResult = DistanceDisplayConditionGeometryInstanceAttribute.toValue(
+    var dc = new DistanceDisplayCondition(10.0, 200.0);
+    var expectedResult = new Float32Array([dc.near, dc.far]);
+    var result = new Float32Array(2);
+    var returnedResult = DistanceDisplayConditionGeometryInstanceAttribute.toValue(
       dc,
       result
     );

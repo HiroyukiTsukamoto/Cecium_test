@@ -52,9 +52,9 @@ function PointPrimitive(options, pointPrimitiveCollection) {
   }
   //>>includeEnd('debug');
 
-  let translucencyByDistance = options.translucencyByDistance;
-  let scaleByDistance = options.scaleByDistance;
-  let distanceDisplayCondition = options.distanceDisplayCondition;
+  var translucencyByDistance = options.translucencyByDistance;
+  var scaleByDistance = options.scaleByDistance;
+  var distanceDisplayCondition = options.distanceDisplayCondition;
   if (defined(translucencyByDistance)) {
     //>>includeStart('debug', pragmas.debug);
     if (translucencyByDistance.far <= translucencyByDistance.near) {
@@ -117,20 +117,20 @@ function PointPrimitive(options, pointPrimitiveCollection) {
   this._index = -1; //Used only by PointPrimitiveCollection
 }
 
-const SHOW_INDEX = (PointPrimitive.SHOW_INDEX = 0);
-const POSITION_INDEX = (PointPrimitive.POSITION_INDEX = 1);
-const COLOR_INDEX = (PointPrimitive.COLOR_INDEX = 2);
-const OUTLINE_COLOR_INDEX = (PointPrimitive.OUTLINE_COLOR_INDEX = 3);
-const OUTLINE_WIDTH_INDEX = (PointPrimitive.OUTLINE_WIDTH_INDEX = 4);
-const PIXEL_SIZE_INDEX = (PointPrimitive.PIXEL_SIZE_INDEX = 5);
-const SCALE_BY_DISTANCE_INDEX = (PointPrimitive.SCALE_BY_DISTANCE_INDEX = 6);
-const TRANSLUCENCY_BY_DISTANCE_INDEX = (PointPrimitive.TRANSLUCENCY_BY_DISTANCE_INDEX = 7);
-const DISTANCE_DISPLAY_CONDITION_INDEX = (PointPrimitive.DISTANCE_DISPLAY_CONDITION_INDEX = 8);
-const DISABLE_DEPTH_DISTANCE_INDEX = (PointPrimitive.DISABLE_DEPTH_DISTANCE_INDEX = 9);
+var SHOW_INDEX = (PointPrimitive.SHOW_INDEX = 0);
+var POSITION_INDEX = (PointPrimitive.POSITION_INDEX = 1);
+var COLOR_INDEX = (PointPrimitive.COLOR_INDEX = 2);
+var OUTLINE_COLOR_INDEX = (PointPrimitive.OUTLINE_COLOR_INDEX = 3);
+var OUTLINE_WIDTH_INDEX = (PointPrimitive.OUTLINE_WIDTH_INDEX = 4);
+var PIXEL_SIZE_INDEX = (PointPrimitive.PIXEL_SIZE_INDEX = 5);
+var SCALE_BY_DISTANCE_INDEX = (PointPrimitive.SCALE_BY_DISTANCE_INDEX = 6);
+var TRANSLUCENCY_BY_DISTANCE_INDEX = (PointPrimitive.TRANSLUCENCY_BY_DISTANCE_INDEX = 7);
+var DISTANCE_DISPLAY_CONDITION_INDEX = (PointPrimitive.DISTANCE_DISPLAY_CONDITION_INDEX = 8);
+var DISABLE_DEPTH_DISTANCE_INDEX = (PointPrimitive.DISABLE_DEPTH_DISTANCE_INDEX = 9);
 PointPrimitive.NUMBER_OF_PROPERTIES = 10;
 
 function makeDirty(pointPrimitive, propertyChanged) {
-  const pointPrimitiveCollection = pointPrimitive._pointPrimitiveCollection;
+  var pointPrimitiveCollection = pointPrimitive._pointPrimitiveCollection;
   if (defined(pointPrimitiveCollection)) {
     pointPrimitiveCollection._updatePointPrimitive(
       pointPrimitive,
@@ -181,7 +181,7 @@ Object.defineProperties(PointPrimitive.prototype, {
       }
       //>>includeEnd('debug');
 
-      const position = this._position;
+      var position = this._position;
       if (!Cartesian3.equals(position, value)) {
         Cartesian3.clone(value, position);
         Cartesian3.clone(value, this._actualPosition);
@@ -227,7 +227,7 @@ Object.defineProperties(PointPrimitive.prototype, {
       }
       //>>includeEnd('debug');
 
-      const scaleByDistance = this._scaleByDistance;
+      var scaleByDistance = this._scaleByDistance;
       if (!NearFarScalar.equals(scaleByDistance, value)) {
         this._scaleByDistance = NearFarScalar.clone(value, scaleByDistance);
         makeDirty(this, SCALE_BY_DISTANCE_INDEX);
@@ -270,7 +270,7 @@ Object.defineProperties(PointPrimitive.prototype, {
       }
       //>>includeEnd('debug');
 
-      const translucencyByDistance = this._translucencyByDistance;
+      var translucencyByDistance = this._translucencyByDistance;
       if (!NearFarScalar.equals(translucencyByDistance, value)) {
         this._translucencyByDistance = NearFarScalar.clone(
           value,
@@ -331,7 +331,7 @@ Object.defineProperties(PointPrimitive.prototype, {
       }
       //>>includeEnd('debug');
 
-      const color = this._color;
+      var color = this._color;
       if (!Color.equals(color, value)) {
         Color.clone(value, color);
         makeDirty(this, COLOR_INDEX);
@@ -355,7 +355,7 @@ Object.defineProperties(PointPrimitive.prototype, {
       }
       //>>includeEnd('debug');
 
-      const outlineColor = this._outlineColor;
+      var outlineColor = this._outlineColor;
       if (!Color.equals(outlineColor, value)) {
         Color.clone(value, outlineColor);
         makeDirty(this, OUTLINE_COLOR_INDEX);
@@ -507,7 +507,7 @@ PointPrimitive.prototype._setActualPosition = function (value) {
   makeDirty(this, POSITION_INDEX);
 };
 
-const tempCartesian3 = new Cartesian4();
+var tempCartesian3 = new Cartesian4();
 PointPrimitive._computeActualPosition = function (
   position,
   frameState,
@@ -521,7 +521,7 @@ PointPrimitive._computeActualPosition = function (
   return SceneTransforms.computeActualWgs84Position(frameState, tempCartesian3);
 };
 
-const scratchCartesian4 = new Cartesian4();
+var scratchCartesian4 = new Cartesian4();
 
 // This function is basically a stripped-down JavaScript version of PointPrimitiveCollectionVS.glsl
 PointPrimitive._computeScreenSpacePosition = function (
@@ -531,7 +531,7 @@ PointPrimitive._computeScreenSpacePosition = function (
   result
 ) {
   // Model to world coordinates
-  const positionWorld = Matrix4.multiplyByVector(
+  var positionWorld = Matrix4.multiplyByVector(
     modelMatrix,
     Cartesian4.fromElements(
       position.x,
@@ -542,7 +542,7 @@ PointPrimitive._computeScreenSpacePosition = function (
     ),
     scratchCartesian4
   );
-  const positionWC = SceneTransforms.wgs84ToWindowCoordinates(
+  var positionWC = SceneTransforms.wgs84ToWindowCoordinates(
     scene,
     positionWorld,
     result
@@ -565,7 +565,7 @@ PointPrimitive._computeScreenSpacePosition = function (
  * console.log(p.computeScreenSpacePosition(scene).toString());
  */
 PointPrimitive.prototype.computeScreenSpacePosition = function (scene, result) {
-  const pointPrimitiveCollection = this._pointPrimitiveCollection;
+  var pointPrimitiveCollection = this._pointPrimitiveCollection;
   if (!defined(result)) {
     result = new Cartesian2();
   }
@@ -579,8 +579,8 @@ PointPrimitive.prototype.computeScreenSpacePosition = function (scene, result) {
   }
   //>>includeEnd('debug');
 
-  const modelMatrix = pointPrimitiveCollection.modelMatrix;
-  const windowCoordinates = PointPrimitive._computeScreenSpacePosition(
+  var modelMatrix = pointPrimitiveCollection.modelMatrix;
+  var windowCoordinates = PointPrimitive._computeScreenSpacePosition(
     modelMatrix,
     this._actualPosition,
     scene,
@@ -608,13 +608,13 @@ PointPrimitive.getScreenSpaceBoundingBox = function (
   screenSpacePosition,
   result
 ) {
-  const size = point.pixelSize;
-  const halfSize = size * 0.5;
+  var size = point.pixelSize;
+  var halfSize = size * 0.5;
 
-  const x = screenSpacePosition.x - halfSize;
-  const y = screenSpacePosition.y - halfSize;
-  const width = size;
-  const height = size;
+  var x = screenSpacePosition.x - halfSize;
+  var y = screenSpacePosition.y - halfSize;
+  var width = size;
+  var height = size;
 
   if (!defined(result)) {
     result = new BoundingRectangle();

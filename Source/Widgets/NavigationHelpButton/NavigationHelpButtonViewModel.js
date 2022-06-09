@@ -14,7 +14,7 @@ function NavigationHelpButtonViewModel() {
    */
   this.showInstructions = false;
 
-  const that = this;
+  var that = this;
   this._command = createCommand(function () {
     that.showInstructions = !that.showInstructions;
   });

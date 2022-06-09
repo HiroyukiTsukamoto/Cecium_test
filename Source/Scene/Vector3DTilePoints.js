@@ -9,6 +9,7 @@ import Ellipsoid from "../Core/Ellipsoid.js";
 import NearFarScalar from "../Core/NearFarScalar.js";
 import Rectangle from "../Core/Rectangle.js";
 import TaskProcessor from "../Core/TaskProcessor.js";
+import when from "../ThirdParty/when.js";
 import BillboardCollection from "./BillboardCollection.js";
 import Cesium3DTilePointFeature from "./Cesium3DTilePointFeature.js";
 import HorizontalOrigin from "./HorizontalOrigin.js";
@@ -44,21 +45,16 @@ function Vector3DTilePoints(options) {
   this._minHeight = options.minimumHeight;
   this._maxHeight = options.maximumHeight;
 
-  this._billboardCollection = new BillboardCollection({
-    batchTable: options.batchTable,
-  });
-  this._labelCollection = new LabelCollection({
-    batchTable: options.batchTable,
-  });
-  this._polylineCollection = new PolylineCollection();
-  this._polylineCollection._useHighlightColor = true;
+  this._billboardCollection = undefined;
+  this._labelCollection = undefined;
+  this._polylineCollection = undefined;
 
   this._verticesPromise = undefined;
   this._packedBuffer = undefined;
 
   this._ready = false;
-  this._update = function (points, frameState) {};
-  this._readyPromise = initialize(this);
+  this._readyPromise = when.defer();
+  this._resolvedPromise = false;
 }
 
 Object.defineProperties(Vector3DTilePoints.prototype, {
@@ -86,9 +82,9 @@ Object.defineProperties(Vector3DTilePoints.prototype, {
    */
   texturesByteLength: {
     get: function () {
-      const billboardSize = this._billboardCollection.textureAtlas.texture
+      var billboardSize = this._billboardCollection.textureAtlas.texture
         .sizeInBytes;
-      const labelSize = this._labelCollection._textureAtlas.texture.sizeInBytes;
+      var labelSize = this._labelCollection._textureAtlas.texture.sizeInBytes;
       return billboardSize + labelSize;
     },
   },
@@ -101,20 +97,20 @@ Object.defineProperties(Vector3DTilePoints.prototype, {
    */
   readyPromise: {
     get: function () {
-      return this._readyPromise;
+      return this._readyPromise.promise;
     },
   },
 });
 
 function packBuffer(points, ellipsoid) {
-  const rectangle = points._rectangle;
-  const minimumHeight = points._minHeight;
-  const maximumHeight = points._maxHeight;
+  var rectangle = points._rectangle;
+  var minimumHeight = points._minHeight;
+  var maximumHeight = points._maxHeight;
 
-  const packedLength = 2 + Rectangle.packedLength + Ellipsoid.packedLength;
-  const packedBuffer = new Float64Array(packedLength);
+  var packedLength = 2 + Rectangle.packedLength + Ellipsoid.packedLength;
+  var packedBuffer = new Float64Array(packedLength);
 
-  let offset = 0;
+  var offset = 0;
   packedBuffer[offset++] = minimumHeight;
   packedBuffer[offset++] = maximumHeight;
 
@@ -126,17 +122,21 @@ function packBuffer(points, ellipsoid) {
   return packedBuffer;
 }
 
-const createVerticesTaskProcessor = new TaskProcessor(
+var createVerticesTaskProcessor = new TaskProcessor(
   "createVectorTilePoints",
   5
 );
-const scratchPosition = new Cartesian3();
+var scratchPosition = new Cartesian3();
 
 function createPoints(points, ellipsoid) {
-  let positions;
+  if (defined(points._billboardCollection)) {
+    return;
+  }
+
+  var positions;
   if (!defined(points._verticesPromise)) {
     positions = points._positions;
-    let packedBuffer = points._packedBuffer;
+    var packedBuffer = points._packedBuffer;
 
     if (!defined(packedBuffer)) {
       // Copy because they may be the views on the same buffer.
@@ -146,13 +146,13 @@ function createPoints(points, ellipsoid) {
       packedBuffer = points._packedBuffer = packBuffer(points, ellipsoid);
     }
 
-    const transferrableObjects = [positions.buffer, packedBuffer.buffer];
-    const parameters = {
+    var transferrableObjects = [positions.buffer, packedBuffer.buffer];
+    var parameters = {
       positions: positions.buffer,
       packedBuffer: packedBuffer.buffer,
     };
 
-    const verticesPromise = (points._verticesPromise = createVerticesTaskProcessor.scheduleTask(
+    var verticesPromise = (points._verticesPromise = createVerticesTaskProcessor.scheduleTask(
       parameters,
       transferrableObjects
     ));
@@ -161,37 +161,47 @@ function createPoints(points, ellipsoid) {
       return;
     }
 
-    return verticesPromise.then(function (result) {
+    verticesPromise.then(function (result) {
       points._positions = new Float64Array(result.positions);
-      const billboardCollection = points._billboardCollection;
-      const labelCollection = points._labelCollection;
-      const polylineCollection = points._polylineCollection;
-      positions = points._positions;
-      const batchIds = points._batchIds;
-      const numberOfPoints = positions.length / 3;
-
-      for (let i = 0; i < numberOfPoints; ++i) {
-        const id = batchIds[i];
-
-        const position = Cartesian3.unpack(positions, i * 3, scratchPosition);
-
-        const b = billboardCollection.add();
-        b.position = position;
-        b._batchIndex = id;
-
-        const l = labelCollection.add();
-        l.text = " ";
-        l.position = position;
-        l._batchIndex = id;
-
-        const p = polylineCollection.add();
-        p.positions = [Cartesian3.clone(position), Cartesian3.clone(position)];
-      }
-
-      points._positions = undefined;
-      points._packedBuffer = undefined;
       points._ready = true;
     });
+  }
+
+  if (points._ready && !defined(points._billboardCollection)) {
+    positions = points._positions;
+    var batchTable = points._batchTable;
+    var batchIds = points._batchIds;
+
+    var billboardCollection = (points._billboardCollection = new BillboardCollection(
+      { batchTable: batchTable }
+    ));
+    var labelCollection = (points._labelCollection = new LabelCollection({
+      batchTable: batchTable,
+    }));
+    var polylineCollection = (points._polylineCollection = new PolylineCollection());
+    polylineCollection._useHighlightColor = true;
+
+    var numberOfPoints = positions.length / 3;
+    for (var i = 0; i < numberOfPoints; ++i) {
+      var id = batchIds[i];
+
+      var position = Cartesian3.unpack(positions, i * 3, scratchPosition);
+
+      var b = billboardCollection.add();
+      b.position = position;
+      b._batchIndex = id;
+
+      var l = labelCollection.add();
+      l.text = " ";
+      l.position = position;
+      l._batchIndex = id;
+
+      var p = polylineCollection.add();
+      p.positions = [Cartesian3.clone(position), Cartesian3.clone(position)];
+    }
+
+    points._positions = undefined;
+    points._packedBuffer = undefined;
   }
 }
 
@@ -202,18 +212,18 @@ function createPoints(points, ellipsoid) {
  * @param {Cesium3DTileFeature[]} features An array of features where the point features will be placed.
  */
 Vector3DTilePoints.prototype.createFeatures = function (content, features) {
-  const billboardCollection = this._billboardCollection;
-  const labelCollection = this._labelCollection;
-  const polylineCollection = this._polylineCollection;
+  var billboardCollection = this._billboardCollection;
+  var labelCollection = this._labelCollection;
+  var polylineCollection = this._polylineCollection;
 
-  const batchIds = this._batchIds;
-  const length = batchIds.length;
-  for (let i = 0; i < length; ++i) {
-    const batchId = batchIds[i];
+  var batchIds = this._batchIds;
+  var length = batchIds.length;
+  for (var i = 0; i < length; ++i) {
+    var batchId = batchIds[i];
 
-    const billboard = billboardCollection.get(i);
-    const label = labelCollection.get(i);
-    const polyline = polylineCollection.get(i);
+    var billboard = billboardCollection.get(i);
+    var label = labelCollection.get(i);
+    var polyline = polylineCollection.get(i);
 
     features[batchId] = new Cesium3DTilePointFeature(
       content,
@@ -244,11 +254,11 @@ Vector3DTilePoints.prototype.applyDebugSettings = function (enabled, color) {
 };
 
 function clearStyle(polygons, features) {
-  const batchIds = polygons._batchIds;
-  const length = batchIds.length;
-  for (let i = 0; i < length; ++i) {
-    const batchId = batchIds[i];
-    const feature = features[batchId];
+  var batchIds = polygons._batchIds;
+  var length = batchIds.length;
+  for (var i = 0; i < length; ++i) {
+    var batchId = batchIds[i];
+    var feature = features[batchId];
 
     feature.show = true;
     feature.pointSize = Cesium3DTilePointFeature.defaultPointSize;
@@ -281,15 +291,15 @@ function clearStyle(polygons, features) {
   }
 }
 
-const scratchColor = new Color();
-const scratchColor2 = new Color();
-const scratchColor3 = new Color();
-const scratchColor4 = new Color();
-const scratchColor5 = new Color();
-const scratchColor6 = new Color();
-const scratchScaleByDistance = new NearFarScalar();
-const scratchTranslucencyByDistance = new NearFarScalar();
-const scratchDistanceDisplayCondition = new DistanceDisplayCondition();
+var scratchColor = new Color();
+var scratchColor2 = new Color();
+var scratchColor3 = new Color();
+var scratchColor4 = new Color();
+var scratchColor5 = new Color();
+var scratchColor6 = new Color();
+var scratchScaleByDistance = new NearFarScalar();
+var scratchTranslucencyByDistance = new NearFarScalar();
+var scratchDistanceDisplayCondition = new DistanceDisplayCondition();
 
 /**
  * Apply a style to the content.
@@ -303,11 +313,11 @@ Vector3DTilePoints.prototype.applyStyle = function (style, features) {
     return;
   }
 
-  const batchIds = this._batchIds;
-  const length = batchIds.length;
-  for (let i = 0; i < length; ++i) {
-    const batchId = batchIds[i];
-    const feature = features[batchId];
+  var batchIds = this._batchIds;
+  var length = batchIds.length;
+  for (var i = 0; i < length; ++i) {
+    var batchId = batchIds[i];
+    var feature = features[batchId];
 
     if (defined(style.show)) {
       feature.show = style.show.evaluate(feature);
@@ -380,7 +390,7 @@ Vector3DTilePoints.prototype.applyStyle = function (style, features) {
     }
 
     if (defined(style.scaleByDistance)) {
-      const scaleByDistanceCart4 = style.scaleByDistance.evaluate(feature);
+      var scaleByDistanceCart4 = style.scaleByDistance.evaluate(feature);
       scratchScaleByDistance.near = scaleByDistanceCart4.x;
       scratchScaleByDistance.nearValue = scaleByDistanceCart4.y;
       scratchScaleByDistance.far = scaleByDistanceCart4.z;
@@ -391,7 +401,7 @@ Vector3DTilePoints.prototype.applyStyle = function (style, features) {
     }
 
     if (defined(style.translucencyByDistance)) {
-      const translucencyByDistanceCart4 = style.translucencyByDistance.evaluate(
+      var translucencyByDistanceCart4 = style.translucencyByDistance.evaluate(
         feature
       );
       scratchTranslucencyByDistance.near = translucencyByDistanceCart4.x;
@@ -404,7 +414,7 @@ Vector3DTilePoints.prototype.applyStyle = function (style, features) {
     }
 
     if (defined(style.distanceDisplayCondition)) {
-      const distanceDisplayConditionCart2 = style.distanceDisplayCondition.evaluate(
+      var distanceDisplayConditionCart2 = style.distanceDisplayCondition.evaluate(
         feature
       );
       scratchDistanceDisplayCondition.near = distanceDisplayConditionCart2.x;
@@ -461,37 +471,24 @@ Vector3DTilePoints.prototype.applyStyle = function (style, features) {
   }
 };
 
-function initialize(points) {
-  return new Promise(function (resolve, reject) {
-    points._update = function (points, frameState) {
-      const promise = createPoints(points, frameState.mapProjection.ellipsoid);
-
-      if (points._ready) {
-        points._polylineCollection.update(frameState);
-        points._billboardCollection.update(frameState);
-        points._labelCollection.update(frameState);
-      }
-
-      if (!defined(promise)) {
-        return;
-      }
-
-      promise
-        .then(function () {
-          resolve();
-        })
-        .catch(function (e) {
-          reject(e);
-        });
-    };
-  });
-}
-
 /**
  * @private
  */
 Vector3DTilePoints.prototype.update = function (frameState) {
-  this._update(this, frameState);
+  createPoints(this, frameState.mapProjection.ellipsoid);
+
+  if (!this._ready) {
+    return;
+  }
+
+  this._polylineCollection.update(frameState);
+  this._billboardCollection.update(frameState);
+  this._labelCollection.update(frameState);
+
+  if (!this._resolvedPromise) {
+    this._readyPromise.resolve();
+    this._resolvedPromise = true;
+  }
 };
 
 /**

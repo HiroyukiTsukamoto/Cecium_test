@@ -8,8 +8,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/EllipsoidPrimitive",
   function () {
-    let scene;
-    let ellipsoid;
+    var scene;
+    var ellipsoid;
 
     beforeAll(function () {
       scene = createScene();
@@ -23,7 +23,7 @@ describe(
 
     beforeEach(function () {
       ellipsoid = new EllipsoidPrimitive();
-      const offset = new Cartesian3(1.02, 0.0, 0.0);
+      var offset = new Cartesian3(1.02, 0.0, 0.0);
       scene.camera.lookAtTransform(Matrix4.IDENTITY, offset);
     });
 
@@ -44,8 +44,8 @@ describe(
     });
 
     it("Constructs with options", function () {
-      const material = Material.fromType(Material.StripeType);
-      const e = new EllipsoidPrimitive({
+      var material = Material.fromType(Material.StripeType);
+      var e = new EllipsoidPrimitive({
         center: new Cartesian3(1.0, 2.0, 3.0),
         radii: new Cartesian3(4.0, 5.0, 6.0),
         modelMatrix: Matrix4.fromUniformScale(2.0),
@@ -89,13 +89,13 @@ describe(
 
     it("renders two with a vertex array cache hit", function () {
       ellipsoid.radii = new Cartesian3(1.0, 1.0, 1.0);
-      const ellipsoid2 = new EllipsoidPrimitive();
+      var ellipsoid2 = new EllipsoidPrimitive();
       ellipsoid2.radii = new Cartesian3(1.0, 1.0, 1.0);
 
       expect(scene).toRender([0, 0, 0, 255]);
 
       scene.primitives.add(ellipsoid);
-      let result;
+      var result;
       expect(scene).toRenderAndCall(function (rgba) {
         result = rgba;
         expect(rgba).not.toEqual([0, 0, 0, 255]);
@@ -111,7 +111,7 @@ describe(
     });
 
     it("renders bounding volume with debugShowBoundingVolume", function () {
-      const scene = createScene();
+      var scene = createScene();
       scene.primitives.add(
         new EllipsoidPrimitive({
           radii: new Cartesian3(1.0, 1.0, 1.0),
@@ -119,7 +119,7 @@ describe(
         })
       );
 
-      const camera = scene.camera;
+      var camera = scene.camera;
       camera.position = new Cartesian3(1.02, 0.0, 0.0);
       camera.direction = Cartesian3.negate(Cartesian3.UNIT_X, new Cartesian3());
       camera.up = Cartesian3.clone(Cartesian3.UNIT_Z);

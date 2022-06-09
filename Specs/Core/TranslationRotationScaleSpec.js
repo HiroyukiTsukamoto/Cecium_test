@@ -4,7 +4,7 @@ import { TranslationRotationScale } from "../../Source/Cesium.js";
 
 describe("Core/TranslationRotationScale", function () {
   it("sets correct values when constructed with no arguments", function () {
-    const transformation = new TranslationRotationScale();
+    var transformation = new TranslationRotationScale();
 
     expect(transformation.translation).toEqual(Cartesian3.ZERO);
     expect(transformation.rotation).toEqual(Quaternion.IDENTITY);
@@ -12,11 +12,11 @@ describe("Core/TranslationRotationScale", function () {
   });
 
   it("sets correct values when constructed with arguments", function () {
-    const translation = Cartesian3.UNIT_Y;
-    const rotation = new Quaternion(0.5, 0.5, 0.5, 0.5);
-    const scale = Cartesian3.UNIT_X;
+    var translation = Cartesian3.UNIT_Y;
+    var rotation = new Quaternion(0.5, 0.5, 0.5, 0.5);
+    var scale = Cartesian3.UNIT_X;
 
-    const transformation = new TranslationRotationScale(
+    var transformation = new TranslationRotationScale(
       translation,
       rotation,
       scale
@@ -28,12 +28,12 @@ describe("Core/TranslationRotationScale", function () {
   });
 
   it("has a working equals function", function () {
-    const left = new TranslationRotationScale();
+    var left = new TranslationRotationScale();
     left.translation = Cartesian3.UNIT_Y;
     left.rotation = new Quaternion(0.5, 0.5, 0.5, 0.5);
     left.scale = Cartesian3.UNIT_X;
 
-    const right = new TranslationRotationScale();
+    var right = new TranslationRotationScale();
     right.translation = Cartesian3.UNIT_Y;
     right.rotation = new Quaternion(0.5, 0.5, 0.5, 0.5);
     right.scale = Cartesian3.UNIT_X;

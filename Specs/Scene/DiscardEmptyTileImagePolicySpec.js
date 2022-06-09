@@ -1,6 +1,7 @@
 import { Resource } from "../../Source/Cesium.js";
 import { DiscardEmptyTileImagePolicy } from "../../Source/Cesium.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Scene/DiscardEmptyTileImagePolicy", function () {
   afterEach(function () {
@@ -12,10 +13,10 @@ describe("Scene/DiscardEmptyTileImagePolicy", function () {
 
   describe("shouldDiscardImage", function () {
     it("does not discard a non-empty image", function () {
-      const promises = [];
+      var promises = [];
       promises.push(Resource.fetchImage("Data/Images/Green4x4.png"));
 
-      const policy = new DiscardEmptyTileImagePolicy();
+      var policy = new DiscardEmptyTileImagePolicy();
 
       promises.push(
         pollToPromise(function () {
@@ -23,18 +24,18 @@ describe("Scene/DiscardEmptyTileImagePolicy", function () {
         })
       );
 
-      return Promise.all(promises, function (results) {
-        const greenImage = results[0];
+      return when.all(promises, function (results) {
+        var greenImage = results[0];
 
         expect(policy.shouldDiscardImage(greenImage)).toEqual(false);
       });
     });
 
     it("discards an empty image", function () {
-      const promises = [];
-      promises.push(Promise.resolve(DiscardEmptyTileImagePolicy.EMPTY_IMAGE));
+      var promises = [];
+      promises.push(when.resolve(DiscardEmptyTileImagePolicy.EMPTY_IMAGE));
 
-      const policy = new DiscardEmptyTileImagePolicy();
+      var policy = new DiscardEmptyTileImagePolicy();
 
       promises.push(
         pollToPromise(function () {
@@ -42,8 +43,8 @@ describe("Scene/DiscardEmptyTileImagePolicy", function () {
         })
       );
 
-      return Promise.all(promises, function (results) {
-        const emptyImage = results[0];
+      return when.all(promises, function (results) {
+        var emptyImage = results[0];
 
         expect(policy.shouldDiscardImage(emptyImage)).toEqual(true);
       });

@@ -3,7 +3,7 @@
  *
  * @enum {Number}
  */
-const BlendOption = {
+var BlendOption = {
   /**
    * The billboards, points, or labels in the collection are completely opaque.
    * @type {Number}

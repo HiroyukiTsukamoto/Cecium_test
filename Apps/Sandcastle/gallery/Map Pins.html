@@ -29,17 +29,17 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           timeline: false,
           animation: false,
         });
 
-        const pinBuilder = new Cesium.PinBuilder();
+        var pinBuilder = new Cesium.PinBuilder();
 
-        const bluePin = viewer.entities.add({
+        var bluePin = viewer.entities.add({
           name: "Blank blue pin",
           position: Cesium.Cartesian3.fromDegrees(-75.170726, 39.9208667),
           billboard: {
@@ -48,7 +48,7 @@
           },
         });
 
-        const questionPin = viewer.entities.add({
+        var questionPin = viewer.entities.add({
           name: "Question mark",
           position: Cesium.Cartesian3.fromDegrees(-75.1698529, 39.9220071),
           billboard: {
@@ -57,36 +57,39 @@
           },
         });
 
-        const url = Cesium.buildModuleUrl("Assets/Textures/maki/grocery.png");
-        const groceryPin = Promise.resolve(
-          pinBuilder.fromUrl(url, Cesium.Color.GREEN, 48)
-        ).then(function (canvas) {
-          return viewer.entities.add({
-            name: "Grocery store",
-            position: Cesium.Cartesian3.fromDegrees(-75.1705217, 39.921786),
-            billboard: {
-              image: canvas.toDataURL(),
-              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            },
-          });
-        });
+        var url = Cesium.buildModuleUrl("Assets/Textures/maki/grocery.png");
+        var groceryPin = Cesium.when(
+          pinBuilder.fromUrl(url, Cesium.Color.GREEN, 48),
+          function (canvas) {
+            return viewer.entities.add({
+              name: "Grocery store",
+              position: Cesium.Cartesian3.fromDegrees(-75.1705217, 39.921786),
+              billboard: {
+                image: canvas.toDataURL(),
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+              },
+            });
+          }
+        );
 
         //Create a red pin representing a hospital from the maki icon set.
-        const hospitalPin = Promise.resolve(
-          pinBuilder.fromMakiIconId("hospital", Cesium.Color.RED, 48)
-        ).then(function (canvas) {
-          return viewer.entities.add({
-            name: "Hospital",
-            position: Cesium.Cartesian3.fromDegrees(-75.1698606, 39.9211275),
-            billboard: {
-              image: canvas.toDataURL(),
-              verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            },
-          });
-        });
+        var hospitalPin = Cesium.when(
+          pinBuilder.fromMakiIconId("hospital", Cesium.Color.RED, 48),
+          function (canvas) {
+            return viewer.entities.add({
+              name: "Hospital",
+              position: Cesium.Cartesian3.fromDegrees(-75.1698606, 39.9211275),
+              billboard: {
+                image: canvas.toDataURL(),
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+              },
+            });
+          }
+        );
 
         //Since some of the pins are created asynchronously, wait for them all to load before zooming/
-        Promise.all([bluePin, questionPin, groceryPin, hospitalPin]).then(
+        Cesium.when.all(
+          [bluePin, questionPin, groceryPin, hospitalPin],
           function (pins) {
             viewer.zoomTo(pins);
           }
@@ -94,10 +97,10 @@
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

@@ -1,8 +1,8 @@
 /* This file is automatically rebuilt by the Cesium build process. */
-define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677', './ComponentDatatype-4a60b8d6', './RuntimeError-c581ca93', './GeometryAttribute-111bf6c7', './GeometryAttributes-7df9bef6', './IndexDatatype-db156785', './WallGeometryLibrary-f538d9f1', './_commonjsHelpers-3aae1032-f55dc0c4', './combine-761d9c3f', './WebGLConstants-7dccdc96', './arrayRemoveDuplicates-06991c15', './PolylinePipeline-1de31d61', './EllipsoidGeodesic-dc94f381', './EllipsoidRhumbLine-daebc75b', './IntersectionTests-c5b399de', './Plane-e20fba8c'], (function (defaultValue, Matrix2, Transforms, ComponentDatatype, RuntimeError, GeometryAttribute, GeometryAttributes, IndexDatatype, WallGeometryLibrary, _commonjsHelpers3aae1032, combine, WebGLConstants, arrayRemoveDuplicates, PolylinePipeline, EllipsoidGeodesic, EllipsoidRhumbLine, IntersectionTests, Plane) { 'use strict';
+define(['./when-8166c7dd', './Matrix2-92b7fb9d', './Transforms-62a339c3', './ComponentDatatype-9ed50558', './RuntimeError-4fdc4459', './GeometryAttribute-6f4c3b93', './GeometryAttributes-50becc99', './IndexDatatype-797210ca', './WallGeometryLibrary-ace2cc0d', './combine-a5c4cc47', './WebGLConstants-0664004c', './arrayRemoveDuplicates-198208a4', './PolylinePipeline-fd9260c9', './EllipsoidGeodesic-133bd147', './EllipsoidRhumbLine-51654311', './IntersectionTests-4f28a69c', './Plane-049255eb'], (function (when, Matrix2, Transforms, ComponentDatatype, RuntimeError, GeometryAttribute, GeometryAttributes, IndexDatatype, WallGeometryLibrary, combine, WebGLConstants, arrayRemoveDuplicates, PolylinePipeline, EllipsoidGeodesic, EllipsoidRhumbLine, IntersectionTests, Plane) { 'use strict';
 
-  const scratchCartesian3Position1 = new Matrix2.Cartesian3();
-  const scratchCartesian3Position2 = new Matrix2.Cartesian3();
+  var scratchCartesian3Position1 = new Matrix2.Cartesian3();
+  var scratchCartesian3Position2 = new Matrix2.Cartesian3();
 
   /**
    * A description of a wall outline. A wall is defined by a series of points,
@@ -29,7 +29,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    *
    * @example
    * // create a wall outline that spans from ground level to 10000 meters
-   * const wall = new Cesium.WallOutlineGeometry({
+   * var wall = new Cesium.WallOutlineGeometry({
    *   positions : Cesium.Cartesian3.fromDegreesArrayHeights([
    *     19.0, 47.0, 10000.0,
    *     19.0, 48.0, 10000.0,
@@ -38,21 +38,21 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    *     19.0, 47.0, 10000.0
    *   ])
    * });
-   * const geometry = Cesium.WallOutlineGeometry.createGeometry(wall);
+   * var geometry = Cesium.WallOutlineGeometry.createGeometry(wall);
    */
   function WallOutlineGeometry(options) {
-    options = defaultValue.defaultValue(options, defaultValue.defaultValue.EMPTY_OBJECT);
+    options = when.defaultValue(options, when.defaultValue.EMPTY_OBJECT);
 
-    const wallPositions = options.positions;
-    const maximumHeights = options.maximumHeights;
-    const minimumHeights = options.minimumHeights;
+    var wallPositions = options.positions;
+    var maximumHeights = options.maximumHeights;
+    var minimumHeights = options.minimumHeights;
 
     //>>includeStart('debug', pragmas.debug);
-    if (!defaultValue.defined(wallPositions)) {
+    if (!when.defined(wallPositions)) {
       throw new RuntimeError.DeveloperError("options.positions is required.");
     }
     if (
-      defaultValue.defined(maximumHeights) &&
+      when.defined(maximumHeights) &&
       maximumHeights.length !== wallPositions.length
     ) {
       throw new RuntimeError.DeveloperError(
@@ -60,7 +60,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       );
     }
     if (
-      defaultValue.defined(minimumHeights) &&
+      when.defined(minimumHeights) &&
       minimumHeights.length !== wallPositions.length
     ) {
       throw new RuntimeError.DeveloperError(
@@ -69,11 +69,11 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
     }
     //>>includeEnd('debug');
 
-    const granularity = defaultValue.defaultValue(
+    var granularity = when.defaultValue(
       options.granularity,
       ComponentDatatype.CesiumMath.RADIANS_PER_DEGREE
     );
-    const ellipsoid = defaultValue.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84);
+    var ellipsoid = when.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84);
 
     this._positions = wallPositions;
     this._minimumHeights = minimumHeights;
@@ -82,11 +82,11 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
     this._ellipsoid = Matrix2.Ellipsoid.clone(ellipsoid);
     this._workerName = "createWallOutlineGeometry";
 
-    let numComponents = 1 + wallPositions.length * Matrix2.Cartesian3.packedLength + 2;
-    if (defaultValue.defined(minimumHeights)) {
+    var numComponents = 1 + wallPositions.length * Matrix2.Cartesian3.packedLength + 2;
+    if (when.defined(minimumHeights)) {
       numComponents += minimumHeights.length;
     }
-    if (defaultValue.defined(maximumHeights)) {
+    if (when.defined(maximumHeights)) {
       numComponents += maximumHeights.length;
     }
 
@@ -108,41 +108,41 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    */
   WallOutlineGeometry.pack = function (value, array, startingIndex) {
     //>>includeStart('debug', pragmas.debug);
-    if (!defaultValue.defined(value)) {
+    if (!when.defined(value)) {
       throw new RuntimeError.DeveloperError("value is required");
     }
-    if (!defaultValue.defined(array)) {
+    if (!when.defined(array)) {
       throw new RuntimeError.DeveloperError("array is required");
     }
     //>>includeEnd('debug');
 
-    startingIndex = defaultValue.defaultValue(startingIndex, 0);
+    startingIndex = when.defaultValue(startingIndex, 0);
 
-    let i;
+    var i;
 
-    const positions = value._positions;
-    let length = positions.length;
+    var positions = value._positions;
+    var length = positions.length;
     array[startingIndex++] = length;
 
     for (i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
       Matrix2.Cartesian3.pack(positions[i], array, startingIndex);
     }
 
-    const minimumHeights = value._minimumHeights;
-    length = defaultValue.defined(minimumHeights) ? minimumHeights.length : 0;
+    var minimumHeights = value._minimumHeights;
+    length = when.defined(minimumHeights) ? minimumHeights.length : 0;
     array[startingIndex++] = length;
 
-    if (defaultValue.defined(minimumHeights)) {
+    if (when.defined(minimumHeights)) {
       for (i = 0; i < length; ++i) {
         array[startingIndex++] = minimumHeights[i];
       }
     }
 
-    const maximumHeights = value._maximumHeights;
-    length = defaultValue.defined(maximumHeights) ? maximumHeights.length : 0;
+    var maximumHeights = value._maximumHeights;
+    length = when.defined(maximumHeights) ? maximumHeights.length : 0;
     array[startingIndex++] = length;
 
-    if (defaultValue.defined(maximumHeights)) {
+    if (when.defined(maximumHeights)) {
       for (i = 0; i < length; ++i) {
         array[startingIndex++] = maximumHeights[i];
       }
@@ -156,8 +156,8 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
     return array;
   };
 
-  const scratchEllipsoid = Matrix2.Ellipsoid.clone(Matrix2.Ellipsoid.UNIT_SPHERE);
-  const scratchOptions = {
+  var scratchEllipsoid = Matrix2.Ellipsoid.clone(Matrix2.Ellipsoid.UNIT_SPHERE);
+  var scratchOptions = {
     positions: undefined,
     minimumHeights: undefined,
     maximumHeights: undefined,
@@ -175,24 +175,24 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    */
   WallOutlineGeometry.unpack = function (array, startingIndex, result) {
     //>>includeStart('debug', pragmas.debug);
-    if (!defaultValue.defined(array)) {
+    if (!when.defined(array)) {
       throw new RuntimeError.DeveloperError("array is required");
     }
     //>>includeEnd('debug');
 
-    startingIndex = defaultValue.defaultValue(startingIndex, 0);
+    startingIndex = when.defaultValue(startingIndex, 0);
 
-    let i;
+    var i;
 
-    let length = array[startingIndex++];
-    const positions = new Array(length);
+    var length = array[startingIndex++];
+    var positions = new Array(length);
 
     for (i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
       positions[i] = Matrix2.Cartesian3.unpack(array, startingIndex);
     }
 
     length = array[startingIndex++];
-    let minimumHeights;
+    var minimumHeights;
 
     if (length > 0) {
       minimumHeights = new Array(length);
@@ -202,7 +202,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
     }
 
     length = array[startingIndex++];
-    let maximumHeights;
+    var maximumHeights;
 
     if (length > 0) {
       maximumHeights = new Array(length);
@@ -211,12 +211,12 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       }
     }
 
-    const ellipsoid = Matrix2.Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
+    var ellipsoid = Matrix2.Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
     startingIndex += Matrix2.Ellipsoid.packedLength;
 
-    const granularity = array[startingIndex];
+    var granularity = array[startingIndex];
 
-    if (!defaultValue.defined(result)) {
+    if (!when.defined(result)) {
       scratchOptions.positions = positions;
       scratchOptions.minimumHeights = minimumHeights;
       scratchOptions.maximumHeights = maximumHeights;
@@ -249,7 +249,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    *
    * @example
    * // create a wall that spans from 10000 meters to 20000 meters
-   * const wall = Cesium.WallOutlineGeometry.fromConstantHeights({
+   * var wall = Cesium.WallOutlineGeometry.fromConstantHeights({
    *   positions : Cesium.Cartesian3.fromDegreesArray([
    *     19.0, 47.0,
    *     19.0, 48.0,
@@ -260,34 +260,34 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    *   minimumHeight : 20000.0,
    *   maximumHeight : 10000.0
    * });
-   * const geometry = Cesium.WallOutlineGeometry.createGeometry(wall);
+   * var geometry = Cesium.WallOutlineGeometry.createGeometry(wall);
    *
    * @see WallOutlineGeometry#createGeometry
    */
   WallOutlineGeometry.fromConstantHeights = function (options) {
-    options = defaultValue.defaultValue(options, defaultValue.defaultValue.EMPTY_OBJECT);
-    const positions = options.positions;
+    options = when.defaultValue(options, when.defaultValue.EMPTY_OBJECT);
+    var positions = options.positions;
 
     //>>includeStart('debug', pragmas.debug);
-    if (!defaultValue.defined(positions)) {
+    if (!when.defined(positions)) {
       throw new RuntimeError.DeveloperError("options.positions is required.");
     }
     //>>includeEnd('debug');
 
-    let minHeights;
-    let maxHeights;
+    var minHeights;
+    var maxHeights;
 
-    const min = options.minimumHeight;
-    const max = options.maximumHeight;
+    var min = options.minimumHeight;
+    var max = options.maximumHeight;
 
-    const doMin = defaultValue.defined(min);
-    const doMax = defaultValue.defined(max);
+    var doMin = when.defined(min);
+    var doMax = when.defined(max);
     if (doMin || doMax) {
-      const length = positions.length;
+      var length = positions.length;
       minHeights = doMin ? new Array(length) : undefined;
       maxHeights = doMax ? new Array(length) : undefined;
 
-      for (let i = 0; i < length; ++i) {
+      for (var i = 0; i < length; ++i) {
         if (doMin) {
           minHeights[i] = min;
         }
@@ -298,7 +298,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       }
     }
 
-    const newOptions = {
+    var newOptions = {
       positions: positions,
       maximumHeights: maxHeights,
       minimumHeights: minHeights,
@@ -314,13 +314,13 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
    * @returns {Geometry|undefined} The computed vertices and indices.
    */
   WallOutlineGeometry.createGeometry = function (wallGeometry) {
-    const wallPositions = wallGeometry._positions;
-    const minimumHeights = wallGeometry._minimumHeights;
-    const maximumHeights = wallGeometry._maximumHeights;
-    const granularity = wallGeometry._granularity;
-    const ellipsoid = wallGeometry._ellipsoid;
+    var wallPositions = wallGeometry._positions;
+    var minimumHeights = wallGeometry._minimumHeights;
+    var maximumHeights = wallGeometry._maximumHeights;
+    var granularity = wallGeometry._granularity;
+    var ellipsoid = wallGeometry._ellipsoid;
 
-    const pos = WallGeometryLibrary.WallGeometryLibrary.computePositions(
+    var pos = WallGeometryLibrary.WallGeometryLibrary.computePositions(
       ellipsoid,
       wallPositions,
       maximumHeights,
@@ -328,31 +328,31 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       granularity,
       false
     );
-    if (!defaultValue.defined(pos)) {
+    if (!when.defined(pos)) {
       return;
     }
 
-    const bottomPositions = pos.bottomPositions;
-    const topPositions = pos.topPositions;
+    var bottomPositions = pos.bottomPositions;
+    var topPositions = pos.topPositions;
 
-    let length = topPositions.length;
-    let size = length * 2;
+    var length = topPositions.length;
+    var size = length * 2;
 
-    const positions = new Float64Array(size);
-    let positionIndex = 0;
+    var positions = new Float64Array(size);
+    var positionIndex = 0;
 
     // add lower and upper points one after the other, lower
     // points being even and upper points being odd
     length /= 3;
-    let i;
+    var i;
     for (i = 0; i < length; ++i) {
-      const i3 = i * 3;
-      const topPosition = Matrix2.Cartesian3.fromArray(
+      var i3 = i * 3;
+      var topPosition = Matrix2.Cartesian3.fromArray(
         topPositions,
         i3,
         scratchCartesian3Position1
       );
-      const bottomPosition = Matrix2.Cartesian3.fromArray(
+      var bottomPosition = Matrix2.Cartesian3.fromArray(
         bottomPositions,
         i3,
         scratchCartesian3Position2
@@ -369,7 +369,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       positions[positionIndex++] = topPosition.z;
     }
 
-    const attributes = new GeometryAttributes.GeometryAttributes({
+    var attributes = new GeometryAttributes.GeometryAttributes({
       position: new GeometryAttribute.GeometryAttribute({
         componentDatatype: ComponentDatatype.ComponentDatatype.DOUBLE,
         componentsPerAttribute: 3,
@@ -377,20 +377,20 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       }),
     });
 
-    const numVertices = size / 3;
+    var numVertices = size / 3;
     size = 2 * numVertices - 4 + numVertices;
-    const indices = IndexDatatype.IndexDatatype.createTypedArray(numVertices, size);
+    var indices = IndexDatatype.IndexDatatype.createTypedArray(numVertices, size);
 
-    let edgeIndex = 0;
+    var edgeIndex = 0;
     for (i = 0; i < numVertices - 2; i += 2) {
-      const LL = i;
-      const LR = i + 2;
-      const pl = Matrix2.Cartesian3.fromArray(
+      var LL = i;
+      var LR = i + 2;
+      var pl = Matrix2.Cartesian3.fromArray(
         positions,
         LL * 3,
         scratchCartesian3Position1
       );
-      const pr = Matrix2.Cartesian3.fromArray(
+      var pr = Matrix2.Cartesian3.fromArray(
         positions,
         LR * 3,
         scratchCartesian3Position2
@@ -398,8 +398,8 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
       if (Matrix2.Cartesian3.equalsEpsilon(pl, pr, ComponentDatatype.CesiumMath.EPSILON10)) {
         continue;
       }
-      const UL = i + 1;
-      const UR = i + 3;
+      var UL = i + 1;
+      var UR = i + 3;
 
       indices[edgeIndex++] = UL;
       indices[edgeIndex++] = LL;
@@ -421,7 +421,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './Transforms-20594677'
   };
 
   function createWallOutlineGeometry(wallGeometry, offset) {
-    if (defaultValue.defined(offset)) {
+    if (when.defined(offset)) {
       wallGeometry = WallOutlineGeometry.unpack(wallGeometry, offset);
     }
     wallGeometry._ellipsoid = Matrix2.Ellipsoid.clone(wallGeometry._ellipsoid);

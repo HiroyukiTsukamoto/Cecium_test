@@ -102,33 +102,33 @@ describe("Scene/HeightmapTessellator", function () {
     ellipsoid,
     skirtHeight
   ) {
-    let latitude = CesiumMath.lerp(
+    var latitude = CesiumMath.lerp(
       nativeRectangle.north,
       nativeRectangle.south,
       j / (height - 1)
     );
     latitude = CesiumMath.toRadians(latitude);
-    let longitude = CesiumMath.lerp(
+    var longitude = CesiumMath.lerp(
       nativeRectangle.west,
       nativeRectangle.east,
       i / (width - 1)
     );
     longitude = CesiumMath.toRadians(longitude);
 
-    let heightSample = heightmap[j * width + i];
+    var heightSample = heightmap[j * width + i];
 
     if (isEdge) {
       heightSample -= skirtHeight;
     }
 
-    const expectedVertexPosition = ellipsoid.cartographicToCartesian({
+    var expectedVertexPosition = ellipsoid.cartographicToCartesian({
       longitude: longitude,
       latitude: latitude,
       height: heightSample,
     });
 
     index = index * 6;
-    const vertexPosition = new Cartesian3(
+    var vertexPosition = new Cartesian3(
       vertices[index],
       vertices[index + 1],
       vertices[index + 2]
@@ -160,26 +160,26 @@ describe("Scene/HeightmapTessellator", function () {
     skirtHeight,
     encoding
   ) {
-    let latitude = CesiumMath.lerp(
+    var latitude = CesiumMath.lerp(
       nativeRectangle.north,
       nativeRectangle.south,
       j / (height - 1)
     );
     latitude = CesiumMath.toRadians(latitude);
-    let longitude = CesiumMath.lerp(
+    var longitude = CesiumMath.lerp(
       nativeRectangle.west,
       nativeRectangle.east,
       i / (width - 1)
     );
     longitude = CesiumMath.toRadians(longitude);
 
-    let heightSample = heightmap[j * width + i];
+    var heightSample = heightmap[j * width + i];
 
     if (isEdge) {
       heightSample -= skirtHeight;
     }
 
-    const expectedVertexPosition = ellipsoid.cartographicToCartesian({
+    var expectedVertexPosition = ellipsoid.cartographicToCartesian({
       longitude: longitude,
       latitude: latitude,
       height: heightSample,
@@ -192,9 +192,9 @@ describe("Scene/HeightmapTessellator", function () {
   }
 
   it("creates mesh without skirt", function () {
-    const width = 3;
-    const height = 3;
-    const options = {
+    var width = 3;
+    var height = 3;
+    var options = {
       heightmap: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
       width: width,
       height: height,
@@ -212,16 +212,16 @@ describe("Scene/HeightmapTessellator", function () {
         CesiumMath.toRadians(40.0)
       ),
     };
-    const results = HeightmapTessellator.computeVertices(options);
-    const vertices = results.vertices;
+    var results = HeightmapTessellator.computeVertices(options);
+    var vertices = results.vertices;
 
-    const ellipsoid = Ellipsoid.WGS84;
-    const nativeRectangle = options.nativeRectangle;
+    var ellipsoid = Ellipsoid.WGS84;
+    var nativeRectangle = options.nativeRectangle;
 
-    let index = 0;
+    var index = 0;
 
-    for (let j = 0; j < height; ++j) {
-      for (let i = 0; i < width; ++i) {
+    for (var j = 0; j < height; ++j) {
+      for (var i = 0; i < width; ++i) {
         checkExpectedVertex(
           nativeRectangle,
           i,
@@ -240,9 +240,9 @@ describe("Scene/HeightmapTessellator", function () {
   });
 
   it("creates mesh with skirt", function () {
-    const width = 3;
-    const height = 3;
-    const options = {
+    var width = 3;
+    var height = 3;
+    var options = {
       heightmap: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
       width: width,
       height: height,
@@ -254,14 +254,14 @@ describe("Scene/HeightmapTessellator", function () {
         north: 40.0,
       },
     };
-    const results = HeightmapTessellator.computeVertices(options);
-    const vertices = results.vertices;
+    var results = HeightmapTessellator.computeVertices(options);
+    var vertices = results.vertices;
 
-    const ellipsoid = Ellipsoid.WGS84;
-    const nativeRectangle = options.nativeRectangle;
+    var ellipsoid = Ellipsoid.WGS84;
+    var nativeRectangle = options.nativeRectangle;
 
-    let i, j;
-    let index = 0;
+    var i, j;
+    var index = 0;
 
     for (j = 0; j < height; ++j) {
       for (i = 0; i < width; ++i) {
@@ -353,9 +353,9 @@ describe("Scene/HeightmapTessellator", function () {
   });
 
   it("creates quantized mesh", function () {
-    const width = 3;
-    const height = 3;
-    const options = {
+    var width = 3;
+    var height = 3;
+    var options = {
       heightmap: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
       width: width,
       height: height,
@@ -367,14 +367,14 @@ describe("Scene/HeightmapTessellator", function () {
         north: 0.02,
       },
     };
-    const results = HeightmapTessellator.computeVertices(options);
-    const vertices = results.vertices;
+    var results = HeightmapTessellator.computeVertices(options);
+    var vertices = results.vertices;
 
-    const ellipsoid = Ellipsoid.WGS84;
-    const nativeRectangle = options.nativeRectangle;
+    var ellipsoid = Ellipsoid.WGS84;
+    var nativeRectangle = options.nativeRectangle;
 
-    let i, j;
-    let index = 0;
+    var i, j;
+    var index = 0;
 
     for (j = 0; j < height; ++j) {
       for (i = 0; i < width; ++i) {
@@ -471,9 +471,9 @@ describe("Scene/HeightmapTessellator", function () {
   });
 
   it("tessellates web mercator heightmaps", function () {
-    const width = 3;
-    const height = 3;
-    const options = {
+    var width = 3;
+    var height = 3;
+    var options = {
       heightmap: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
       width: width,
       height: height,
@@ -486,56 +486,56 @@ describe("Scene/HeightmapTessellator", function () {
       },
       isGeographic: false,
     };
-    const results = HeightmapTessellator.computeVertices(options);
-    const vertices = results.vertices;
+    var results = HeightmapTessellator.computeVertices(options);
+    var vertices = results.vertices;
 
-    const ellipsoid = Ellipsoid.WGS84;
-    const projection = new WebMercatorProjection(ellipsoid);
-    const nativeRectangle = options.nativeRectangle;
+    var ellipsoid = Ellipsoid.WGS84;
+    var projection = new WebMercatorProjection(ellipsoid);
+    var nativeRectangle = options.nativeRectangle;
 
-    const geographicSouthwest = projection.unproject(
+    var geographicSouthwest = projection.unproject(
       new Cartesian2(nativeRectangle.west, nativeRectangle.south)
     );
-    const geographicNortheast = projection.unproject(
+    var geographicNortheast = projection.unproject(
       new Cartesian2(nativeRectangle.east, nativeRectangle.north)
     );
 
-    for (let j = 0; j < height; ++j) {
-      const y = CesiumMath.lerp(
+    for (var j = 0; j < height; ++j) {
+      var y = CesiumMath.lerp(
         nativeRectangle.north,
         nativeRectangle.south,
         j / (height - 1)
       );
-      for (let i = 0; i < width; ++i) {
-        const x = CesiumMath.lerp(
+      for (var i = 0; i < width; ++i) {
+        var x = CesiumMath.lerp(
           nativeRectangle.west,
           nativeRectangle.east,
           i / (width - 1)
         );
 
-        const latLon = projection.unproject(new Cartesian2(x, y));
-        const longitude = latLon.longitude;
-        const latitude = latLon.latitude;
+        var latLon = projection.unproject(new Cartesian2(x, y));
+        var longitude = latLon.longitude;
+        var latitude = latLon.latitude;
 
-        const heightSample = options.heightmap[j * width + i];
+        var heightSample = options.heightmap[j * width + i];
 
-        const expectedVertexPosition = ellipsoid.cartographicToCartesian({
+        var expectedVertexPosition = ellipsoid.cartographicToCartesian({
           longitude: longitude,
           latitude: latitude,
           height: heightSample,
         });
 
-        const index = (j * width + i) * 6;
-        const vertexPosition = new Cartesian3(
+        var index = (j * width + i) * 6;
+        var vertexPosition = new Cartesian3(
           vertices[index],
           vertices[index + 1],
           vertices[index + 2]
         );
 
-        const expectedU =
+        var expectedU =
           (longitude - geographicSouthwest.longitude) /
           (geographicNortheast.longitude - geographicSouthwest.longitude);
-        const expectedV =
+        var expectedV =
           (latitude - geographicSouthwest.latitude) /
           (geographicNortheast.latitude - geographicSouthwest.latitude);
 
@@ -554,9 +554,9 @@ describe("Scene/HeightmapTessellator", function () {
   });
 
   it("supports multi-element little endian heights", function () {
-    const width = 3;
-    const height = 3;
-    const options = {
+    var width = 3;
+    var height = 3;
+    var options = {
       heightmap: [
         1.0,
         2.0,
@@ -607,40 +607,40 @@ describe("Scene/HeightmapTessellator", function () {
         elementMultiplier: 10,
       },
     };
-    const results = HeightmapTessellator.computeVertices(options);
-    const vertices = results.vertices;
+    var results = HeightmapTessellator.computeVertices(options);
+    var vertices = results.vertices;
 
-    const ellipsoid = Ellipsoid.WGS84;
-    const nativeRectangle = options.nativeRectangle;
+    var ellipsoid = Ellipsoid.WGS84;
+    var nativeRectangle = options.nativeRectangle;
 
-    for (let j = 0; j < height; ++j) {
-      let latitude = CesiumMath.lerp(
+    for (var j = 0; j < height; ++j) {
+      var latitude = CesiumMath.lerp(
         nativeRectangle.north,
         nativeRectangle.south,
         j / (height - 1)
       );
       latitude = CesiumMath.toRadians(latitude);
-      for (let i = 0; i < width; ++i) {
-        let longitude = CesiumMath.lerp(
+      for (var i = 0; i < width; ++i) {
+        var longitude = CesiumMath.lerp(
           nativeRectangle.west,
           nativeRectangle.east,
           i / (width - 1)
         );
         longitude = CesiumMath.toRadians(longitude);
 
-        const heightSampleIndex = (j * width + i) * options.structure.stride;
-        const heightSample =
+        var heightSampleIndex = (j * width + i) * options.structure.stride;
+        var heightSample =
           options.heightmap[heightSampleIndex] +
           options.heightmap[heightSampleIndex + 1] * 10.0;
 
-        const expectedVertexPosition = ellipsoid.cartographicToCartesian({
+        var expectedVertexPosition = ellipsoid.cartographicToCartesian({
           longitude: longitude,
           latitude: latitude,
           height: heightSample,
         });
 
-        const index = (j * width + i) * 6;
-        const vertexPosition = new Cartesian3(
+        var index = (j * width + i) * 6;
+        var vertexPosition = new Cartesian3(
           vertices[index],
           vertices[index + 1],
           vertices[index + 2]
@@ -661,9 +661,9 @@ describe("Scene/HeightmapTessellator", function () {
   });
 
   it("supports multi-element big endian heights", function () {
-    const width = 3;
-    const height = 3;
-    const options = {
+    var width = 3;
+    var height = 3;
+    var options = {
       heightmap: [
         1.0,
         2.0,
@@ -715,40 +715,40 @@ describe("Scene/HeightmapTessellator", function () {
         isBigEndian: true,
       },
     };
-    const results = HeightmapTessellator.computeVertices(options);
-    const vertices = results.vertices;
+    var results = HeightmapTessellator.computeVertices(options);
+    var vertices = results.vertices;
 
-    const ellipsoid = Ellipsoid.WGS84;
-    const nativeRectangle = options.nativeRectangle;
+    var ellipsoid = Ellipsoid.WGS84;
+    var nativeRectangle = options.nativeRectangle;
 
-    for (let j = 0; j < height; ++j) {
-      let latitude = CesiumMath.lerp(
+    for (var j = 0; j < height; ++j) {
+      var latitude = CesiumMath.lerp(
         nativeRectangle.north,
         nativeRectangle.south,
         j / (height - 1)
       );
       latitude = CesiumMath.toRadians(latitude);
-      for (let i = 0; i < width; ++i) {
-        let longitude = CesiumMath.lerp(
+      for (var i = 0; i < width; ++i) {
+        var longitude = CesiumMath.lerp(
           nativeRectangle.west,
           nativeRectangle.east,
           i / (width - 1)
         );
         longitude = CesiumMath.toRadians(longitude);
 
-        const heightSampleIndex = (j * width + i) * options.structure.stride;
-        const heightSample =
+        var heightSampleIndex = (j * width + i) * options.structure.stride;
+        var heightSample =
           options.heightmap[heightSampleIndex] * 10.0 +
           options.heightmap[heightSampleIndex + 1];
 
-        const expectedVertexPosition = ellipsoid.cartographicToCartesian({
+        var expectedVertexPosition = ellipsoid.cartographicToCartesian({
           longitude: longitude,
           latitude: latitude,
           height: heightSample,
         });
 
-        const index = (j * width + i) * 6;
-        const vertexPosition = new Cartesian3(
+        var index = (j * width + i) * 6;
+        var vertexPosition = new Cartesian3(
           vertices[index],
           vertices[index + 1],
           vertices[index + 2]

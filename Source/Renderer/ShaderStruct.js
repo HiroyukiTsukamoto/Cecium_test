@@ -1,3 +1,5 @@
+import Check from "../Core/Check.js";
+
 /**
  * A utility for dynamically-generating a GLSL struct.
  *
@@ -15,15 +17,18 @@
  * //     vec3 normal;
  * //     vec2 texCoord;
  * // };
- * const struct = new ShaderStruct("Attributes");
+ * var struct = new ShaderStruct("Attributes");
  * struct.addField("vec3", "position");
  * struct.addField("vec3", "normal");
  * struct.addField("vec2", "texCoord");
- * const generatedLines = struct.generateGlslLines();
+ * var generatedLines = struct.generateGlslLines();
  *
  * @private
  */
 export default function ShaderStruct(name) {
+  //>>includeStart('debug', pragmas.debug);
+  Check.typeOf.string("name", name);
+  //>>includeEnd('debug');
   this.name = name;
   this.fields = [];
 }
@@ -34,7 +39,11 @@ export default function ShaderStruct(name) {
  * @param {String} identifier The identifier of the struct field
  */
 ShaderStruct.prototype.addField = function (type, identifier) {
-  const field = `    ${type} ${identifier};`;
+  //>>includeStart('debug', pragmas.debug);
+  Check.typeOf.string("type", type);
+  Check.typeOf.string("identifier", identifier);
+  //>>includeEnd('debug');
+  var field = "    " + type + " " + identifier + ";";
   this.fields.push(field);
 };
 
@@ -43,11 +52,11 @@ ShaderStruct.prototype.addField = function (type, identifier) {
  * @return {String[]} The generated GLSL code.
  */
 ShaderStruct.prototype.generateGlslLines = function () {
-  let fields = this.fields;
+  var fields = this.fields;
   if (fields.length === 0) {
     // GLSL requires structs to have at least one field
     fields = ["    float _empty;"];
   }
 
-  return [].concat(`struct ${this.name}`, "{", fields, "};");
+  return [].concat("struct " + this.name, "{", fields, "};");
 };

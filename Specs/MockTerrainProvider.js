@@ -1,13 +1,11 @@
 import createTileKey from "./createTileKey.js";
 import runLater from "./runLater.js";
-import {
-  defined,
-  Event,
-  GeographicTilingScheme,
-  HeightmapTerrainData,
-  RuntimeError,
-  TerrainProvider,
-} from "../Source/Cesium.js";
+import { defined } from "../Source/Cesium.js";
+import { GeographicTilingScheme } from "../Source/Cesium.js";
+import { HeightmapTerrainData } from "../Source/Cesium.js";
+import { RuntimeError } from "../Source/Cesium.js";
+import { TerrainProvider } from "../Source/Cesium.js";
+import { when } from "../Source/Cesium.js";
 
 function MockTerrainProvider() {
   this.tilingScheme = new GeographicTilingScheme();
@@ -18,9 +16,8 @@ function MockTerrainProvider() {
     this.tilingScheme.getNumberOfXTilesAtLevel(0)
   );
   this.ready = true;
-  this.readyPromise = Promise.resolve();
+  this.readyPromise = when.resolve();
   this.hasWaterMask = true;
-  this.errorEvent = new Event();
 
   this._tileDataAvailable = {};
   this._requestTileGeometryWillSucceed = {};
@@ -36,14 +33,14 @@ MockTerrainProvider.prototype.requestTileGeometry = function (
   level,
   request
 ) {
-  const willSucceed = this._requestTileGeometryWillSucceed[
+  var willSucceed = this._requestTileGeometryWillSucceed[
     createTileKey(x, y, level)
   ];
   if (willSucceed === undefined) {
     return undefined; // defer by default
   }
 
-  const that = this;
+  var that = this;
   return runLater(function () {
     if (willSucceed === true) {
       return createTerrainData(that, x, y, level, false);
@@ -51,7 +48,7 @@ MockTerrainProvider.prototype.requestTileGeometry = function (
       throw new RuntimeError("requestTileGeometry failed as requested.");
     }
 
-    return Promise.resolve(willSucceed).then(function () {
+    return when(willSucceed).then(function () {
       return createTerrainData(that, x, y, level, false);
     });
   });
@@ -218,20 +215,20 @@ MockTerrainProvider.prototype.willBeUnknownAvailability = function (
 };
 
 function createTerrainData(terrainProvider, x, y, level, upsampled) {
-  let terrainData =
+  var terrainData =
     terrainProvider._requestTileGeometryWillSucceedWith[
       createTileKey(x, y, level)
     ];
 
   if (!defined(terrainData)) {
-    const options = {
+    var options = {
       width: 5,
       height: 5,
       buffer: new Float32Array(25),
       createdByUpsampling: upsampled,
     };
 
-    const willHaveWaterMask =
+    var willHaveWaterMask =
       terrainProvider._willHaveWaterMask[createTileKey(x, y, level)];
     if (defined(willHaveWaterMask)) {
       if (willHaveWaterMask.includeLand && willHaveWaterMask.includeWater) {
@@ -252,7 +249,7 @@ function createTerrainData(terrainProvider, x, y, level, upsampled) {
     terrainData = new HeightmapTerrainData(options);
   }
 
-  const originalUpsample = terrainData.upsample;
+  var originalUpsample = terrainData.upsample;
   terrainData.upsample = function (
     tilingScheme,
     thisX,
@@ -261,7 +258,7 @@ function createTerrainData(terrainProvider, x, y, level, upsampled) {
     descendantX,
     descendantY
   ) {
-    const willSucceed =
+    var willSucceed =
       terrainProvider._upsampleWillSucceed[
         createTileKey(descendantX, descendantY, thisLevel + 1)
       ];
@@ -278,13 +275,13 @@ function createTerrainData(terrainProvider, x, y, level, upsampled) {
     });
   };
 
-  const originalCreateMesh = terrainData.createMesh;
+  var originalCreateMesh = terrainData.createMesh;
   terrainData.createMesh = function (options) {
-    const x = options.x;
-    const y = options.y;
-    const level = options.level;
+    var x = options.x;
+    var y = options.y;
+    var level = options.level;
 
-    const willSucceed =
+    var willSucceed =
       terrainProvider._createMeshWillSucceed[createTileKey(x, y, level)];
     if (willSucceed === undefined) {
       return undefined; // defer by default
@@ -298,10 +295,10 @@ function createTerrainData(terrainProvider, x, y, level, upsampled) {
       });
     }
 
-    const args = arguments;
+    var args = arguments;
 
     return runLater(function () {
-      return Promise.resolve(willSucceed).then(function () {
+      return when(willSucceed).then(function () {
         return originalCreateMesh.apply(terrainData, args);
       });
     });

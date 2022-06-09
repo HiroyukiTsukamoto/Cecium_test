@@ -6,7 +6,7 @@ import Matrix2 from "../Core/Matrix2.js";
 import Matrix3 from "../Core/Matrix3.js";
 import Matrix4 from "../Core/Matrix4.js";
 
-const ComponentsPerAttribute = {
+var ComponentsPerAttribute = {
   SCALAR: 1,
   VEC2: 2,
   VEC3: 3,
@@ -16,7 +16,7 @@ const ComponentsPerAttribute = {
   MAT4: 16,
 };
 
-const ClassPerType = {
+var ClassPerType = {
   SCALAR: undefined,
   VEC2: Cartesian2,
   VEC3: Cartesian3,
@@ -30,16 +30,16 @@ const ClassPerType = {
  * @private
  */
 function getBinaryAccessor(accessor) {
-  const componentType = accessor.componentType;
-  let componentDatatype;
+  var componentType = accessor.componentType;
+  var componentDatatype;
   if (typeof componentType === "string") {
     componentDatatype = ComponentDatatype.fromName(componentType);
   } else {
     componentDatatype = componentType;
   }
 
-  const componentsPerAttribute = ComponentsPerAttribute[accessor.type];
-  const classType = ClassPerType[accessor.type];
+  var componentsPerAttribute = ComponentsPerAttribute[accessor.type];
+  var classType = ClassPerType[accessor.type];
   return {
     componentsPerAttribute: componentsPerAttribute,
     classType: classType,

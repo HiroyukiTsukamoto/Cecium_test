@@ -31,8 +31,8 @@ import Primitive from "./Primitive.js";
  */
 function createTangentSpaceDebugPrimitive(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const instances = [];
-  let geometry = options.geometry;
+  var instances = [];
+  var geometry = options.geometry;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(geometry)) {
@@ -46,11 +46,11 @@ function createTangentSpaceDebugPrimitive(options) {
     geometry = geometry.constructor.createGeometry(geometry);
   }
 
-  const attributes = geometry.attributes;
-  const modelMatrix = Matrix4.clone(
+  var attributes = geometry.attributes;
+  var modelMatrix = Matrix4.clone(
     defaultValue(options.modelMatrix, Matrix4.IDENTITY)
   );
-  const length = defaultValue(options.length, 10000.0);
+  var length = defaultValue(options.length, 10000.0);
 
   if (defined(attributes.normal)) {
     instances.push(

@@ -9,7 +9,7 @@ import DeveloperError from "../Core/DeveloperError.js";
  *
  * @private
  */
-const VertexAttributeSemantic = {
+var VertexAttributeSemantic = {
   /**
    * Per-vertex position.
    *
@@ -72,7 +72,7 @@ const VertexAttributeSemantic = {
    * @type {String}
    * @constant
    */
-  FEATURE_ID: "_FEATURE_ID",
+  FEATURE_ID: "FEATURE_ID",
 };
 
 function semanticToVariableName(semantic) {
@@ -146,11 +146,11 @@ VertexAttributeSemantic.fromGltfSemantic = function (gltfSemantic) {
   Check.typeOf.string("gltfSemantic", gltfSemantic);
   //>>includeEnd('debug');
 
-  let semantic = gltfSemantic;
+  var semantic = gltfSemantic;
 
   // Strip the set index from the semantic
-  const setIndexRegex = /^(\w+)_\d+$/;
-  const setIndexMatch = setIndexRegex.exec(gltfSemantic);
+  var setIndexRegex = /^(\w+)_\d+$/;
+  var setIndexMatch = setIndexRegex.exec(gltfSemantic);
   if (setIndexMatch !== null) {
     semantic = setIndexMatch[1];
   }
@@ -171,6 +171,8 @@ VertexAttributeSemantic.fromGltfSemantic = function (gltfSemantic) {
     case "WEIGHTS":
       return VertexAttributeSemantic.WEIGHTS;
     case "_FEATURE_ID":
+    case "_BATCHID": // for b3dm compatibility
+    case "BATCHID": // for legacy b3dm compatibility
       return VertexAttributeSemantic.FEATURE_ID;
   }
 
@@ -263,9 +265,9 @@ VertexAttributeSemantic.getVariableName = function (semantic, setIndex) {
   Check.typeOf.string("semantic", semantic);
   //>>includeEnd('debug');
 
-  let variableName = semanticToVariableName(semantic);
+  var variableName = semanticToVariableName(semantic);
   if (defined(setIndex)) {
-    variableName += `_${setIndex}`;
+    variableName += "_" + setIndex;
   }
   return variableName;
 };

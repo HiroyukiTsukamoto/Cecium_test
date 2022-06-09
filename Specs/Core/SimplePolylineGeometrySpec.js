@@ -33,12 +33,12 @@ describe("Core/SimplePolylineGeometry", function () {
   });
 
   it("constructor computes all vertex attributes", function () {
-    const positions = [
+    var positions = [
       new Cartesian3(1.0, 0.0, 0.0),
       new Cartesian3(0.0, 1.0, 0.0),
       new Cartesian3(0.0, 0.0, 1.0),
     ];
-    const line = SimplePolylineGeometry.createGeometry(
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         granularity: Math.PI,
@@ -56,8 +56,8 @@ describe("Core/SimplePolylineGeometry", function () {
   });
 
   it("constructor computes all vertex attributes for rhumb lines", function () {
-    const positions = Cartesian3.fromDegreesArray([30, 30, 30, 60, 60, 60]);
-    const line = SimplePolylineGeometry.createGeometry(
+    var positions = Cartesian3.fromDegreesArray([30, 30, 30, 60, 60, 60]);
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         granularity: Math.PI,
@@ -66,7 +66,7 @@ describe("Core/SimplePolylineGeometry", function () {
       })
     );
 
-    const cartesian3Array = [];
+    var cartesian3Array = [];
     Cartesian3.packArray(positions, cartesian3Array);
 
     expect(line.attributes.position.values).toEqualEpsilon(
@@ -79,17 +79,17 @@ describe("Core/SimplePolylineGeometry", function () {
   });
 
   it("constructor computes per segment colors", function () {
-    const positions = [
+    var positions = [
       new Cartesian3(1.0, 0.0, 0.0),
       new Cartesian3(0.0, 1.0, 0.0),
       new Cartesian3(0.0, 0.0, 1.0),
     ];
-    const colors = [
+    var colors = [
       new Color(1.0, 0.0, 0.0, 1.0),
       new Color(0.0, 1.0, 0.0, 1.0),
       new Color(0.0, 0.0, 1.0, 1.0),
     ];
-    const line = SimplePolylineGeometry.createGeometry(
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         colors: colors,
@@ -100,22 +100,22 @@ describe("Core/SimplePolylineGeometry", function () {
 
     expect(line.attributes.color).toBeDefined();
 
-    const numVertices = positions.length * 2 - 2;
+    var numVertices = positions.length * 2 - 2;
     expect(line.attributes.color.values.length).toEqual(numVertices * 4);
   });
 
   it("constructor computes per vertex colors", function () {
-    const positions = [
+    var positions = [
       new Cartesian3(1.0, 0.0, 0.0),
       new Cartesian3(0.0, 1.0, 0.0),
       new Cartesian3(0.0, 0.0, 1.0),
     ];
-    const colors = [
+    var colors = [
       new Color(1.0, 0.0, 0.0, 1.0),
       new Color(0.0, 1.0, 0.0, 1.0),
       new Color(0.0, 0.0, 1.0, 1.0),
     ];
-    const line = SimplePolylineGeometry.createGeometry(
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         colors: colors,
@@ -127,17 +127,17 @@ describe("Core/SimplePolylineGeometry", function () {
 
     expect(line.attributes.color).toBeDefined();
 
-    const numVertices = positions.length;
+    var numVertices = positions.length;
     expect(line.attributes.color.values.length).toEqual(numVertices * 4);
   });
 
   it("constructor computes all vertex attributes, no subdivision", function () {
-    const positions = [
+    var positions = [
       new Cartesian3(),
       new Cartesian3(1.0, 0.0, 0.0),
       new Cartesian3(2.0, 0.0, 0.0),
     ];
-    const line = SimplePolylineGeometry.createGeometry(
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         arcType: ArcType.NONE,
@@ -161,17 +161,17 @@ describe("Core/SimplePolylineGeometry", function () {
   });
 
   it("constructor computes per segment colors, no subdivision", function () {
-    const positions = [
+    var positions = [
       new Cartesian3(),
       new Cartesian3(1.0, 0.0, 0.0),
       new Cartesian3(2.0, 0.0, 0.0),
     ];
-    const colors = [
+    var colors = [
       new Color(1.0, 0.0, 0.0, 1.0),
       new Color(0.0, 1.0, 0.0, 1.0),
       new Color(0.0, 0.0, 1.0, 1.0),
     ];
-    const line = SimplePolylineGeometry.createGeometry(
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         colors: colors,
@@ -181,22 +181,22 @@ describe("Core/SimplePolylineGeometry", function () {
 
     expect(line.attributes.color).toBeDefined();
 
-    const numVertices = positions.length * 2 - 2;
+    var numVertices = positions.length * 2 - 2;
     expect(line.attributes.color.values.length).toEqual(numVertices * 4);
   });
 
   it("constructor computes per vertex colors, no subdivision", function () {
-    const positions = [
+    var positions = [
       new Cartesian3(),
       new Cartesian3(1.0, 0.0, 0.0),
       new Cartesian3(2.0, 0.0, 0.0),
     ];
-    const colors = [
+    var colors = [
       new Color(1.0, 0.0, 0.0, 1.0),
       new Color(0.0, 1.0, 0.0, 1.0),
       new Color(0.0, 0.0, 1.0, 1.0),
     ];
-    const line = SimplePolylineGeometry.createGeometry(
+    var line = SimplePolylineGeometry.createGeometry(
       new SimplePolylineGeometry({
         positions: positions,
         colors: colors,
@@ -207,16 +207,16 @@ describe("Core/SimplePolylineGeometry", function () {
 
     expect(line.attributes.color).toBeDefined();
 
-    const numVertices = positions.length;
+    var numVertices = positions.length;
     expect(line.attributes.color.values.length).toEqual(numVertices * 4);
   });
 
-  const positions = [
+  var positions = [
     new Cartesian3(1, 2, 3),
     new Cartesian3(4, 5, 6),
     new Cartesian3(7, 8, 9),
   ];
-  let line = new SimplePolylineGeometry({
+  var line = new SimplePolylineGeometry({
     positions: positions,
     colors: [Color.RED, Color.LIME, Color.BLUE],
     colorsPerVertex: true,
@@ -224,7 +224,7 @@ describe("Core/SimplePolylineGeometry", function () {
     granularity: 11,
     ellipsoid: new Ellipsoid(12, 13, 14),
   });
-  let packedInstance = [
+  var packedInstance = [
     3,
     1,
     2,

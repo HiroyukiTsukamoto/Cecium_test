@@ -16,7 +16,7 @@ import DynamicGeometryUpdater from "./DynamicGeometryUpdater.js";
 import GeometryUpdater from "./GeometryUpdater.js";
 import Property from "./Property.js";
 
-const scratchColor = new Color();
+var scratchColor = new Color();
 
 function PolylineVolumeGeometryOptions(entity) {
   this.id = entity;
@@ -81,26 +81,26 @@ PolylineVolumeGeometryUpdater.prototype.createFillGeometryInstance = function (
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
 
-  let attributes;
+  var attributes;
 
-  let color;
-  const show = new ShowGeometryInstanceAttribute(
+  var color;
+  var show = new ShowGeometryInstanceAttribute(
     isAvailable &&
       entity.isShowing &&
       this._showProperty.getValue(time) &&
       this._fillProperty.getValue(time)
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
-  const distanceDisplayConditionAttribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
+  var distanceDisplayConditionAttribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
     distanceDisplayCondition
   );
   if (this._materialProperty instanceof ColorMaterialProperty) {
-    let currentColor;
+    var currentColor;
     if (
       defined(this._materialProperty.color) &&
       (this._materialProperty.color.isConstant || isAvailable)
@@ -151,15 +151,15 @@ PolylineVolumeGeometryUpdater.prototype.createOutlineGeometryInstance = function
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
-  const outlineColor = Property.getValueOrDefault(
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
+  var outlineColor = Property.getValueOrDefault(
     this._outlineColorProperty,
     time,
     Color.BLACK,
     scratchColor
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
 
@@ -209,12 +209,11 @@ PolylineVolumeGeometryUpdater.prototype._setStaticOptions = function (
   entity,
   polylineVolume
 ) {
-  const granularity = polylineVolume.granularity;
-  const cornerType = polylineVolume.cornerType;
+  var granularity = polylineVolume.granularity;
+  var cornerType = polylineVolume.cornerType;
 
-  const options = this._options;
-  const isColorMaterial =
-    this._materialProperty instanceof ColorMaterialProperty;
+  var options = this._options;
+  var isColorMaterial = this._materialProperty instanceof ColorMaterialProperty;
   options.vertexFormat = isColorMaterial
     ? PerInstanceColorAppearance.VERTEX_FORMAT
     : MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat;
@@ -264,7 +263,7 @@ DynamicPolylineVolumeGeometryUpdater.prototype._isHidden = function (
   polylineVolume,
   time
 ) {
-  const options = this._options;
+  var options = this._options;
   return (
     !defined(options.polylinePositions) ||
     !defined(options.shapePositions) ||
@@ -282,7 +281,7 @@ DynamicPolylineVolumeGeometryUpdater.prototype._setOptions = function (
   polylineVolume,
   time
 ) {
-  const options = this._options;
+  var options = this._options;
   options.polylinePositions = Property.getValueOrUndefined(
     polylineVolume.positions,
     time,

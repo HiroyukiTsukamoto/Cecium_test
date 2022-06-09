@@ -61,7 +61,11 @@ function createUniformArray(gl, activeUniform, uniformName, locations) {
       return new UniformArrayMat4(gl, activeUniform, uniformName, locations);
     default:
       throw new RuntimeError(
-        `Unrecognized uniform type: ${activeUniform.type} for uniform "${uniformName}".`
+        "Unrecognized uniform type: " +
+          activeUniform.type +
+          ' for uniform "' +
+          uniformName +
+          '".'
       );
   }
 }
@@ -71,7 +75,7 @@ function createUniformArray(gl, activeUniform, uniformName, locations) {
  * @constructor
  */
 function UniformArrayFloat(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -87,13 +91,13 @@ function UniformArrayFloat(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayFloat.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (v !== arraybuffer[i]) {
       arraybuffer[i] = v;
@@ -113,7 +117,7 @@ UniformArrayFloat.prototype.set = function () {
  * @constructor
  */
 function UniformArrayFloatVec2(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -129,14 +133,14 @@ function UniformArrayFloatVec2(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayFloatVec2.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Cartesian2.equalsArray(v, arraybuffer, j)) {
       Cartesian2.pack(v, arraybuffer, j);
@@ -157,7 +161,7 @@ UniformArrayFloatVec2.prototype.set = function () {
  * @constructor
  */
 function UniformArrayFloatVec3(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -173,14 +177,14 @@ function UniformArrayFloatVec3(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayFloatVec3.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (defined(v.red)) {
       if (
@@ -219,7 +223,7 @@ UniformArrayFloatVec3.prototype.set = function () {
  * @constructor
  */
 function UniformArrayFloatVec4(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -246,14 +250,14 @@ UniformArrayFloatVec4.prototype.set = function () {
   // As soon as changed is true, break into a separate loop that
   // does the copy without the equals check.
 
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (defined(v.red)) {
       if (!Color.equalsArray(v, arraybuffer, j)) {
@@ -286,7 +290,7 @@ UniformArrayFloatVec4.prototype.set = function () {
  * @constructor
  */
 function UniformArraySampler(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -304,13 +308,13 @@ function UniformArraySampler(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArraySampler.prototype.set = function () {
-  const gl = this._gl;
-  const textureUnitIndex = gl.TEXTURE0 + this.textureUnitIndex;
+  var gl = this._gl;
+  var textureUnitIndex = gl.TEXTURE0 + this.textureUnitIndex;
 
-  const value = this.value;
-  const length = value.length;
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  var value = this.value;
+  var length = value.length;
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
     gl.activeTexture(textureUnitIndex + i);
     gl.bindTexture(v._target, v._texture);
   }
@@ -319,10 +323,10 @@ UniformArraySampler.prototype.set = function () {
 UniformArraySampler.prototype._setSampler = function (textureUnitIndex) {
   this.textureUnitIndex = textureUnitIndex;
 
-  const locations = this._locations;
-  const length = locations.length;
-  for (let i = 0; i < length; ++i) {
-    const index = textureUnitIndex + i;
+  var locations = this._locations;
+  var length = locations.length;
+  for (var i = 0; i < length; ++i) {
+    var index = textureUnitIndex + i;
     this._gl.uniform1i(locations[i], index);
   }
 
@@ -336,7 +340,7 @@ UniformArraySampler.prototype._setSampler = function (textureUnitIndex) {
  * @constructor
  */
 function UniformArrayInt(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -352,13 +356,13 @@ function UniformArrayInt(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayInt.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (v !== arraybuffer[i]) {
       arraybuffer[i] = v;
@@ -378,7 +382,7 @@ UniformArrayInt.prototype.set = function () {
  * @constructor
  */
 function UniformArrayIntVec2(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -394,14 +398,14 @@ function UniformArrayIntVec2(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayIntVec2.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Cartesian2.equalsArray(v, arraybuffer, j)) {
       Cartesian2.pack(v, arraybuffer, j);
@@ -422,7 +426,7 @@ UniformArrayIntVec2.prototype.set = function () {
  * @constructor
  */
 function UniformArrayIntVec3(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -438,14 +442,14 @@ function UniformArrayIntVec3(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayIntVec3.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Cartesian3.equalsArray(v, arraybuffer, j)) {
       Cartesian3.pack(v, arraybuffer, j);
@@ -466,7 +470,7 @@ UniformArrayIntVec3.prototype.set = function () {
  * @constructor
  */
 function UniformArrayIntVec4(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -482,14 +486,14 @@ function UniformArrayIntVec4(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayIntVec4.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Cartesian4.equalsArray(v, arraybuffer, j)) {
       Cartesian4.pack(v, arraybuffer, j);
@@ -510,7 +514,7 @@ UniformArrayIntVec4.prototype.set = function () {
  * @constructor
  */
 function UniformArrayMat2(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -526,14 +530,14 @@ function UniformArrayMat2(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayMat2.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Matrix2.equalsArray(v, arraybuffer, j)) {
       Matrix2.pack(v, arraybuffer, j);
@@ -554,7 +558,7 @@ UniformArrayMat2.prototype.set = function () {
  * @constructor
  */
 function UniformArrayMat3(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -570,14 +574,14 @@ function UniformArrayMat3(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayMat3.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Matrix3.equalsArray(v, arraybuffer, j)) {
       Matrix3.pack(v, arraybuffer, j);
@@ -598,7 +602,7 @@ UniformArrayMat3.prototype.set = function () {
  * @constructor
  */
 function UniformArrayMat4(gl, activeUniform, uniformName, locations) {
-  const length = locations.length;
+  var length = locations.length;
 
   /**
    * @type {String}
@@ -614,14 +618,14 @@ function UniformArrayMat4(gl, activeUniform, uniformName, locations) {
 }
 
 UniformArrayMat4.prototype.set = function () {
-  const value = this.value;
-  const length = value.length;
-  const arraybuffer = this._value;
-  let changed = false;
-  let j = 0;
+  var value = this.value;
+  var length = value.length;
+  var arraybuffer = this._value;
+  var changed = false;
+  var j = 0;
 
-  for (let i = 0; i < length; ++i) {
-    const v = value[i];
+  for (var i = 0; i < length; ++i) {
+    var v = value[i];
 
     if (!Matrix4.equalsArray(v, arraybuffer, j)) {
       Matrix4.pack(v, arraybuffer, j);

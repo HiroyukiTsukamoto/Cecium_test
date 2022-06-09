@@ -1,3 +1,5 @@
+import AlphaMode from "../AlphaMode.js";
+
 /**
  * Options for configuring the {@link AlphaPipelineStage}
  *
@@ -20,7 +22,7 @@ export default function ModelAlphaOptions() {
    * @type {AlphaMode}
    * @private
    */
-  this.alphaMode = undefined;
+  this.alphaMode = AlphaMode.OPAQUE;
   /**
    * When the alpha mode is MASK, this determines the alpha threshold
    * below which fragments are discarded

@@ -16,13 +16,13 @@ import StaticGeometryColorBatch from "./StaticGeometryColorBatch.js";
 import StaticGeometryPerMaterialBatch from "./StaticGeometryPerMaterialBatch.js";
 import StaticGroundPolylinePerMaterialBatch from "./StaticGroundPolylinePerMaterialBatch.js";
 
-const emptyArray = [];
+var emptyArray = [];
 
 function removeUpdater(that, updater) {
   //We don't keep track of which batch an updater is in, so just remove it from all of them.
-  const batches = that._batches;
-  const length = batches.length;
-  for (let i = 0; i < length; i++) {
+  var batches = that._batches;
+  var length = batches.length;
+  for (var i = 0; i < length; i++) {
     batches[i].remove(updater);
   }
 }
@@ -35,19 +35,17 @@ function insertUpdaterIntoBatch(that, time, updater) {
 
   if (updater.clampToGround && updater.fillEnabled) {
     // Also checks for support
-    const classificationType = updater.classificationTypeProperty.getValue(
-      time
-    );
+    var classificationType = updater.classificationTypeProperty.getValue(time);
     that._groundBatches[classificationType].add(time, updater);
     return;
   }
 
-  let shadows;
+  var shadows;
   if (updater.fillEnabled) {
     shadows = updater.shadowsProperty.getValue(time);
   }
 
-  let multiplier = 0;
+  var multiplier = 0;
   if (defined(updater.depthFailMaterialProperty)) {
     multiplier =
       updater.depthFailMaterialProperty instanceof ColorMaterialProperty
@@ -55,7 +53,7 @@ function insertUpdaterIntoBatch(that, time, updater) {
         : 2;
   }
 
-  let index;
+  var index;
   if (defined(shadows)) {
     index = shadows + multiplier * ShadowMode.NUMBER_OF_SHADOW_MODES;
   }
@@ -100,8 +98,8 @@ function PolylineVisualizer(
   this._removedObjects = new AssociativeArray();
   this._changedObjects = new AssociativeArray();
 
-  let i;
-  const numberOfShadowModes = ShadowMode.NUMBER_OF_SHADOW_MODES;
+  var i;
+  var numberOfShadowModes = ShadowMode.NUMBER_OF_SHADOW_MODES;
   this._colorBatches = new Array(numberOfShadowModes * 3);
   this._materialBatches = new Array(numberOfShadowModes * 3);
 
@@ -160,7 +158,7 @@ function PolylineVisualizer(
 
   this._dynamicBatch = new DynamicGeometryBatch(primitives, groundPrimitives);
 
-  const numberOfClassificationTypes =
+  var numberOfClassificationTypes =
     ClassificationType.NUMBER_OF_CLASSIFICATION_TYPES;
   this._groundBatches = new Array(numberOfClassificationTypes);
 
@@ -205,17 +203,17 @@ PolylineVisualizer.prototype.update = function (time) {
   Check.defined("time", time);
   //>>includeEnd('debug');
 
-  const addedObjects = this._addedObjects;
-  const added = addedObjects.values;
-  const removedObjects = this._removedObjects;
-  const removed = removedObjects.values;
-  const changedObjects = this._changedObjects;
-  const changed = changedObjects.values;
+  var addedObjects = this._addedObjects;
+  var added = addedObjects.values;
+  var removedObjects = this._removedObjects;
+  var removed = removedObjects.values;
+  var changedObjects = this._changedObjects;
+  var changed = changedObjects.values;
 
-  let i;
-  let entity;
-  let id;
-  let updater;
+  var i;
+  var entity;
+  var id;
+  var updater;
 
   for (i = changed.length - 1; i > -1; i--) {
     entity = changed[i];
@@ -266,9 +264,9 @@ PolylineVisualizer.prototype.update = function (time) {
   removedObjects.removeAll();
   changedObjects.removeAll();
 
-  let isUpdated = true;
-  const batches = this._batches;
-  const length = batches.length;
+  var isUpdated = true;
+  var batches = this._batches;
+  var length = batches.length;
   for (i = 0; i < length; i++) {
     isUpdated = batches[i].update(time) && isUpdated;
   }
@@ -276,8 +274,8 @@ PolylineVisualizer.prototype.update = function (time) {
   return isUpdated;
 };
 
-const getBoundingSphereArrayScratch = [];
-const getBoundingSphereBoundingSphereScratch = new BoundingSphere();
+var getBoundingSphereArrayScratch = [];
+var getBoundingSphereBoundingSphereScratch = new BoundingSphere();
 
 /**
  * Computes a bounding sphere which encloses the visualization produced for the specified entity.
@@ -296,15 +294,15 @@ PolylineVisualizer.prototype.getBoundingSphere = function (entity, result) {
   Check.defined("result", result);
   //>>includeEnd('debug');
 
-  const boundingSpheres = getBoundingSphereArrayScratch;
-  const tmp = getBoundingSphereBoundingSphereScratch;
+  var boundingSpheres = getBoundingSphereArrayScratch;
+  var tmp = getBoundingSphereBoundingSphereScratch;
 
-  let count = 0;
-  let state = BoundingSphereState.DONE;
-  const batches = this._batches;
-  const batchesLength = batches.length;
-  const updater = this._updaters.get(entity.id);
-  for (let i = 0; i < batchesLength; i++) {
+  var count = 0;
+  var state = BoundingSphereState.DONE;
+  var batches = this._batches;
+  var batchesLength = batches.length;
+  var updater = this._updaters.get(entity.id);
+  for (var i = 0; i < batchesLength; i++) {
     state = batches[i].getBoundingSphere(updater, tmp);
     if (state === BoundingSphereState.PENDING) {
       return BoundingSphereState.PENDING;
@@ -346,14 +344,14 @@ PolylineVisualizer.prototype.destroy = function () {
   this._addedObjects.removeAll();
   this._removedObjects.removeAll();
 
-  let i;
-  const batches = this._batches;
-  let length = batches.length;
+  var i;
+  var batches = this._batches;
+  var length = batches.length;
   for (i = 0; i < length; i++) {
     batches[i].removeAllPrimitives();
   }
 
-  const subscriptions = this._subscriptions.values;
+  var subscriptions = this._subscriptions.values;
   length = subscriptions.length;
   for (i = 0; i < length; i++) {
     subscriptions[i]();
@@ -366,11 +364,11 @@ PolylineVisualizer.prototype.destroy = function () {
  * @private
  */
 PolylineVisualizer._onGeometryChanged = function (updater) {
-  const removedObjects = this._removedObjects;
-  const changedObjects = this._changedObjects;
+  var removedObjects = this._removedObjects;
+  var changedObjects = this._changedObjects;
 
-  const entity = updater.entity;
-  const id = entity.id;
+  var entity = updater.entity;
+  var id = entity.id;
 
   if (!defined(removedObjects.get(id)) && !defined(changedObjects.get(id))) {
     changedObjects.set(id, entity);
@@ -385,13 +383,13 @@ PolylineVisualizer.prototype._onCollectionChanged = function (
   added,
   removed
 ) {
-  const addedObjects = this._addedObjects;
-  const removedObjects = this._removedObjects;
-  const changedObjects = this._changedObjects;
+  var addedObjects = this._addedObjects;
+  var removedObjects = this._removedObjects;
+  var changedObjects = this._changedObjects;
 
-  let i;
-  let id;
-  let entity;
+  var i;
+  var id;
+  var entity;
   for (i = removed.length - 1; i > -1; i--) {
     entity = removed[i];
     id = entity.id;

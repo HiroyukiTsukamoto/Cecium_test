@@ -6,11 +6,11 @@ import {
 } from "../../Source/Cesium.js";
 
 describe("Scene/parseBoundingVolumeSemantics", function () {
-  const boundingBox = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1];
-  const boundingRegion = [0, 0, Math.PI_OVER_SIX, Math.PI_OVER_TWO, 0, 50];
-  const boundingSphere = [0, 0, 0, 1];
-  const minimumHeight = -10;
-  const maximumHeight = 10;
+  var boundingBox = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1];
+  var boundingRegion = [0, 0, Math.PI_OVER_SIX, Math.PI_OVER_TWO, 0, 50];
+  var boundingSphere = [0, 0, 0, 1];
+  var minimumHeight = -10;
+  var maximumHeight = 10;
 
   it("throws without tileMetadata", function () {
     expect(function () {
@@ -19,13 +19,10 @@ describe("Scene/parseBoundingVolumeSemantics", function () {
   });
 
   it("works if no semantics are present", function () {
-    // Note: TileMetadata is used in unit tests instead of ImplicitMetadataView
+    // Note: TileMetadata is used in unit tests instead of ImplicitTileMetadata
     // as the former is more straightforward to construct
-    const emptyMetadata = new TileMetadata({
+    var emptyMetadata = new TileMetadata({
       tile: {
-        properties: {},
-      },
-      class: {
         properties: {},
       },
     });
@@ -44,35 +41,31 @@ describe("Scene/parseBoundingVolumeSemantics", function () {
   });
 
   it("parses minimum and maximum height", function () {
-    const tileClass = new MetadataClass({
+    var tileClass = new MetadataClass({
       id: "tile",
       class: {
         properties: {
           tileMinimumHeight: {
-            type: "SCALAR",
-            componentType: "FLOAT32",
+            type: "FLOAT32",
             semantic: "TILE_MINIMUM_HEIGHT",
           },
           tileMaximumHeight: {
-            type: "SCALAR",
-            componentType: "FLOAT32",
+            type: "FLOAT32",
             semantic: "TILE_MAXIMUM_HEIGHT",
           },
           contentMinimumHeight: {
-            type: "SCALAR",
-            componentType: "FLOAT32",
+            type: "FLOAT32",
             semantic: "CONTENT_MINIMUM_HEIGHT",
           },
           contentMaximumHeight: {
-            type: "SCALAR",
-            componentType: "FLOAT32",
+            type: "FLOAT32",
             semantic: "CONTENT_MAXIMUM_HEIGHT",
           },
         },
       },
     });
 
-    const tileMetadata = new TileMetadata({
+    var tileMetadata = new TileMetadata({
       class: tileClass,
       tile: {
         properties: {
@@ -99,29 +92,27 @@ describe("Scene/parseBoundingVolumeSemantics", function () {
   });
 
   it("parses bounding volumes", function () {
-    const tileClass = new MetadataClass({
+    var tileClass = new MetadataClass({
       id: "tile",
       class: {
         properties: {
           tileBoundingBox: {
-            type: "SCALAR",
+            type: "ARRAY",
             componentType: "FLOAT64",
-            array: true,
-            count: 12,
+            componentCount: 12,
             semantic: "TILE_BOUNDING_BOX",
           },
           contentBoundingSphere: {
-            type: "SCALAR",
+            type: "ARRAY",
             componentType: "FLOAT64",
-            array: true,
-            count: 4,
+            componentCount: 4,
             semantic: "CONTENT_BOUNDING_SPHERE",
           },
         },
       },
     });
 
-    const tileMetadata = new TileMetadata({
+    var tileMetadata = new TileMetadata({
       class: tileClass,
       tile: {
         properties: {
@@ -150,43 +141,39 @@ describe("Scene/parseBoundingVolumeSemantics", function () {
   });
 
   it("bounding volumes are parsed with the precedence box, region, then sphere", function () {
-    const tileClass = new MetadataClass({
+    var tileClass = new MetadataClass({
       id: "tile",
       class: {
         properties: {
           tileBoundingBox: {
-            type: "SCALAR",
+            type: "ARRAY",
             componentType: "FLOAT64",
-            array: true,
-            count: 12,
+            componentCount: 12,
             semantic: "TILE_BOUNDING_BOX",
           },
           tileBoundingRegion: {
-            type: "SCALAR",
+            type: "ARRAY",
             componentType: "FLOAT64",
-            array: true,
-            count: 6,
+            componentCount: 6,
             semantic: "TILE_BOUNDING_REGION",
           },
           contentBoundingRegion: {
-            type: "SCALAR",
+            type: "ARRAY",
             componentType: "FLOAT64",
-            array: true,
-            count: 6,
+            componentCount: 6,
             semantic: "CONTENT_BOUNDING_REGION",
           },
           contentBoundingSphere: {
-            type: "SCALAR",
+            type: "ARRAY",
             componentType: "FLOAT64",
-            array: true,
-            count: 4,
+            componentCount: 4,
             semantic: "CONTENT_BOUNDING_SPHERE",
           },
         },
       },
     });
 
-    const tileMetadata = new TileMetadata({
+    var tileMetadata = new TileMetadata({
       class: tileClass,
       tile: {
         properties: {

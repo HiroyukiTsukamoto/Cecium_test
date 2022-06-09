@@ -3,10 +3,11 @@ import { computeFlyToLocationForRectangle } from "../../Source/Cesium.js";
 import { Globe } from "../../Source/Cesium.js";
 import { SceneMode } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
+import { when } from "../../Source/Cesium.js";
 import MockTerrainProvider from "../MockTerrainProvider.js";
 
 describe("Scene/computeFlyToLocationForRectangle", function () {
-  let scene;
+  var scene;
 
   beforeEach(function () {
     scene = createScene();
@@ -18,15 +19,15 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
 
   function sampleTest(sceneMode) {
     //Pretend we have terrain with availability.
-    const terrainProvider = new MockTerrainProvider();
+    var terrainProvider = new MockTerrainProvider();
     terrainProvider.availability = {};
 
     scene.globe = new Globe();
     scene.terrainProvider = terrainProvider;
     scene.mode = sceneMode;
 
-    const rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
-    const cartographics = [
+    var rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
+    var cartographics = [
       Rectangle.center(rectangle),
       Rectangle.southeast(rectangle),
       Rectangle.southwest(rectangle),
@@ -35,8 +36,8 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
     ];
 
     // Mock sampleTerrainMostDetailed with same positions but with heights.
-    const maxHeight = 1234;
-    const sampledResults = [
+    var maxHeight = 1234;
+    var sampledResults = [
       Rectangle.center(rectangle),
       Rectangle.southeast(rectangle),
       Rectangle.southwest(rectangle),
@@ -51,10 +52,10 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
     spyOn(
       computeFlyToLocationForRectangle,
       "_sampleTerrainMostDetailed"
-    ).and.returnValue(Promise.resolve(sampledResults));
+    ).and.returnValue(when.resolve(sampledResults));
 
     // Basically do the computation ourselves with our known values;
-    let expectedResult;
+    var expectedResult;
     if (sceneMode === SceneMode.SCENE3D) {
       expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
         scene.camera.getRectangleCameraCoordinates(rectangle)
@@ -85,15 +86,15 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
   });
 
   it("returns height above ellipsoid when in 2D", function () {
-    const terrainProvider = new MockTerrainProvider();
+    var terrainProvider = new MockTerrainProvider();
     terrainProvider.availability = {};
 
     scene.globe = new Globe();
     scene.terrainProvider = terrainProvider;
     scene.mode = SceneMode.SCENE2D;
 
-    const rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
-    const expectedResult = scene.mapProjection.unproject(
+    var rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
+    var expectedResult = scene.mapProjection.unproject(
       scene.camera.getRectangleCameraCoordinates(rectangle)
     );
 
@@ -112,10 +113,10 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
     scene.globe = new Globe();
     scene.terrainProvider = new MockTerrainProvider();
 
-    const rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
+    var rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
     spyOn(computeFlyToLocationForRectangle, "_sampleTerrainMostDetailed");
 
-    const expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
+    var expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
       scene.camera.getRectangleCameraCoordinates(rectangle)
     );
     return computeFlyToLocationForRectangle(rectangle, scene).then(function (
@@ -129,14 +130,14 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
   });
 
   it("waits for terrain to become ready", function () {
-    const terrainProvider = new MockTerrainProvider();
+    var terrainProvider = new MockTerrainProvider();
     spyOn(terrainProvider.readyPromise, "then").and.callThrough();
 
     scene.globe = new Globe();
     scene.terrainProvider = terrainProvider;
 
-    const rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
-    const expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
+    var rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
+    var expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
       scene.camera.getRectangleCameraCoordinates(rectangle)
     );
     return computeFlyToLocationForRectangle(rectangle, scene).then(function (
@@ -149,10 +150,10 @@ describe("Scene/computeFlyToLocationForRectangle", function () {
 
   it("returns height above ellipsoid when terrain undefined", function () {
     scene.terrainProvider = undefined;
-    const rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
+    var rectangle = new Rectangle(0.2, 0.4, 0.6, 0.8);
     spyOn(computeFlyToLocationForRectangle, "_sampleTerrainMostDetailed");
 
-    const expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
+    var expectedResult = scene.mapProjection.ellipsoid.cartesianToCartographic(
       scene.camera.getRectangleCameraCoordinates(rectangle)
     );
     return computeFlyToLocationForRectangle(rectangle, scene).then(function (

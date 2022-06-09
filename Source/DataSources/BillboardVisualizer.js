@@ -14,26 +14,26 @@ import VerticalOrigin from "../Scene/VerticalOrigin.js";
 import BoundingSphereState from "./BoundingSphereState.js";
 import Property from "./Property.js";
 
-const defaultColor = Color.WHITE;
-const defaultEyeOffset = Cartesian3.ZERO;
-const defaultHeightReference = HeightReference.NONE;
-const defaultPixelOffset = Cartesian2.ZERO;
-const defaultScale = 1.0;
-const defaultRotation = 0.0;
-const defaultAlignedAxis = Cartesian3.ZERO;
-const defaultHorizontalOrigin = HorizontalOrigin.CENTER;
-const defaultVerticalOrigin = VerticalOrigin.CENTER;
-const defaultSizeInMeters = false;
+var defaultColor = Color.WHITE;
+var defaultEyeOffset = Cartesian3.ZERO;
+var defaultHeightReference = HeightReference.NONE;
+var defaultPixelOffset = Cartesian2.ZERO;
+var defaultScale = 1.0;
+var defaultRotation = 0.0;
+var defaultAlignedAxis = Cartesian3.ZERO;
+var defaultHorizontalOrigin = HorizontalOrigin.CENTER;
+var defaultVerticalOrigin = VerticalOrigin.CENTER;
+var defaultSizeInMeters = false;
 
-const positionScratch = new Cartesian3();
-const colorScratch = new Color();
-const eyeOffsetScratch = new Cartesian3();
-const pixelOffsetScratch = new Cartesian2();
-const scaleByDistanceScratch = new NearFarScalar();
-const translucencyByDistanceScratch = new NearFarScalar();
-const pixelOffsetScaleByDistanceScratch = new NearFarScalar();
-const boundingRectangleScratch = new BoundingRectangle();
-const distanceDisplayConditionScratch = new DistanceDisplayCondition();
+var positionScratch = new Cartesian3();
+var colorScratch = new Color();
+var eyeOffsetScratch = new Cartesian3();
+var pixelOffsetScratch = new Cartesian2();
+var scaleByDistanceScratch = new NearFarScalar();
+var translucencyByDistanceScratch = new NearFarScalar();
+var pixelOffsetScaleByDistanceScratch = new NearFarScalar();
+var boundingRectangleScratch = new BoundingRectangle();
+var distanceDisplayConditionScratch = new DistanceDisplayCondition();
 
 function EntityData(entity) {
   this.entity = entity;
@@ -84,20 +84,20 @@ BillboardVisualizer.prototype.update = function (time) {
   }
   //>>includeEnd('debug');
 
-  const items = this._items.values;
-  const cluster = this._cluster;
+  var items = this._items.values;
+  var cluster = this._cluster;
 
-  for (let i = 0, len = items.length; i < len; i++) {
-    const item = items[i];
-    const entity = item.entity;
-    const billboardGraphics = entity._billboard;
-    let textureValue;
-    let billboard = item.billboard;
-    let show =
+  for (var i = 0, len = items.length; i < len; i++) {
+    var item = items[i];
+    var entity = item.entity;
+    var billboardGraphics = entity._billboard;
+    var textureValue;
+    var billboard = item.billboard;
+    var show =
       entity.isShowing &&
       entity.isAvailable(time) &&
       Property.getValueOrDefault(billboardGraphics._show, time, true);
-    let position;
+    var position;
     if (show) {
       position = Property.getValueOrUndefined(
         entity._position,
@@ -220,7 +220,7 @@ BillboardVisualizer.prototype.update = function (time) {
       time
     );
 
-    const subRegion = Property.getValueOrUndefined(
+    var subRegion = Property.getValueOrUndefined(
       billboardGraphics._imageSubRegion,
       time,
       boundingRectangleScratch
@@ -253,12 +253,12 @@ BillboardVisualizer.prototype.getBoundingSphere = function (entity, result) {
   }
   //>>includeEnd('debug');
 
-  const item = this._items.get(entity.id);
+  var item = this._items.get(entity.id);
   if (!defined(item) || !defined(item.billboard)) {
     return BoundingSphereState.FAILED;
   }
 
-  const billboard = item.billboard;
+  var billboard = item.billboard;
   if (billboard.heightReference === HeightReference.NONE) {
     result.center = Cartesian3.clone(billboard.position, result.center);
   } else {
@@ -288,8 +288,8 @@ BillboardVisualizer.prototype.destroy = function () {
     BillboardVisualizer.prototype._onCollectionChanged,
     this
   );
-  const entities = this._entityCollection.values;
-  for (let i = 0; i < entities.length; i++) {
+  var entities = this._entityCollection.values;
+  for (var i = 0; i < entities.length; i++) {
     this._cluster.removeBillboard(entities[i]);
   }
   return destroyObject(this);
@@ -301,10 +301,10 @@ BillboardVisualizer.prototype._onCollectionChanged = function (
   removed,
   changed
 ) {
-  let i;
-  let entity;
-  const items = this._items;
-  const cluster = this._cluster;
+  var i;
+  var entity;
+  var items = this._items;
+  var cluster = this._cluster;
 
   for (i = added.length - 1; i > -1; i--) {
     entity = added[i];

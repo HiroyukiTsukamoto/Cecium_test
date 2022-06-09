@@ -11,8 +11,8 @@ describe("Core/TimeIntervalCollection", function () {
   }
 
   function iso8601ToJulianDateArray(iso8601Dates) {
-    const julianDates = [];
-    for (let i = 0; i < iso8601Dates.length; ++i) {
+    var julianDates = [];
+    for (var i = 0; i < iso8601Dates.length; ++i) {
       julianDates[i] = JulianDate.fromIso8601(iso8601Dates[i]);
     }
 
@@ -27,10 +27,10 @@ describe("Core/TimeIntervalCollection", function () {
     dataCallback
   ) {
     dataCallback = defaultValue(dataCallback, defaultDataCallback);
-    const length = intervals.length;
+    var length = intervals.length;
     expect(length).toEqual(julianDates.length - 1);
-    for (let i = 0; i < length; ++i) {
-      const interval = intervals.get(i);
+    for (var i = 0; i < length; ++i) {
+      var interval = intervals.get(i);
       expect(JulianDate.compare(interval.start, julianDates[i])).toEqual(0);
       expect(JulianDate.compare(interval.stop, julianDates[i + 1])).toEqual(0);
       expect(interval.isStartIncluded).toBe(i === 0 ? isStartIncluded : true);
@@ -54,7 +54,7 @@ describe("Core/TimeIntervalCollection", function () {
   };
 
   it("constructing a default interval collection has expected property values.", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(intervals.length).toEqual(0);
     expect(intervals.start).toBeUndefined();
     expect(intervals.stop).toBeUndefined();
@@ -65,7 +65,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("constructing an interval collection from array.", function () {
-    const arg = [
+    var arg = [
       new TimeInterval({
         start: new JulianDate(1),
         stop: new JulianDate(2),
@@ -79,7 +79,7 @@ describe("Core/TimeIntervalCollection", function () {
         isStopIncluded: true,
       }),
     ];
-    const intervals = new TimeIntervalCollection(arg);
+    var intervals = new TimeIntervalCollection(arg);
     expect(intervals.length).toEqual(2);
     expect(intervals.start).toEqual(arg[0].start);
     expect(intervals.stop).toEqual(arg[1].stop);
@@ -90,14 +90,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("isStartIncluded/isStopIncluded works.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -119,14 +119,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("contains works for a simple interval collection.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -143,8 +143,8 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("contains works for a endpoints of a closed interval collection.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
@@ -156,8 +156,8 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("contains works for a endpoints of an open interval collection.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: false,
@@ -169,14 +169,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("indexOf finds the correct interval for a valid date", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -189,14 +189,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("indexOf returns complement of index of the interval that a missing date would come before", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -208,14 +208,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("indexOf returns complement of collection length if the date is after all intervals.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -227,20 +227,20 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("get returns the interval at the correct index", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: false,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
       isStopIncluded: false,
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: new JulianDate(4),
       stop: new JulianDate(5),
       isStartIncluded: false,
@@ -253,27 +253,27 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("get is undefined for a out of range index", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(intervals.get(1)).toBeUndefined();
   });
 
   it("findInterval works when looking for an exact interval", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(0),
       stop: new JulianDate(1),
       isStartIncluded: false,
       isStopIncluded: false,
       data: 1,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
       data: 2,
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -294,22 +294,22 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("findInterval works when you do not care about end points", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(0),
       stop: new JulianDate(1),
       isStartIncluded: false,
       isStopIncluded: false,
       data: 1,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
       data: 2,
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -328,14 +328,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("getStart & getStop return expected values.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval1 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: false,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: true,
@@ -348,7 +348,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("isEmpty and clear return expected values", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     intervals.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -363,7 +363,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("length returns the correct interval length when adding intervals with different data", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(intervals.length).toEqual(0);
 
     intervals.addInterval(
@@ -393,7 +393,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("length returns the correct length after two intervals with the same data are merged.", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
     intervals.addInterval(
       new TimeInterval({
@@ -422,21 +422,21 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("addInterval and findIntervalContainingDate work when using non-overlapping intervals", function () {
-    const interval1 = new TimeInterval({
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: true,
       data: 1,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
       isStopIncluded: true,
       data: 2,
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: new JulianDate(4),
       stop: new JulianDate(5),
       isStartIncluded: true,
@@ -444,7 +444,7 @@ describe("Core/TimeIntervalCollection", function () {
       data: 3,
     });
 
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
     intervals.addInterval(interval1);
     expect(intervals.length).toEqual(1);
@@ -500,21 +500,21 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("addInterval and findIntervalContainingDate work when using overlapping intervals", function () {
-    const interval1 = new TimeInterval({
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2.5),
       isStartIncluded: true,
       isStopIncluded: true,
       data: 1,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
       isStopIncluded: true,
       data: 2,
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: interval1.start,
       stop: interval2.stop,
       isStartIncluded: true,
@@ -522,7 +522,7 @@ describe("Core/TimeIntervalCollection", function () {
       data: 3,
     });
 
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
     intervals.addInterval(interval1);
     expect(intervals.length).toEqual(1);
@@ -581,14 +581,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("findDataForIntervalContainingDate works", function () {
-    const interval1 = new TimeInterval({
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2.5),
       isStartIncluded: true,
       isStopIncluded: true,
       data: 1,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
@@ -596,7 +596,7 @@ describe("Core/TimeIntervalCollection", function () {
       data: 2,
     });
 
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     intervals.addInterval(interval1);
     expect(
       intervals.findDataForIntervalContainingDate(interval1.start)
@@ -622,30 +622,30 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("addInterval correctly intervals that have the same data when using equalsCallback", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
-    const interval1 = new TimeInterval({
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(4),
       isStartIncluded: true,
       isStopIncluded: true,
       data: new TestObject(2),
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(3),
       isStartIncluded: true,
       isStopIncluded: false,
       data: new TestObject(2),
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: new JulianDate(3),
       stop: new JulianDate(4),
       isStartIncluded: false,
       isStopIncluded: true,
       data: new TestObject(2),
     });
-    const interval4 = new TimeInterval({
+    var interval4 = new TimeInterval({
       start: new JulianDate(3),
       stop: new JulianDate(4),
       isStartIncluded: true,
@@ -705,7 +705,7 @@ describe("Core/TimeIntervalCollection", function () {
       });
     }
 
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     intervals.addInterval(createTimeInterval(10.0, 20.0));
     intervals.addInterval(createTimeInterval(30.0, 40.0));
 
@@ -865,15 +865,15 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("removeInterval removes the first interval correctly", function () {
-    const intervals = new TimeIntervalCollection();
-    const from1To3 = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var from1To3 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(3),
       isStopIncluded: true,
       isStartIncluded: true,
       data: "1-to-3",
     });
-    const from3To6 = new TimeInterval({
+    var from3To6 = new TimeInterval({
       start: new JulianDate(3),
       stop: new JulianDate(6),
       isStopIncluded: true,
@@ -896,7 +896,7 @@ describe("Core/TimeIntervalCollection", function () {
     expect(intervals.get(1).stop.dayNumber).toEqual(6);
     expect(intervals.get(1).data).toEqual("3-to-6");
 
-    const toRemove = new TimeInterval({
+    var toRemove = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(3),
       isStopIncluded: true,
@@ -917,7 +917,7 @@ describe("Core/TimeIntervalCollection", function () {
 
   it("should add and remove intervals correctly (some kind of integration test)", function () {
     // about the year 3000
-    const CONST_DAY_NUM = 3000000;
+    var CONST_DAY_NUM = 3000000;
 
     function intervalFromSeconds(seconds, data) {
       // make all intervals a few seconds in length
@@ -950,36 +950,51 @@ describe("Core/TimeIntervalCollection", function () {
 
     function expectCollection(collection, count, expectation) {
       expectation.forEach(function (item) {
-        const interval = collection.findIntervalContainingDate(
+        var interval = collection.findIntervalContainingDate(
           new JulianDate(CONST_DAY_NUM, item.sec)
         );
         if (item.data === null) {
           // expect the interval at this time not to exist
           if (interval !== undefined) {
             throw new Error(
-              `expected undefined at ${item.sec} seconds but it was ${interval.data}`
+              "expected undefined at " +
+                item.sec +
+                " seconds but it was " +
+                interval.data
             );
           }
           expect(interval).toBeUndefined();
         } else if (interval === undefined) {
           throw new Error(
-            `expected ${item.data} at ${item.sec} seconds, but it was undefined`
+            "expected " +
+              item.data +
+              " at " +
+              item.sec +
+              " seconds, but it was undefined"
           );
         } else if (interval.data !== item.data) {
           throw new Error(
-            `expected ${item.data} at ${item.sec} seconds, but it was ${interval.data}`
+            "expected " +
+              item.data +
+              " at " +
+              item.sec +
+              " seconds, but it was " +
+              interval.data
           );
         }
       });
 
       if (collection.length !== count) {
         throw new Error(
-          `Expected interval to have ${count} elements but it had ${collection.length}`
+          "Expected interval to have " +
+            count +
+            " elements but it had " +
+            collection.length
         );
       }
     }
 
-    const collection = new TimeIntervalCollection();
+    var collection = new TimeIntervalCollection();
 
     addIntervals(collection, [
       { sec: 0, data: 0 },
@@ -1118,14 +1133,14 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("removeInterval leaves a hole", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(4),
       isStartIncluded: true,
       isStopIncluded: true,
     });
-    const removedInterval = new TimeInterval({
+    var removedInterval = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: true,
@@ -1147,8 +1162,8 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("removeInterval with an interval of the exact same size works.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(4),
       isStartIncluded: true,
@@ -1167,8 +1182,8 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("removeInterval with an empty interval has no affect.", function () {
-    const intervals = new TimeIntervalCollection();
-    const interval = new TimeInterval({
+    var intervals = new TimeIntervalCollection();
+    var interval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(4),
       isStartIncluded: true,
@@ -1192,15 +1207,15 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("removeInterval takes isStartIncluded and isStopIncluded into account", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
-    const interval = new TimeInterval({
+    var interval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(4),
       isStartIncluded: true,
       isStopIncluded: true,
     });
-    const removedInterval = new TimeInterval({
+    var removedInterval = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(4),
       isStartIncluded: false,
@@ -1222,7 +1237,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("removeInterval removes overlapped intervals", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
     intervals.addInterval(
       new TimeInterval({
@@ -1257,7 +1272,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const removedInterval = new TimeInterval({
+    var removedInterval = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(4),
       isStartIncluded: false,
@@ -1271,7 +1286,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("intersect works with an empty collection", function () {
-    const left = new TimeIntervalCollection();
+    var left = new TimeIntervalCollection();
     left.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -1284,7 +1299,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("intersect works non-overlapping intervals", function () {
-    const left = new TimeIntervalCollection();
+    var left = new TimeIntervalCollection();
     left.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -1294,7 +1309,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const right = new TimeIntervalCollection();
+    var right = new TimeIntervalCollection();
     right.addInterval(
       new TimeInterval({
         start: new JulianDate(2),
@@ -1307,7 +1322,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("intersect works with intersecting intervals and no merge callback", function () {
-    const left = new TimeIntervalCollection();
+    var left = new TimeIntervalCollection();
     left.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -1317,7 +1332,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const right = new TimeIntervalCollection();
+    var right = new TimeIntervalCollection();
     right.addInterval(
       new TimeInterval({
         start: new JulianDate(2),
@@ -1327,7 +1342,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const intersectedIntervals = left.intersect(right);
+    var intersectedIntervals = left.intersect(right);
 
     expect(intersectedIntervals.length).toEqual(1);
     expect(intersectedIntervals.get(0).start).toEqual(right.get(0).start);
@@ -1337,7 +1352,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("intersect works with intersecting intervals an a merge callback", function () {
-    const left = new TimeIntervalCollection();
+    var left = new TimeIntervalCollection();
     left.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -1348,7 +1363,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const right = new TimeIntervalCollection();
+    var right = new TimeIntervalCollection();
     right.addInterval(
       new TimeInterval({
         start: new JulianDate(2),
@@ -1359,7 +1374,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const intersectedIntervals = left.intersect(
+    var intersectedIntervals = left.intersect(
       right,
       TestObject.equals,
       TestObject.merge
@@ -1374,31 +1389,31 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("equals works without data", function () {
-    const interval1 = new TimeInterval({
+    var interval1 = new TimeInterval({
       start: new JulianDate(1),
       stop: new JulianDate(2),
       isStartIncluded: true,
       isStopIncluded: true,
     });
-    const interval2 = new TimeInterval({
+    var interval2 = new TimeInterval({
       start: new JulianDate(2),
       stop: new JulianDate(3),
       isStartIncluded: false,
       isStopIncluded: true,
     });
-    const interval3 = new TimeInterval({
+    var interval3 = new TimeInterval({
       start: new JulianDate(4),
       stop: new JulianDate(5),
       isStartIncluded: true,
       isStopIncluded: true,
     });
 
-    const left = new TimeIntervalCollection();
+    var left = new TimeIntervalCollection();
     left.addInterval(interval1);
     left.addInterval(interval2);
     left.addInterval(interval3);
 
-    const right = new TimeIntervalCollection();
+    var right = new TimeIntervalCollection();
     right.addInterval(interval1);
     right.addInterval(interval2);
     right.addInterval(interval3);
@@ -1406,7 +1421,7 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("equals works with data", function () {
-    const left = new TimeIntervalCollection();
+    var left = new TimeIntervalCollection();
     left.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -1435,7 +1450,7 @@ describe("Core/TimeIntervalCollection", function () {
       })
     );
 
-    const right = new TimeIntervalCollection();
+    var right = new TimeIntervalCollection();
     right.addInterval(
       new TimeInterval({
         start: new JulianDate(1),
@@ -1480,70 +1495,70 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("get throws with undefined", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.get(undefined);
     }).toThrowDeveloperError();
   });
 
   it("findIntervalContainingDate throws with undefined date", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.findIntervalContainingDate(undefined);
     }).toThrowDeveloperError();
   });
 
   it("findDataForIntervalContainingDate throws with undefined date", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.findDataForIntervalContainingDate(undefined);
     }).toThrowDeveloperError();
   });
 
   it("contains throws with undefined date", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.contains(undefined);
     }).toThrowDeveloperError();
   });
 
   it("indexOf throws with undefined date", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.indexOf(undefined);
     }).toThrowDeveloperError();
   });
 
   it("addInterval throws with undefined interval", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.addInterval(undefined, TestObject.equals);
     }).toThrowDeveloperError();
   });
 
   it("removeInterval throws with undefined", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.removeInterval(undefined);
     }).toThrowDeveloperError();
   });
 
   it("intersect throws with undefined interval", function () {
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
     expect(function () {
       intervals.intersect(undefined);
     }).toThrowDeveloperError();
   });
 
   it("changed event is raised as expected", function () {
-    const interval = new TimeInterval({
+    var interval = new TimeInterval({
       start: new JulianDate(10, 0),
       stop: new JulianDate(12, 0),
     });
 
-    const intervals = new TimeIntervalCollection();
+    var intervals = new TimeIntervalCollection();
 
-    const listener = jasmine.createSpy("listener");
+    var listener = jasmine.createSpy("listener");
     intervals.changedEvent.addEventListener(listener);
 
     intervals.addInterval(interval);
@@ -1572,12 +1587,12 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 return single interval if no duration", function () {
-    const start = "2017-01-01T00:00:00Z";
-    const stop = "2017-01-02T00:00:00Z";
-    const julianDates = iso8601ToJulianDateArray([start, stop]);
+    var start = "2017-01-01T00:00:00Z";
+    var stop = "2017-01-02T00:00:00Z";
+    var julianDates = iso8601ToJulianDateArray([start, stop]);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${start}/${stop}`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601: start + "/" + stop,
       isStartIncluded: false,
       isStopIncluded: false,
     });
@@ -1586,44 +1601,42 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 works with just year", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2017-01-01T00:00:00Z",
       "2018-01-01T00:00:00Z",
       "2019-01-01T00:00:00Z",
       "2020-01-01T00:00:00Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/P1Y`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/P1Y",
     });
 
     checkIntervals(intervals, julianDates, true, true);
   });
 
   it("fromIso8601 works with just month", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2016-12-02T10:00:01.5Z",
       "2017-01-02T10:00:01.5Z",
       "2017-02-02T10:00:01.5Z",
       "2017-03-02T10:00:01.5Z",
       "2017-04-02T10:00:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/P1M`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/P1M",
     });
 
     checkIntervals(intervals, julianDates, true, true);
   });
 
   it("fromIso8601 works with just day", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2016-12-31T10:01:01.5Z",
       "2017-01-01T10:01:01.5Z",
       "2017-01-02T10:01:01.5Z",
@@ -1631,12 +1644,11 @@ describe("Core/TimeIntervalCollection", function () {
       "2017-01-04T10:01:01.5Z",
       "2017-01-05T10:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/P1D`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/P1D",
       isStartIncluded: false,
     });
 
@@ -1644,18 +1656,20 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 works with just all date components", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2017-01-01T10:01:01.5Z",
       "2018-03-04T10:01:01.5Z",
       "2019-05-07T10:01:01.5Z",
       "2020-07-10T10:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/P1Y2M3D`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] +
+        "/" +
+        iso8601Dates[iso8601Dates.length - 1] +
+        "/P1Y2M3D",
       isStopIncluded: false,
     });
 
@@ -1663,18 +1677,17 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 works with just just hour", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2017-01-01T22:01:01.5Z",
       "2017-01-01T23:01:01.5Z",
       "2017-01-02T00:01:01.5Z",
       "2017-01-02T01:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1H`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/PT1H",
       isStartIncluded: false,
     });
 
@@ -1682,18 +1695,17 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 works with just just minute", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1M`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/PT1M",
       isStopIncluded: false,
     });
 
@@ -1701,18 +1713,17 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 works with just just second", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2016-12-31T23:59:58.5Z",
       "2016-12-31T23:59:59.5Z",
       "2017-01-01T00:00:00.5Z",
       "2017-01-01T00:00:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1S`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/PT1S",
       isStartIncluded: false,
       isStopIncluded: false,
     });
@@ -1721,73 +1732,81 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 works with just just millisecond", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2016-12-31T23:59:58.5Z",
       "2016-12-31T23:59:59Z",
       "2016-12-31T23:59:59.5Z",
       "2017-01-01T00:00:00Z",
       "2017-01-01T00:00:00.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT0.5S`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] +
+        "/" +
+        iso8601Dates[iso8601Dates.length - 1] +
+        "/PT0.5S",
     });
 
     checkIntervals(intervals, julianDates, true, true);
   });
 
   it("fromIso8601 works with just all time components", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2017-01-01T10:01:01.5Z",
       "2017-01-01T11:03:05Z",
       "2017-01-01T12:05:08.5Z",
       "2017-01-01T13:07:12Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1H2M3.5S`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] +
+        "/" +
+        iso8601Dates[iso8601Dates.length - 1] +
+        "/PT1H2M3.5S",
     });
 
     checkIntervals(intervals, julianDates, true, true);
   });
 
   it("fromIso8601 works with just all date and time components", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2017-01-01T10:01:01.5Z",
       "2018-03-04T11:03:05Z",
       "2019-05-07T12:05:08.5Z",
       "2020-07-10T13:07:12Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/P1Y2M3DT1H2M3.5S`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] +
+        "/" +
+        iso8601Dates[iso8601Dates.length - 1] +
+        "/P1Y2M3DT1H2M3.5S",
     });
 
     checkIntervals(intervals, julianDates, true, true);
   });
 
   it("fromIso8601 works with just all date and time components with date string for duration", function () {
-    const iso8601Dates = [
+    var iso8601Dates = [
       "2017-01-01T10:01:01.5Z",
       "2018-03-04T11:03:05Z",
       "2019-05-07T12:05:08.5Z",
       "2020-07-10T13:07:12Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/0001-02-03T01:02:03.5`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] +
+        "/" +
+        iso8601Dates[iso8601Dates.length - 1] +
+        "/0001-02-03T01:02:03.5",
     });
 
     checkIntervals(intervals, julianDates, true, true);
@@ -1801,24 +1820,26 @@ describe("Core/TimeIntervalCollection", function () {
   }
 
   it("fromIso8601 calls the dataCallback on interval create", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2017-01-01T10:01:01.5Z",
       "2018-03-04T11:03:05Z",
       "2019-05-07T12:05:08.5Z",
       "2020-07-10T13:07:12Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/P1Y2M3DT1H2M3.5S`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] +
+        "/" +
+        iso8601Dates[iso8601Dates.length - 1] +
+        "/P1Y2M3DT1H2M3.5S",
       dataCallback: dataSpy,
     });
 
     expect(dataSpy.calls.count()).toEqual(3);
-    for (let i = 0; i < 3; ++i) {
+    for (var i = 0; i < 3; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
@@ -1826,19 +1847,18 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 handles leadingInterval option", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1M`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/PT1M",
       isStartIncluded: true,
       isStopIncluded: false,
       leadingInterval: true,
@@ -1846,12 +1866,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(4);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check leading interval
-    const leading = intervals._intervals.shift();
+    var leading = intervals._intervals.shift();
     expect(JulianDate.compare(leading.start, Iso8601.MINIMUM_VALUE)).toEqual(0);
     expect(JulianDate.compare(leading.stop, julianDates[0])).toEqual(0);
     expect(leading.isStartIncluded).toBe(true);
@@ -1862,19 +1882,18 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 handles trailingInterval option", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1M`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/PT1M",
       isStartIncluded: false,
       isStopIncluded: true,
       trailingInterval: true,
@@ -1882,12 +1901,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(4);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check trailing interval
-    const trailing = intervals._intervals.pop();
+    var trailing = intervals._intervals.pop();
     expect(
       JulianDate.compare(trailing.start, julianDates[iso8601Dates.length - 1])
     ).toEqual(0);
@@ -1900,19 +1919,18 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601 handles leadingInterval and trailingInterval option", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601({
-      iso8601: `${iso8601Dates[0]}/${
-        iso8601Dates[iso8601Dates.length - 1]
-      }/PT1M`,
+    var intervals = TimeIntervalCollection.fromIso8601({
+      iso8601:
+        iso8601Dates[0] + "/" + iso8601Dates[iso8601Dates.length - 1] + "/PT1M",
       isStartIncluded: false,
       isStopIncluded: false,
       leadingInterval: true,
@@ -1921,12 +1939,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(5);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check leading interval
-    const leading = intervals._intervals.shift();
+    var leading = intervals._intervals.shift();
     expect(JulianDate.compare(leading.start, Iso8601.MINIMUM_VALUE)).toEqual(0);
     expect(JulianDate.compare(leading.stop, julianDates[0])).toEqual(0);
     expect(leading.isStartIncluded).toBe(true);
@@ -1934,7 +1952,7 @@ describe("Core/TimeIntervalCollection", function () {
     expect(leading.data).toEqual(dataCallback(leading, 0));
 
     // Check trailing interval
-    const trailing = intervals._intervals.pop();
+    var trailing = intervals._intervals.pop();
     expect(
       JulianDate.compare(trailing.start, julianDates[iso8601Dates.length - 1])
     ).toEqual(0);
@@ -1948,16 +1966,16 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601DateArray handles leadingInterval option", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601DateArray({
+    var intervals = TimeIntervalCollection.fromIso8601DateArray({
       iso8601Dates: iso8601Dates,
       isStartIncluded: true,
       isStopIncluded: false,
@@ -1966,12 +1984,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(4);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check leading interval
-    const leading = intervals._intervals.shift();
+    var leading = intervals._intervals.shift();
     expect(JulianDate.compare(leading.start, Iso8601.MINIMUM_VALUE)).toEqual(0);
     expect(JulianDate.compare(leading.stop, julianDates[0])).toEqual(0);
     expect(leading.isStartIncluded).toBe(true);
@@ -1982,16 +2000,16 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601DateArray handles trailingInterval option", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601DateArray({
+    var intervals = TimeIntervalCollection.fromIso8601DateArray({
       iso8601Dates: iso8601Dates,
       isStartIncluded: false,
       isStopIncluded: true,
@@ -2000,12 +2018,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(4);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check trailing interval
-    const trailing = intervals._intervals.pop();
+    var trailing = intervals._intervals.pop();
     expect(
       JulianDate.compare(trailing.start, julianDates[iso8601Dates.length - 1])
     ).toEqual(0);
@@ -2018,16 +2036,16 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601DateArray handles leadingInterval and trailingInterval option", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
 
-    const intervals = TimeIntervalCollection.fromIso8601DateArray({
+    var intervals = TimeIntervalCollection.fromIso8601DateArray({
       iso8601Dates: iso8601Dates,
       isStartIncluded: false,
       isStopIncluded: false,
@@ -2037,12 +2055,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(5);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check leading interval
-    const leading = intervals._intervals.shift();
+    var leading = intervals._intervals.shift();
     expect(JulianDate.compare(leading.start, Iso8601.MINIMUM_VALUE)).toEqual(0);
     expect(JulianDate.compare(leading.stop, julianDates[0])).toEqual(0);
     expect(leading.isStartIncluded).toBe(true);
@@ -2050,7 +2068,7 @@ describe("Core/TimeIntervalCollection", function () {
     expect(leading.data).toEqual(dataCallback(leading, 0));
 
     // Check trailing interval
-    const trailing = intervals._intervals.pop();
+    var trailing = intervals._intervals.pop();
     expect(
       JulianDate.compare(trailing.start, julianDates[iso8601Dates.length - 1])
     ).toEqual(0);
@@ -2064,17 +2082,17 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601DurationArray handles relativeToPrevious set to false", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
-    const iso8601Durations = ["PT0M", "PT1M", "PT2M", "PT3M"];
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var iso8601Durations = ["PT0M", "PT1M", "PT2M", "PT3M"];
 
-    const intervals = TimeIntervalCollection.fromIso8601DurationArray({
+    var intervals = TimeIntervalCollection.fromIso8601DurationArray({
       epoch: julianDates[0],
       iso8601Durations: iso8601Durations,
       relativeToPrevious: false,
@@ -2086,12 +2104,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(5);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check leading interval
-    const leading = intervals._intervals.shift();
+    var leading = intervals._intervals.shift();
     expect(JulianDate.compare(leading.start, Iso8601.MINIMUM_VALUE)).toEqual(0);
     expect(JulianDate.compare(leading.stop, julianDates[0])).toEqual(0);
     expect(leading.isStartIncluded).toBe(true);
@@ -2099,7 +2117,7 @@ describe("Core/TimeIntervalCollection", function () {
     expect(leading.data).toEqual(dataCallback(leading, 0));
 
     // Check trailing interval
-    const trailing = intervals._intervals.pop();
+    var trailing = intervals._intervals.pop();
     expect(
       JulianDate.compare(trailing.start, julianDates[iso8601Dates.length - 1])
     ).toEqual(0);
@@ -2113,17 +2131,17 @@ describe("Core/TimeIntervalCollection", function () {
   });
 
   it("fromIso8601DurationArray handles relativeToPrevious set to true", function () {
-    const dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
-    const iso8601Dates = [
+    var dataSpy = jasmine.createSpy("data").and.callFake(dataCallback);
+    var iso8601Dates = [
       "2016-12-31T23:58:01.5Z",
       "2016-12-31T23:59:01.5Z",
       "2017-01-01T00:00:01.5Z",
       "2017-01-01T00:01:01.5Z",
     ];
-    const julianDates = iso8601ToJulianDateArray(iso8601Dates);
-    const iso8601Durations = ["PT0M", "PT1M", "PT1M", "PT1M"];
+    var julianDates = iso8601ToJulianDateArray(iso8601Dates);
+    var iso8601Durations = ["PT0M", "PT1M", "PT1M", "PT1M"];
 
-    const intervals = TimeIntervalCollection.fromIso8601DurationArray({
+    var intervals = TimeIntervalCollection.fromIso8601DurationArray({
       epoch: julianDates[0],
       iso8601Durations: iso8601Durations,
       relativeToPrevious: true,
@@ -2135,12 +2153,12 @@ describe("Core/TimeIntervalCollection", function () {
     });
 
     expect(dataSpy.calls.count()).toEqual(5);
-    for (let i = 0; i < 4; ++i) {
+    for (var i = 0; i < 4; ++i) {
       expect(dataSpy).toHaveBeenCalledWith(intervals.get(i), i);
     }
 
     // Check leading interval
-    const leading = intervals._intervals.shift();
+    var leading = intervals._intervals.shift();
     expect(JulianDate.compare(leading.start, Iso8601.MINIMUM_VALUE)).toEqual(0);
     expect(JulianDate.compare(leading.stop, julianDates[0])).toEqual(0);
     expect(leading.isStartIncluded).toBe(true);
@@ -2148,7 +2166,7 @@ describe("Core/TimeIntervalCollection", function () {
     expect(leading.data).toEqual(dataCallback(leading, 0));
 
     // Check trailing interval
-    const trailing = intervals._intervals.pop();
+    var trailing = intervals._intervals.pop();
     expect(
       JulianDate.compare(trailing.start, julianDates[iso8601Dates.length - 1])
     ).toEqual(0);

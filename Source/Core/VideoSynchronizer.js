@@ -65,7 +65,7 @@ Object.defineProperties(VideoSynchronizer.prototype, {
       return this._clock;
     },
     set: function (value) {
-      const oldValue = this._clock;
+      var oldValue = this._clock;
 
       if (oldValue === value) {
         return;
@@ -97,7 +97,7 @@ Object.defineProperties(VideoSynchronizer.prototype, {
       return this._element;
     },
     set: function (value) {
-      const oldValue = this._element;
+      var oldValue = this._element;
 
       if (oldValue === value) {
         return;
@@ -145,7 +145,7 @@ VideoSynchronizer.prototype._trySetPlaybackRate = function (clock) {
     return;
   }
 
-  const element = this._element;
+  var element = this._element;
   try {
     element.playbackRate = clock.multiplier;
   } catch (error) {
@@ -156,13 +156,13 @@ VideoSynchronizer.prototype._trySetPlaybackRate = function (clock) {
 };
 
 VideoSynchronizer.prototype._onTick = function (clock) {
-  const element = this._element;
+  var element = this._element;
   if (!defined(element) || element.readyState < 2) {
     return;
   }
 
-  const paused = element.paused;
-  const shouldAnimate = clock.shouldAnimate;
+  var paused = element.paused;
+  var shouldAnimate = clock.shouldAnimate;
   if (shouldAnimate === paused) {
     if (shouldAnimate) {
       element.play();
@@ -183,13 +183,13 @@ VideoSynchronizer.prototype._onTick = function (clock) {
 
   this._trySetPlaybackRate(clock);
 
-  const clockTime = clock.currentTime;
-  const epoch = defaultValue(this.epoch, Iso8601.MINIMUM_VALUE);
-  let videoTime = JulianDate.secondsDifference(clockTime, epoch);
+  var clockTime = clock.currentTime;
+  var epoch = defaultValue(this.epoch, Iso8601.MINIMUM_VALUE);
+  var videoTime = JulianDate.secondsDifference(clockTime, epoch);
 
-  const duration = element.duration;
-  let desiredTime;
-  const currentTime = element.currentTime;
+  var duration = element.duration;
+  var desiredTime;
+  var currentTime = element.currentTime;
   if (element.loop) {
     videoTime = videoTime % duration;
     if (videoTime < 0.0) {
@@ -206,7 +206,7 @@ VideoSynchronizer.prototype._onTick = function (clock) {
 
   //If the playing video's time and the scene's clock time
   //ever drift too far apart, we want to set the video to match
-  const tolerance = shouldAnimate ? defaultValue(this.tolerance, 1.0) : 0.001;
+  var tolerance = shouldAnimate ? defaultValue(this.tolerance, 1.0) : 0.001;
   if (Math.abs(desiredTime - currentTime) > tolerance) {
     this._seeking = true;
     element.currentTime = desiredTime;

@@ -7,29 +7,15 @@ import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
 import Uri from "../ThirdParty/Uri.js";
 
-const mobileWidth = 576;
-const lightboxHeight = 100;
-const textColor = "#ffffff";
-const highlightColor = "#48b";
-
-/**
- * Used to sort the credits by frequency of appearance
- * when they are later displayed.
- *
- * @alias CreditDisplay.CreditDisplayElement
- * @constructor
- *
- * @private
- */
-function CreditDisplayElement(credit, count) {
-  this.credit = credit;
-  this.count = defaultValue(count, 1);
-}
+var mobileWidth = 576;
+var lightboxHeight = 100;
+var textColor = "#ffffff";
+var highlightColor = "#48b";
 
 function contains(credits, credit) {
-  const len = credits.length;
-  for (let i = 0; i < len; i++) {
-    const existingCredit = credits[i];
+  var len = credits.length;
+  for (var i = 0; i < len; i++) {
+    var existingCredit = credits[i];
     if (Credit.equals(existingCredit, credit)) {
       return true;
     }
@@ -41,8 +27,8 @@ function swapCesiumCredit(creditDisplay) {
   // We don't want to clutter the screen with the Cesium logo and the Cesium ion
   // logo at the same time. Since the ion logo is required, we just replace the
   // Cesium logo or add the logo if the Cesium one was removed.
-  const previousCredit = creditDisplay._previousCesiumCredit;
-  const currentCredit = creditDisplay._currentCesiumCredit;
+  var previousCredit = creditDisplay._previousCesiumCredit;
+  var currentCredit = creditDisplay._currentCesiumCredit;
   if (Credit.equals(currentCredit, previousCredit)) {
     return;
   }
@@ -57,10 +43,10 @@ function swapCesiumCredit(creditDisplay) {
   creditDisplay._previousCesiumCredit = currentCredit;
 }
 
-const delimiterClassName = "cesium-credit-delimiter";
+var delimiterClassName = "cesium-credit-delimiter";
 
 function createDelimiterElement(delimiter) {
-  const delimiterElement = document.createElement("span");
+  var delimiterElement = document.createElement("span");
   delimiterElement.textContent = delimiter;
   delimiterElement.className = delimiterClassName;
   return delimiterElement;
@@ -69,7 +55,7 @@ function createDelimiterElement(delimiter) {
 function createCreditElement(element, elementWrapperTagName) {
   // may need to wrap the credit in another element
   if (defined(elementWrapperTagName)) {
-    const wrapper = document.createElement(elementWrapperTagName);
+    var wrapper = document.createElement(elementWrapperTagName);
     wrapper._creditId = element._creditId;
     wrapper.appendChild(element);
     element = wrapper;
@@ -78,27 +64,21 @@ function createCreditElement(element, elementWrapperTagName) {
 }
 
 function displayCredits(container, credits, delimiter, elementWrapperTagName) {
-  const childNodes = container.childNodes;
-  let domIndex = -1;
-
-  // Sort the credits such that more frequent credits appear first
-  credits.sort(function (credit1, credit2) {
-    return credit2.count - credit1.count;
-  });
-
-  for (let creditIndex = 0; creditIndex < credits.length; ++creditIndex) {
-    const credit = credits[creditIndex].credit;
+  var childNodes = container.childNodes;
+  var domIndex = -1;
+  for (var creditIndex = 0; creditIndex < credits.length; ++creditIndex) {
+    var credit = credits[creditIndex];
     if (defined(credit)) {
       domIndex = creditIndex;
       if (defined(delimiter)) {
         // credits may be separated by delimiters
         domIndex *= 2;
         if (creditIndex > 0) {
-          const delimiterDomIndex = domIndex - 1;
+          var delimiterDomIndex = domIndex - 1;
           if (childNodes.length <= delimiterDomIndex) {
             container.appendChild(createDelimiterElement(delimiter));
           } else {
-            const existingDelimiter = childNodes[delimiterDomIndex];
+            var existingDelimiter = childNodes[delimiterDomIndex];
             if (existingDelimiter.className !== delimiterClassName) {
               container.replaceChild(
                 createDelimiterElement(delimiter),
@@ -109,7 +89,7 @@ function displayCredits(container, credits, delimiter, elementWrapperTagName) {
         }
       }
 
-      const element = credit.element;
+      var element = credit.element;
 
       // check to see if the correct credit is in the right place
       if (childNodes.length <= domIndex) {
@@ -117,7 +97,7 @@ function displayCredits(container, credits, delimiter, elementWrapperTagName) {
           createCreditElement(element, elementWrapperTagName)
         );
       } else {
-        const existingElement = childNodes[domIndex];
+        var existingElement = childNodes[domIndex];
         if (existingElement._creditId !== credit._id) {
           // not the right credit, swap it in
           container.replaceChild(
@@ -137,9 +117,9 @@ function displayCredits(container, credits, delimiter, elementWrapperTagName) {
 }
 
 function styleLightboxContainer(that) {
-  const lightboxCredits = that._lightboxCredits;
-  const width = that.viewport.clientWidth;
-  const height = that.viewport.clientHeight;
+  var lightboxCredits = that._lightboxCredits;
+  var width = that.viewport.clientWidth;
+  var height = that.viewport.clientHeight;
   if (width !== that._lastViewportWidth) {
     if (width < mobileWidth) {
       lightboxCredits.className =
@@ -148,26 +128,24 @@ function styleLightboxContainer(that) {
     } else {
       lightboxCredits.className =
         "cesium-credit-lightbox cesium-credit-lightbox-expanded";
-      lightboxCredits.style.marginTop = `${Math.floor(
-        (height - lightboxCredits.clientHeight) * 0.5
-      )}px`;
+      lightboxCredits.style.marginTop =
+        Math.floor((height - lightboxCredits.clientHeight) * 0.5) + "px";
     }
     that._lastViewportWidth = width;
   }
 
   if (width >= mobileWidth && height !== that._lastViewportHeight) {
-    lightboxCredits.style.marginTop = `${Math.floor(
-      (height - lightboxCredits.clientHeight) * 0.5
-    )}px`;
+    lightboxCredits.style.marginTop =
+      Math.floor((height - lightboxCredits.clientHeight) * 0.5) + "px";
     that._lastViewportHeight = height;
   }
 }
 
 function addStyle(selector, styles) {
-  let style = `${selector} {`;
-  for (const attribute in styles) {
+  var style = selector + " {";
+  for (var attribute in styles) {
     if (styles.hasOwnProperty(attribute)) {
-      style += `${attribute}: ${styles[attribute]}; `;
+      style += attribute + ": " + styles[attribute] + "; ";
     }
   }
   style += " }\n";
@@ -175,7 +153,7 @@ function addStyle(selector, styles) {
 }
 
 function appendCss() {
-  let style = "";
+  var style = "";
   style += addStyle(".cesium-credit-lightbox-overlay", {
     display: "none",
     "z-index": "1", //must be at least 1 to draw over top other Cesium widgets
@@ -191,7 +169,7 @@ function appendCss() {
     "background-color": "#303336",
     color: textColor,
     position: "relative",
-    "min-height": `${lightboxHeight}px`,
+    "min-height": lightboxHeight + "px",
     margin: "auto",
   });
 
@@ -270,8 +248,8 @@ function appendCss() {
     }
   );
 
-  const head = document.head;
-  const css = document.createElement("style");
+  var head = document.head;
+  var css = document.createElement("style");
   css.innerHTML = style;
   head.insertBefore(css, head.firstChild);
 }
@@ -287,21 +265,21 @@ function appendCss() {
  * @constructor
  *
  * @example
- * const creditDisplay = new Cesium.CreditDisplay(creditContainer);
+ * var creditDisplay = new Cesium.CreditDisplay(creditContainer);
  */
 function CreditDisplay(container, delimiter, viewport) {
   //>>includeStart('debug', pragmas.debug);
   Check.defined("container", container);
   //>>includeEnd('debug');
-  const that = this;
+  var that = this;
 
   viewport = defaultValue(viewport, document.body);
 
-  const lightbox = document.createElement("div");
+  var lightbox = document.createElement("div");
   lightbox.className = "cesium-credit-lightbox-overlay";
   viewport.appendChild(lightbox);
 
-  const lightboxCredits = document.createElement("div");
+  var lightboxCredits = document.createElement("div");
   lightboxCredits.className = "cesium-credit-lightbox";
   lightbox.appendChild(lightboxCredits);
 
@@ -313,38 +291,38 @@ function CreditDisplay(container, delimiter, viewport) {
   }
   lightbox.addEventListener("click", hideLightbox, false);
 
-  const title = document.createElement("div");
+  var title = document.createElement("div");
   title.className = "cesium-credit-lightbox-title";
   title.textContent = "Data provided by:";
   lightboxCredits.appendChild(title);
 
-  const closeButton = document.createElement("a");
+  var closeButton = document.createElement("a");
   closeButton.onclick = this.hideLightbox.bind(this);
   closeButton.innerHTML = "&times;";
   closeButton.className = "cesium-credit-lightbox-close";
   lightboxCredits.appendChild(closeButton);
 
-  const creditList = document.createElement("ul");
+  var creditList = document.createElement("ul");
   lightboxCredits.appendChild(creditList);
 
-  const cesiumCreditContainer = document.createElement("div");
+  var cesiumCreditContainer = document.createElement("div");
   cesiumCreditContainer.className = "cesium-credit-logoContainer";
   cesiumCreditContainer.style.display = "inline";
   container.appendChild(cesiumCreditContainer);
 
-  const screenContainer = document.createElement("div");
+  var screenContainer = document.createElement("div");
   screenContainer.className = "cesium-credit-textContainer";
   screenContainer.style.display = "inline";
   container.appendChild(screenContainer);
 
-  const expandLink = document.createElement("a");
+  var expandLink = document.createElement("a");
   expandLink.className = "cesium-credit-expand-link";
   expandLink.onclick = this.showLightbox.bind(this);
   expandLink.textContent = "Data attribution";
   container.appendChild(expandLink);
 
   appendCss();
-  const cesiumCredit = Credit.clone(CreditDisplay.cesiumCredit);
+  var cesiumCredit = Credit.clone(CreditDisplay.cesiumCredit);
 
   this._delimiter = defaultValue(delimiter, " • ");
   this._screenContainer = screenContainer;
@@ -361,14 +339,10 @@ function CreditDisplay(container, delimiter, viewport) {
   this._cesiumCredit = cesiumCredit;
   this._previousCesiumCredit = undefined;
   this._currentCesiumCredit = cesiumCredit;
-  this._creditDisplayElementPool = [];
-  this._creditDisplayElementIndex = 0;
-
   this._currentFrameCredits = {
     screenCredits: new AssociativeArray(),
     lightboxCredits: new AssociativeArray(),
   };
-
   this._defaultCredit = undefined;
 
   this.viewport = viewport;
@@ -380,26 +354,6 @@ function CreditDisplay(container, delimiter, viewport) {
   this.container = container;
 }
 
-function setCredit(creditDisplay, credits, credit, count) {
-  count = defaultValue(count, 1);
-  let creditDisplayElement = credits.get(credit.id);
-  if (!defined(creditDisplayElement)) {
-    const pool = creditDisplay._creditDisplayElementPool;
-    const poolIndex = creditDisplay._creditDisplayElementPoolIndex;
-    if (poolIndex < pool.length) {
-      creditDisplayElement = pool[poolIndex];
-      creditDisplayElement.credit = credit;
-      creditDisplayElement.count = count;
-    } else {
-      creditDisplayElement = new CreditDisplayElement(credit, count);
-      pool.push(creditDisplayElement);
-    }
-    ++creditDisplay._creditDisplayElementPoolIndex;
-    credits.set(credit.id, creditDisplayElement);
-  } else if (creditDisplayElement.count < Number.MAX_VALUE) {
-    creditDisplayElement.count += count;
-  }
-}
 /**
  * Adds a credit to the list of current credits to be displayed in the credit container
  *
@@ -420,14 +374,11 @@ CreditDisplay.prototype.addCredit = function (credit) {
     return;
   }
 
-  let credits;
   if (!credit.showOnScreen) {
-    credits = this._currentFrameCredits.lightboxCredits;
+    this._currentFrameCredits.lightboxCredits.set(credit.id, credit);
   } else {
-    credits = this._currentFrameCredits.screenCredits;
+    this._currentFrameCredits.screenCredits.set(credit.id, credit);
   }
-
-  setCredit(this, credits, credit);
 };
 
 /**
@@ -440,7 +391,7 @@ CreditDisplay.prototype.addDefaultCredit = function (credit) {
   Check.defined("credit", credit);
   //>>includeEnd('debug');
 
-  const defaultCredits = this._defaultCredits;
+  var defaultCredits = this._defaultCredits;
   if (!contains(defaultCredits, credit)) {
     defaultCredits.push(credit);
   }
@@ -456,8 +407,8 @@ CreditDisplay.prototype.removeDefaultCredit = function (credit) {
   Check.defined("credit", credit);
   //>>includeEnd('debug');
 
-  const defaultCredits = this._defaultCredits;
-  const index = defaultCredits.indexOf(credit);
+  var defaultCredits = this._defaultCredits;
+  var index = defaultCredits.indexOf(credit);
   if (index !== -1) {
     defaultCredits.splice(index, 1);
   }
@@ -486,15 +437,14 @@ CreditDisplay.prototype.update = function () {
  * Resets the credit display to a beginning of frame state, clearing out current credits.
  */
 CreditDisplay.prototype.beginFrame = function () {
-  const currentFrameCredits = this._currentFrameCredits;
-  this._creditDisplayElementPoolIndex = 0;
+  var currentFrameCredits = this._currentFrameCredits;
 
-  const screenCredits = currentFrameCredits.screenCredits;
+  var screenCredits = currentFrameCredits.screenCredits;
   screenCredits.removeAll();
-  const defaultCredits = this._defaultCredits;
-  for (let i = 0; i < defaultCredits.length; ++i) {
-    const defaultCredit = defaultCredits[i];
-    setCredit(this, screenCredits, defaultCredit, Number.MAX_VALUE);
+  var defaultCredits = this._defaultCredits;
+  for (var i = 0; i < defaultCredits.length; ++i) {
+    var defaultCredit = defaultCredits[i];
+    screenCredits.set(defaultCredit.id, defaultCredit);
   }
 
   currentFrameCredits.lightboxCredits.removeAll();
@@ -509,7 +459,7 @@ CreditDisplay.prototype.beginFrame = function () {
  * Sets the credit display to the end of frame state, displaying credits from the last frame in the credit container.
  */
 CreditDisplay.prototype.endFrame = function () {
-  const screenCredits = this._currentFrameCredits.screenCredits.values;
+  var screenCredits = this._currentFrameCredits.screenCredits.values;
   displayCredits(
     this._screenContainer,
     screenCredits,
@@ -517,7 +467,7 @@ CreditDisplay.prototype.endFrame = function () {
     undefined
   );
 
-  const lightboxCredits = this._currentFrameCredits.lightboxCredits.values;
+  var lightboxCredits = this._currentFrameCredits.lightboxCredits.values;
   this._expandLink.style.display =
     lightboxCredits.length > 0 ? "inline" : "none";
   displayCredits(this._creditList, lightboxCredits, undefined, "li");
@@ -559,10 +509,10 @@ CreditDisplay.prototype.isDestroyed = function () {
 CreditDisplay._cesiumCredit = undefined;
 CreditDisplay._cesiumCreditInitialized = false;
 
-let defaultCredit;
+var defaultCredit;
 function getDefaultCredit() {
   if (!defined(defaultCredit)) {
-    let logo = buildModuleUrl("Assets/Images/ion-credit.png");
+    var logo = buildModuleUrl("Assets/Images/ion-credit.png");
 
     // When hosting in a WebView, the base URL scheme is file:// or ms-appx-web://
     // which is stripped out from the Credit's <img> tag; use the full path instead
@@ -571,12 +521,14 @@ function getDefaultCredit() {
       logo.indexOf("https://") !== 0 &&
       logo.indexOf("data:") !== 0
     ) {
-      const logoUrl = new Uri(logo);
+      var logoUrl = new Uri(logo);
       logo = logoUrl.path();
     }
 
     defaultCredit = new Credit(
-      `<a href="https://cesium.com/" target="_blank"><img src="${logo}" title="Cesium ion"/></a>`,
+      '<a href="https://cesium.com/" target="_blank"><img src="' +
+        logo +
+        '" title="Cesium ion"/></a>',
       true
     );
   }
@@ -605,6 +557,4 @@ Object.defineProperties(CreditDisplay, {
     },
   },
 });
-
-CreditDisplay.CreditDisplayElement = CreditDisplayElement;
 export default CreditDisplay;

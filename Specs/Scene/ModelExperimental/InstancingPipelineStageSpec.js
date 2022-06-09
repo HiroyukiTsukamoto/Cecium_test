@@ -1,35 +1,26 @@
 import {
-  Axis,
   Cartesian3,
   combine,
   GltfLoader,
-  I3dmLoader,
   InstancingPipelineStage,
   Resource,
   ResourceCache,
   ShaderBuilder,
-  Matrix4,
   Math as CesiumMath,
-  ModelExperimentalUtility,
-  _shadersInstancingStageCommon,
-  _shadersLegacyInstancingStageVS,
 } from "../../../Source/Cesium.js";
 import createScene from "../../createScene.js";
 import waitForLoaderProcess from "../../waitForLoaderProcess.js";
-import ShaderBuilderTester from "../../ShaderBuilderTester.js";
 
 describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
-  const boxInstanced =
+  var boxInstanced =
     "./Data/Models/GltfLoader/BoxInstanced/glTF/box-instanced.gltf";
-  const boxInstancedTranslation =
+  var boxInstancedTranslation =
     "./Data/Models/GltfLoader/BoxInstancedTranslation/glTF/box-instanced-translation.gltf";
-  const boxInstancedTranslationMinMax =
+  var boxInstancedTranslationMinMax =
     "./Data/Models/GltfLoader/BoxInstancedTranslationWithMinMax/glTF/box-instanced-translation-min-max.gltf";
-  const i3dmInstancedOrientation =
-    "./Data/Cesium3DTiles/Instanced/InstancedOrientation/instancedOrientation.i3dm";
 
-  let scene;
-  const gltfLoaders = [];
+  var scene;
+  var gltfLoaders = [];
 
   beforeAll(function () {
     scene = createScene();
@@ -40,9 +31,9 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   afterEach(function () {
-    const gltfLoadersLength = gltfLoaders.length;
-    for (let i = 0; i < gltfLoadersLength; ++i) {
-      const gltfLoader = gltfLoaders[i];
+    var gltfLoadersLength = gltfLoaders.length;
+    for (var i = 0; i < gltfLoadersLength; ++i) {
+      var gltfLoader = gltfLoaders[i];
       if (!gltfLoader.isDestroyed()) {
         gltfLoader.destroy();
       }
@@ -52,7 +43,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   function getOptions(gltfPath, options) {
-    const resource = new Resource({
+    var resource = new Resource({
       url: gltfPath,
     });
 
@@ -62,40 +53,16 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     });
   }
 
-  function getI3dmOptions(gltfPath, options) {
-    const resource = new Resource({
-      url: gltfPath,
-    });
-
-    return combine(options, {
-      i3dmResource: resource,
-      incrementallyLoadTexture: false,
-    });
-  }
-
   function loadGltf(gltfPath, options) {
-    const gltfLoader = new GltfLoader(getOptions(gltfPath, options));
+    var gltfLoader = new GltfLoader(getOptions(gltfPath, options));
     gltfLoaders.push(gltfLoader);
     gltfLoader.load();
 
     return waitForLoaderProcess(gltfLoader, scene);
   }
 
-  function loadI3dm(i3dmPath) {
-    const result = Resource.fetchArrayBuffer(i3dmPath);
-
-    return result.then(function (arrayBuffer) {
-      const i3dmLoader = new I3dmLoader(
-        getI3dmOptions(i3dmPath, { arrayBuffer: arrayBuffer })
-      );
-      gltfLoaders.push(i3dmLoader);
-      i3dmLoader.load();
-      return waitForLoaderProcess(i3dmLoader, scene);
-    });
-  }
-
   it("correctly computes instancing TRANSLATION min and max from typed arrays", function () {
-    const renderResources = {
+    var renderResources = {
       attributeIndex: 1,
       attributes: [],
       instancingTranslationMax: undefined,
@@ -107,8 +74,8 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     };
 
     return loadGltf(boxInstanced).then(function (gltfLoader) {
-      const components = gltfLoader.components;
-      const node = components.nodes[0];
+      var components = gltfLoader.components;
+      var node = components.nodes[0];
 
       scene.renderForSpecs();
       InstancingPipelineStage.process(renderResources, node, scene.frameState);
@@ -124,7 +91,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   it("sets instancing TRANSLATION min and max from attributes", function () {
-    const renderResources = {
+    var renderResources = {
       attributeIndex: 1,
       attributes: [],
       instancingTranslationMax: undefined,
@@ -136,8 +103,8 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     };
 
     return loadGltf(boxInstancedTranslationMinMax).then(function (gltfLoader) {
-      const components = gltfLoader.components;
-      const node = components.nodes[0];
+      var components = gltfLoader.components;
+      var node = components.nodes[0];
 
       InstancingPipelineStage.process(renderResources, node);
 
@@ -152,7 +119,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   it("creates instancing matrices vertex attributes when ROTATION is present", function () {
-    const renderResources = {
+    var renderResources = {
       attributeIndex: 1,
       attributes: [],
       instancingTranslationMax: undefined,
@@ -164,8 +131,8 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     };
 
     return loadGltf(boxInstanced).then(function (gltfLoader) {
-      const components = gltfLoader.components;
-      const node = components.nodes[0];
+      var components = gltfLoader.components;
+      var node = components.nodes[0];
 
       scene.renderForSpecs();
       InstancingPipelineStage.process(renderResources, node, scene.frameState);
@@ -178,10 +145,10 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
       );
       expect(renderResources.attributes.length).toBe(4);
 
-      const attributeLines = renderResources.shaderBuilder._attributeLines;
-      const vertexDefineLines =
+      var attributeLines = renderResources.shaderBuilder._attributeLines;
+      var vertexDefineLines =
         renderResources.shaderBuilder._vertexShaderParts.defineLines;
-      const fragmentDefineLines =
+      var fragmentDefineLines =
         renderResources.shaderBuilder._fragmentShaderParts.defineLines;
 
       expect(vertexDefineLines[0]).toEqual("HAS_INSTANCING");
@@ -201,7 +168,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   it("creates instance matrices vertex attributes when TRANSLATION min and max are not present", function () {
-    const renderResources = {
+    var renderResources = {
       attributeIndex: 1,
       attributes: [],
       instancingTranslationMax: undefined,
@@ -213,8 +180,8 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     };
 
     return loadGltf(boxInstancedTranslation).then(function (gltfLoader) {
-      const components = gltfLoader.components;
-      const node = components.nodes[0];
+      var components = gltfLoader.components;
+      var node = components.nodes[0];
 
       scene.renderForSpecs();
       InstancingPipelineStage.process(renderResources, node, scene.frameState);
@@ -227,10 +194,10 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
       );
       expect(renderResources.attributes.length).toBe(3);
 
-      const attributeLines = renderResources.shaderBuilder._attributeLines;
-      const vertexDefineLines =
+      var attributeLines = renderResources.shaderBuilder._attributeLines;
+      var vertexDefineLines =
         renderResources.shaderBuilder._vertexShaderParts.defineLines;
-      const fragmentDefineLines =
+      var fragmentDefineLines =
         renderResources.shaderBuilder._fragmentShaderParts.defineLines;
 
       expect(vertexDefineLines[0]).toEqual("HAS_INSTANCING");
@@ -253,7 +220,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   it("correctly creates transform matrices", function () {
-    const renderResources = {
+    var renderResources = {
       attributeIndex: 1,
       attributes: [],
       instancingTranslationMax: undefined,
@@ -265,10 +232,10 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     };
 
     return loadGltf(boxInstanced).then(function (gltfLoader) {
-      const components = gltfLoader.components;
-      const node = components.nodes[0];
+      var components = gltfLoader.components;
+      var node = components.nodes[0];
 
-      const expectedTransformsTypedArray = new Float32Array([
+      var expectedTransformsTypedArray = new Float32Array([
         0.5999999642372131,
         0,
         0,
@@ -318,7 +285,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
         0.3897113800048828,
         0,
       ]);
-      const transformsTypedArray = InstancingPipelineStage._getInstanceTransformsTypedArray(
+      var transformsTypedArray = InstancingPipelineStage._getInstanceTransformsTypedArray(
         node.instances,
         node.instances.attributes[0].count,
         renderResources
@@ -327,7 +294,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
       expect(transformsTypedArray.length).toEqual(
         expectedTransformsTypedArray.length
       );
-      for (let i = 0; i < expectedTransformsTypedArray.length; i++) {
+      for (var i = 0; i < expectedTransformsTypedArray.length; i++) {
         expect(transformsTypedArray[i]).toEqualEpsilon(
           expectedTransformsTypedArray[i],
           CesiumMath.EPSILON10
@@ -337,7 +304,7 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
   });
 
   it("creates TRANSLATION vertex attributes", function () {
-    const renderResources = {
+    var renderResources = {
       attributeIndex: 1,
       attributes: [],
       instancingTranslationMax: undefined,
@@ -349,8 +316,8 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
     };
 
     return loadGltf(boxInstancedTranslationMinMax).then(function (gltfLoader) {
-      const components = gltfLoader.components;
-      const node = components.nodes[0];
+      var components = gltfLoader.components;
+      var node = components.nodes[0];
 
       scene.renderForSpecs();
       InstancingPipelineStage.process(renderResources, node, scene.frameState);
@@ -363,10 +330,10 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
       );
       expect(renderResources.attributes.length).toBe(1);
 
-      const attributeLines = renderResources.shaderBuilder._attributeLines;
-      const vertexDefineLines =
+      var attributeLines = renderResources.shaderBuilder._attributeLines;
+      var vertexDefineLines =
         renderResources.shaderBuilder._vertexShaderParts.defineLines;
-      const fragmentDefineLines =
+      var fragmentDefineLines =
         renderResources.shaderBuilder._fragmentShaderParts.defineLines;
 
       expect(vertexDefineLines[0]).toEqual("HAS_INSTANCING");
@@ -376,106 +343,6 @@ describe("Scene/ModelExperimental/InstancingPipelineStage", function () {
 
       expect(attributeLines[0]).toEqual(
         "attribute vec3 a_instanceTranslation;"
-      );
-    });
-  });
-
-  it("adds uniforms for legacy instancing path", function () {
-    const renderResources = {
-      attributeIndex: 1,
-      attributes: [],
-      instancingTranslationMax: undefined,
-      instancingTranslationMin: undefined,
-      shaderBuilder: new ShaderBuilder(),
-      model: {
-        _resources: [],
-        modelMatrix: Matrix4.fromUniformScale(2.0),
-        sceneGraph: {
-          axisCorrectionMatrix: ModelExperimentalUtility.getAxisCorrectionMatrix(
-            Axis.Y,
-            Axis.Z,
-            new Matrix4()
-          ),
-        },
-      },
-      uniformMap: {},
-      runtimeNode: {
-        computedTransform: Matrix4.fromTranslation(
-          new Cartesian3(0.0, 2.0, 0.0)
-        ),
-      },
-    };
-
-    return loadI3dm(i3dmInstancedOrientation, {
-      i3dmResource: Resource.createIfNeeded(i3dmInstancedOrientation),
-    }).then(function (i3dmLoader) {
-      const components = i3dmLoader.components;
-      const node = components.nodes[0];
-      const shaderBuilder = renderResources.shaderBuilder;
-      const uniformMap = renderResources.uniformMap;
-      const runtimeNode = renderResources.runtimeNode;
-
-      // Add the loaded components to the mocked render resources, as the
-      // uniform callbacks need to access this.
-      renderResources.model.sceneGraph.components = components;
-
-      scene.renderForSpecs();
-      InstancingPipelineStage.process(renderResources, node, scene.frameState);
-
-      ShaderBuilderTester.expectHasVertexDefines(shaderBuilder, [
-        "HAS_INSTANCING",
-        "HAS_INSTANCE_MATRICES",
-        "USE_LEGACY_INSTANCING",
-      ]);
-
-      ShaderBuilderTester.expectHasVertexUniforms(shaderBuilder, [
-        "uniform mat4 u_instance_modifiedModelView;",
-        "uniform mat4 u_instance_nodeTransform;",
-      ]);
-
-      ShaderBuilderTester.expectVertexLinesEqual(shaderBuilder, [
-        _shadersInstancingStageCommon,
-        _shadersLegacyInstancingStageVS,
-      ]);
-
-      const model = renderResources.model;
-      const sceneGraph = model.sceneGraph;
-
-      // For i3dm, the model view matrix chain has to be broken up so the shader
-      // can insert the instancing transform attribute.
-      //
-      // modifiedModelView = view * modelMatrix * rtcTransform
-      const view = scene.frameState.context.uniformState.view;
-      const modelMatrix = model.modelMatrix;
-      const rtcTransform = components.transform;
-      let expectedModelView = Matrix4.multiplyTransformation(
-        view,
-        modelMatrix,
-        new Matrix4()
-      );
-      expectedModelView = Matrix4.multiplyTransformation(
-        expectedModelView,
-        rtcTransform,
-        expectedModelView
-      );
-      expect(uniformMap.u_instance_modifiedModelView()).toEqualEpsilon(
-        expectedModelView,
-        CesiumMath.EPSILON8
-      );
-
-      // The second part of the matrix
-      //
-      // nodeTransform = axisCorrection * computedTransform
-      const axisCorrection = sceneGraph.axisCorrectionMatrix;
-      const computedTransform = runtimeNode.computedTransform;
-      const expectedNodeTransform = Matrix4.multiplyTransformation(
-        axisCorrection,
-        computedTransform,
-        new Matrix4()
-      );
-      expect(uniformMap.u_instance_nodeTransform()).toEqualEpsilon(
-        expectedNodeTransform,
-        CesiumMath.EPSILON8
       );
     });
   });

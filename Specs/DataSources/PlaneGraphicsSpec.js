@@ -12,7 +12,7 @@ import testMaterialDefinitionChanged from "../testMaterialDefinitionChanged.js";
 
 describe("DataSources/PlaneGraphics", function () {
   it("creates expected instance from raw assignment and construction", function () {
-    const options = {
+    var options = {
       material: Color.BLUE,
       show: true,
       fill: false,
@@ -25,7 +25,7 @@ describe("DataSources/PlaneGraphics", function () {
       distanceDisplayCondition: new DistanceDisplayCondition(10.0, 100.0),
     };
 
-    const plane = new PlaneGraphics(options);
+    var plane = new PlaneGraphics(options);
     expect(plane.material).toBeInstanceOf(ColorMaterialProperty);
     expect(plane.show).toBeInstanceOf(ConstantProperty);
     expect(plane.fill).toBeInstanceOf(ConstantProperty);
@@ -52,7 +52,7 @@ describe("DataSources/PlaneGraphics", function () {
   });
 
   it("merge assigns unassigned properties", function () {
-    const source = new PlaneGraphics();
+    var source = new PlaneGraphics();
     source.material = new ColorMaterialProperty();
     source.show = new ConstantProperty();
     source.fill = new ConstantProperty();
@@ -66,7 +66,7 @@ describe("DataSources/PlaneGraphics", function () {
       new DistanceDisplayCondition(10.0, 100.0)
     );
 
-    const target = new PlaneGraphics();
+    var target = new PlaneGraphics();
     target.merge(source);
 
     expect(target.material).toBe(source.material);
@@ -84,20 +84,20 @@ describe("DataSources/PlaneGraphics", function () {
   });
 
   it("merge does not assign assigned properties", function () {
-    const source = new PlaneGraphics();
+    var source = new PlaneGraphics();
 
-    const material = new ColorMaterialProperty();
-    const show = new ConstantProperty();
-    const fill = new ConstantProperty();
-    const outline = new ConstantProperty();
-    const outlineColor = new ConstantProperty();
-    const outlineWidth = new ConstantProperty();
-    const plane = new ConstantProperty();
-    const dimensions = new ConstantProperty();
-    const shadows = new ConstantProperty();
-    const distanceDisplayCondition = new ConstantProperty();
+    var material = new ColorMaterialProperty();
+    var show = new ConstantProperty();
+    var fill = new ConstantProperty();
+    var outline = new ConstantProperty();
+    var outlineColor = new ConstantProperty();
+    var outlineWidth = new ConstantProperty();
+    var plane = new ConstantProperty();
+    var dimensions = new ConstantProperty();
+    var shadows = new ConstantProperty();
+    var distanceDisplayCondition = new ConstantProperty();
 
-    const target = new PlaneGraphics();
+    var target = new PlaneGraphics();
     target.material = material;
     target.show = show;
     target.fill = fill;
@@ -124,7 +124,7 @@ describe("DataSources/PlaneGraphics", function () {
   });
 
   it("clone works", function () {
-    const source = new PlaneGraphics();
+    var source = new PlaneGraphics();
     source.material = new ColorMaterialProperty();
     source.show = new ConstantProperty();
     source.fill = new ConstantProperty();
@@ -136,7 +136,7 @@ describe("DataSources/PlaneGraphics", function () {
     source.shadows = new ConstantProperty();
     source.distanceDisplayCondition = new ConstantProperty();
 
-    const result = source.clone();
+    var result = source.clone();
     expect(result.material).toBe(source.material);
     expect(result.show).toBe(source.show);
     expect(result.fill).toBe(source.fill);
@@ -152,14 +152,14 @@ describe("DataSources/PlaneGraphics", function () {
   });
 
   it("merge throws if source undefined", function () {
-    const target = new PlaneGraphics();
+    var target = new PlaneGraphics();
     expect(function () {
       target.merge(undefined);
     }).toThrowDeveloperError();
   });
 
   it("raises definitionChanged when a property is assigned or modified", function () {
-    const property = new PlaneGraphics();
+    var property = new PlaneGraphics();
     testMaterialDefinitionChanged(property, "material", Color.RED, Color.BLUE);
     testDefinitionChanged(property, "show", true, false);
     testDefinitionChanged(property, "fill", false, true);

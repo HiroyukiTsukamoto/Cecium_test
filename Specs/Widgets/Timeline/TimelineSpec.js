@@ -2,7 +2,7 @@ import { Clock } from "../../../Source/Cesium.js";
 import { Timeline } from "../../../Source/Cesium.js";
 
 describe("Widgets/Timeline/Timeline", function () {
-  let container;
+  var container;
   beforeEach(function () {
     container = document.createElement("span");
     container.id = "container";
@@ -16,7 +16,7 @@ describe("Widgets/Timeline/Timeline", function () {
   });
 
   it("sanity check", function () {
-    const timeline = new Timeline(container, new Clock());
+    var timeline = new Timeline(container, new Clock());
     timeline.resize();
     expect(timeline.isDestroyed()).toEqual(false);
     timeline.destroy();

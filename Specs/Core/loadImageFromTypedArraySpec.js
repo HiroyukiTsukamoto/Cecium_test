@@ -1,8 +1,9 @@
 import { loadImageFromTypedArray } from "../../Source/Cesium.js";
 import { Resource } from "../../Source/Cesium.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Core/loadImageFromTypedArray", function () {
-  let supportsImageBitmapOptions;
+  var supportsImageBitmapOptions;
 
   beforeAll(function () {
     return Resource.supportsImageBitmapOptions().then(function (result) {
@@ -13,7 +14,7 @@ describe("Core/loadImageFromTypedArray", function () {
   it("can load an image", function () {
     return Resource.fetchArrayBuffer("./Data/Images/Blue10x10.png").then(
       function (arrayBuffer) {
-        const options = {
+        var options = {
           uint8Array: new Uint8Array(arrayBuffer),
           format: "image/png",
         };
@@ -31,13 +32,13 @@ describe("Core/loadImageFromTypedArray", function () {
       return;
     }
 
-    const options = {
+    var options = {
       uint8Array: new Uint8Array([67, 101, 115, 105, 117, 109]), // This is an invalid PNG.
       format: "image/png",
       flipY: true,
     };
-    spyOn(window, "createImageBitmap").and.returnValue(Promise.resolve({}));
-    const blob = new Blob([options.uint8Array], {
+    spyOn(window, "createImageBitmap").and.returnValue(when.resolve({}));
+    var blob = new Blob([options.uint8Array], {
       type: options.format,
     });
 
@@ -73,14 +74,14 @@ describe("Core/loadImageFromTypedArray", function () {
       return;
     }
 
-    const options = {
+    var options = {
       uint8Array: new Uint8Array([67, 101, 115, 105, 117, 109]), // This is an invalid PNG.
       format: "image/png",
       flipY: false,
       skipColorSpaceConversion: true,
     };
-    spyOn(window, "createImageBitmap").and.returnValue(Promise.resolve({}));
-    const blob = new Blob([options.uint8Array], {
+    spyOn(window, "createImageBitmap").and.returnValue(when.resolve({}));
+    var blob = new Blob([options.uint8Array], {
       type: options.format,
     });
 
@@ -117,12 +118,12 @@ describe("Core/loadImageFromTypedArray", function () {
     }
 
     spyOn(Resource, "supportsImageBitmapOptions").and.returnValue(
-      Promise.resolve(false)
+      when.resolve(false)
     );
     spyOn(window, "createImageBitmap").and.callThrough();
     return Resource.fetchArrayBuffer("./Data/Images/Blue10x10.png").then(
       function (arrayBuffer) {
-        const options = {
+        var options = {
           uint8Array: new Uint8Array(arrayBuffer),
           format: "image/png",
         };
@@ -137,7 +138,7 @@ describe("Core/loadImageFromTypedArray", function () {
   });
 
   it("can not load an invalid image", function () {
-    const options = {
+    var options = {
       uint8Array: new Uint8Array([67, 101, 115, 105, 117, 109]), // This is an invalid PNG.
       format: "image/png",
     };
@@ -145,7 +146,7 @@ describe("Core/loadImageFromTypedArray", function () {
       .then(function (image) {
         fail("should not be called");
       })
-      .catch(function () {});
+      .otherwise(function () {});
   });
 
   it("Throws without array", function () {

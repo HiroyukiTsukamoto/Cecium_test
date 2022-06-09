@@ -37,7 +37,7 @@ function KmlTourFlyTo(duration, flyToMode, view) {
 KmlTourFlyTo.prototype.play = function (done, camera, cameraOptions) {
   this.activeCamera = camera;
   if (defined(done) && done !== null) {
-    const self = this;
+    var self = this;
     this.activeCallback = function (terminated) {
       delete self.activeCallback;
       delete self.activeCamera;
@@ -45,11 +45,11 @@ KmlTourFlyTo.prototype.play = function (done, camera, cameraOptions) {
     };
   }
 
-  const options = this.getCameraOptions(cameraOptions);
+  var options = this.getCameraOptions(cameraOptions);
   if (this.view.headingPitchRoll) {
     camera.flyTo(options);
   } else if (this.view.headingPitchRange) {
-    const target = new BoundingSphere(this.view.position);
+    var target = new BoundingSphere(this.view.position);
     camera.flyToBoundingSphere(target, options);
   }
 };
@@ -74,7 +74,7 @@ KmlTourFlyTo.prototype.stop = function () {
  * @returns {Object} {@link Camera#flyTo} or {@link Camera#flyToBoundingSphere} options
  */
 KmlTourFlyTo.prototype.getCameraOptions = function (cameraOptions) {
-  let options = {
+  var options = {
     duration: this.duration,
   };
 

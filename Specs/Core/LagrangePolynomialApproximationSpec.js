@@ -4,8 +4,8 @@ describe("Core/LagrangePolynomialApproximation", function () {
   //The results of these specs were validated against STK Components
   //an aerospace SDK available from Analytical Graphics. www.agi.com/components/
 
-  const xTable = [0, 60, 120, 180, 240, 300, 360, 420];
-  const yTable = [
+  var xTable = [0, 60, 120, 180, 240, 300, 360, 420];
+  var yTable = [
     13378137.0,
     0.0,
     0,
@@ -32,29 +32,29 @@ describe("Core/LagrangePolynomialApproximation", function () {
     0,
   ];
 
-  const x = 100.0;
+  var x = 100.0;
 
   it("interpolation produces correct results.", function () {
-    const result = LagrangePolynomialApproximation.interpolateOrderZero(
+    var result = LagrangePolynomialApproximation.interpolateOrderZero(
       x,
       xTable,
       yTable,
       3
     );
-    const expectedResult = [13367002.870928623, 545695.7388100647, 0];
+    var expectedResult = [13367002.870928623, 545695.7388100647, 0];
     expect(result).toEqualEpsilon(expectedResult, 1e-15);
   });
 
   it("interpolation produces correct results with a result parameter", function () {
-    const result = new Array(3);
-    const returnedResult = LagrangePolynomialApproximation.interpolateOrderZero(
+    var result = new Array(3);
+    var returnedResult = LagrangePolynomialApproximation.interpolateOrderZero(
       x,
       xTable,
       yTable,
       3,
       result
     );
-    const expectedResult = [13367002.870928623, 545695.7388100647, 0];
+    var expectedResult = [13367002.870928623, 545695.7388100647, 0];
     expect(result).toBe(returnedResult);
     expect(result).toEqualEpsilon(expectedResult, 1e-15);
   });

@@ -26,8 +26,8 @@ function createCommand(func, canExecute) {
 
   canExecute = defaultValue(canExecute, true);
 
-  const beforeExecute = new Event();
-  const afterExecute = new Event();
+  var beforeExecute = new Event();
+  var afterExecute = new Event();
 
   function command() {
     //>>includeStart('debug', pragmas.debug);
@@ -36,12 +36,12 @@ function createCommand(func, canExecute) {
     }
     //>>includeEnd('debug');
 
-    const commandInfo = {
+    var commandInfo = {
       args: arguments,
       cancel: false,
     };
 
-    let result;
+    var result;
     beforeExecute.raiseEvent(commandInfo);
     if (!commandInfo.cancel) {
       result = func.apply(null, arguments);

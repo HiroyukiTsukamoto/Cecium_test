@@ -25,14 +25,14 @@ describe("Scene/TileReplacementQueue", function () {
 
   Tile.prototype.freeResources = function () {};
 
-  let queue;
-  let one;
-  let two;
-  let three;
-  let four;
-  let notEligibleForUnloading;
+  var queue;
+  var one;
+  var two;
+  var three;
+  var four;
+  var notEligibleForUnloading;
   beforeEach(function () {
-    const tilingScheme = new GeographicTilingScheme();
+    var tilingScheme = new GeographicTilingScheme();
     queue = new TileReplacementQueue();
     one = new QuadtreeTile({
       tilingScheme: tilingScheme,

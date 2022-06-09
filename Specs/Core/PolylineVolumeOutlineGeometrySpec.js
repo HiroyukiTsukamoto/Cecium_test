@@ -6,7 +6,7 @@ import { PolylineVolumeOutlineGeometry } from "../../Source/Cesium.js";
 import createPackableSpecs from "../createPackableSpecs.js";
 
 describe("Core/PolylineVolumeOutlineGeometry", function () {
-  let shape;
+  var shape;
 
   beforeAll(function () {
     shape = [
@@ -32,7 +32,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("createGeometry returnes undefined without 2 unique polyline positions", function () {
-    const geometry = PolylineVolumeOutlineGeometry.createGeometry(
+    var geometry = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: [new Cartesian3()],
         shapePositions: shape,
@@ -42,7 +42,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("createGeometry returnes undefined without 3 unique shape positions", function () {
-    const geometry = PolylineVolumeOutlineGeometry.createGeometry(
+    var geometry = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: [Cartesian3.UNIT_X, Cartesian3.UNIT_Y],
         shapePositions: [
@@ -56,7 +56,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("computes positions", function () {
-    const m = PolylineVolumeOutlineGeometry.createGeometry(
+    var m = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: Cartesian3.fromDegreesArray([
           90.0,
@@ -74,7 +74,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("computes positions, clockwise shape", function () {
-    const m = PolylineVolumeOutlineGeometry.createGeometry(
+    var m = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: Cartesian3.fromDegreesArray([
           90.0,
@@ -92,7 +92,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("computes right turn", function () {
-    const m = PolylineVolumeOutlineGeometry.createGeometry(
+    var m = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: Cartesian3.fromDegreesArray([
           90.0,
@@ -112,7 +112,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("computes left turn", function () {
-    const m = PolylineVolumeOutlineGeometry.createGeometry(
+    var m = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: Cartesian3.fromDegreesArray([
           90.0,
@@ -132,7 +132,7 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
   });
 
   it("computes with rounded corners", function () {
-    const m = PolylineVolumeOutlineGeometry.createGeometry(
+    var m = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: Cartesian3.fromDegreesArray([
           90.0,
@@ -149,15 +149,15 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
       })
     );
 
-    const corners = 36 * 4;
-    const numVertices = corners + 28; // corners + 7 positions * 4 for shape
-    const numLines = corners + 32; // corners + 6 segments * 4 lines per segment + 4 lines * 2 ends
+    var corners = 36 * 4;
+    var numVertices = corners + 28; // corners + 7 positions * 4 for shape
+    var numLines = corners + 32; // corners + 6 segments * 4 lines per segment + 4 lines * 2 ends
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.indices.length).toEqual(numLines * 2);
   });
 
   it("computes with beveled corners", function () {
-    const m = PolylineVolumeOutlineGeometry.createGeometry(
+    var m = PolylineVolumeOutlineGeometry.createGeometry(
       new PolylineVolumeOutlineGeometry({
         polylinePositions: Cartesian3.fromDegreesArray([
           90.0,
@@ -178,24 +178,24 @@ describe("Core/PolylineVolumeOutlineGeometry", function () {
     expect(m.indices.length).toEqual(44 * 2); // 9 segments * 4 lines per segment + 4 lines * 2 ends
   });
 
-  const positions = [
+  var positions = [
     new Cartesian3(1.0, 0.0, 0.0),
     new Cartesian3(0.0, 1.0, 0.0),
     new Cartesian3(0.0, 0.0, 1.0),
   ];
-  const volumeShape = [
+  var volumeShape = [
     new Cartesian2(0.0, 0.0),
     new Cartesian2(1.0, 0.0),
     new Cartesian2(0.0, 1.0),
   ];
-  const volume = new PolylineVolumeOutlineGeometry({
+  var volume = new PolylineVolumeOutlineGeometry({
     polylinePositions: positions,
     cornerType: CornerType.BEVELED,
     shapePositions: volumeShape,
     ellipsoid: Ellipsoid.UNIT_SPHERE,
     granularity: 0.1,
   });
-  const packedInstance = [
+  var packedInstance = [
     3.0,
     1.0,
     0.0,

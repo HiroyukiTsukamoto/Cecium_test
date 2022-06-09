@@ -72,13 +72,13 @@ function GetFeatureInfoFormat(type, format, callback) {
 }
 
 function geoJsonToFeatureInfo(json) {
-  const result = [];
+  var result = [];
 
-  const features = json.features;
-  for (let i = 0; i < features.length; ++i) {
-    const feature = features[i];
+  var features = json.features;
+  for (var i = 0; i < features.length; ++i) {
+    var feature = features[i];
 
-    const featureInfo = new ImageryLayerFeatureInfo();
+    var featureInfo = new ImageryLayerFeatureInfo();
     featureInfo.data = feature;
     featureInfo.properties = feature.properties;
     featureInfo.configureNameFromProperties(feature.properties);
@@ -86,8 +86,8 @@ function geoJsonToFeatureInfo(json) {
 
     // If this is a point feature, use the coordinates of the point.
     if (defined(feature.geometry) && feature.geometry.type === "Point") {
-      const longitude = feature.geometry.coordinates[0];
-      const latitude = feature.geometry.coordinates[1];
+      var longitude = feature.geometry.coordinates[0];
+      var latitude = feature.geometry.coordinates[1];
       featureInfo.position = Cartographic.fromDegrees(longitude, latitude);
     }
 
@@ -97,13 +97,13 @@ function geoJsonToFeatureInfo(json) {
   return result;
 }
 
-const mapInfoMxpNamespace = "http://www.mapinfo.com/mxp";
-const esriWmsNamespace = "http://www.esri.com/wms";
-const wfsNamespace = "http://www.opengis.net/wfs";
-const gmlNamespace = "http://www.opengis.net/gml";
+var mapInfoMxpNamespace = "http://www.mapinfo.com/mxp";
+var esriWmsNamespace = "http://www.esri.com/wms";
+var wfsNamespace = "http://www.opengis.net/wfs";
+var gmlNamespace = "http://www.opengis.net/gml";
 
 function xmlToFeatureInfo(xml) {
-  const documentElement = xml.documentElement;
+  var documentElement = xml.documentElement;
   if (
     documentElement.localName === "MultiFeatureCollection" &&
     documentElement.namespaceURI === mapInfoMxpNamespace
@@ -136,37 +136,37 @@ function xmlToFeatureInfo(xml) {
 }
 
 function mapInfoXmlToFeatureInfo(xml) {
-  const result = [];
+  var result = [];
 
-  const multiFeatureCollection = xml.documentElement;
+  var multiFeatureCollection = xml.documentElement;
 
-  const features = multiFeatureCollection.getElementsByTagNameNS(
+  var features = multiFeatureCollection.getElementsByTagNameNS(
     mapInfoMxpNamespace,
     "Feature"
   );
-  for (let featureIndex = 0; featureIndex < features.length; ++featureIndex) {
-    const feature = features[featureIndex];
+  for (var featureIndex = 0; featureIndex < features.length; ++featureIndex) {
+    var feature = features[featureIndex];
 
-    const properties = {};
+    var properties = {};
 
-    const propertyElements = feature.getElementsByTagNameNS(
+    var propertyElements = feature.getElementsByTagNameNS(
       mapInfoMxpNamespace,
       "Val"
     );
     for (
-      let propertyIndex = 0;
+      var propertyIndex = 0;
       propertyIndex < propertyElements.length;
       ++propertyIndex
     ) {
-      const propertyElement = propertyElements[propertyIndex];
+      var propertyElement = propertyElements[propertyIndex];
       if (propertyElement.hasAttribute("ref")) {
-        const name = propertyElement.getAttribute("ref");
-        const value = propertyElement.textContent.trim();
+        var name = propertyElement.getAttribute("ref");
+        var value = propertyElement.textContent.trim();
         properties[name] = value;
       }
     }
 
-    const featureInfo = new ImageryLayerFeatureInfo();
+    var featureInfo = new ImageryLayerFeatureInfo();
     featureInfo.data = feature;
     featureInfo.properties = properties;
     featureInfo.configureNameFromProperties(properties);
@@ -178,25 +178,25 @@ function mapInfoXmlToFeatureInfo(xml) {
 }
 
 function esriXmlToFeatureInfo(xml) {
-  const featureInfoResponse = xml.documentElement;
-  const result = [];
-  let properties;
+  var featureInfoResponse = xml.documentElement;
+  var result = [];
+  var properties;
 
-  const features = featureInfoResponse.getElementsByTagNameNS("*", "FIELDS");
+  var features = featureInfoResponse.getElementsByTagNameNS("*", "FIELDS");
   if (features.length > 0) {
     // Standard esri format
-    for (let featureIndex = 0; featureIndex < features.length; ++featureIndex) {
-      const feature = features[featureIndex];
+    for (var featureIndex = 0; featureIndex < features.length; ++featureIndex) {
+      var feature = features[featureIndex];
 
       properties = {};
 
-      const propertyAttributes = feature.attributes;
+      var propertyAttributes = feature.attributes;
       for (
-        let attributeIndex = 0;
+        var attributeIndex = 0;
         attributeIndex < propertyAttributes.length;
         ++attributeIndex
       ) {
-        const attribute = propertyAttributes[attributeIndex];
+        var attribute = propertyAttributes[attributeIndex];
         properties[attribute.name] = attribute.value;
       }
 
@@ -206,27 +206,27 @@ function esriXmlToFeatureInfo(xml) {
     }
   } else {
     // Thredds format -- looks like esri, but instead of containing FIELDS, contains FeatureInfo element
-    const featureInfoElements = featureInfoResponse.getElementsByTagNameNS(
+    var featureInfoElements = featureInfoResponse.getElementsByTagNameNS(
       "*",
       "FeatureInfo"
     );
     for (
-      let featureInfoElementIndex = 0;
+      var featureInfoElementIndex = 0;
       featureInfoElementIndex < featureInfoElements.length;
       ++featureInfoElementIndex
     ) {
-      const featureInfoElement = featureInfoElements[featureInfoElementIndex];
+      var featureInfoElement = featureInfoElements[featureInfoElementIndex];
 
       properties = {};
 
       // node.children is not supported in IE9-11, so use childNodes and check that child.nodeType is an element
-      const featureInfoChildren = featureInfoElement.childNodes;
+      var featureInfoChildren = featureInfoElement.childNodes;
       for (
-        let childIndex = 0;
+        var childIndex = 0;
         childIndex < featureInfoChildren.length;
         ++childIndex
       ) {
-        const child = featureInfoChildren[childIndex];
+        var child = featureInfoChildren[childIndex];
         if (child.nodeType === Node.ELEMENT_NODE) {
           properties[child.localName] = child.textContent;
         }
@@ -245,22 +245,22 @@ function esriXmlToFeatureInfo(xml) {
 }
 
 function gmlToFeatureInfo(xml) {
-  const result = [];
+  var result = [];
 
-  const featureCollection = xml.documentElement;
+  var featureCollection = xml.documentElement;
 
-  const featureMembers = featureCollection.getElementsByTagNameNS(
+  var featureMembers = featureCollection.getElementsByTagNameNS(
     gmlNamespace,
     "featureMember"
   );
   for (
-    let featureIndex = 0;
+    var featureIndex = 0;
     featureIndex < featureMembers.length;
     ++featureIndex
   ) {
-    const featureMember = featureMembers[featureIndex];
+    var featureMember = featureMembers[featureIndex];
 
-    const properties = {};
+    var properties = {};
     getGmlPropertiesRecursively(featureMember, properties);
     result.push(
       imageryLayerFeatureInfoFromDataAndProperties(featureMember, properties)
@@ -274,13 +274,13 @@ function gmlToFeatureInfo(xml) {
 // eg. <msGMLOutput> <ABC_layer> <ABC_feature> <foo>bar</foo> ... </ABC_feature> </ABC_layer> </msGMLOutput>
 
 function msGmlToFeatureInfo(xml) {
-  const result = [];
+  var result = [];
 
   // Find the first child. Except for IE, this would work:
-  // const layer = xml.documentElement.children[0];
-  let layer;
-  const children = xml.documentElement.childNodes;
-  for (let i = 0; i < children.length; i++) {
+  // var layer = xml.documentElement.children[0];
+  var layer;
+  var children = xml.documentElement.childNodes;
+  for (var i = 0; i < children.length; i++) {
     if (children[i].nodeType === Node.ELEMENT_NODE) {
       layer = children[i];
       break;
@@ -291,15 +291,15 @@ function msGmlToFeatureInfo(xml) {
       "Unable to find first child of the feature info xml document"
     );
   }
-  const featureMembers = layer.childNodes;
+  var featureMembers = layer.childNodes;
   for (
-    let featureIndex = 0;
+    var featureIndex = 0;
     featureIndex < featureMembers.length;
     ++featureIndex
   ) {
-    const featureMember = featureMembers[featureIndex];
+    var featureMember = featureMembers[featureIndex];
     if (featureMember.nodeType === Node.ELEMENT_NODE) {
-      const properties = {};
+      var properties = {};
       getGmlPropertiesRecursively(featureMember, properties);
       result.push(
         imageryLayerFeatureInfoFromDataAndProperties(featureMember, properties)
@@ -311,10 +311,10 @@ function msGmlToFeatureInfo(xml) {
 }
 
 function getGmlPropertiesRecursively(gmlNode, properties) {
-  let isSingleValue = true;
+  var isSingleValue = true;
 
-  for (let i = 0; i < gmlNode.childNodes.length; ++i) {
-    const child = gmlNode.childNodes[i];
+  for (var i = 0; i < gmlNode.childNodes.length; ++i) {
+    var child = gmlNode.childNodes[i];
 
     if (child.nodeType === Node.ELEMENT_NODE) {
       isSingleValue = false;
@@ -341,7 +341,7 @@ function getGmlPropertiesRecursively(gmlNode, properties) {
 }
 
 function imageryLayerFeatureInfoFromDataAndProperties(data, properties) {
-  const featureInfo = new ImageryLayerFeatureInfo();
+  var featureInfo = new ImageryLayerFeatureInfo();
   featureInfo.data = data;
   featureInfo.properties = properties;
   featureInfo.configureNameFromProperties(properties);
@@ -350,22 +350,22 @@ function imageryLayerFeatureInfoFromDataAndProperties(data, properties) {
 }
 
 function unknownXmlToFeatureInfo(xml) {
-  const xmlText = new XMLSerializer().serializeToString(xml);
+  var xmlText = new XMLSerializer().serializeToString(xml);
 
-  const element = document.createElement("div");
-  const pre = document.createElement("pre");
+  var element = document.createElement("div");
+  var pre = document.createElement("pre");
   pre.textContent = xmlText;
   element.appendChild(pre);
 
-  const featureInfo = new ImageryLayerFeatureInfo();
+  var featureInfo = new ImageryLayerFeatureInfo();
   featureInfo.data = xml;
   featureInfo.description = element.innerHTML;
   return [featureInfo];
 }
 
-const emptyBodyRegex = /<body>\s*<\/body>/im;
-const wmsServiceExceptionReportRegex = /<ServiceExceptionReport([\s\S]*)<\/ServiceExceptionReport>/im;
-const titleRegex = /<title>([\s\S]*)<\/title>/im;
+var emptyBodyRegex = /<body>\s*<\/body>/im;
+var wmsServiceExceptionReportRegex = /<ServiceExceptionReport([\s\S]*)<\/ServiceExceptionReport>/im;
+var titleRegex = /<title>([\s\S]*)<\/title>/im;
 
 function textToFeatureInfo(text) {
   // If the text is HTML and it has an empty body tag, assume it means no features were found.
@@ -380,13 +380,13 @@ function textToFeatureInfo(text) {
   }
 
   // If the text has a <title> element, use it as the name.
-  let name;
-  const title = titleRegex.exec(text);
+  var name;
+  var title = titleRegex.exec(text);
   if (title && title.length > 1) {
     name = title[1];
   }
 
-  const featureInfo = new ImageryLayerFeatureInfo();
+  var featureInfo = new ImageryLayerFeatureInfo();
   featureInfo.name = name;
   featureInfo.description = text;
   featureInfo.data = text;

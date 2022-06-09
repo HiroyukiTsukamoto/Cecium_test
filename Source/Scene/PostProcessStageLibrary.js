@@ -32,16 +32,16 @@ import PostProcessStageSampleMode from "./PostProcessStageSampleMode.js";
  *
  * @namespace PostProcessStageLibrary
  */
-const PostProcessStageLibrary = {};
+var PostProcessStageLibrary = {};
 
 function createBlur(name) {
-  const delta = 1.0;
-  const sigma = 2.0;
-  const stepSize = 1.0;
+  var delta = 1.0;
+  var sigma = 2.0;
+  var stepSize = 1.0;
 
-  const blurShader = `#define USE_STEP_SIZE\n${GaussianBlur1D}`;
-  const blurX = new PostProcessStage({
-    name: `${name}_x_direction`,
+  var blurShader = "#define USE_STEP_SIZE\n" + GaussianBlur1D;
+  var blurX = new PostProcessStage({
+    name: name + "_x_direction",
     fragmentShader: blurShader,
     uniforms: {
       delta: delta,
@@ -51,8 +51,8 @@ function createBlur(name) {
     },
     sampleMode: PostProcessStageSampleMode.LINEAR,
   });
-  const blurY = new PostProcessStage({
-    name: `${name}_y_direction`,
+  var blurY = new PostProcessStage({
+    name: name + "_y_direction",
     fragmentShader: blurShader,
     uniforms: {
       delta: delta,
@@ -63,15 +63,15 @@ function createBlur(name) {
     sampleMode: PostProcessStageSampleMode.LINEAR,
   });
 
-  const uniforms = {};
+  var uniforms = {};
   Object.defineProperties(uniforms, {
     delta: {
       get: function () {
         return blurX.uniforms.delta;
       },
       set: function (value) {
-        const blurXUniforms = blurX.uniforms;
-        const blurYUniforms = blurY.uniforms;
+        var blurXUniforms = blurX.uniforms;
+        var blurYUniforms = blurY.uniforms;
         blurXUniforms.delta = blurYUniforms.delta = value;
       },
     },
@@ -80,8 +80,8 @@ function createBlur(name) {
         return blurX.uniforms.sigma;
       },
       set: function (value) {
-        const blurXUniforms = blurX.uniforms;
-        const blurYUniforms = blurY.uniforms;
+        var blurXUniforms = blurX.uniforms;
+        var blurYUniforms = blurY.uniforms;
         blurXUniforms.sigma = blurYUniforms.sigma = value;
       },
     },
@@ -90,8 +90,8 @@ function createBlur(name) {
         return blurX.uniforms.stepSize;
       },
       set: function (value) {
-        const blurXUniforms = blurX.uniforms;
-        const blurYUniforms = blurY.uniforms;
+        var blurXUniforms = blurX.uniforms;
+        var blurYUniforms = blurY.uniforms;
         blurXUniforms.stepSize = blurYUniforms.stepSize = value;
       },
     },
@@ -138,8 +138,8 @@ PostProcessStageLibrary.createBlurStage = function () {
  * @return {PostProcessStageComposite} A post-process stage that applies a depth of field effect.
  */
 PostProcessStageLibrary.createDepthOfFieldStage = function () {
-  const blur = createBlur("czm_depth_of_field_blur");
-  const dof = new PostProcessStage({
+  var blur = createBlur("czm_depth_of_field_blur");
+  var dof = new PostProcessStage({
     name: "czm_depth_of_field_composite",
     fragmentShader: DepthOfField,
     uniforms: {
@@ -148,7 +148,7 @@ PostProcessStageLibrary.createDepthOfFieldStage = function () {
     },
   });
 
-  const uniforms = {};
+  var uniforms = {};
   Object.defineProperties(uniforms, {
     focalDistance: {
       get: function () {
@@ -226,11 +226,11 @@ PostProcessStageLibrary.isDepthOfFieldSupported = function (scene) {
  *
  * @example
  * // multiple silhouette effects
- * const yellowEdge = Cesium.PostProcessLibrary.createEdgeDetectionStage();
+ * var yellowEdge = Cesium.PostProcessLibrary.createEdgeDetectionStage();
  * yellowEdge.uniforms.color = Cesium.Color.YELLOW;
  * yellowEdge.selected = [feature0];
  *
- * const greenEdge = Cesium.PostProcessLibrary.createEdgeDetectionStage();
+ * var greenEdge = Cesium.PostProcessLibrary.createEdgeDetectionStage();
  * greenEdge.uniforms.color = Cesium.Color.LIME;
  * greenEdge.selected = [feature1];
  *
@@ -239,9 +239,9 @@ PostProcessStageLibrary.isDepthOfFieldSupported = function (scene) {
  */
 PostProcessStageLibrary.createEdgeDetectionStage = function () {
   // unique name generated on call so more than one effect can be added
-  const name = createGuid();
+  var name = createGuid();
   return new PostProcessStage({
-    name: `czm_edge_detection_${name}`,
+    name: "czm_edge_detection_" + name,
     fragmentShader: EdgeDetection,
     uniforms: {
       length: 0.25,
@@ -271,37 +271,50 @@ function getSilhouetteEdgeDetection(edgeDetectionStages) {
     return PostProcessStageLibrary.createEdgeDetectionStage();
   }
 
-  const edgeDetection = new PostProcessStageComposite({
+  var edgeDetection = new PostProcessStageComposite({
     name: "czm_edge_detection_multiple",
     stages: edgeDetectionStages,
     inputPreviousStageTexture: false,
   });
 
-  const compositeUniforms = {};
-  let fsDecl = "";
-  let fsLoop = "";
-  for (let i = 0; i < edgeDetectionStages.length; ++i) {
-    fsDecl += `uniform sampler2D edgeTexture${i}; \n`;
+  var compositeUniforms = {};
+  var fsDecl = "";
+  var fsLoop = "";
+  for (var i = 0; i < edgeDetectionStages.length; ++i) {
+    fsDecl += "uniform sampler2D edgeTexture" + i + "; \n";
     fsLoop +=
-      `        vec4 edge${i} = texture2D(edgeTexture${i}, v_textureCoordinates); \n` +
-      `        if (edge${i}.a > 0.0) \n` +
-      `        { \n` +
-      `            color = edge${i}; \n` +
-      `            break; \n` +
-      `        } \n`;
-    compositeUniforms[`edgeTexture${i}`] = edgeDetectionStages[i].name;
+      "        vec4 edge" +
+      i +
+      " = texture2D(edgeTexture" +
+      i +
+      ", v_textureCoordinates); \n" +
+      "        if (edge" +
+      i +
+      ".a > 0.0) \n" +
+      "        { \n" +
+      "            color = edge" +
+      i +
+      "; \n" +
+      "            break; \n" +
+      "        } \n";
+    compositeUniforms["edgeTexture" + i] = edgeDetectionStages[i].name;
   }
 
-  const fs =
-    `${fsDecl}varying vec2 v_textureCoordinates; \n` +
-    `void main() { \n` +
-    `    vec4 color = vec4(0.0); \n` +
-    `    for (int i = 0; i < ${edgeDetectionStages.length}; i++) \n` +
-    `    { \n${fsLoop}    } \n` +
-    `    gl_FragColor = color; \n` +
-    `} \n`;
+  var fs =
+    fsDecl +
+    "varying vec2 v_textureCoordinates; \n" +
+    "void main() { \n" +
+    "    vec4 color = vec4(0.0); \n" +
+    "    for (int i = 0; i < " +
+    edgeDetectionStages.length +
+    "; i++) \n" +
+    "    { \n" +
+    fsLoop +
+    "    } \n" +
+    "    gl_FragColor = color; \n" +
+    "} \n";
 
-  const edgeComposite = new PostProcessStage({
+  var edgeComposite = new PostProcessStage({
     name: "czm_edge_detection_combine",
     fragmentShader: fs,
     uniforms: compositeUniforms,
@@ -328,8 +341,8 @@ function getSilhouetteEdgeDetection(edgeDetectionStages) {
  * @return {PostProcessStageComposite} A post-process stage that applies a silhouette effect.
  */
 PostProcessStageLibrary.createSilhouetteStage = function (edgeDetectionStages) {
-  const edgeDetection = getSilhouetteEdgeDetection(edgeDetectionStages);
-  const silhouetteProcess = new PostProcessStage({
+  var edgeDetection = getSilhouetteEdgeDetection(edgeDetectionStages);
+  var silhouetteProcess = new PostProcessStage({
     name: "czm_silhouette_color_edges",
     fragmentShader: Silhouette,
     uniforms: {
@@ -385,7 +398,7 @@ PostProcessStageLibrary.isSilhouetteSupported = function (scene) {
  * @private
  */
 PostProcessStageLibrary.createBloomStage = function () {
-  const contrastBias = new PostProcessStage({
+  var contrastBias = new PostProcessStage({
     name: "czm_bloom_contrast_bias",
     fragmentShader: ContrastBias,
     uniforms: {
@@ -393,13 +406,13 @@ PostProcessStageLibrary.createBloomStage = function () {
       brightness: -0.3,
     },
   });
-  const blur = createBlur("czm_bloom_blur");
-  const generateComposite = new PostProcessStageComposite({
+  var blur = createBlur("czm_bloom_blur");
+  var generateComposite = new PostProcessStageComposite({
     name: "czm_bloom_contrast_bias_blur",
     stages: [contrastBias, blur],
   });
 
-  const bloomComposite = new PostProcessStage({
+  var bloomComposite = new PostProcessStage({
     name: "czm_bloom_generate_composite",
     fragmentShader: BloomComposite,
     uniforms: {
@@ -408,7 +421,7 @@ PostProcessStageLibrary.createBloomStage = function () {
     },
   });
 
-  const uniforms = {};
+  var uniforms = {};
   Object.defineProperties(uniforms, {
     glowOnly: {
       get: function () {
@@ -501,7 +514,7 @@ PostProcessStageLibrary.createBloomStage = function () {
  * @private
  */
 PostProcessStageLibrary.createAmbientOcclusionStage = function () {
-  const generate = new PostProcessStage({
+  var generate = new PostProcessStage({
     name: "czm_ambient_occlusion_generate",
     fragmentShader: AmbientOcclusionGenerate,
     uniforms: {
@@ -513,14 +526,14 @@ PostProcessStageLibrary.createAmbientOcclusionStage = function () {
       randomTexture: undefined,
     },
   });
-  const blur = createBlur("czm_ambient_occlusion_blur");
+  var blur = createBlur("czm_ambient_occlusion_blur");
   blur.uniforms.stepSize = 0.86;
-  const generateAndBlur = new PostProcessStageComposite({
+  var generateAndBlur = new PostProcessStageComposite({
     name: "czm_ambient_occlusion_generate_blur",
     stages: [generate, blur],
   });
 
-  const ambientOcclusionModulate = new PostProcessStage({
+  var ambientOcclusionModulate = new PostProcessStage({
     name: "czm_ambient_occlusion_composite",
     fragmentShader: AmbientOcclusionModulate,
     uniforms: {
@@ -529,7 +542,7 @@ PostProcessStageLibrary.createAmbientOcclusionStage = function () {
     },
   });
 
-  const uniforms = {};
+  var uniforms = {};
   Object.defineProperties(uniforms, {
     intensity: {
       get: function () {
@@ -637,7 +650,7 @@ PostProcessStageLibrary.isAmbientOcclusionSupported = function (scene) {
   return scene.context.depthTexture;
 };
 
-const fxaaFS = `#define FXAA_QUALITY_PRESET 39 \n${FXAA3_11}\n${FXAA}`;
+var fxaaFS = "#define FXAA_QUALITY_PRESET 39 \n" + FXAA3_11 + "\n" + FXAA;
 
 /**
  * Creates a post-process stage that applies Fast Approximate Anti-aliasing (FXAA) to the input texture.
@@ -662,7 +675,7 @@ PostProcessStageLibrary.createFXAAStage = function () {
 PostProcessStageLibrary.createAcesTonemappingStage = function (
   useAutoExposure
 ) {
-  let fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
+  var fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
   fs += AcesTonemapping;
   return new PostProcessStage({
     name: "czm_aces",
@@ -682,7 +695,7 @@ PostProcessStageLibrary.createAcesTonemappingStage = function (
 PostProcessStageLibrary.createFilmicTonemappingStage = function (
   useAutoExposure
 ) {
-  let fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
+  var fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
   fs += FilmicTonemapping;
   return new PostProcessStage({
     name: "czm_filmic",
@@ -702,7 +715,7 @@ PostProcessStageLibrary.createFilmicTonemappingStage = function (
 PostProcessStageLibrary.createReinhardTonemappingStage = function (
   useAutoExposure
 ) {
-  let fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
+  var fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
   fs += ReinhardTonemapping;
   return new PostProcessStage({
     name: "czm_reinhard",
@@ -722,7 +735,7 @@ PostProcessStageLibrary.createReinhardTonemappingStage = function (
 PostProcessStageLibrary.createModifiedReinhardTonemappingStage = function (
   useAutoExposure
 ) {
-  let fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
+  var fs = useAutoExposure ? "#define AUTO_EXPOSURE\n" : "";
   fs += ModifiedReinhardTonemapping;
   return new PostProcessStage({
     name: "czm_modified_reinhard",

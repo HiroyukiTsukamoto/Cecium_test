@@ -6,7 +6,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  * @namespace LinearApproximation
  */
-const LinearApproximation = {
+var LinearApproximation = {
   type: "Linear",
 };
 
@@ -58,11 +58,11 @@ LinearApproximation.interpolateOrderZero = function (
     result = new Array(yStride);
   }
 
-  let i;
-  let y0;
-  let y1;
-  const x0 = xTable[0];
-  const x1 = xTable[1];
+  var i;
+  var y0;
+  var y1;
+  var x0 = xTable[0];
+  var x1 = xTable[1];
 
   //>>includeStart('debug', pragmas.debug);
   if (x0 === x1) {

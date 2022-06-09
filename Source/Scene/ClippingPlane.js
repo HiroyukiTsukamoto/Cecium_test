@@ -118,7 +118,7 @@ ClippingPlane.clone = function (clippingPlane, result) {
 /**
  * Wrapper on Cartesian3 that allows detection of Plane changes from "members of members," for example:
  *
- * const clippingPlane = new ClippingPlane(...);
+ * var clippingPlane = new ClippingPlane(...);
  * clippingPlane.normal.z = -1.0;
  *
  * @private

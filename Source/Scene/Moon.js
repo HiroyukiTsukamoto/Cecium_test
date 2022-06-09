@@ -32,7 +32,7 @@ import Material from "./Material.js";
 function Moon(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  let url = options.textureUrl;
+  var url = options.textureUrl;
   if (!defined(url)) {
     url = buildModuleUrl("Assets/Textures/moonSmall.jpg");
   }
@@ -90,10 +90,10 @@ Object.defineProperties(Moon.prototype, {
   },
 });
 
-const icrfToFixed = new Matrix3();
-const rotationScratch = new Matrix3();
-const translationScratch = new Cartesian3();
-const scratchCommandList = [];
+var icrfToFixed = new Matrix3();
+var rotationScratch = new Matrix3();
+var translationScratch = new Cartesian3();
+var scratchCommandList = [];
 
 /**
  * @private
@@ -103,20 +103,20 @@ Moon.prototype.update = function (frameState) {
     return;
   }
 
-  const ellipsoidPrimitive = this._ellipsoidPrimitive;
+  var ellipsoidPrimitive = this._ellipsoidPrimitive;
   ellipsoidPrimitive.material.uniforms.image = this.textureUrl;
   ellipsoidPrimitive.onlySunLighting = this.onlySunLighting;
 
-  const date = frameState.time;
+  var date = frameState.time;
   if (!defined(Transforms.computeIcrfToFixedMatrix(date, icrfToFixed))) {
     Transforms.computeTemeToPseudoFixedMatrix(date, icrfToFixed);
   }
 
-  const rotation = this._axes.evaluate(date, rotationScratch);
+  var rotation = this._axes.evaluate(date, rotationScratch);
   Matrix3.transpose(rotation, rotation);
   Matrix3.multiply(icrfToFixed, rotation, rotation);
 
-  const translation = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(
+  var translation = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(
     date,
     translationScratch
   );
@@ -128,7 +128,7 @@ Moon.prototype.update = function (frameState) {
     ellipsoidPrimitive.modelMatrix
   );
 
-  const savedCommandList = frameState.commandList;
+  var savedCommandList = frameState.commandList;
   frameState.commandList = scratchCommandList;
   scratchCommandList.length = 0;
   ellipsoidPrimitive.update(frameState);

@@ -4,7 +4,7 @@ import { PerformanceWatchdog } from "../../../Source/Cesium.js";
 describe(
   "Widgets/PerformanceWatchdog/PerformanceWatchdog",
   function () {
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
     });
@@ -14,11 +14,11 @@ describe(
     });
 
     it("can create and destroy", function () {
-      const container = document.createElement("span");
+      var container = document.createElement("span");
       container.id = "testContainer";
       document.body.appendChild(container);
 
-      const widget = new PerformanceWatchdog({
+      var widget = new PerformanceWatchdog({
         container: "testContainer",
         scene: scene,
       });
@@ -47,7 +47,7 @@ describe(
     });
 
     it("throws if options.scene is undefined", function () {
-      const container = document.createElement("span");
+      var container = document.createElement("span");
       container.id = "testContainer";
       document.body.appendChild(container);
 

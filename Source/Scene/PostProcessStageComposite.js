@@ -57,7 +57,7 @@ import destroyObject from "../Core/destroyObject.js";
  *
  * @example
  * // Example 3: create a uniform alias
- * const uniforms = {};
+ * var uniforms = {};
  * Cesium.defineProperties(uniforms, {
  *     filterSize : {
  *         get : function() {
@@ -91,7 +91,7 @@ function PostProcessStageComposite(options) {
     true
   );
 
-  let name = options.name;
+  var name = options.name;
   if (!defined(name)) {
     name = createGuid();
   }
@@ -124,9 +124,9 @@ Object.defineProperties(PostProcessStageComposite.prototype, {
    */
   ready: {
     get: function () {
-      const stages = this._stages;
-      const length = stages.length;
-      for (let i = 0; i < length; ++i) {
+      var stages = this._stages;
+      var length = stages.length;
+      for (var i = 0; i < length; ++i) {
         if (!stages[i].ready) {
           return false;
         }
@@ -157,9 +157,9 @@ Object.defineProperties(PostProcessStageComposite.prototype, {
       return this._stages[0].enabled;
     },
     set: function (value) {
-      const stages = this._stages;
-      const length = stages.length;
-      for (let i = 0; i < length; ++i) {
+      var stages = this._stages;
+      var length = stages.length;
+      for (var i = 0; i < length; ++i) {
         stages[i].enabled = value;
       }
     },
@@ -232,9 +232,9 @@ Object.defineProperties(PostProcessStageComposite.prototype, {
  * @private
  */
 PostProcessStageComposite.prototype._isSupported = function (context) {
-  const stages = this._stages;
-  const length = stages.length;
-  for (let i = 0; i < length; ++i) {
+  var stages = this._stages;
+  var length = stages.length;
+  for (var i = 0; i < length; ++i) {
     if (!stages[i]._isSupported(context)) {
       return false;
     }
@@ -260,11 +260,9 @@ PostProcessStageComposite.prototype.get = function (index) {
 };
 
 function isSelectedTextureDirty(stage) {
-  let length = defined(stage._selected) ? stage._selected.length : 0;
-  const parentLength = defined(stage._parentSelected)
-    ? stage._parentSelected
-    : 0;
-  let dirty =
+  var length = defined(stage._selected) ? stage._selected.length : 0;
+  var parentLength = defined(stage._parentSelected) ? stage._parentSelected : 0;
+  var dirty =
     stage._selected !== stage._selectedShadow ||
     length !== stage._selectedLength;
   dirty =
@@ -286,7 +284,7 @@ function isSelectedTextureDirty(stage) {
     }
 
     length = stage._combinedSelected.length;
-    for (let i = 0; i < length; ++i) {
+    for (var i = 0; i < length; ++i) {
       if (stage._combinedSelected[i] !== stage._combinedSelectedShadow[i]) {
         return true;
       }
@@ -312,10 +310,10 @@ PostProcessStageComposite.prototype.update = function (context, useLogDepth) {
     ? this._parentSelected.length
     : 0;
 
-  const stages = this._stages;
-  const length = stages.length;
-  for (let i = 0; i < length; ++i) {
-    const stage = stages[i];
+  var stages = this._stages;
+  var length = stages.length;
+  for (var i = 0; i < length; ++i) {
+    var stage = stages[i];
     if (this._selectedDirty) {
       stage.parentSelected = this._combinedSelected;
     }
@@ -352,9 +350,9 @@ PostProcessStageComposite.prototype.isDestroyed = function () {
  * @see PostProcessStageComposite#isDestroyed
  */
 PostProcessStageComposite.prototype.destroy = function () {
-  const stages = this._stages;
-  const length = stages.length;
-  for (let i = 0; i < length; ++i) {
+  var stages = this._stages;
+  var length = stages.length;
+  for (var i = 0; i < length; ++i) {
     stages[i].destroy();
   }
   return destroyObject(this);

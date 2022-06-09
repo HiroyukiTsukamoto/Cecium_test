@@ -5,7 +5,7 @@ import WebGLConstants from "../Core/WebGLConstants.js";
  *
  * @enum {Number}
  */
-const BlendEquation = {
+var BlendEquation = {
   /**
    * Pixel values are added componentwise.  This is used in additive blending for translucency.
    *

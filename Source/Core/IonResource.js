@@ -1,4 +1,5 @@
 import Uri from "../ThirdParty/Uri.js";
+import when from "../ThirdParty/when.js";
 import Check from "./Check.js";
 import Credit from "./Credit.js";
 import defaultValue from "./defaultValue.js";
@@ -29,9 +30,9 @@ function IonResource(endpoint, endpointResource) {
   Check.defined("endpointResource", endpointResource);
   //>>includeEnd('debug');
 
-  let options;
-  const externalType = endpoint.externalType;
-  const isExternal = defined(externalType);
+  var options;
+  var externalType = endpoint.externalType;
+  var isExternal = defined(externalType);
 
   if (!isExternal) {
     options = {
@@ -98,10 +99,7 @@ if (defined(Object.create)) {
  *   });
  */
 IonResource.fromAssetId = function (assetId, options) {
-  const endpointResource = IonResource._createEndpointResource(
-    assetId,
-    options
-  );
+  var endpointResource = IonResource._createEndpointResource(assetId, options);
 
   return endpointResource.fetchJson().then(function (endpoint) {
     return new IonResource(endpoint, endpointResource);
@@ -140,8 +138,8 @@ Object.defineProperties(IonResource.prototype, {
 
 /** @private */
 IonResource.getCreditsFromEndpoint = function (endpoint, endpointResource) {
-  const credits = endpoint.attributions.map(Credit.getIonCredit);
-  const defaultTokenCredit = Ion.getDefaultTokenCredit(
+  var credits = endpoint.attributions.map(Credit.getIonCredit);
+  var defaultTokenCredit = Ion.getDefaultTokenCredit(
     endpointResource.queryParameters.access_token
   );
   if (defined(defaultTokenCredit)) {
@@ -153,7 +151,7 @@ IonResource.getCreditsFromEndpoint = function (endpoint, endpointResource) {
 /** @inheritdoc */
 IonResource.prototype.clone = function (result) {
   // We always want to use the root's information because it's the most up-to-date
-  const ionRoot = defaultValue(this._ionRoot, this);
+  var ionRoot = defaultValue(this._ionRoot, this);
 
   if (!defined(result)) {
     result = new IonResource(
@@ -171,7 +169,7 @@ IonResource.prototype.clone = function (result) {
 
 IonResource.prototype.fetchImage = function (options) {
   if (!this._isExternal) {
-    const userOptions = options;
+    var userOptions = options;
     options = {
       preferBlob: true,
     };
@@ -196,7 +194,7 @@ IonResource.prototype._makeRequest = function (options) {
   if (!defined(options.headers)) {
     options.headers = {};
   }
-  options.headers.Authorization = `Bearer ${this._ionEndpoint.accessToken}`;
+  options.headers.Authorization = "Bearer " + this._ionEndpoint.accessToken;
 
   return Resource.prototype._makeRequest.call(this, options);
 };
@@ -210,12 +208,12 @@ IonResource._createEndpointResource = function (assetId, options) {
   //>>includeEnd('debug');
 
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  let server = defaultValue(options.server, Ion.defaultServer);
-  const accessToken = defaultValue(options.accessToken, Ion.defaultAccessToken);
+  var server = defaultValue(options.server, Ion.defaultServer);
+  var accessToken = defaultValue(options.accessToken, Ion.defaultAccessToken);
   server = Resource.createIfNeeded(server);
 
-  const resourceOptions = {
-    url: `v1/assets/${assetId}/endpoint`,
+  var resourceOptions = {
+    url: "v1/assets/" + assetId + "/endpoint",
   };
 
   if (defined(accessToken)) {
@@ -226,12 +224,12 @@ IonResource._createEndpointResource = function (assetId, options) {
 };
 
 function retryCallback(that, error) {
-  const ionRoot = defaultValue(that._ionRoot, that);
-  const endpointResource = ionRoot._ionEndpointResource;
+  var ionRoot = defaultValue(that._ionRoot, that);
+  var endpointResource = ionRoot._ionEndpointResource;
 
   // Image is not available in worker threads, so this avoids
   // a ReferenceError
-  const imageDefined = typeof Image !== "undefined";
+  var imageDefined = typeof Image !== "undefined";
 
   // We only want to retry in the case of invalid credentials (401) or image
   // requests(since Image failures can not provide a status code)
@@ -240,7 +238,7 @@ function retryCallback(that, error) {
     (error.statusCode !== 401 &&
       !(imageDefined && error.target instanceof Image))
   ) {
-    return Promise.resolve(false);
+    return when.resolve(false);
   }
 
   // We use a shared pending promise for all derived assets, since they share
@@ -254,7 +252,7 @@ function retryCallback(that, error) {
         ionRoot._ionEndpoint = newEndpoint;
         return newEndpoint;
       })
-      .finally(function (newEndpoint) {
+      .always(function (newEndpoint) {
         // Pass or fail, we're done with this promise, the next failure should use a new one.
         ionRoot._pendingPromise = undefined;
         return newEndpoint;

@@ -1,5 +1,5 @@
 /* This file is automatically rebuilt by the Cesium build process. */
-define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './RuntimeError-c581ca93', './EllipsoidOutlineGeometry-ad6558a8', './ComponentDatatype-4a60b8d6', './WebGLConstants-7dccdc96', './GeometryOffsetAttribute-3e8c299c', './Transforms-20594677', './_commonjsHelpers-3aae1032-f55dc0c4', './combine-761d9c3f', './GeometryAttribute-111bf6c7', './GeometryAttributes-7df9bef6', './IndexDatatype-db156785'], (function (defaultValue, Matrix2, RuntimeError, EllipsoidOutlineGeometry, ComponentDatatype, WebGLConstants, GeometryOffsetAttribute, Transforms, _commonjsHelpers3aae1032, combine, GeometryAttribute, GeometryAttributes, IndexDatatype) { 'use strict';
+define(['./when-8166c7dd', './Matrix2-92b7fb9d', './RuntimeError-4fdc4459', './EllipsoidOutlineGeometry-7cf1382d', './ComponentDatatype-9ed50558', './WebGLConstants-0664004c', './GeometryOffsetAttribute-e8e698d7', './Transforms-62a339c3', './combine-a5c4cc47', './GeometryAttribute-6f4c3b93', './GeometryAttributes-50becc99', './IndexDatatype-797210ca'], (function (when, Matrix2, RuntimeError, EllipsoidOutlineGeometry, ComponentDatatype, WebGLConstants, GeometryOffsetAttribute, Transforms, combine, GeometryAttribute, GeometryAttributes, IndexDatatype) { 'use strict';
 
   /**
    * A description of the outline of a sphere.
@@ -18,17 +18,17 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './RuntimeError-c581ca9
    * @exception {DeveloperError} options.subdivisions must be greater than or equal to zero.
    *
    * @example
-   * const sphere = new Cesium.SphereOutlineGeometry({
+   * var sphere = new Cesium.SphereOutlineGeometry({
    *   radius : 100.0,
    *   stackPartitions : 6,
    *   slicePartitions: 5
    * });
-   * const geometry = Cesium.SphereOutlineGeometry.createGeometry(sphere);
+   * var geometry = Cesium.SphereOutlineGeometry.createGeometry(sphere);
    */
   function SphereOutlineGeometry(options) {
-    const radius = defaultValue.defaultValue(options.radius, 1.0);
-    const radii = new Matrix2.Cartesian3(radius, radius, radius);
-    const ellipsoidOptions = {
+    var radius = when.defaultValue(options.radius, 1.0);
+    var radii = new Matrix2.Cartesian3(radius, radius, radius);
+    var ellipsoidOptions = {
       radii: radii,
       stackPartitions: options.stackPartitions,
       slicePartitions: options.slicePartitions,
@@ -66,8 +66,8 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './RuntimeError-c581ca9
     );
   };
 
-  const scratchEllipsoidGeometry = new EllipsoidOutlineGeometry.EllipsoidOutlineGeometry();
-  const scratchOptions = {
+  var scratchEllipsoidGeometry = new EllipsoidOutlineGeometry.EllipsoidOutlineGeometry();
+  var scratchOptions = {
     radius: undefined,
     radii: new Matrix2.Cartesian3(),
     stackPartitions: undefined,
@@ -84,7 +84,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './RuntimeError-c581ca9
    * @returns {SphereOutlineGeometry} The modified result parameter or a new SphereOutlineGeometry instance if one was not provided.
    */
   SphereOutlineGeometry.unpack = function (array, startingIndex, result) {
-    const ellipsoidGeometry = EllipsoidOutlineGeometry.EllipsoidOutlineGeometry.unpack(
+    var ellipsoidGeometry = EllipsoidOutlineGeometry.EllipsoidOutlineGeometry.unpack(
       array,
       startingIndex,
       scratchEllipsoidGeometry
@@ -93,7 +93,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './RuntimeError-c581ca9
     scratchOptions.slicePartitions = ellipsoidGeometry._slicePartitions;
     scratchOptions.subdivisions = ellipsoidGeometry._subdivisions;
 
-    if (!defaultValue.defined(result)) {
+    if (!when.defined(result)) {
       scratchOptions.radius = ellipsoidGeometry._radii.x;
       return new SphereOutlineGeometry(scratchOptions);
     }
@@ -116,7 +116,7 @@ define(['./defaultValue-94c3e563', './Matrix2-fc7e9822', './RuntimeError-c581ca9
   };
 
   function createSphereOutlineGeometry(sphereGeometry, offset) {
-    if (defaultValue.defined(offset)) {
+    if (when.defined(offset)) {
       sphereGeometry = SphereOutlineGeometry.unpack(sphereGeometry, offset);
     }
     return SphereOutlineGeometry.createGeometry(sphereGeometry);

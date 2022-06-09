@@ -30,21 +30,21 @@ import VertexFormat from "./VertexFormat.js";
  *
  * @example
  * // Create a circle.
- * const circle = new Cesium.CircleGeometry({
+ * var circle = new Cesium.CircleGeometry({
  *   center : Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883),
  *   radius : 100000.0
  * });
- * const geometry = Cesium.CircleGeometry.createGeometry(circle);
+ * var geometry = Cesium.CircleGeometry.createGeometry(circle);
  */
 function CircleGeometry(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const radius = options.radius;
+  var radius = options.radius;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number("radius", radius);
   //>>includeEnd('debug');
 
-  const ellipseGeometryOptions = {
+  var ellipseGeometryOptions = {
     center: options.center,
     semiMajorAxis: radius,
     semiMinorAxis: radius,
@@ -82,12 +82,12 @@ CircleGeometry.pack = function (value, array, startingIndex) {
   return EllipseGeometry.pack(value._ellipseGeometry, array, startingIndex);
 };
 
-const scratchEllipseGeometry = new EllipseGeometry({
+var scratchEllipseGeometry = new EllipseGeometry({
   center: new Cartesian3(),
   semiMajorAxis: 1.0,
   semiMinorAxis: 1.0,
 });
-const scratchOptions = {
+var scratchOptions = {
   center: new Cartesian3(),
   radius: undefined,
   ellipsoid: Ellipsoid.clone(Ellipsoid.UNIT_SPHERE),
@@ -110,7 +110,7 @@ const scratchOptions = {
  * @returns {CircleGeometry} The modified result parameter or a new CircleGeometry instance if one was not provided.
  */
 CircleGeometry.unpack = function (array, startingIndex, result) {
-  const ellipseGeometry = EllipseGeometry.unpack(
+  var ellipseGeometry = EllipseGeometry.unpack(
     array,
     startingIndex,
     scratchEllipseGeometry
@@ -162,11 +162,11 @@ CircleGeometry.createShadowVolume = function (
   minHeightFunc,
   maxHeightFunc
 ) {
-  const granularity = circleGeometry._ellipseGeometry._granularity;
-  const ellipsoid = circleGeometry._ellipseGeometry._ellipsoid;
+  var granularity = circleGeometry._ellipseGeometry._granularity;
+  var ellipsoid = circleGeometry._ellipseGeometry._ellipsoid;
 
-  const minHeight = minHeightFunc(granularity, ellipsoid);
-  const maxHeight = maxHeightFunc(granularity, ellipsoid);
+  var minHeight = minHeightFunc(granularity, ellipsoid);
+  var maxHeight = maxHeightFunc(granularity, ellipsoid);
 
   return new CircleGeometry({
     center: circleGeometry._ellipseGeometry._center,

@@ -4,7 +4,7 @@ import { SelectionIndicator } from "../../../Source/Cesium.js";
 describe(
   "Widgets/SelectionIndicator/SelectionIndicator",
   function () {
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
     });
@@ -14,7 +14,7 @@ describe(
     });
 
     it("constructor sets expected values", function () {
-      const selectionIndicator = new SelectionIndicator(document.body, scene);
+      var selectionIndicator = new SelectionIndicator(document.body, scene);
       expect(selectionIndicator.container).toBe(document.body);
       expect(selectionIndicator.viewModel.scene).toBe(scene);
       expect(selectionIndicator.isDestroyed()).toEqual(false);
@@ -23,10 +23,10 @@ describe(
     });
 
     it("constructor works with string id container", function () {
-      const testElement = document.createElement("span");
+      var testElement = document.createElement("span");
       testElement.id = "testElement";
       document.body.appendChild(testElement);
-      const selectionIndicator = new SelectionIndicator("testElement", scene);
+      var selectionIndicator = new SelectionIndicator("testElement", scene);
       expect(selectionIndicator.container).toBe(testElement);
       document.body.removeChild(testElement);
       selectionIndicator.destroy();

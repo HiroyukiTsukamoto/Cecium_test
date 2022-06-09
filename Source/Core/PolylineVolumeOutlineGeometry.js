@@ -20,25 +20,25 @@ import PrimitiveType from "./PrimitiveType.js";
 import WindingOrder from "./WindingOrder.js";
 
 function computeAttributes(positions, shape) {
-  const attributes = new GeometryAttributes();
+  var attributes = new GeometryAttributes();
   attributes.position = new GeometryAttribute({
     componentDatatype: ComponentDatatype.DOUBLE,
     componentsPerAttribute: 3,
     values: positions,
   });
 
-  const shapeLength = shape.length;
-  const vertexCount = attributes.position.values.length / 3;
-  const positionLength = positions.length / 3;
-  const shapeCount = positionLength / shapeLength;
-  const indices = IndexDatatype.createTypedArray(
+  var shapeLength = shape.length;
+  var vertexCount = attributes.position.values.length / 3;
+  var positionLength = positions.length / 3;
+  var shapeCount = positionLength / shapeLength;
+  var indices = IndexDatatype.createTypedArray(
     vertexCount,
     2 * shapeLength * (shapeCount + 1)
   );
-  let i, j;
-  let index = 0;
+  var i, j;
+  var index = 0;
   i = 0;
-  let offset = i * shapeLength;
+  var offset = i * shapeLength;
   for (j = 0; j < shapeLength - 1; j++) {
     indices[index++] = j + offset;
     indices[index++] = j + offset + 1;
@@ -56,15 +56,15 @@ function computeAttributes(positions, shape) {
   indices[index++] = offset;
 
   for (i = 0; i < shapeCount - 1; i++) {
-    const firstOffset = shapeLength * i;
-    const secondOffset = firstOffset + shapeLength;
+    var firstOffset = shapeLength * i;
+    var secondOffset = firstOffset + shapeLength;
     for (j = 0; j < shapeLength; j++) {
       indices[index++] = j + firstOffset;
       indices[index++] = j + secondOffset;
     }
   }
 
-  const geometry = new Geometry({
+  var geometry = new Geometry({
     attributes: attributes,
     indices: IndexDatatype.createTypedArray(vertexCount, indices),
     boundingSphere: BoundingSphere.fromVertices(positions),
@@ -91,15 +91,15 @@ function computeAttributes(positions, shape) {
  *
  * @example
  * function computeCircle(radius) {
- *   const positions = [];
- *   for (let i = 0; i < 360; i++) {
- *     const radians = Cesium.Math.toRadians(i);
+ *   var positions = [];
+ *   for (var i = 0; i < 360; i++) {
+ *     var radians = Cesium.Math.toRadians(i);
  *     positions.push(new Cesium.Cartesian2(radius * Math.cos(radians), radius * Math.sin(radians)));
  *   }
  *   return positions;
  * }
  *
- * const volumeOutline = new Cesium.PolylineVolumeOutlineGeometry({
+ * var volumeOutline = new Cesium.PolylineVolumeOutlineGeometry({
  *   polylinePositions : Cesium.Cartesian3.fromDegreesArray([
  *     -72.0, 40.0,
  *     -70.0, 35.0
@@ -109,8 +109,8 @@ function computeAttributes(positions, shape) {
  */
 function PolylineVolumeOutlineGeometry(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const positions = options.polylinePositions;
-  const shape = options.shapePositions;
+  var positions = options.polylinePositions;
+  var shape = options.shapePositions;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(positions)) {
@@ -133,7 +133,7 @@ function PolylineVolumeOutlineGeometry(options) {
   );
   this._workerName = "createPolylineVolumeOutlineGeometry";
 
-  let numComponents = 1 + positions.length * Cartesian3.packedLength;
+  var numComponents = 1 + positions.length * Cartesian3.packedLength;
   numComponents += 1 + shape.length * Cartesian2.packedLength;
 
   /**
@@ -164,17 +164,17 @@ PolylineVolumeOutlineGeometry.pack = function (value, array, startingIndex) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  let i;
+  var i;
 
-  const positions = value._positions;
-  let length = positions.length;
+  var positions = value._positions;
+  var length = positions.length;
   array[startingIndex++] = length;
 
   for (i = 0; i < length; ++i, startingIndex += Cartesian3.packedLength) {
     Cartesian3.pack(positions[i], array, startingIndex);
   }
 
-  const shape = value._shape;
+  var shape = value._shape;
   length = shape.length;
   array[startingIndex++] = length;
 
@@ -191,8 +191,8 @@ PolylineVolumeOutlineGeometry.pack = function (value, array, startingIndex) {
   return array;
 };
 
-const scratchEllipsoid = Ellipsoid.clone(Ellipsoid.UNIT_SPHERE);
-const scratchOptions = {
+var scratchEllipsoid = Ellipsoid.clone(Ellipsoid.UNIT_SPHERE);
+var scratchOptions = {
   polylinePositions: undefined,
   shapePositions: undefined,
   ellipsoid: scratchEllipsoid,
@@ -218,27 +218,27 @@ PolylineVolumeOutlineGeometry.unpack = function (array, startingIndex, result) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  let i;
+  var i;
 
-  let length = array[startingIndex++];
-  const positions = new Array(length);
+  var length = array[startingIndex++];
+  var positions = new Array(length);
 
   for (i = 0; i < length; ++i, startingIndex += Cartesian3.packedLength) {
     positions[i] = Cartesian3.unpack(array, startingIndex);
   }
 
   length = array[startingIndex++];
-  const shape = new Array(length);
+  var shape = new Array(length);
 
   for (i = 0; i < length; ++i, startingIndex += Cartesian2.packedLength) {
     shape[i] = Cartesian2.unpack(array, startingIndex);
   }
 
-  const ellipsoid = Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
+  var ellipsoid = Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
   startingIndex += Ellipsoid.packedLength;
 
-  const cornerType = array[startingIndex++];
-  const granularity = array[startingIndex];
+  var cornerType = array[startingIndex++];
+  var granularity = array[startingIndex];
 
   if (!defined(result)) {
     scratchOptions.polylinePositions = positions;
@@ -257,7 +257,7 @@ PolylineVolumeOutlineGeometry.unpack = function (array, startingIndex, result) {
   return result;
 };
 
-const brScratch = new BoundingRectangle();
+var brScratch = new BoundingRectangle();
 
 /**
  * Computes the geometric representation of the outline of a polyline with a volume, including its vertices, indices, and a bounding sphere.
@@ -268,12 +268,12 @@ const brScratch = new BoundingRectangle();
 PolylineVolumeOutlineGeometry.createGeometry = function (
   polylineVolumeOutlineGeometry
 ) {
-  const positions = polylineVolumeOutlineGeometry._positions;
-  const cleanPositions = arrayRemoveDuplicates(
+  var positions = polylineVolumeOutlineGeometry._positions;
+  var cleanPositions = arrayRemoveDuplicates(
     positions,
     Cartesian3.equalsEpsilon
   );
-  let shape2D = polylineVolumeOutlineGeometry._shape;
+  var shape2D = polylineVolumeOutlineGeometry._shape;
   shape2D = PolylineVolumeGeometryLibrary.removeDuplicatesFromShape(shape2D);
 
   if (cleanPositions.length < 2 || shape2D.length < 3) {
@@ -285,9 +285,9 @@ PolylineVolumeOutlineGeometry.createGeometry = function (
   ) {
     shape2D.reverse();
   }
-  const boundingRectangle = BoundingRectangle.fromPoints(shape2D, brScratch);
+  var boundingRectangle = BoundingRectangle.fromPoints(shape2D, brScratch);
 
-  const computedPositions = PolylineVolumeGeometryLibrary.computePositions(
+  var computedPositions = PolylineVolumeGeometryLibrary.computePositions(
     cleanPositions,
     shape2D,
     boundingRectangle,

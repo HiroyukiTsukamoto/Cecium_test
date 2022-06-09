@@ -39,7 +39,7 @@ describe("Core/CylinderOutlineGeometry", function () {
   });
 
   it("computes positions", function () {
-    const m = CylinderOutlineGeometry.createGeometry(
+    var m = CylinderOutlineGeometry.createGeometry(
       new CylinderOutlineGeometry({
         length: 1,
         topRadius: 1,
@@ -53,7 +53,7 @@ describe("Core/CylinderOutlineGeometry", function () {
   });
 
   it("computes offset attribute", function () {
-    const m = CylinderOutlineGeometry.createGeometry(
+    var m = CylinderOutlineGeometry.createGeometry(
       new CylinderOutlineGeometry({
         length: 1,
         topRadius: 1,
@@ -63,18 +63,18 @@ describe("Core/CylinderOutlineGeometry", function () {
       })
     );
 
-    const numVertices = 6;
+    var numVertices = 6;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
   it("computes positions with no lines along the length", function () {
-    const m = CylinderOutlineGeometry.createGeometry(
+    var m = CylinderOutlineGeometry.createGeometry(
       new CylinderOutlineGeometry({
         length: 1,
         topRadius: 1,
@@ -84,8 +84,8 @@ describe("Core/CylinderOutlineGeometry", function () {
       })
     );
 
-    const numVertices = 6; //3 top 3 bottom
-    const numLines = 6; //3 top 3 bottom
+    var numVertices = 6; //3 top 3 bottom
+    var numLines = 6; //3 top 3 bottom
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.indices.length).toEqual(numLines * 2);
   });
@@ -94,47 +94,37 @@ describe("Core/CylinderOutlineGeometry", function () {
     "undefined is returned if the length is less than or equal to zero or if " +
       "both radii are equal to zero or is either radii and less than zero",
     function () {
-      const cylinderOutline0 = new CylinderOutlineGeometry({
+      var cylinderOutline0 = new CylinderOutlineGeometry({
         length: 0,
         topRadius: 80000,
         bottomRadius: 200000,
       });
-      const cylinderOutline1 = new CylinderOutlineGeometry({
+      var cylinderOutline1 = new CylinderOutlineGeometry({
         length: 200000,
         topRadius: 0,
         bottomRadius: 0,
       });
-      const cylinderOutline2 = new CylinderOutlineGeometry({
+      var cylinderOutline2 = new CylinderOutlineGeometry({
         length: 200000,
         topRadius: -10,
         bottomRadius: 4,
       });
-      const cylinderOutline3 = new CylinderOutlineGeometry({
+      var cylinderOutline3 = new CylinderOutlineGeometry({
         length: -200000,
         topRadius: 100,
         bottomRadius: 100,
       });
-      const cylinderOutline4 = new CylinderOutlineGeometry({
+      var cylinderOutline4 = new CylinderOutlineGeometry({
         length: 200000,
         topRadius: 32,
         bottomRadius: -100,
       });
 
-      const geometry0 = CylinderOutlineGeometry.createGeometry(
-        cylinderOutline0
-      );
-      const geometry1 = CylinderOutlineGeometry.createGeometry(
-        cylinderOutline1
-      );
-      const geometry2 = CylinderOutlineGeometry.createGeometry(
-        cylinderOutline2
-      );
-      const geometry3 = CylinderOutlineGeometry.createGeometry(
-        cylinderOutline3
-      );
-      const geometry4 = CylinderOutlineGeometry.createGeometry(
-        cylinderOutline4
-      );
+      var geometry0 = CylinderOutlineGeometry.createGeometry(cylinderOutline0);
+      var geometry1 = CylinderOutlineGeometry.createGeometry(cylinderOutline1);
+      var geometry2 = CylinderOutlineGeometry.createGeometry(cylinderOutline2);
+      var geometry3 = CylinderOutlineGeometry.createGeometry(cylinderOutline3);
+      var geometry4 = CylinderOutlineGeometry.createGeometry(cylinderOutline4);
 
       expect(geometry0).toBeUndefined();
       expect(geometry1).toBeUndefined();
@@ -144,13 +134,13 @@ describe("Core/CylinderOutlineGeometry", function () {
     }
   );
 
-  const cylinder = new CylinderOutlineGeometry({
+  var cylinder = new CylinderOutlineGeometry({
     length: 1,
     topRadius: 1,
     bottomRadius: 0,
     slices: 3,
     numberOfVerticalLines: 0,
   });
-  const packedInstance = [1.0, 1.0, 0.0, 3.0, 0.0, -1.0];
+  var packedInstance = [1.0, 1.0, 0.0, 3.0, 0.0, -1.0];
   createPackableSpecs(CylinderOutlineGeometry, cylinder, packedInstance);
 });

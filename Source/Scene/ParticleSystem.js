@@ -13,7 +13,7 @@ import BillboardCollection from "./BillboardCollection.js";
 import CircleEmitter from "./CircleEmitter.js";
 import Particle from "./Particle.js";
 
-const defaultImageSize = new Cartesian2(1.0, 1.0);
+var defaultImageSize = new Cartesian2(1.0, 1.0);
 
 /**
  * A ParticleSystem manages the updating and display of a collection of particles.
@@ -86,7 +86,7 @@ function ParticleSystem(options) {
    */
   this.image = defaultValue(options.image, undefined);
 
-  let emitter = options.emitter;
+  var emitter = options.emitter;
   if (!defined(emitter)) {
     emitter = new CircleEmitter(0.5);
   }
@@ -537,31 +537,31 @@ Object.defineProperties(ParticleSystem.prototype, {
 });
 
 function updateParticlePool(system) {
-  const emissionRate = system._emissionRate;
-  const life = system._maximumParticleLife;
+  var emissionRate = system._emissionRate;
+  var life = system._maximumParticleLife;
 
-  let burstAmount = 0;
-  const bursts = system._bursts;
+  var burstAmount = 0;
+  var bursts = system._bursts;
   if (defined(bursts)) {
-    const length = bursts.length;
-    for (let i = 0; i < length; ++i) {
+    var length = bursts.length;
+    for (var i = 0; i < length; ++i) {
       burstAmount += bursts[i].maximum;
     }
   }
 
-  const billboardCollection = system._billboardCollection;
-  const image = system.image;
+  var billboardCollection = system._billboardCollection;
+  var image = system.image;
 
-  const particleEstimate = Math.ceil(emissionRate * life + burstAmount);
-  const particles = system._particles;
-  const particlePool = system._particlePool;
-  const numToAdd = Math.max(
+  var particleEstimate = Math.ceil(emissionRate * life + burstAmount);
+  var particles = system._particles;
+  var particlePool = system._particlePool;
+  var numToAdd = Math.max(
     particleEstimate - particles.length - particlePool.length,
     0
   );
 
-  for (let j = 0; j < numToAdd; ++j) {
-    const particle = new Particle();
+  for (var j = 0; j < numToAdd; ++j) {
+    var particle = new Particle();
     particle._billboard = billboardCollection.add({
       image: image,
     });
@@ -573,7 +573,7 @@ function updateParticlePool(system) {
 
 function getOrCreateParticle(system) {
   // Try to reuse an existing particle from the pool.
-  let particle = system._particlePool.pop();
+  var particle = system._particlePool.pop();
   if (!defined(particle)) {
     // Create a new one
     particle = new Particle();
@@ -586,17 +586,17 @@ function addParticleToPool(system, particle) {
 }
 
 function freeParticlePool(system) {
-  const particles = system._particles;
-  const particlePool = system._particlePool;
-  const billboardCollection = system._billboardCollection;
+  var particles = system._particles;
+  var particlePool = system._particlePool;
+  var billboardCollection = system._billboardCollection;
 
-  const numParticles = particles.length;
-  const numInPool = particlePool.length;
-  const estimate = system._particleEstimate;
+  var numParticles = particles.length;
+  var numInPool = particlePool.length;
+  var estimate = system._particleEstimate;
 
-  const start = numInPool - Math.max(estimate - numParticles - numInPool, 0);
-  for (let i = start; i < numInPool; ++i) {
-    const p = particlePool[i];
+  var start = numInPool - Math.max(estimate - numParticles - numInPool, 0);
+  for (var i = start; i < numInPool; ++i) {
+    var p = particlePool[i];
     billboardCollection.remove(p._billboard);
   }
   particlePool.length = start;
@@ -609,7 +609,7 @@ function removeBillboard(particle) {
 }
 
 function updateBillboard(system, particle) {
-  let billboard = particle._billboard;
+  var billboard = particle._billboard;
   if (!defined(billboard)) {
     billboard = particle._billboard = system._billboardCollection.add({
       image: particle.image,
@@ -622,22 +622,22 @@ function updateBillboard(system, particle) {
   billboard.show = true;
 
   // Update the color
-  const r = CesiumMath.lerp(
+  var r = CesiumMath.lerp(
     particle.startColor.red,
     particle.endColor.red,
     particle.normalizedAge
   );
-  const g = CesiumMath.lerp(
+  var g = CesiumMath.lerp(
     particle.startColor.green,
     particle.endColor.green,
     particle.normalizedAge
   );
-  const b = CesiumMath.lerp(
+  var b = CesiumMath.lerp(
     particle.startColor.blue,
     particle.endColor.blue,
     particle.normalizedAge
   );
-  const a = CesiumMath.lerp(
+  var a = CesiumMath.lerp(
     particle.startColor.alpha,
     particle.endColor.alpha,
     particle.normalizedAge
@@ -679,7 +679,7 @@ function addParticle(system, particle) {
   particle._normalizedAge = 0.0;
   particle._age = 0.0;
 
-  const speed = CesiumMath.randomBetween(
+  var speed = CesiumMath.randomBetween(
     system._minimumSpeed,
     system._maximumSpeed
   );
@@ -697,8 +697,8 @@ function calculateNumberToEmit(system, dt) {
   dt = CesiumMath.mod(dt, system._lifetime);
 
   // Compute the number of particles to emit based on the emissionRate.
-  const v = dt * system._emissionRate;
-  let numToEmit = Math.floor(v);
+  var v = dt * system._emissionRate;
+  var numToEmit = Math.floor(v);
   system._carryOver += v - numToEmit;
   if (system._carryOver > 1.0) {
     numToEmit++;
@@ -707,10 +707,10 @@ function calculateNumberToEmit(system, dt) {
 
   // Apply any bursts
   if (defined(system.bursts)) {
-    const length = system.bursts.length;
-    for (let i = 0; i < length; i++) {
-      const burst = system.bursts[i];
-      const currentTime = system._currentTime;
+    var length = system.bursts.length;
+    for (var i = 0; i < length; i++) {
+      var burst = system.bursts[i];
+      var currentTime = system._currentTime;
       if (defined(burst) && !burst._complete && currentTime > burst.time) {
         numToEmit += CesiumMath.randomBetween(burst.minimum, burst.maximum);
         burst._complete = true;
@@ -721,7 +721,7 @@ function calculateNumberToEmit(system, dt) {
   return numToEmit;
 }
 
-const rotatedVelocityScratch = new Cartesian3();
+var rotatedVelocityScratch = new Cartesian3();
 
 /**
  * @private
@@ -741,7 +741,7 @@ ParticleSystem.prototype.update = function (frameState) {
   }
 
   // Compute the frame time
-  let dt = 0.0;
+  var dt = 0.0;
   if (this._previousTime) {
     dt = JulianDate.secondsDifference(frameState.time, this._previousTime);
   }
@@ -750,15 +750,15 @@ ParticleSystem.prototype.update = function (frameState) {
     dt = 0.0;
   }
 
-  const particles = this._particles;
-  const emitter = this._emitter;
-  const updateCallback = this.updateCallback;
+  var particles = this._particles;
+  var emitter = this._emitter;
+  var updateCallback = this.updateCallback;
 
-  let i;
-  let particle;
+  var i;
+  var particle;
 
   // update particles and remove dead particles
-  let length = particles.length;
+  var length = particles.length;
   for (i = 0; i < length; ++i) {
     particle = particles[i];
     if (!particle.update(dt, updateCallback)) {
@@ -774,7 +774,7 @@ ParticleSystem.prototype.update = function (frameState) {
   }
   particles.length = length;
 
-  const numToEmit = calculateNumberToEmit(this, dt);
+  var numToEmit = calculateNumberToEmit(this, dt);
 
   if (numToEmit > 0 && defined(emitter)) {
     // Compute the final model matrix by combining the particle systems model matrix and the emitter matrix.
@@ -787,7 +787,7 @@ ParticleSystem.prototype.update = function (frameState) {
       this._matrixDirty = false;
     }
 
-    const combinedMatrix = this._combinedMatrix;
+    var combinedMatrix = this._combinedMatrix;
 
     for (i = 0; i < numToEmit; i++) {
       // Create a new particle.
@@ -840,7 +840,7 @@ ParticleSystem.prototype.update = function (frameState) {
     if (this.loop) {
       this._currentTime = CesiumMath.mod(this._currentTime, this._lifetime);
       if (this.bursts) {
-        const burstLength = this.bursts.length;
+        var burstLength = this.bursts.length;
         // Reset any bursts
         for (i = 0; i < burstLength; i++) {
           this.bursts[i]._complete = false;
@@ -901,8 +901,8 @@ ParticleSystem.prototype.destroy = function () {
  *
  * @example
  * function applyGravity(particle, dt) {
- *    const position = particle.position;
- *    const gravityVector = Cesium.Cartesian3.normalize(position, new Cesium.Cartesian3());
+ *    var position = particle.position;
+ *    var gravityVector = Cesium.Cartesian3.normalize(position, new Cesium.Cartesian3());
  *    Cesium.Cartesian3.multiplyByScalar(gravityVector, GRAVITATIONAL_CONSTANT * dt, gravityVector);
  *    particle.velocity = Cesium.Cartesian3.add(particle.velocity, gravityVector, particle.velocity);
  * }

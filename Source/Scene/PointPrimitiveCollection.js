@@ -25,22 +25,21 @@ import BlendOption from "./BlendOption.js";
 import PointPrimitive from "./PointPrimitive.js";
 import SceneMode from "./SceneMode.js";
 
-const SHOW_INDEX = PointPrimitive.SHOW_INDEX;
-const POSITION_INDEX = PointPrimitive.POSITION_INDEX;
-const COLOR_INDEX = PointPrimitive.COLOR_INDEX;
-const OUTLINE_COLOR_INDEX = PointPrimitive.OUTLINE_COLOR_INDEX;
-const OUTLINE_WIDTH_INDEX = PointPrimitive.OUTLINE_WIDTH_INDEX;
-const PIXEL_SIZE_INDEX = PointPrimitive.PIXEL_SIZE_INDEX;
-const SCALE_BY_DISTANCE_INDEX = PointPrimitive.SCALE_BY_DISTANCE_INDEX;
-const TRANSLUCENCY_BY_DISTANCE_INDEX =
+var SHOW_INDEX = PointPrimitive.SHOW_INDEX;
+var POSITION_INDEX = PointPrimitive.POSITION_INDEX;
+var COLOR_INDEX = PointPrimitive.COLOR_INDEX;
+var OUTLINE_COLOR_INDEX = PointPrimitive.OUTLINE_COLOR_INDEX;
+var OUTLINE_WIDTH_INDEX = PointPrimitive.OUTLINE_WIDTH_INDEX;
+var PIXEL_SIZE_INDEX = PointPrimitive.PIXEL_SIZE_INDEX;
+var SCALE_BY_DISTANCE_INDEX = PointPrimitive.SCALE_BY_DISTANCE_INDEX;
+var TRANSLUCENCY_BY_DISTANCE_INDEX =
   PointPrimitive.TRANSLUCENCY_BY_DISTANCE_INDEX;
-const DISTANCE_DISPLAY_CONDITION_INDEX =
+var DISTANCE_DISPLAY_CONDITION_INDEX =
   PointPrimitive.DISTANCE_DISPLAY_CONDITION_INDEX;
-const DISABLE_DEPTH_DISTANCE_INDEX =
-  PointPrimitive.DISABLE_DEPTH_DISTANCE_INDEX;
-const NUMBER_OF_PROPERTIES = PointPrimitive.NUMBER_OF_PROPERTIES;
+var DISABLE_DEPTH_DISTANCE_INDEX = PointPrimitive.DISABLE_DEPTH_DISTANCE_INDEX;
+var NUMBER_OF_PROPERTIES = PointPrimitive.NUMBER_OF_PROPERTIES;
 
-const attributeLocations = {
+var attributeLocations = {
   positionHighAndSize: 0,
   positionLowAndOutline: 1,
   compressedAttribute0: 2, // color, outlineColor, pick color
@@ -75,7 +74,7 @@ const attributeLocations = {
  *
  * @example
  * // Create a pointPrimitive collection with two points
- * const points = scene.primitives.add(new Cesium.PointPrimitiveCollection());
+ * var points = scene.primitives.add(new Cesium.PointPrimitiveCollection());
  * points.add({
  *   position : new Cesium.Cartesian3(1.0, 2.0, 3.0),
  *   color : Cesium.Color.YELLOW
@@ -147,7 +146,7 @@ function PointPrimitiveCollection(options) {
    *
    *
    * @example
-   * const center = Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883);
+   * var center = Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883);
    * pointPrimitives.modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
    * pointPrimitives.add({
    *   color : Cesium.Color.ORANGE,
@@ -218,7 +217,7 @@ function PointPrimitiveCollection(options) {
     BufferUsage.STATIC_DRAW, // DISTANCE_DISPLAY_CONDITION_INDEX
   ];
 
-  const that = this;
+  var that = this;
   this._uniforms = {
     u_maxTotalPointSize: function () {
       return that._maxTotalPointSize;
@@ -243,8 +242,8 @@ Object.defineProperties(PointPrimitiveCollection.prototype, {
 });
 
 function destroyPointPrimitives(pointPrimitives) {
-  const length = pointPrimitives.length;
-  for (let i = 0; i < length; ++i) {
+  var length = pointPrimitives.length;
+  for (var i = 0; i < length; ++i) {
     if (pointPrimitives[i]) {
       pointPrimitives[i]._destroy();
     }
@@ -267,7 +266,7 @@ function destroyPointPrimitives(pointPrimitives) {
  *
  * @example
  * // Example 1:  Add a point, specifying all the default values.
- * const p = pointPrimitives.add({
+ * var p = pointPrimitives.add({
  *   show : true,
  *   position : Cesium.Cartesian3.ZERO,
  *   pixelSize : 10.0,
@@ -279,7 +278,7 @@ function destroyPointPrimitives(pointPrimitives) {
  *
  * @example
  * // Example 2:  Specify only the point's cartographic position.
- * const p = pointPrimitives.add({
+ * var p = pointPrimitives.add({
  *   position : Cesium.Cartesian3.fromDegrees(longitude, latitude, height)
  * });
  *
@@ -287,7 +286,7 @@ function destroyPointPrimitives(pointPrimitives) {
  * @see PointPrimitiveCollection#removeAll
  */
 PointPrimitiveCollection.prototype.add = function (options) {
-  const p = new PointPrimitive(options, this);
+  var p = new PointPrimitive(options, this);
   p._index = this._pointPrimitives.length;
 
   this._pointPrimitives.push(p);
@@ -312,7 +311,7 @@ PointPrimitiveCollection.prototype.add = function (options) {
  *
  *
  * @example
- * const p = pointPrimitives.add(...);
+ * var p = pointPrimitives.add(...);
  * pointPrimitives.remove(p);  // Returns true
  *
  * @see PointPrimitiveCollection#add
@@ -362,11 +361,11 @@ function removePointPrimitives(pointPrimitiveCollection) {
   if (pointPrimitiveCollection._pointPrimitivesRemoved) {
     pointPrimitiveCollection._pointPrimitivesRemoved = false;
 
-    const newPointPrimitives = [];
-    const pointPrimitives = pointPrimitiveCollection._pointPrimitives;
-    const length = pointPrimitives.length;
-    for (let i = 0, j = 0; i < length; ++i) {
-      const pointPrimitive = pointPrimitives[i];
+    var newPointPrimitives = [];
+    var pointPrimitives = pointPrimitiveCollection._pointPrimitives;
+    var length = pointPrimitives.length;
+    for (var i = 0, j = 0; i < length; ++i) {
+      var pointPrimitive = pointPrimitives[i];
       if (pointPrimitive) {
         pointPrimitive._index = j++;
         newPointPrimitives.push(pointPrimitive);
@@ -423,9 +422,9 @@ PointPrimitiveCollection.prototype.contains = function (pointPrimitive) {
  *
  * @example
  * // Toggle the show property of every point in the collection
- * const len = pointPrimitives.length;
- * for (let i = 0; i < len; ++i) {
- *   const p = pointPrimitives.get(i);
+ * var len = pointPrimitives.length;
+ * for (var i = 0; i < len; ++i) {
+ *   var p = pointPrimitives.get(i);
  *   p.show = !p.show;
  * }
  *
@@ -443,12 +442,12 @@ PointPrimitiveCollection.prototype.get = function (index) {
 };
 
 PointPrimitiveCollection.prototype.computeNewBuffersUsage = function () {
-  const buffersUsage = this._buffersUsage;
-  let usageChanged = false;
+  var buffersUsage = this._buffersUsage;
+  var usageChanged = false;
 
-  const properties = this._propertiesChanged;
-  for (let k = 0; k < NUMBER_OF_PROPERTIES; ++k) {
-    const newUsage =
+  var properties = this._propertiesChanged;
+  for (var k = 0; k < NUMBER_OF_PROPERTIES; ++k) {
+    var newUsage =
       properties[k] === 0 ? BufferUsage.STATIC_DRAW : BufferUsage.STREAM_DRAW;
     usageChanged = usageChanged || buffersUsage[k] !== newUsage;
     buffersUsage[k] = newUsage;
@@ -507,7 +506,7 @@ function createVAF(context, numberOfPointPrimitives, buffersUsage) {
 // PERFORMANCE_IDEA:  Save memory if a property is the same for all pointPrimitives, use a latched attribute state,
 // instead of storing it in a vertex buffer.
 
-const writePositionScratch = new EncodedCartesian3();
+var writePositionScratch = new EncodedCartesian3();
 
 function writePositionSizeAndOutline(
   pointPrimitiveCollection,
@@ -515,8 +514,8 @@ function writePositionSizeAndOutline(
   vafWriters,
   pointPrimitive
 ) {
-  const i = pointPrimitive._index;
-  const position = pointPrimitive._getActualPosition();
+  var i = pointPrimitive._index;
+  var position = pointPrimitive._getActualPosition();
 
   if (pointPrimitiveCollection._mode === SceneMode.SCENE3D) {
     BoundingSphere.expand(
@@ -528,26 +527,25 @@ function writePositionSizeAndOutline(
   }
 
   EncodedCartesian3.fromCartesian(position, writePositionScratch);
-  const pixelSize = pointPrimitive.pixelSize;
-  const outlineWidth = pointPrimitive.outlineWidth;
+  var pixelSize = pointPrimitive.pixelSize;
+  var outlineWidth = pointPrimitive.outlineWidth;
 
   pointPrimitiveCollection._maxPixelSize = Math.max(
     pointPrimitiveCollection._maxPixelSize,
     pixelSize + outlineWidth
   );
 
-  const positionHighWriter = vafWriters[attributeLocations.positionHighAndSize];
-  const high = writePositionScratch.high;
+  var positionHighWriter = vafWriters[attributeLocations.positionHighAndSize];
+  var high = writePositionScratch.high;
   positionHighWriter(i, high.x, high.y, high.z, pixelSize);
 
-  const positionLowWriter =
-    vafWriters[attributeLocations.positionLowAndOutline];
-  const low = writePositionScratch.low;
+  var positionLowWriter = vafWriters[attributeLocations.positionLowAndOutline];
+  var low = writePositionScratch.low;
   positionLowWriter(i, low.x, low.y, low.z, outlineWidth);
 }
 
-const LEFT_SHIFT16 = 65536.0; // 2^16
-const LEFT_SHIFT8 = 256.0; // 2^8
+var LEFT_SHIFT16 = 65536.0; // 2^16
+var LEFT_SHIFT8 = 256.0; // 2^8
 
 function writeCompressedAttrib0(
   pointPrimitiveCollection,
@@ -555,33 +553,33 @@ function writeCompressedAttrib0(
   vafWriters,
   pointPrimitive
 ) {
-  const i = pointPrimitive._index;
+  var i = pointPrimitive._index;
 
-  const color = pointPrimitive.color;
-  const pickColor = pointPrimitive.getPickId(context).color;
-  const outlineColor = pointPrimitive.outlineColor;
+  var color = pointPrimitive.color;
+  var pickColor = pointPrimitive.getPickId(context).color;
+  var outlineColor = pointPrimitive.outlineColor;
 
-  let red = Color.floatToByte(color.red);
-  let green = Color.floatToByte(color.green);
-  let blue = Color.floatToByte(color.blue);
-  const compressed0 = red * LEFT_SHIFT16 + green * LEFT_SHIFT8 + blue;
+  var red = Color.floatToByte(color.red);
+  var green = Color.floatToByte(color.green);
+  var blue = Color.floatToByte(color.blue);
+  var compressed0 = red * LEFT_SHIFT16 + green * LEFT_SHIFT8 + blue;
 
   red = Color.floatToByte(outlineColor.red);
   green = Color.floatToByte(outlineColor.green);
   blue = Color.floatToByte(outlineColor.blue);
-  const compressed1 = red * LEFT_SHIFT16 + green * LEFT_SHIFT8 + blue;
+  var compressed1 = red * LEFT_SHIFT16 + green * LEFT_SHIFT8 + blue;
 
   red = Color.floatToByte(pickColor.red);
   green = Color.floatToByte(pickColor.green);
   blue = Color.floatToByte(pickColor.blue);
-  const compressed2 = red * LEFT_SHIFT16 + green * LEFT_SHIFT8 + blue;
+  var compressed2 = red * LEFT_SHIFT16 + green * LEFT_SHIFT8 + blue;
 
-  const compressed3 =
+  var compressed3 =
     Color.floatToByte(color.alpha) * LEFT_SHIFT16 +
     Color.floatToByte(outlineColor.alpha) * LEFT_SHIFT8 +
     Color.floatToByte(pickColor.alpha);
 
-  const writer = vafWriters[attributeLocations.compressedAttribute0];
+  var writer = vafWriters[attributeLocations.compressedAttribute0];
   writer(i, compressed0, compressed1, compressed2, compressed3);
 }
 
@@ -591,14 +589,14 @@ function writeCompressedAttrib1(
   vafWriters,
   pointPrimitive
 ) {
-  const i = pointPrimitive._index;
+  var i = pointPrimitive._index;
 
-  let near = 0.0;
-  let nearValue = 1.0;
-  let far = 1.0;
-  let farValue = 1.0;
+  var near = 0.0;
+  var nearValue = 1.0;
+  var far = 1.0;
+  var farValue = 1.0;
 
-  const translucency = pointPrimitive.translucencyByDistance;
+  var translucency = pointPrimitive.translucencyByDistance;
   if (defined(translucency)) {
     near = translucency.near;
     nearValue = translucency.nearValue;
@@ -612,7 +610,7 @@ function writeCompressedAttrib1(
     }
   }
 
-  let show = pointPrimitive.show && pointPrimitive.clusterShow;
+  var show = pointPrimitive.show && pointPrimitive.clusterShow;
 
   // If the color alphas are zero, do not show this pointPrimitive.  This lets us avoid providing
   // color during the pick pass and also eliminates a discard in the fragment shader.
@@ -625,13 +623,13 @@ function writeCompressedAttrib1(
 
   nearValue = CesiumMath.clamp(nearValue, 0.0, 1.0);
   nearValue = nearValue === 1.0 ? 255.0 : (nearValue * 255.0) | 0;
-  const compressed0 = (show ? 1.0 : 0.0) * LEFT_SHIFT8 + nearValue;
+  var compressed0 = (show ? 1.0 : 0.0) * LEFT_SHIFT8 + nearValue;
 
   farValue = CesiumMath.clamp(farValue, 0.0, 1.0);
   farValue = farValue === 1.0 ? 255.0 : (farValue * 255.0) | 0;
-  const compressed1 = farValue;
+  var compressed1 = farValue;
 
-  const writer = vafWriters[attributeLocations.compressedAttribute1];
+  var writer = vafWriters[attributeLocations.compressedAttribute1];
   writer(i, compressed0, compressed1, near, far);
 }
 
@@ -641,14 +639,14 @@ function writeScaleByDistance(
   vafWriters,
   pointPrimitive
 ) {
-  const i = pointPrimitive._index;
-  const writer = vafWriters[attributeLocations.scaleByDistance];
-  let near = 0.0;
-  let nearValue = 1.0;
-  let far = 1.0;
-  let farValue = 1.0;
+  var i = pointPrimitive._index;
+  var writer = vafWriters[attributeLocations.scaleByDistance];
+  var near = 0.0;
+  var nearValue = 1.0;
+  var far = 1.0;
+  var farValue = 1.0;
 
-  const scale = pointPrimitive.scaleByDistance;
+  var scale = pointPrimitive.scaleByDistance;
   if (defined(scale)) {
     near = scale.near;
     nearValue = scale.nearValue;
@@ -671,13 +669,13 @@ function writeDistanceDisplayConditionAndDepthDisable(
   vafWriters,
   pointPrimitive
 ) {
-  const i = pointPrimitive._index;
-  const writer =
+  var i = pointPrimitive._index;
+  var writer =
     vafWriters[attributeLocations.distanceDisplayConditionAndDisableDepth];
-  let near = 0.0;
-  let far = Number.MAX_VALUE;
+  var near = 0.0;
+  var far = Number.MAX_VALUE;
 
-  const distanceDisplayCondition = pointPrimitive.distanceDisplayCondition;
+  var distanceDisplayCondition = pointPrimitive.distanceDisplayCondition;
   if (defined(distanceDisplayCondition)) {
     near = distanceDisplayCondition.near;
     far = distanceDisplayCondition.far;
@@ -688,7 +686,7 @@ function writeDistanceDisplayConditionAndDepthDisable(
     pointPrimitiveCollection._shaderDistanceDisplayCondition = true;
   }
 
-  let disableDepthTestDistance = pointPrimitive.disableDepthTestDistance;
+  var disableDepthTestDistance = pointPrimitive.disableDepthTestDistance;
   disableDepthTestDistance *= disableDepthTestDistance;
   if (disableDepthTestDistance > 0.0) {
     pointPrimitiveCollection._shaderDisableDepthDistance = true;
@@ -746,7 +744,7 @@ function recomputeActualPositions(
   modelMatrix,
   recomputeBoundingVolume
 ) {
-  let boundingVolume;
+  var boundingVolume;
   if (frameState.mode === SceneMode.SCENE3D) {
     boundingVolume = pointPrimitiveCollection._baseVolume;
     pointPrimitiveCollection._boundingVolumeDirty = true;
@@ -754,11 +752,11 @@ function recomputeActualPositions(
     boundingVolume = pointPrimitiveCollection._baseVolume2D;
   }
 
-  const positions = [];
-  for (let i = 0; i < length; ++i) {
-    const pointPrimitive = pointPrimitives[i];
-    const position = pointPrimitive.position;
-    const actualPosition = PointPrimitive._computeActualPosition(
+  var positions = [];
+  for (var i = 0; i < length; ++i) {
+    var pointPrimitive = pointPrimitives[i];
+    var position = pointPrimitive.position;
+    var actualPosition = PointPrimitive._computeActualPosition(
       position,
       frameState,
       modelMatrix
@@ -780,12 +778,12 @@ function recomputeActualPositions(
 }
 
 function updateMode(pointPrimitiveCollection, frameState) {
-  const mode = frameState.mode;
+  var mode = frameState.mode;
 
-  const pointPrimitives = pointPrimitiveCollection._pointPrimitives;
-  const pointPrimitivesToUpdate =
+  var pointPrimitives = pointPrimitiveCollection._pointPrimitives;
+  var pointPrimitivesToUpdate =
     pointPrimitiveCollection._pointPrimitivesToUpdate;
-  const modelMatrix = pointPrimitiveCollection._modelMatrix;
+  var modelMatrix = pointPrimitiveCollection._modelMatrix;
 
   if (
     pointPrimitiveCollection._createVertexArray ||
@@ -833,16 +831,16 @@ function updateMode(pointPrimitiveCollection, frameState) {
 }
 
 function updateBoundingVolume(collection, frameState, boundingVolume) {
-  const pixelSize = frameState.camera.getPixelSize(
+  var pixelSize = frameState.camera.getPixelSize(
     boundingVolume,
     frameState.context.drawingBufferWidth,
     frameState.context.drawingBufferHeight
   );
-  const size = pixelSize * collection._maxPixelSize;
+  var size = pixelSize * collection._maxPixelSize;
   boundingVolume.radius += size;
 }
 
-const scratchWriterArray = [];
+var scratchWriterArray = [];
 
 /**
  * @private
@@ -858,25 +856,25 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
 
   updateMode(this, frameState);
 
-  const pointPrimitives = this._pointPrimitives;
-  const pointPrimitivesLength = pointPrimitives.length;
-  const pointPrimitivesToUpdate = this._pointPrimitivesToUpdate;
-  const pointPrimitivesToUpdateLength = this._pointPrimitivesToUpdateIndex;
+  var pointPrimitives = this._pointPrimitives;
+  var pointPrimitivesLength = pointPrimitives.length;
+  var pointPrimitivesToUpdate = this._pointPrimitivesToUpdate;
+  var pointPrimitivesToUpdateLength = this._pointPrimitivesToUpdateIndex;
 
-  const properties = this._propertiesChanged;
+  var properties = this._propertiesChanged;
 
-  const createVertexArray = this._createVertexArray;
+  var createVertexArray = this._createVertexArray;
 
-  let vafWriters;
-  const context = frameState.context;
-  const pass = frameState.passes;
-  const picking = pass.pick;
+  var vafWriters;
+  var context = frameState.context;
+  var pass = frameState.passes;
+  var picking = pass.pick;
 
   // PERFORMANCE_IDEA: Round robin multiple buffers.
   if (createVertexArray || (!picking && this.computeNewBuffersUsage())) {
     this._createVertexArray = false;
 
-    for (let k = 0; k < NUMBER_OF_PROPERTIES; ++k) {
+    for (var k = 0; k < NUMBER_OF_PROPERTIES; ++k) {
       properties[k] = 0;
     }
 
@@ -888,8 +886,8 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
       vafWriters = this._vaf.writers;
 
       // Rewrite entire buffer if pointPrimitives were added or removed.
-      for (let i = 0; i < pointPrimitivesLength; ++i) {
-        const pointPrimitive = this._pointPrimitives[i];
+      for (var i = 0; i < pointPrimitivesLength; ++i) {
+        var pointPrimitive = this._pointPrimitives[i];
         pointPrimitive._dirty = false; // In case it needed an update.
         writePointPrimitive(this, context, vafWriters, pointPrimitive);
       }
@@ -900,7 +898,7 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
     this._pointPrimitivesToUpdateIndex = 0;
   } else if (pointPrimitivesToUpdateLength > 0) {
     // PointPrimitives were modified, but none were added or removed.
-    const writers = scratchWriterArray;
+    var writers = scratchWriterArray;
     writers.length = 0;
 
     if (
@@ -930,7 +928,7 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
       writers.push(writeDistanceDisplayConditionAndDepthDisable);
     }
 
-    const numWriters = writers.length;
+    var numWriters = writers.length;
 
     vafWriters = this._vaf.writers;
 
@@ -939,21 +937,21 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
 
       // PERFORMANCE_IDEA:  I totally made up 10% :).
 
-      for (let m = 0; m < pointPrimitivesToUpdateLength; ++m) {
-        const b = pointPrimitivesToUpdate[m];
+      for (var m = 0; m < pointPrimitivesToUpdateLength; ++m) {
+        var b = pointPrimitivesToUpdate[m];
         b._dirty = false;
 
-        for (let n = 0; n < numWriters; ++n) {
+        for (var n = 0; n < numWriters; ++n) {
           writers[n](this, context, vafWriters, b);
         }
       }
       this._vaf.commit();
     } else {
-      for (let h = 0; h < pointPrimitivesToUpdateLength; ++h) {
-        const bb = pointPrimitivesToUpdate[h];
+      for (var h = 0; h < pointPrimitivesToUpdateLength; ++h) {
+        var bb = pointPrimitivesToUpdate[h];
         bb._dirty = false;
 
-        for (let o = 0; o < numWriters; ++o) {
+        for (var o = 0; o < numWriters; ++o) {
           writers[o](this, context, vafWriters, bb);
         }
         this._vaf.subCommit(bb._index, 1);
@@ -984,8 +982,8 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
     );
   }
 
-  let boundingVolume;
-  let modelMatrix = Matrix4.IDENTITY;
+  var boundingVolume;
+  var modelMatrix = Matrix4.IDENTITY;
   if (frameState.mode === SceneMode.SCENE3D) {
     modelMatrix = this.modelMatrix;
     boundingVolume = BoundingSphere.clone(
@@ -1000,7 +998,7 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
   }
   updateBoundingVolume(this, frameState, boundingVolume);
 
-  const blendOptionChanged = this._blendOption !== this.blendOption;
+  var blendOptionChanged = this._blendOption !== this.blendOption;
   this._blendOption = this.blendOption;
 
   if (blendOptionChanged) {
@@ -1039,8 +1037,8 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
   this._shaderDisableDepthDistance =
     this._shaderDisableDepthDistance ||
     frameState.minimumDisableDepthTestDistance !== 0.0;
-  let vs;
-  let fs;
+  var vs;
+  var fs;
 
   if (
     blendOptionChanged ||
@@ -1126,27 +1124,27 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
     this._compiledShaderDisableDepthDistance = this._shaderDisableDepthDistance;
   }
 
-  let va;
-  let vaLength;
-  let command;
-  let j;
+  var va;
+  var vaLength;
+  var command;
+  var j;
 
-  const commandList = frameState.commandList;
+  var commandList = frameState.commandList;
 
   if (pass.render || picking) {
-    const colorList = this._colorCommands;
+    var colorList = this._colorCommands;
 
-    const opaque = this._blendOption === BlendOption.OPAQUE;
-    const opaqueAndTranslucent =
+    var opaque = this._blendOption === BlendOption.OPAQUE;
+    var opaqueAndTranslucent =
       this._blendOption === BlendOption.OPAQUE_AND_TRANSLUCENT;
 
     va = this._vaf.va;
     vaLength = va.length;
 
     colorList.length = vaLength;
-    const totalLength = opaqueAndTranslucent ? vaLength * 2 : vaLength;
+    var totalLength = opaqueAndTranslucent ? vaLength * 2 : vaLength;
     for (j = 0; j < totalLength; ++j) {
-      const opaqueCommand = opaque || (opaqueAndTranslucent && j % 2 === 0);
+      var opaqueCommand = opaque || (opaqueAndTranslucent && j % 2 === 0);
 
       command = colorList[j];
       if (!defined(command)) {
@@ -1158,7 +1156,7 @@ PointPrimitiveCollection.prototype.update = function (frameState) {
         opaqueCommand || !opaqueAndTranslucent ? Pass.OPAQUE : Pass.TRANSLUCENT;
       command.owner = this;
 
-      const index = opaqueAndTranslucent ? Math.floor(j / 2.0) : j;
+      var index = opaqueAndTranslucent ? Math.floor(j / 2.0) : j;
       command.boundingVolume = boundingVolume;
       command.modelMatrix = modelMatrix;
       command.shaderProgram = opaqueCommand ? this._sp : this._spTranslucent;

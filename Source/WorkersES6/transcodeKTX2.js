@@ -8,7 +8,7 @@ import PixelDatatype from "../Renderer/PixelDatatype.js";
 import createTaskProcessorWorker from "./createTaskProcessorWorker.js";
 import ktx_parse from "../ThirdParty/ktx-parse.js";
 
-const faceOrder = [
+var faceOrder = [
   "positiveX",
   "negativeX",
   "positiveY",
@@ -18,18 +18,18 @@ const faceOrder = [
 ];
 
 // Flags
-const colorModelETC1S = 163;
-const colorModelUASTC = 166;
+var colorModelETC1S = 163;
+var colorModelUASTC = 166;
 
-let transcoderModule;
+var transcoderModule;
 function transcode(parameters, transferableObjects) {
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.object("transcoderModule", transcoderModule);
   //>>includeEnd('debug');
 
-  const data = parameters.ktx2Buffer;
-  const supportedTargetFormats = parameters.supportedTargetFormats;
-  let header;
+  var data = parameters.ktx2Buffer;
+  var supportedTargetFormats = parameters.supportedTargetFormats;
+  var header;
   try {
     header = ktx_parse(data);
   } catch (e) {
@@ -44,8 +44,8 @@ function transcode(parameters, transferableObjects) {
     throw new RuntimeError("KTX2 3D textures are unsupported.");
   }
 
-  const dfd = header.dataFormatDescriptor[0];
-  const result = new Array(header.levelCount);
+  var dfd = header.dataFormatDescriptor[0];
+  var result = new Array(header.levelCount);
 
   if (
     header.vkFormat === 0x0 &&
@@ -70,11 +70,11 @@ function transcode(parameters, transferableObjects) {
 
 // Parser for uncompressed
 function parseUncompressed(header, result) {
-  const internalFormat =
+  var internalFormat =
     header.vkFormat === VulkanConstants.VK_FORMAT_R8G8B8_SRGB
       ? PixelFormat.RGB
       : PixelFormat.RGBA;
-  let datatype;
+  var datatype;
   if (header.vkFormat === VulkanConstants.VK_FORMAT_R8G8B8A8_UNORM) {
     datatype = PixelDatatype.UNSIGNED_BYTE;
   } else if (
@@ -87,21 +87,21 @@ function parseUncompressed(header, result) {
     datatype = PixelDatatype.FLOAT;
   }
 
-  for (let i = 0; i < header.levels.length; ++i) {
-    const level = {};
+  for (var i = 0; i < header.levels.length; ++i) {
+    var level = {};
     result[i] = level;
-    const levelBuffer = header.levels[i].levelData;
+    var levelBuffer = header.levels[i].levelData;
 
-    const width = header.pixelWidth >> i;
-    const height = header.pixelHeight >> i;
-    const faceLength =
+    var width = header.pixelWidth >> i;
+    var height = header.pixelHeight >> i;
+    var faceLength =
       width * height * PixelFormat.componentsLength(internalFormat);
 
-    for (let j = 0; j < header.faceCount; ++j) {
+    for (var j = 0; j < header.faceCount; ++j) {
       // multiply levelBuffer.byteOffset by the size in bytes of the pixel data type
-      const faceByteOffset =
+      var faceByteOffset =
         levelBuffer.byteOffset + faceLength * header.typeSize * j;
-      let faceView;
+      var faceView;
       if (!defined(datatype) || PixelDatatype.sizeInBytes(datatype) === 1) {
         faceView = new Uint8Array(
           levelBuffer.buffer,
@@ -141,11 +141,11 @@ function transcodeCompressed(
   transferableObjects,
   result
 ) {
-  const ktx2File = new transcoderModule.KTX2File(data);
-  let width = ktx2File.getWidth();
-  let height = ktx2File.getHeight();
-  const levels = ktx2File.getLevels();
-  const hasAlpha = ktx2File.getHasAlpha();
+  var ktx2File = new transcoderModule.KTX2File(data);
+  var width = ktx2File.getWidth();
+  var height = ktx2File.getHeight();
+  var levels = ktx2File.getLevels();
+  var hasAlpha = ktx2File.getHasAlpha();
 
   if (!(width > 0) || !(height > 0) || !(levels > 0)) {
     ktx2File.close();
@@ -153,9 +153,9 @@ function transcodeCompressed(
     throw new RuntimeError("Invalid KTX2 file");
   }
 
-  let internalFormat, transcoderFormat;
-  const dfd = header.dataFormatDescriptor[0];
-  const BasisFormat = transcoderModule.transcoder_texture_format;
+  var internalFormat, transcoderFormat;
+  var dfd = header.dataFormatDescriptor[0];
+  var BasisFormat = transcoderModule.transcoder_texture_format;
 
   // Determine target format based on platform support
   if (dfd.colorModel === colorModelETC1S) {
@@ -234,8 +234,8 @@ function transcodeCompressed(
     throw new RuntimeError("startTranscoding() failed");
   }
 
-  for (let i = 0; i < header.levels.length; ++i) {
-    const level = {};
+  for (var i = 0; i < header.levels.length; ++i) {
+    var level = {};
     result[i] = level;
     width = header.pixelWidth >> i;
     height = header.pixelHeight >> i;
@@ -243,15 +243,15 @@ function transcodeCompressed(
     // Since supercompressed cubemaps are unsupported, this function
     // does not iterate over KTX2 faces and assumes faceCount = 1.
 
-    const dstSize = ktx2File.getImageTranscodedSizeInBytes(
+    var dstSize = ktx2File.getImageTranscodedSizeInBytes(
       i, // level index
       0, // layer index
       0, // face index
       transcoderFormat.value
     );
-    const dst = new Uint8Array(dstSize);
+    var dst = new Uint8Array(dstSize);
 
-    const transcoded = ktx2File.transcodeImage(
+    var transcoded = ktx2File.transcodeImage(
       dst,
       i, // level index
       0, // layer index
@@ -290,10 +290,10 @@ function initWorker(compiledModule) {
 }
 
 function transcodeKTX2(event) {
-  const data = event.data;
+  var data = event.data;
 
   // Expect the first message to be to load a web assembly module
-  const wasmConfig = data.webAssemblyConfig;
+  var wasmConfig = data.webAssemblyConfig;
   if (defined(wasmConfig)) {
     // Require and compile WebAssembly module, or use fallback if not supported
     return require([wasmConfig.modulePath], function (mscBasisTranscoder) {

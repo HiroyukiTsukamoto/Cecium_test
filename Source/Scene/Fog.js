@@ -18,13 +18,6 @@ function Fog() {
    */
   this.enabled = true;
   /**
-   * <code>true</code> if fog is renderable in shaders, <code>false</code> otherwise.
-   * This allows to benefits from optimized tile loading strategy based on fog density without the actual visual rendering.
-   * @type {Boolean}
-   * @default true
-   */
-  this.renderable = true;
-  /**
    * A scalar that determines the density of the fog. Terrain that is in full fog are culled.
    * The density of the fog increases as this number approaches 1.0 and becomes less dense as it approaches zero.
    * The more dense the fog is, the more aggressively the terrain is culled. For example, if the camera is a height of
@@ -53,7 +46,7 @@ function Fog() {
 }
 
 // These values were found by sampling the density at certain views and finding at what point culled tiles impacted the view at the horizon.
-const heightsTable = [
+var heightsTable = [
   359.393,
   800.749,
   1275.6501,
@@ -75,7 +68,7 @@ const heightsTable = [
   493552.0528,
   628733.5874,
 ];
-const densityTable = [
+var densityTable = [
   2.0e-5,
   2.0e-4,
   1.0e-4,
@@ -99,22 +92,22 @@ const densityTable = [
 ];
 
 // Scale densities by 1e6 to bring lowest value to ~1. Prevents divide by zero.
-for (let i = 0; i < densityTable.length; ++i) {
+for (var i = 0; i < densityTable.length; ++i) {
   densityTable[i] *= 1.0e6;
 }
 // Change range to [0, 1].
-const tableStartDensity = densityTable[1];
-const tableEndDensity = densityTable[densityTable.length - 1];
-for (let j = 0; j < densityTable.length; ++j) {
+var tableStartDensity = densityTable[1];
+var tableEndDensity = densityTable[densityTable.length - 1];
+for (var j = 0; j < densityTable.length; ++j) {
   densityTable[j] =
     (densityTable[j] - tableEndDensity) / (tableStartDensity - tableEndDensity);
 }
 
-let tableLastIndex = 0;
+var tableLastIndex = 0;
 
 function findInterval(height) {
-  const heights = heightsTable;
-  const length = heights.length;
+  var heights = heightsTable;
+  var length = heights.length;
 
   if (height < heights[0]) {
     tableLastIndex = 0;
@@ -142,7 +135,7 @@ function findInterval(height) {
   }
 
   // The above failed so do a linear search.
-  let i;
+  var i;
   for (i = 0; i < length - 2; ++i) {
     if (height >= heights[i] && height < heights[i + 1]) {
       break;
@@ -153,18 +146,16 @@ function findInterval(height) {
   return tableLastIndex;
 }
 
-const scratchPositionNormal = new Cartesian3();
+var scratchPositionNormal = new Cartesian3();
 
 Fog.prototype.update = function (frameState) {
-  const enabled = (frameState.fog.enabled = this.enabled);
+  var enabled = (frameState.fog.enabled = this.enabled);
   if (!enabled) {
     return;
   }
 
-  frameState.fog.renderable = this.renderable;
-
-  const camera = frameState.camera;
-  const positionCartographic = camera.positionCartographic;
+  var camera = frameState.camera;
+  var positionCartographic = camera.positionCartographic;
 
   // Turn off fog in space.
   if (
@@ -176,26 +167,26 @@ Fog.prototype.update = function (frameState) {
     return;
   }
 
-  const height = positionCartographic.height;
-  const i = findInterval(height);
-  const t = CesiumMath.clamp(
+  var height = positionCartographic.height;
+  var i = findInterval(height);
+  var t = CesiumMath.clamp(
     (height - heightsTable[i]) / (heightsTable[i + 1] - heightsTable[i]),
     0.0,
     1.0
   );
-  let density = CesiumMath.lerp(densityTable[i], densityTable[i + 1], t);
+  var density = CesiumMath.lerp(densityTable[i], densityTable[i + 1], t);
 
   // Again, scale value to be in the range of densityTable (prevents divide by zero) and change to new range.
-  const startDensity = this.density * 1.0e6;
-  const endDensity = (startDensity / tableStartDensity) * tableEndDensity;
+  var startDensity = this.density * 1.0e6;
+  var endDensity = (startDensity / tableStartDensity) * tableEndDensity;
   density = density * (startDensity - endDensity) * 1.0e-6;
 
   // Fade fog in as the camera tilts toward the horizon.
-  const positionNormal = Cartesian3.normalize(
+  var positionNormal = Cartesian3.normalize(
     camera.positionWC,
     scratchPositionNormal
   );
-  const dot = Math.abs(Cartesian3.dot(camera.directionWC, positionNormal));
+  var dot = Math.abs(Cartesian3.dot(camera.directionWC, positionNormal));
   density *= 1.0 - dot;
 
   frameState.fog.density = density;

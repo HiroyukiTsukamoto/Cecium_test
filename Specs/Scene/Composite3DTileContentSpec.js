@@ -1,12 +1,9 @@
 import {
   Cartesian3,
-  Cesium3DContentGroup,
   Color,
-  ContentMetadata,
   HeadingPitchRange,
   MetadataClass,
   GroupMetadata,
-  ImplicitMetadataView,
 } from "../../Source/Cesium.js";
 import Cesium3DTilesTester from "../Cesium3DTilesTester.js";
 import createScene from "../createScene.js";
@@ -14,21 +11,20 @@ import createScene from "../createScene.js";
 describe(
   "Scene/Composite3DTileContent",
   function () {
-    let scene;
-    const centerLongitude = -1.31968;
-    const centerLatitude = 0.698874;
+    var scene;
+    var centerLongitude = -1.31968;
+    var centerLatitude = 0.698874;
 
-    const compositeUrl =
-      "./Data/Cesium3DTiles/Composite/Composite/tileset.json";
-    const compositeOfComposite =
+    var compositeUrl = "./Data/Cesium3DTiles/Composite/Composite/tileset.json";
+    var compositeOfComposite =
       "./Data/Cesium3DTiles/Composite/CompositeOfComposite/tileset.json";
-    const compositeOfInstanced =
+    var compositeOfInstanced =
       "./Data/Cesium3DTiles/Composite/CompositeOfInstanced/tileset.json";
 
     beforeAll(function () {
       scene = createScene();
       // One item in each data set is always located in the center, so point the camera there
-      const center = Cartesian3.fromRadians(centerLongitude, centerLatitude);
+      var center = Cartesian3.fromRadians(centerLongitude, centerLatitude);
       scene.camera.lookAt(center, new HeadingPitchRange(0.0, -1.57, 26.0));
     });
 
@@ -43,7 +39,7 @@ describe(
     function expectRenderComposite(tileset) {
       expect(scene).toPickAndCall(function (result) {
         // Pick a building
-        const pickedBuilding = result;
+        var pickedBuilding = result;
         expect(pickedBuilding).toBeDefined();
 
         // Change the color of the picked building to yellow
@@ -60,7 +56,7 @@ describe(
         // Both a building and instance are located at the center, hide the building and pick the instance
         pickedBuilding.show = false;
 
-        let pickedInstance;
+        var pickedInstance;
         expect(scene).toPickAndCall(function (result) {
           pickedInstance = result;
           expect(pickedInstance).toBeDefined();
@@ -85,14 +81,14 @@ describe(
     }
 
     it("throws with invalid version", function () {
-      const arrayBuffer = Cesium3DTilesTester.generateCompositeTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateCompositeTileBuffer({
         version: 2,
       });
       Cesium3DTilesTester.loadTileExpectError(scene, arrayBuffer, "cmpt");
     });
 
     it("throws with invalid inner tile content type", function () {
-      const arrayBuffer = Cesium3DTilesTester.generateCompositeTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateCompositeTileBuffer({
         tiles: [
           Cesium3DTilesTester.generateInstancedTileBuffer({
             magic: [120, 120, 120, 120],
@@ -110,7 +106,7 @@ describe(
       // Try loading a composite tile with an instanced tile that has an invalid url.
       // Expect promise to be rejected in Model, ModelInstanceCollection,
       // Instanced3DModel3DTileContent, and Composite3DTileContent.
-      const arrayBuffer = Cesium3DTilesTester.generateCompositeTileBuffer({
+      var arrayBuffer = Cesium3DTilesTester.generateCompositeTileBuffer({
         tiles: [
           Cesium3DTilesTester.generateInstancedTileBuffer({
             gltfFormat: 0,
@@ -147,115 +143,41 @@ describe(
       return Cesium3DTilesTester.tileDestroys(scene, compositeUrl);
     });
 
-    describe("metadata", function () {
-      let metadataClass;
-      let groupMetadata;
-      let contentMetadataClass;
-      let explicitMetadata;
-      let implicitMetadata;
-
-      beforeAll(function () {
-        metadataClass = new MetadataClass({
-          id: "test",
-          class: {
-            properties: {
-              name: {
-                type: "STRING",
-              },
-              height: {
-                type: "SCALAR",
-                componentType: "FLOAT32",
-              },
+    describe("3DTILES_metadata", function () {
+      var metadataClass = new MetadataClass({
+        id: "test",
+        class: {
+          properties: {
+            name: {
+              type: "STRING",
+            },
+            height: {
+              type: "FLOAT32",
             },
           },
-        });
-
-        groupMetadata = new GroupMetadata({
-          id: "testGroup",
-          group: {
-            properties: {
-              name: "Test Group",
-              height: 35.6,
-            },
+        },
+      });
+      var groupMetadata = new GroupMetadata({
+        id: "testGroup",
+        group: {
+          properties: {
+            name: "Test Group",
+            height: 35.6,
           },
-          class: metadataClass,
-        });
-
-        contentMetadataClass = new MetadataClass({
-          id: "contentTest",
-          class: {
-            properties: {
-              author: {
-                type: "STRING",
-              },
-              color: {
-                type: "VEC3",
-                componentType: "UINT8",
-              },
-            },
-          },
-        });
-
-        explicitMetadata = new ContentMetadata({
-          content: {
-            properties: {
-              author: "Test Author",
-              color: [255, 0, 0],
-            },
-          },
-          class: contentMetadataClass,
-        });
-
-        implicitMetadata = new ImplicitMetadataView({
-          metadataTable: {},
-          class: {},
-          entityId: 0,
-          propertyTableJson: {},
-        });
+        },
+        class: metadataClass,
       });
 
-      it("assigning group metadata propagates to inner contents", function () {
+      it("assigning groupMetadata propagates to inner contents", function () {
         return Cesium3DTilesTester.loadTileset(scene, compositeUrl).then(
           function (tileset) {
-            const content = tileset.root.content;
-            content.group = new Cesium3DContentGroup({
-              metadata: groupMetadata,
-            });
-            expect(content.group.metadata).toBe(groupMetadata);
+            var content = tileset.root.content;
+            content.groupMetadata = groupMetadata;
+            expect(content.groupMetadata).toBe(groupMetadata);
 
-            const innerContents = content.innerContents;
-            for (let i = 0; i < innerContents.length; i++) {
-              expect(innerContents[i].group.metadata).toBe(groupMetadata);
-            }
-          }
-        );
-      });
-
-      it("assigning explicit content metadata propagates to inner contents", function () {
-        return Cesium3DTilesTester.loadTileset(scene, compositeUrl).then(
-          function (tileset) {
-            const content = tileset.root.content;
-            content.metadata = explicitMetadata;
-            expect(content.metadata).toBe(explicitMetadata);
-
-            const innerContents = content.innerContents;
-            for (let i = 0; i < innerContents.length; i++) {
-              expect(innerContents[i].metadata).toBe(explicitMetadata);
-            }
-          }
-        );
-      });
-
-      it("assigning implicit content metadata propagates to inner contents", function () {
-        return Cesium3DTilesTester.loadTileset(scene, compositeUrl).then(
-          function (tileset) {
-            const content = tileset.root.content;
-            content.metadata = implicitMetadata;
-            expect(content.metadata).toBe(implicitMetadata);
-
-            const innerContents = content.innerContents;
-            for (let i = 0; i < innerContents.length; i++) {
-              expect(innerContents[i].metadata).toBe(implicitMetadata);
+            var innerContents = content.innerContents;
+            for (var i = 0; i < innerContents.length; i++) {
+              expect(innerContents[i].groupMetadata).toBe(groupMetadata);
             }
           }
         );

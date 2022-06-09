@@ -12,9 +12,9 @@ import { WebMercatorTilingScheme } from "../../Source/Cesium.js";
 import pollToPromise from "../pollToPromise.js";
 
 describe("Core/ArcGISTiledElevationTerrainProvider", function () {
-  const lercTileUrl = "Data/Images/Red16x16.png";
-  let availability;
-  let metadata;
+  var lercTileUrl = "Data/Images/Red16x16.png";
+  var availability;
+  var metadata;
 
   beforeEach(function () {
     availability = {
@@ -211,7 +211,7 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("resolves readyPromise", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
 
@@ -222,11 +222,11 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("resolves readyPromise with Resource", function () {
-    const resource = new Resource({
+    var resource = new Resource({
       url: "made/up/url",
     });
 
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: resource,
     });
 
@@ -237,17 +237,15 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("has error event", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
     expect(provider.errorEvent).toBeDefined();
     expect(provider.errorEvent).toBe(provider.errorEvent);
-
-    return provider.readyPromise;
   });
 
   it("returns reasonable geometric error for various levels", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
 
@@ -267,32 +265,28 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("getLevelMaximumGeometricError must not be called before isReady returns true", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
 
     expect(function () {
       provider.getLevelMaximumGeometricError(0);
     }).toThrowDeveloperError();
-
-    return provider.readyPromise;
   });
 
   it("getTilingScheme must not be called before isReady returns true", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
 
     expect(function () {
       return provider.tilingScheme;
     }).toThrowDeveloperError();
-
-    return provider.readyPromise;
   });
 
   it("logo is undefined if credit is not provided", function () {
     delete metadata.copyrightText;
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
     return pollToPromise(function () {
@@ -303,7 +297,7 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("logo is defined if credit is provided", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
       credit: "thanks to our awesome made up contributors!",
     });
@@ -315,29 +309,23 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("does not have a water mask", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
     expect(provider.hasWaterMask).toBe(false);
-    return provider.readyPromise.catch(function (error) {
-      expect(error).toBeInstanceOf(RuntimeError);
-    });
   });
 
   it("is not ready immediately", function () {
-    const provider = new ArcGISTiledElevationTerrainProvider({
+    var provider = new ArcGISTiledElevationTerrainProvider({
       url: "made/up/url",
     });
     expect(provider.ready).toBe(false);
-    return provider.readyPromise.catch(function (error) {
-      expect(error).toBeInstanceOf(RuntimeError);
-    });
   });
 
   it("detects WebMercator tiling scheme", function () {
-    const baseUrl = "made/up/url";
+    var baseUrl = "made/up/url";
 
-    const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+    var terrainProvider = new ArcGISTiledElevationTerrainProvider({
       url: baseUrl,
     });
 
@@ -351,11 +339,11 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("detects Geographic tiling scheme", function () {
-    const baseUrl = "made/up/url";
+    var baseUrl = "made/up/url";
 
     metadata.spatialReference.latestWkid = 4326;
 
-    const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+    var terrainProvider = new ArcGISTiledElevationTerrainProvider({
       url: baseUrl,
     });
 
@@ -369,37 +357,37 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("raises an error if the SRS is not supported", function () {
-    const baseUrl = "made/up/url";
+    var baseUrl = "made/up/url";
 
     metadata.spatialReference.latestWkid = 1234;
 
-    const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+    var terrainProvider = new ArcGISTiledElevationTerrainProvider({
       url: baseUrl,
     });
 
-    return terrainProvider.readyPromise.then(fail).catch(function (error) {
+    return terrainProvider.readyPromise.then(fail).otherwise(function (error) {
       expect(error).toBeInstanceOf(RuntimeError);
     });
   });
 
   it("raises an error if tileInfo missing", function () {
-    const baseUrl = "made/up/url";
+    var baseUrl = "made/up/url";
 
     delete metadata.tileInfo;
 
-    const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+    var terrainProvider = new ArcGISTiledElevationTerrainProvider({
       url: baseUrl,
     });
 
-    return terrainProvider.readyPromise.then(fail).catch(function (error) {
+    return terrainProvider.readyPromise.then(fail).otherwise(function (error) {
       expect(error).toBeInstanceOf(RuntimeError);
     });
   });
 
   it("checks availability if TileMap capability exists", function () {
-    const baseUrl = "made/up/url";
+    var baseUrl = "made/up/url";
 
-    const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+    var terrainProvider = new ArcGISTiledElevationTerrainProvider({
       url: baseUrl,
     });
 
@@ -413,11 +401,11 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
   });
 
   it("does not check availability if TileMap capability is missing", function () {
-    const baseUrl = "made/up/url";
+    var baseUrl = "made/up/url";
 
     metadata.capabilities = "Image,Mensuration";
 
-    const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+    var terrainProvider = new ArcGISTiledElevationTerrainProvider({
       url: baseUrl,
     });
 
@@ -432,7 +420,7 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
 
   describe("requestTileGeometry", function () {
     it("must not be called before isReady returns true", function () {
-      const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+      var terrainProvider = new ArcGISTiledElevationTerrainProvider({
         url: "made/up/url",
         proxy: new DefaultProxy("/proxy/"),
       });
@@ -440,14 +428,12 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
       expect(function () {
         terrainProvider.requestTileGeometry(0, 0, 0);
       }).toThrowDeveloperError();
-
-      return terrainProvider.readyPromise;
     });
 
     it("provides HeightmapTerrainData", function () {
-      const baseUrl = "made/up/url";
+      var baseUrl = "made/up/url";
 
-      const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+      var terrainProvider = new ArcGISTiledElevationTerrainProvider({
         url: baseUrl,
       });
 
@@ -455,7 +441,7 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
         return terrainProvider.ready;
       })
         .then(function () {
-          const promise = terrainProvider.requestTileGeometry(0, 0, 0);
+          var promise = terrainProvider.requestTileGeometry(0, 0, 0);
           RequestScheduler.update();
           return promise;
         })
@@ -465,9 +451,9 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
     });
 
     it("returns undefined if too many requests are already in progress", function () {
-      const baseUrl = "made/up/url";
+      var baseUrl = "made/up/url";
 
-      const deferreds = [];
+      var deferreds = [];
 
       Resource._Implementations.createImage = function (
         request,
@@ -478,17 +464,17 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
         deferreds.push(deferred);
       };
 
-      const terrainProvider = new ArcGISTiledElevationTerrainProvider({
+      var terrainProvider = new ArcGISTiledElevationTerrainProvider({
         url: baseUrl,
       });
 
       return pollToPromise(function () {
         return terrainProvider.ready;
       }).then(function () {
-        let promise;
-        let i;
+        var promise;
+        var i;
         for (i = 0; i < RequestScheduler.maximumRequestsPerServer; ++i) {
-          const request = new Request({
+          var request = new Request({
             throttle: true,
             throttleByServer: true,
           });
@@ -503,12 +489,6 @@ describe("Core/ArcGISTiledElevationTerrainProvider", function () {
         for (i = 0; i < deferreds.length; ++i) {
           deferreds[i].resolve();
         }
-
-        return Promise.all(
-          deferreds.map(function (deferred) {
-            return deferred.promise;
-          })
-        );
       });
     });
   });

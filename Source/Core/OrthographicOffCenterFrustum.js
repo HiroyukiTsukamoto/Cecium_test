@@ -25,9 +25,9 @@ import Matrix4 from "./Matrix4.js";
  * @param {Number} [options.far=500000000.0] The far clipping plane distance.
  *
  * @example
- * const maxRadii = ellipsoid.maximumRadius;
+ * var maxRadii = ellipsoid.maximumRadius;
  *
- * const frustum = new Cesium.OrthographicOffCenterFrustum();
+ * var frustum = new Cesium.OrthographicOffCenterFrustum();
  * frustum.right = maxRadii * Cesium.Math.PI;
  * frustum.left = -c.frustum.right;
  * frustum.top = c.frustum.right * (canvas.clientHeight / canvas.clientWidth);
@@ -161,10 +161,10 @@ Object.defineProperties(OrthographicOffCenterFrustum.prototype, {
   },
 });
 
-const getPlanesRight = new Cartesian3();
-const getPlanesNearCenter = new Cartesian3();
-const getPlanesPoint = new Cartesian3();
-const negateScratch = new Cartesian3();
+var getPlanesRight = new Cartesian3();
+var getPlanesNearCenter = new Cartesian3();
+var getPlanesPoint = new Cartesian3();
+var negateScratch = new Cartesian3();
 
 /**
  * Creates a culling volume for this frustum.
@@ -176,8 +176,8 @@ const negateScratch = new Cartesian3();
  *
  * @example
  * // Check if a bounding volume intersects the frustum.
- * const cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
- * const intersect = cullingVolume.computeVisibility(boundingVolume);
+ * var cullingVolume = frustum.computeCullingVolume(cameraPosition, cameraDirection, cameraUp);
+ * var intersect = cullingVolume.computeVisibility(boundingVolume);
  */
 OrthographicOffCenterFrustum.prototype.computeCullingVolume = function (
   position,
@@ -196,27 +196,27 @@ OrthographicOffCenterFrustum.prototype.computeCullingVolume = function (
   }
   //>>includeEnd('debug');
 
-  const planes = this._cullingVolume.planes;
-  const t = this.top;
-  const b = this.bottom;
-  const r = this.right;
-  const l = this.left;
-  const n = this.near;
-  const f = this.far;
+  var planes = this._cullingVolume.planes;
+  var t = this.top;
+  var b = this.bottom;
+  var r = this.right;
+  var l = this.left;
+  var n = this.near;
+  var f = this.far;
 
-  const right = Cartesian3.cross(direction, up, getPlanesRight);
+  var right = Cartesian3.cross(direction, up, getPlanesRight);
   Cartesian3.normalize(right, right);
-  const nearCenter = getPlanesNearCenter;
+  var nearCenter = getPlanesNearCenter;
   Cartesian3.multiplyByScalar(direction, n, nearCenter);
   Cartesian3.add(position, nearCenter, nearCenter);
 
-  const point = getPlanesPoint;
+  var point = getPlanesPoint;
 
   // Left plane
   Cartesian3.multiplyByScalar(right, l, point);
   Cartesian3.add(nearCenter, point, point);
 
-  let plane = planes[0];
+  var plane = planes[0];
   if (!defined(plane)) {
     plane = planes[0] = new Cartesian4();
   }
@@ -307,7 +307,7 @@ OrthographicOffCenterFrustum.prototype.computeCullingVolume = function (
  * @example
  * // Example 1
  * // Get the width and height of a pixel.
- * const pixelSize = camera.frustum.getPixelDimensions(scene.drawingBufferWidth, scene.drawingBufferHeight, 0.0, scene.pixelRatio, new Cesium.Cartesian2());
+ * var pixelSize = camera.frustum.getPixelDimensions(scene.drawingBufferWidth, scene.drawingBufferHeight, 0.0, scene.pixelRatio, new Cesium.Cartesian2());
  */
 OrthographicOffCenterFrustum.prototype.getPixelDimensions = function (
   drawingBufferWidth,
@@ -344,10 +344,10 @@ OrthographicOffCenterFrustum.prototype.getPixelDimensions = function (
   }
   //>>includeEnd('debug');
 
-  const frustumWidth = this.right - this.left;
-  const frustumHeight = this.top - this.bottom;
-  const pixelWidth = (pixelRatio * frustumWidth) / drawingBufferWidth;
-  const pixelHeight = (pixelRatio * frustumHeight) / drawingBufferHeight;
+  var frustumWidth = this.right - this.left;
+  var frustumHeight = this.top - this.bottom;
+  var pixelWidth = (pixelRatio * frustumWidth) / drawingBufferWidth;
+  var pixelHeight = (pixelRatio * frustumHeight) / drawingBufferHeight;
 
   result.x = pixelWidth;
   result.y = pixelHeight;

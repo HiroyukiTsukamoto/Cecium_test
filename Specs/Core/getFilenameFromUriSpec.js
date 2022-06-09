@@ -2,7 +2,7 @@ import { getFilenameFromUri } from "../../Source/Cesium.js";
 
 describe("Core/getFilenameFromUri", function () {
   it("works as expected", function () {
-    let result = getFilenameFromUri(
+    var result = getFilenameFromUri(
       "http://www.mysite.com/awesome?makeitawesome=true"
     );
     expect(result).toEqual("awesome");

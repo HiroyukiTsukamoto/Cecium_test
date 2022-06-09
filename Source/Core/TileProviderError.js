@@ -120,7 +120,7 @@ TileProviderError.handleError = function (
   retryFunction,
   errorDetails
 ) {
-  let error = previousError;
+  var error = previousError;
   if (!defined(previousError)) {
     error = new TileProviderError(
       provider,
@@ -146,9 +146,10 @@ TileProviderError.handleError = function (
     event.raiseEvent(error);
   } else {
     console.log(
-      `An error occurred in "${provider.constructor.name}": ${formatError(
-        message
-      )}`
+      'An error occurred in "' +
+        provider.constructor.name +
+        '": ' +
+        formatError(message)
     );
   }
 

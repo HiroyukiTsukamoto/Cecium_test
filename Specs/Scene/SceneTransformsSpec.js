@@ -12,8 +12,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/SceneTransforms",
   function () {
-    let scene;
-    let defaultCamera;
+    var scene;
+    var defaultCamera;
 
     beforeAll(function () {
       scene = createScene();
@@ -35,7 +35,7 @@ describe(
     });
 
     it("throws an exception without scene", function () {
-      const position = Cartesian3.fromDegrees(0.0, 0.0);
+      var position = Cartesian3.fromDegrees(0.0, 0.0);
       expect(function () {
         SceneTransforms.wgs84ToWindowCoordinates(undefined, position);
       }).toThrowDeveloperError();
@@ -48,17 +48,17 @@ describe(
     });
 
     it("returns correct window position in 3D", function () {
-      const ellipsoid = Ellipsoid.WGS84;
-      const positionCartographic = ellipsoid.cartesianToCartographic(
+      var ellipsoid = Ellipsoid.WGS84;
+      var positionCartographic = ellipsoid.cartesianToCartographic(
         scene.camera.position
       );
       positionCartographic.height = 0.0;
-      const position = ellipsoid.cartographicToCartesian(positionCartographic);
+      var position = ellipsoid.cartographicToCartesian(positionCartographic);
 
       // Update scene state
       scene.renderForSpecs();
 
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );
@@ -67,17 +67,17 @@ describe(
     });
 
     it("returns correct drawing buffer position in 3D", function () {
-      const ellipsoid = Ellipsoid.WGS84;
-      const positionCartographic = ellipsoid.cartesianToCartographic(
+      var ellipsoid = Ellipsoid.WGS84;
+      var positionCartographic = ellipsoid.cartesianToCartographic(
         scene.camera.position
       );
       positionCartographic.height = 0.0;
-      const position = ellipsoid.cartographicToCartesian(positionCartographic);
+      var position = ellipsoid.cartographicToCartesian(positionCartographic);
 
       // Update scene state
       scene.renderForSpecs();
 
-      const drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
+      var drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
         scene,
         position
       );
@@ -92,17 +92,17 @@ describe(
     });
 
     it("returns undefined for window position behind camera in 3D", function () {
-      const ellipsoid = Ellipsoid.WGS84;
-      const positionCartographic = ellipsoid.cartesianToCartographic(
+      var ellipsoid = Ellipsoid.WGS84;
+      var positionCartographic = ellipsoid.cartesianToCartographic(
         scene.camera.position
       );
       positionCartographic.height *= 1.1;
-      const position = ellipsoid.cartographicToCartesian(positionCartographic);
+      var position = ellipsoid.cartographicToCartesian(positionCartographic);
 
       // Update scene state
       scene.renderForSpecs();
 
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );
@@ -110,17 +110,17 @@ describe(
     });
 
     it("returns undefined for drawing buffer position behind camera in 3D", function () {
-      const ellipsoid = Ellipsoid.WGS84;
-      const positionCartographic = ellipsoid.cartesianToCartographic(
+      var ellipsoid = Ellipsoid.WGS84;
+      var positionCartographic = ellipsoid.cartesianToCartographic(
         scene.camera.position
       );
       positionCartographic.height *= 1.1;
-      const position = ellipsoid.cartographicToCartesian(positionCartographic);
+      var position = ellipsoid.cartographicToCartesian(positionCartographic);
 
       // Update scene state
       scene.renderForSpecs();
 
-      const drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
+      var drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
         scene,
         position
       );
@@ -132,10 +132,10 @@ describe(
       scene.morphToColumbusView(0);
       scene.renderForSpecs();
 
-      const actualWindowCoordinates = new Cartesian2(0.5, 0.5);
-      const position = scene.camera.pickEllipsoid(actualWindowCoordinates);
+      var actualWindowCoordinates = new Cartesian2(0.5, 0.5);
+      var position = scene.camera.pickEllipsoid(actualWindowCoordinates);
 
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );
@@ -150,12 +150,10 @@ describe(
       scene.morphToColumbusView(0);
       scene.renderForSpecs();
 
-      const actualDrawingBufferCoordinates = new Cartesian2(0.5, 0.5);
-      const position = scene.camera.pickEllipsoid(
-        actualDrawingBufferCoordinates
-      );
+      var actualDrawingBufferCoordinates = new Cartesian2(0.5, 0.5);
+      var position = scene.camera.pickEllipsoid(actualDrawingBufferCoordinates);
 
-      const drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
+      var drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
         scene,
         position
       );
@@ -170,7 +168,7 @@ describe(
       scene.morphToColumbusView(0);
       scene.renderForSpecs();
 
-      const position = new Cartesian3();
+      var position = new Cartesian3();
       Cartesian3.normalize(scene.camera.position, position);
       Cartesian3.add(position, scene.camera.direction, position);
       Cartesian3.multiplyByScalar(
@@ -179,7 +177,7 @@ describe(
         scene.camera.direction
       );
 
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );
@@ -191,7 +189,7 @@ describe(
       scene.morphToColumbusView(0);
       scene.renderForSpecs();
 
-      const position = new Cartesian3();
+      var position = new Cartesian3();
       Cartesian3.normalize(scene.camera.position, position);
       Cartesian3.add(position, scene.camera.direction, position);
       Cartesian3.multiplyByScalar(
@@ -200,7 +198,7 @@ describe(
         scene.camera.direction
       );
 
-      const drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
+      var drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
         scene,
         position
       );
@@ -221,8 +219,8 @@ describe(
       scene.morphTo2D(0);
       scene.renderForSpecs();
 
-      const position = Cartesian3.fromDegrees(0, 0);
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var position = Cartesian3.fromDegrees(0, 0);
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );
@@ -235,7 +233,7 @@ describe(
     });
 
     it("returns correct window position in 3D with orthographic frustum", function () {
-      const frustum = new OrthographicFrustum();
+      var frustum = new OrthographicFrustum();
       frustum.aspectRatio = 1.0;
       frustum.width = 20.0;
       scene.camera.frustum = frustum;
@@ -252,8 +250,8 @@ describe(
         ),
       });
 
-      const position = Cartesian3.fromDegrees(0, 0);
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var position = Cartesian3.fromDegrees(0, 0);
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );
@@ -279,8 +277,8 @@ describe(
       scene.morphTo2D(0);
       scene.renderForSpecs();
 
-      const position = Cartesian3.fromDegrees(0, 0);
-      const drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
+      var position = Cartesian3.fromDegrees(0, 0);
+      var drawingBufferCoordinates = SceneTransforms.wgs84ToDrawingBufferCoordinates(
         scene,
         position
       );
@@ -293,7 +291,7 @@ describe(
     });
 
     it("should not error when zoomed out and in 2D", function () {
-      const scene = createScene();
+      var scene = createScene();
       scene.camera.setView({
         destination: Cartesian3.fromDegrees(75, 15, 30000000.0),
       });
@@ -302,8 +300,8 @@ describe(
       scene.morphTo2D(0);
       scene.renderForSpecs();
 
-      const position = Cartesian3.fromDegrees(-80, 25);
-      const windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
+      var position = Cartesian3.fromDegrees(-80, 25);
+      var windowCoordinates = SceneTransforms.wgs84ToWindowCoordinates(
         scene,
         position
       );

@@ -1,4 +1,5 @@
 import { Ellipsoid } from "../../../Source/Cesium.js";
+import { Cesium3DTileset } from "../../../Source/Cesium.js";
 import { Globe } from "../../../Source/Cesium.js";
 import createScene from "../../createScene.js";
 import { Cesium3DTilesInspector } from "../../../Source/Cesium.js";
@@ -6,10 +7,13 @@ import { Cesium3DTilesInspector } from "../../../Source/Cesium.js";
 describe(
   "Widgets/Cesium3DTilesInspector/Cesium3DTilesInspector",
   function () {
-    let scene;
+    // Parent tile with content and four child tiles with content
+    var tilesetUrl = "./Data/Cesium3DTiles/Tilesets/Tileset/tileset.json";
+
+    var scene;
     beforeAll(function () {
       scene = createScene();
-      const ellipsoid = Ellipsoid.UNIT_SPHERE;
+      var ellipsoid = Ellipsoid.UNIT_SPHERE;
       scene.globe = new Globe(ellipsoid);
     });
 
@@ -18,11 +22,11 @@ describe(
     });
 
     it("can create and destroy", function () {
-      const container = document.createElement("div");
+      var container = document.createElement("div");
       container.id = "testContainer";
       document.body.appendChild(container);
 
-      const widget = new Cesium3DTilesInspector("testContainer", scene);
+      var widget = new Cesium3DTilesInspector("testContainer", scene);
       expect(widget.container).toBe(container);
       expect(widget.viewModel._scene).toBe(scene);
       expect(widget.isDestroyed()).toEqual(false);
@@ -48,6 +52,29 @@ describe(
       expect(function () {
         return new Cesium3DTilesInspector(document.body);
       }).toThrowDeveloperError();
+    });
+
+    describe("logging", function () {
+      var widget;
+      var container;
+
+      beforeAll(function () {
+        container = document.createElement("div");
+        container.id = "testContainer";
+        document.body.appendChild(container);
+        widget = new Cesium3DTilesInspector("testContainer", scene);
+
+        var viewModel = widget.viewModel;
+        viewModel.tileset = new Cesium3DTileset({
+          url: tilesetUrl,
+        });
+        return viewModel.tileset.readyPromise;
+      });
+
+      afterAll(function () {
+        widget.destroy();
+        document.body.removeChild(container);
+      });
     });
   },
   "WebGL"

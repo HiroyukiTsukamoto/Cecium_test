@@ -1,5 +1,4 @@
 import { CesiumTerrainProvider } from "../../Source/Cesium.js";
-import { defer } from "../../Source/Cesium.js";
 import { Ellipsoid } from "../../Source/Cesium.js";
 import { GeographicTilingScheme } from "../../Source/Cesium.js";
 import { getAbsoluteUri } from "../../Source/Cesium.js";
@@ -12,6 +11,7 @@ import { RequestScheduler } from "../../Source/Cesium.js";
 import { Resource } from "../../Source/Cesium.js";
 import { TerrainProvider } from "../../Source/Cesium.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Core/CesiumTerrainProvider", function () {
   beforeEach(function () {
@@ -24,7 +24,7 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   function returnTileJson(path) {
-    const oldLoad = Resource._Implementations.loadWithXhr;
+    var oldLoad = Resource._Implementations.loadWithXhr;
     Resource._Implementations.loadWithXhr = function (
       url,
       responseType,
@@ -88,12 +88,12 @@ describe("Core/CesiumTerrainProvider", function () {
   }
 
   function returnParentUrlTileJson() {
-    const paths = [
+    var paths = [
       "Data/CesiumTerrainTileJson/ParentUrl.tile.json",
       "Data/CesiumTerrainTileJson/Parent.tile.json",
     ];
-    let i = 0;
-    const oldLoad = Resource._Implementations.loadWithXhr;
+    var i = 0;
+    var oldLoad = Resource._Implementations.loadWithXhr;
     Resource._Implementations.loadWithXhr = function (
       url,
       responseType,
@@ -133,20 +133,21 @@ describe("Core/CesiumTerrainProvider", function () {
   }
 
   function waitForTile(level, x, y, requestNormals, requestWaterMask, f) {
-    const terrainProvider = new CesiumTerrainProvider({
+    var terrainProvider = new CesiumTerrainProvider({
       url: "made/up/url",
       requestVertexNormals: requestNormals,
       requestWaterMask: requestWaterMask,
     });
 
-    return terrainProvider.readyPromise
-      .then(function () {
-        return terrainProvider.requestTileGeometry(level, x, y);
-      })
-      .then(f)
-      .catch(function (error) {
+    return pollToPromise(function () {
+      return terrainProvider.ready;
+    }).then(function () {
+      var promise = terrainProvider.requestTileGeometry(level, x, y);
+
+      return when(promise, f, function (error) {
         expect("requestTileGeometry").toBe("returning a tile."); // test failure
       });
+    });
   }
 
   function createRequest() {
@@ -170,7 +171,7 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("resolves readyPromise", function () {
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -181,8 +182,8 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("resolves readyPromise when url promise is used", function () {
-    const provider = new CesiumTerrainProvider({
-      url: Promise.resolve("made/up/url"),
+    var provider = new CesiumTerrainProvider({
+      url: when.resolve("made/up/url"),
     });
 
     return provider.readyPromise.then(function (result) {
@@ -192,11 +193,11 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("resolves readyPromise with Resource", function () {
-    const resource = new Resource({
+    var resource = new Resource({
       url: "made/up/url",
     });
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: resource,
     });
 
@@ -207,15 +208,16 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("rejects readyPromise when url rejects", function () {
-    const provider = new CesiumTerrainProvider({
-      url: Promise.reject(new Error("my message")),
+    var error = new Error();
+    var provider = new CesiumTerrainProvider({
+      url: when.reject(error),
     });
     return provider.readyPromise
       .then(function () {
         fail("should not resolve");
       })
-      .catch(function (result) {
-        expect(result.message).toBe("my message");
+      .otherwise(function (result) {
+        expect(result).toBe(error);
         expect(provider.ready).toBe(false);
       });
   });
@@ -223,7 +225,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("uses geographic tiling scheme by default", function () {
     returnHeightmapTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -237,8 +239,8 @@ describe("Core/CesiumTerrainProvider", function () {
   it("can use a custom ellipsoid", function () {
     returnHeightmapTileJson();
 
-    const ellipsoid = new Ellipsoid(1, 2, 3);
-    const provider = new CesiumTerrainProvider({
+    var ellipsoid = new Ellipsoid(1, 2, 3);
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
       ellipsoid: ellipsoid,
     });
@@ -251,7 +253,7 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("has error event", function () {
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
     expect(provider.errorEvent).toBeDefined();
@@ -261,7 +263,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("returns reasonable geometric error for various levels", function () {
     returnQuantizedMeshTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -283,7 +285,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("logo is undefined if credit is not provided", function () {
     returnHeightmapTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -297,7 +299,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("logo is defined if credit is provided", function () {
     returnHeightmapTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
       credit: "thanks to our awesome made up contributors!",
     });
@@ -312,7 +314,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("has a water mask", function () {
     returnHeightmapTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -326,7 +328,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("has vertex normals", function () {
     returnOctVertexNormalTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
       requestVertexNormals: true,
     });
@@ -342,7 +344,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("does not request vertex normals", function () {
     returnOctVertexNormalTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
       requestVertexNormals: false,
     });
@@ -358,13 +360,15 @@ describe("Core/CesiumTerrainProvider", function () {
   it("requests parent layer.json", function () {
     returnParentUrlTileJson();
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
       requestVertexNormals: true,
       requestWaterMask: true,
     });
 
-    return provider.readyPromise.then(function () {
+    return pollToPromise(function () {
+      return provider.ready;
+    }).then(function () {
       expect(provider._tileCredits[0].html).toBe(
         "This is a child tileset! This amazing data is courtesy The Amazing Data Source!"
       );
@@ -376,7 +380,7 @@ describe("Core/CesiumTerrainProvider", function () {
       expect(provider.availability.isTileAvailable(1, 3, 1)).toBe(true); // Parent has this, but child doesn't
       expect(provider.availability.isTileAvailable(2, 0, 0)).toBe(false); // Neither has this
 
-      const layers = provider._layers;
+      var layers = provider._layers;
       expect(layers.length).toBe(2);
       expect(layers[0].hasVertexNormals).toBe(false);
       expect(layers[0].hasWaterMask).toBe(true);
@@ -394,11 +398,11 @@ describe("Core/CesiumTerrainProvider", function () {
   it("raises an error if layer.json does not specify a format", function () {
     returnTileJson("Data/CesiumTerrainTileJson/NoFormat.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
-    const deferred = defer();
+    var deferred = when.defer();
 
     provider.errorEvent.addEventListener(function (e) {
       deferred.resolve(e);
@@ -412,11 +416,11 @@ describe("Core/CesiumTerrainProvider", function () {
   it("raises an error if layer.json specifies an unknown format", function () {
     returnTileJson("Data/CesiumTerrainTileJson/InvalidFormat.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
-    const deferred = defer();
+    var deferred = when.defer();
 
     provider.errorEvent.addEventListener(function (e) {
       deferred.resolve(e);
@@ -430,11 +434,11 @@ describe("Core/CesiumTerrainProvider", function () {
   it("raises an error if layer.json does not specify quantized-mesh 1.x format", function () {
     returnTileJson("Data/CesiumTerrainTileJson/QuantizedMesh2.0.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
-    const deferred = defer();
+    var deferred = when.defer();
 
     provider.errorEvent.addEventListener(function (e) {
       deferred.resolve(e);
@@ -448,11 +452,11 @@ describe("Core/CesiumTerrainProvider", function () {
   it("supports quantized-mesh1.x minor versions", function () {
     returnTileJson("Data/CesiumTerrainTileJson/QuantizedMesh1.1.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
-    const errorListener = jasmine.createSpy("error");
+    var errorListener = jasmine.createSpy("error");
     provider.errorEvent.addEventListener(errorListener);
 
     return pollToPromise(function () {
@@ -465,11 +469,11 @@ describe("Core/CesiumTerrainProvider", function () {
   it("raises an error if layer.json does not specify a tiles property", function () {
     returnTileJson("Data/CesiumTerrainTileJson/NoTiles.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
-    const deferred = defer();
+    var deferred = when.defer();
 
     provider.errorEvent.addEventListener(function (e) {
       deferred.resolve(e);
@@ -485,11 +489,11 @@ describe("Core/CesiumTerrainProvider", function () {
   it("raises an error if layer.json tiles property is an empty array", function () {
     returnTileJson("Data/CesiumTerrainTileJson/EmptyTilesArray.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
-    const deferred = defer();
+    var deferred = when.defer();
 
     provider.errorEvent.addEventListener(function (e) {
       deferred.resolve(e);
@@ -505,7 +509,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("uses attribution specified in layer.json", function () {
     returnTileJson("Data/CesiumTerrainTileJson/WithAttribution.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -521,7 +525,7 @@ describe("Core/CesiumTerrainProvider", function () {
   it("do not add blank attribution if layer.json does not have one", function () {
     returnTileJson("Data/CesiumTerrainTileJson/WaterMask.tile.json");
 
-    const provider = new CesiumTerrainProvider({
+    var provider = new CesiumTerrainProvider({
       url: "made/up/url",
     });
 
@@ -533,7 +537,7 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("The undefined availability tile is returned at level 0", function () {
-    const layer = {
+    var layer = {
       availabilityLevels: 10,
     };
 
@@ -546,7 +550,7 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("The correct availability tile is computed in first level", function () {
-    const layer = {
+    var layer = {
       availabilityLevels: 10,
     };
 
@@ -571,21 +575,21 @@ describe("Core/CesiumTerrainProvider", function () {
   });
 
   it("The correct availability tile is computed in second level", function () {
-    const layer = {
+    var layer = {
       availabilityLevels: 10,
     };
 
-    const expected = {
+    var expected = {
       level: 10,
       x: 80,
       y: 50,
     };
 
-    const xs = [expected.x, expected.x];
-    const ys = [expected.y, expected.y];
+    var xs = [expected.x, expected.x];
+    var ys = [expected.y, expected.y];
 
     // Compute level 20 tiles by always taking SW or NE child
-    for (let i = 0; i < 10; ++i) {
+    for (var i = 0; i < 10; ++i) {
       xs[0] *= 2;
       ys[0] *= 2;
       xs[1] = xs[1] * 2 + 1;
@@ -604,79 +608,63 @@ describe("Core/CesiumTerrainProvider", function () {
     it("uses multiple urls specified in layer.json", function () {
       returnTileJson("Data/CesiumTerrainTileJson/MultipleUrls.tile.json");
 
-      const provider = new CesiumTerrainProvider({
+      var provider = new CesiumTerrainProvider({
         url: "made/up/url",
       });
 
-      spyOn(Resource._Implementations, "loadWithXhr").and.callThrough();
-
-      return provider.readyPromise
-        .then(function () {
-          return provider.requestTileGeometry(0, 0, 0);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo0.com");
-          return provider.requestTileGeometry(1, 0, 0);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo1.com");
-          return provider.requestTileGeometry(1, -1, 0);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo2.com");
-          return provider.requestTileGeometry(1, 0, 1);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo3.com");
-        });
+      return pollToPromise(function () {
+        return provider.ready;
+      }).then(function () {
+        spyOn(Resource._Implementations, "loadWithXhr");
+        provider.requestTileGeometry(0, 0, 0);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo0.com");
+        provider.requestTileGeometry(1, 0, 0);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo1.com");
+        provider.requestTileGeometry(1, -1, 0);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo2.com");
+        provider.requestTileGeometry(1, 0, 1);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo3.com");
+      });
     });
 
     it("supports scheme-less template URLs in layer.json resolved with absolute URL", function () {
       returnTileJson("Data/CesiumTerrainTileJson/MultipleUrls.tile.json");
 
-      const url = getAbsoluteUri("Data/CesiumTerrainTileJson");
+      var url = getAbsoluteUri("Data/CesiumTerrainTileJson");
 
-      const provider = new CesiumTerrainProvider({
+      var provider = new CesiumTerrainProvider({
         url: url,
       });
 
-      spyOn(Resource._Implementations, "loadWithXhr").and.callThrough();
-
-      return provider.readyPromise
-        .then(function () {
-          return provider.requestTileGeometry(0, 0, 0);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo0.com");
-          return provider.requestTileGeometry(1, 0, 0);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo1.com");
-          return provider.requestTileGeometry(1, -1, 0);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo2.com");
-          return provider.requestTileGeometry(1, 0, 1);
-        })
-        .catch(function () {
-          expect(
-            Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
-          ).toContain("foo3.com");
-        });
+      return pollToPromise(function () {
+        return provider.ready;
+      }).then(function () {
+        spyOn(Resource._Implementations, "loadWithXhr");
+        provider.requestTileGeometry(0, 0, 0);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo0.com");
+        provider.requestTileGeometry(1, 0, 0);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo1.com");
+        provider.requestTileGeometry(1, -1, 0);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo2.com");
+        provider.requestTileGeometry(1, 0, 1);
+        expect(
+          Resource._Implementations.loadWithXhr.calls.mostRecent().args[0]
+        ).toContain("foo3.com");
+      });
     });
 
     it("provides HeightmapTerrainData", function () {
@@ -690,7 +678,7 @@ describe("Core/CesiumTerrainProvider", function () {
         overrideMimeType
       ) {
         // Just return any old file, as long as its big enough
-        return Resource._DefaultImplementations.loadWithXhr(
+        Resource._DefaultImplementations.loadWithXhr(
           "Data/EarthOrientationParameters/IcrfToFixedStkComponentsRotationData.json",
           responseType,
           method,
@@ -980,7 +968,7 @@ describe("Core/CesiumTerrainProvider", function () {
 
       returnMetadataAvailabilityTileJson();
 
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: "made/up/url",
       });
 
@@ -1011,9 +999,9 @@ describe("Core/CesiumTerrainProvider", function () {
     });
 
     it("returns undefined if too many requests are already in progress", function () {
-      const baseUrl = "made/up/url";
+      var baseUrl = "made/up/url";
 
-      const deferreds = [];
+      var deferreds = [];
 
       Resource._Implementations.loadWithXhr = function (
         url,
@@ -1030,15 +1018,15 @@ describe("Core/CesiumTerrainProvider", function () {
 
       returnHeightmapTileJson();
 
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: baseUrl,
       });
 
       return pollToPromise(function () {
         return terrainProvider.ready;
       }).then(function () {
-        let promise;
-        let i;
+        var promise;
+        var i;
         for (i = 0; i < RequestScheduler.maximumRequestsPerServer; ++i) {
           promise = terrainProvider.requestTileGeometry(
             0,
@@ -1060,7 +1048,7 @@ describe("Core/CesiumTerrainProvider", function () {
     });
 
     it("supports getTileDataAvailable()", function () {
-      const baseUrl = "made/up/url";
+      var baseUrl = "made/up/url";
 
       Resource._Implementations.loadWithXhr = function (
         url,
@@ -1083,7 +1071,7 @@ describe("Core/CesiumTerrainProvider", function () {
 
       returnQuantizedMeshTileJson();
 
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: baseUrl,
       });
 
@@ -1096,11 +1084,11 @@ describe("Core/CesiumTerrainProvider", function () {
     });
 
     it("getTileDataAvailable() converts xyz to tms", function () {
-      const baseUrl = "made/up/url";
+      var baseUrl = "made/up/url";
 
       returnPartialAvailabilityTileJson();
 
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: baseUrl,
       });
 
@@ -1134,7 +1122,7 @@ describe("Core/CesiumTerrainProvider", function () {
 
       returnMetadataAvailabilityTileJson();
 
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: "made/up/url",
       });
 
@@ -1181,7 +1169,7 @@ describe("Core/CesiumTerrainProvider", function () {
     });
 
     it("Uses query parameter extensions for ion resource", function () {
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: IonResource.fromAssetId(1),
         requestVertexNormals: true,
         requestWaterMask: true,
@@ -1190,12 +1178,12 @@ describe("Core/CesiumTerrainProvider", function () {
       return pollToPromise(function () {
         return terrainProvider.ready;
       }).then(function () {
-        const getDerivedResource = spyOn(
+        var getDerivedResource = spyOn(
           IonResource.prototype,
           "getDerivedResource"
         ).and.callThrough();
         terrainProvider.requestTileGeometry(0, 0, 0);
-        const options = getDerivedResource.calls.argsFor(0)[0];
+        var options = getDerivedResource.calls.argsFor(0)[0];
         expect(options.queryParameters.extensions).toEqual(
           "octvertexnormals-watermask-metadata"
         );

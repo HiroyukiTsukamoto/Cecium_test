@@ -8,7 +8,7 @@ import knockout from "../../ThirdParty/knockout.js";
 import createCommand from "../createCommand.js";
 import ToggleButtonViewModel from "../ToggleButtonViewModel.js";
 
-const monthNames = [
+var monthNames = [
   "Jan",
   "Feb",
   "Mar",
@@ -22,15 +22,15 @@ const monthNames = [
   "Nov",
   "Dec",
 ];
-const realtimeShuttleRingAngle = 15;
-const maxShuttleRingAngle = 105;
+var realtimeShuttleRingAngle = 15;
+var maxShuttleRingAngle = 105;
 
 function numberComparator(left, right) {
   return left - right;
 }
 
 function getTypicalMultiplierIndex(multiplier, shuttleRingTicks) {
-  const index = binarySearch(shuttleRingTicks, multiplier, numberComparator);
+  var index = binarySearch(shuttleRingTicks, multiplier, numberComparator);
   return index < 0 ? ~index : index;
 }
 
@@ -40,11 +40,11 @@ function angleToMultiplier(angle, shuttleRingTicks) {
     return angle / realtimeShuttleRingAngle;
   }
 
-  const minp = realtimeShuttleRingAngle;
-  const maxp = maxShuttleRingAngle;
-  let maxv;
-  const minv = 0;
-  let scale;
+  var minp = realtimeShuttleRingAngle;
+  var maxp = maxShuttleRingAngle;
+  var maxv;
+  var minv = 0;
+  var scale;
   if (angle > 0) {
     maxv = Math.log(shuttleRingTicks[shuttleRingTicks.length - 1]);
     scale = (maxv - minv) / (maxp - minp);
@@ -65,18 +65,18 @@ function multiplierToAngle(multiplier, shuttleRingTicks, clockViewModel) {
     return multiplier * realtimeShuttleRingAngle;
   }
 
-  const fastedMultipler = shuttleRingTicks[shuttleRingTicks.length - 1];
+  var fastedMultipler = shuttleRingTicks[shuttleRingTicks.length - 1];
   if (multiplier > fastedMultipler) {
     multiplier = fastedMultipler;
   } else if (multiplier < -fastedMultipler) {
     multiplier = -fastedMultipler;
   }
 
-  const minp = realtimeShuttleRingAngle;
-  const maxp = maxShuttleRingAngle;
-  let maxv;
-  const minv = 0;
-  let scale;
+  var minp = realtimeShuttleRingAngle;
+  var maxp = maxShuttleRingAngle;
+  var maxv;
+  var minv = 0;
+  var scale;
 
   if (multiplier > 0) {
     maxv = Math.log(fastedMultipler);
@@ -105,7 +105,7 @@ function AnimationViewModel(clockViewModel) {
   }
   //>>includeEnd('debug');
 
-  const that = this;
+  var that = this;
   this._clockViewModel = clockViewModel;
   this._allShuttleRingTicks = [];
   this._dateFormatter = AnimationViewModel.defaultDateFormatter;
@@ -163,20 +163,20 @@ function AnimationViewModel(clockViewModel) {
    */
   this.multiplierLabel = undefined;
   knockout.defineProperty(this, "multiplierLabel", function () {
-    const clockViewModel = that._clockViewModel;
+    var clockViewModel = that._clockViewModel;
     if (clockViewModel.clockStep === ClockStep.SYSTEM_CLOCK) {
       return "Today";
     }
 
-    const multiplier = clockViewModel.multiplier;
+    var multiplier = clockViewModel.multiplier;
 
     //If it's a whole number, just return it.
     if (multiplier % 1 === 0) {
-      return `${multiplier.toFixed(0)}x`;
+      return multiplier.toFixed(0) + "x";
     }
 
     //Convert to decimal string and remove any trailing zeroes
-    return `${multiplier.toFixed(3).replace(/0{0,3}$/, "")}x`;
+    return multiplier.toFixed(3).replace(/0{0,3}$/, "") + "x";
   });
 
   /**
@@ -197,9 +197,9 @@ function AnimationViewModel(clockViewModel) {
         Math.min(angle, maxShuttleRingAngle),
         -maxShuttleRingAngle
       );
-      const ticks = that._allShuttleRingTicks;
+      var ticks = that._allShuttleRingTicks;
 
-      const clockViewModel = that._clockViewModel;
+      var clockViewModel = that._clockViewModel;
       clockViewModel.clockStep = ClockStep.SYSTEM_CLOCK_MULTIPLIER;
 
       //If we are at the max angle, simply return the max value in either direction.
@@ -209,15 +209,15 @@ function AnimationViewModel(clockViewModel) {
         return;
       }
 
-      let multiplier = angleToMultiplier(angle, ticks);
+      var multiplier = angleToMultiplier(angle, ticks);
       if (that.snapToTicks) {
         multiplier = ticks[getTypicalMultiplierIndex(multiplier, ticks)];
       } else if (multiplier !== 0) {
-        const positiveMultiplier = Math.abs(multiplier);
+        var positiveMultiplier = Math.abs(multiplier);
 
         if (positiveMultiplier > 100) {
-          const numDigits = positiveMultiplier.toFixed(0).length - 2;
-          const divisor = Math.pow(10, numDigits);
+          var numDigits = positiveMultiplier.toFixed(0).length - 2;
+          var divisor = Math.pow(10, numDigits);
           multiplier = (Math.round(multiplier / divisor) * divisor) | 0;
         } else if (positiveMultiplier > realtimeShuttleRingAngle) {
           multiplier = Math.round(multiplier);
@@ -233,24 +233,24 @@ function AnimationViewModel(clockViewModel) {
 
   this._canAnimate = undefined;
   knockout.defineProperty(this, "_canAnimate", function () {
-    const clockViewModel = that._clockViewModel;
-    const clockRange = clockViewModel.clockRange;
+    var clockViewModel = that._clockViewModel;
+    var clockRange = clockViewModel.clockRange;
 
     if (that.shuttleRingDragging || clockRange === ClockRange.UNBOUNDED) {
       return true;
     }
 
-    const multiplier = clockViewModel.multiplier;
-    const currentTime = clockViewModel.currentTime;
-    const startTime = clockViewModel.startTime;
+    var multiplier = clockViewModel.multiplier;
+    var currentTime = clockViewModel.currentTime;
+    var startTime = clockViewModel.startTime;
 
-    let result = false;
+    var result = false;
     if (clockRange === ClockRange.LOOP_STOP) {
       result =
         JulianDate.greaterThan(currentTime, startTime) ||
         (currentTime.equals(startTime) && multiplier > 0);
     } else {
-      const stopTime = clockViewModel.stopTime;
+      var stopTime = clockViewModel.stopTime;
       result =
         (JulianDate.greaterThan(currentTime, startTime) &&
           JulianDate.lessThan(currentTime, stopTime)) || //
@@ -266,13 +266,13 @@ function AnimationViewModel(clockViewModel) {
 
   this._isSystemTimeAvailable = undefined;
   knockout.defineProperty(this, "_isSystemTimeAvailable", function () {
-    const clockViewModel = that._clockViewModel;
-    const clockRange = clockViewModel.clockRange;
+    var clockViewModel = that._clockViewModel;
+    var clockRange = clockViewModel.clockRange;
     if (clockRange === ClockRange.UNBOUNDED) {
       return true;
     }
 
-    const systemTime = clockViewModel.systemTime;
+    var systemTime = clockViewModel.systemTime;
     return (
       JulianDate.greaterThanOrEquals(systemTime, clockViewModel.startTime) &&
       JulianDate.lessThanOrEquals(systemTime, clockViewModel.stopTime)
@@ -287,8 +287,8 @@ function AnimationViewModel(clockViewModel) {
     );
   });
 
-  const pauseCommand = createCommand(function () {
-    const clockViewModel = that._clockViewModel;
+  var pauseCommand = createCommand(function () {
+    var clockViewModel = that._clockViewModel;
     if (clockViewModel.shouldAnimate) {
       clockViewModel.shouldAnimate = false;
     } else if (that._canAnimate) {
@@ -303,9 +303,9 @@ function AnimationViewModel(clockViewModel) {
     tooltip: "Pause",
   });
 
-  const playReverseCommand = createCommand(function () {
-    const clockViewModel = that._clockViewModel;
-    const multiplier = clockViewModel.multiplier;
+  var playReverseCommand = createCommand(function () {
+    var clockViewModel = that._clockViewModel;
+    var multiplier = clockViewModel.multiplier;
     if (multiplier > 0) {
       clockViewModel.multiplier = -multiplier;
     }
@@ -319,9 +319,9 @@ function AnimationViewModel(clockViewModel) {
     tooltip: "Play Reverse",
   });
 
-  const playForwardCommand = createCommand(function () {
-    const clockViewModel = that._clockViewModel;
-    const multiplier = clockViewModel.multiplier;
+  var playForwardCommand = createCommand(function () {
+    var clockViewModel = that._clockViewModel;
+    var multiplier = clockViewModel.multiplier;
     if (multiplier < 0) {
       clockViewModel.multiplier = -multiplier;
     }
@@ -339,7 +339,7 @@ function AnimationViewModel(clockViewModel) {
     tooltip: "Play Forward",
   });
 
-  const playRealtimeCommand = createCommand(function () {
+  var playRealtimeCommand = createCommand(function () {
     that._clockViewModel.clockStep = ClockStep.SYSTEM_CLOCK;
   }, knockout.getObservable(this, "_isSystemTimeAvailable"));
 
@@ -355,20 +355,20 @@ function AnimationViewModel(clockViewModel) {
   });
 
   this._slower = createCommand(function () {
-    const clockViewModel = that._clockViewModel;
-    const shuttleRingTicks = that._allShuttleRingTicks;
-    const multiplier = clockViewModel.multiplier;
-    const index = getTypicalMultiplierIndex(multiplier, shuttleRingTicks) - 1;
+    var clockViewModel = that._clockViewModel;
+    var shuttleRingTicks = that._allShuttleRingTicks;
+    var multiplier = clockViewModel.multiplier;
+    var index = getTypicalMultiplierIndex(multiplier, shuttleRingTicks) - 1;
     if (index >= 0) {
       clockViewModel.multiplier = shuttleRingTicks[index];
     }
   });
 
   this._faster = createCommand(function () {
-    const clockViewModel = that._clockViewModel;
-    const shuttleRingTicks = that._allShuttleRingTicks;
-    const multiplier = clockViewModel.multiplier;
-    const index = getTypicalMultiplierIndex(multiplier, shuttleRingTicks) + 1;
+    var clockViewModel = that._clockViewModel;
+    var shuttleRingTicks = that._allShuttleRingTicks;
+    var multiplier = clockViewModel.multiplier;
+    var index = getTypicalMultiplierIndex(multiplier, shuttleRingTicks) + 1;
     if (index < shuttleRingTicks.length) {
       clockViewModel.multiplier = shuttleRingTicks[index];
     }
@@ -382,10 +382,14 @@ function AnimationViewModel(clockViewModel) {
  * @type {AnimationViewModel.DateFormatter}
  */
 AnimationViewModel.defaultDateFormatter = function (date, viewModel) {
-  const gregorianDate = JulianDate.toGregorianDate(date);
-  return `${monthNames[gregorianDate.month - 1]} ${gregorianDate.day} ${
+  var gregorianDate = JulianDate.toGregorianDate(date);
+  return (
+    monthNames[gregorianDate.month - 1] +
+    " " +
+    gregorianDate.day +
+    " " +
     gregorianDate.year
-  }`;
+  );
 };
 
 /**
@@ -433,22 +437,27 @@ AnimationViewModel.defaultTicks = [
  * @type {AnimationViewModel.TimeFormatter}
  */
 AnimationViewModel.defaultTimeFormatter = function (date, viewModel) {
-  const gregorianDate = JulianDate.toGregorianDate(date);
-  const millisecond = Math.round(gregorianDate.millisecond);
+  var gregorianDate = JulianDate.toGregorianDate(date);
+  var millisecond = Math.round(gregorianDate.millisecond);
   if (Math.abs(viewModel._clockViewModel.multiplier) < 1) {
-    return `${gregorianDate.hour
-      .toString()
-      .padStart(2, "0")}:${gregorianDate.minute
-      .toString()
-      .padStart(2, "0")}:${gregorianDate.second
-      .toString()
-      .padStart(2, "0")}.${millisecond.toString().padStart(3, "0")}`;
+    return (
+      gregorianDate.hour.toString().padStart(2, "0") +
+      ":" +
+      gregorianDate.minute.toString().padStart(2, "0") +
+      ":" +
+      gregorianDate.second.toString().padStart(2, "0") +
+      "." +
+      millisecond.toString().padStart(3, "0")
+    );
   }
-  return `${gregorianDate.hour
-    .toString()
-    .padStart(2, "0")}:${gregorianDate.minute
-    .toString()
-    .padStart(2, "0")}:${gregorianDate.second.toString().padStart(2, "0")} UTC`;
+  return (
+    gregorianDate.hour.toString().padStart(2, "0") +
+    ":" +
+    gregorianDate.minute.toString().padStart(2, "0") +
+    ":" +
+    gregorianDate.second.toString().padStart(2, "0") +
+    " UTC"
+  );
 };
 
 /**
@@ -476,12 +485,12 @@ AnimationViewModel.prototype.setShuttleRingTicks = function (positiveTicks) {
   }
   //>>includeEnd('debug');
 
-  let i;
-  let len;
-  let tick;
+  var i;
+  var len;
+  var tick;
 
-  const hash = {};
-  const sortedFilteredPositiveTicks = this._sortedFilteredPositiveTicks;
+  var hash = {};
+  var sortedFilteredPositiveTicks = this._sortedFilteredPositiveTicks;
   sortedFilteredPositiveTicks.length = 0;
   for (i = 0, len = positiveTicks.length; i < len; ++i) {
     tick = positiveTicks[i];
@@ -493,7 +502,7 @@ AnimationViewModel.prototype.setShuttleRingTicks = function (positiveTicks) {
   }
   sortedFilteredPositiveTicks.sort(numberComparator);
 
-  const allTicks = [];
+  var allTicks = [];
   for (len = sortedFilteredPositiveTicks.length, i = len - 1; i >= 0; --i) {
     tick = sortedFilteredPositiveTicks[i];
     if (tick !== 0) {

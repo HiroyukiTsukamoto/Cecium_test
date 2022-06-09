@@ -3,19 +3,19 @@ import {
   ResourceCache,
   ResourceLoaderState,
   MetadataSchemaLoader,
+  when,
 } from "../../Source/Cesium.js";
 
 describe("Scene/MetadataSchemaLoader", function () {
-  const schemaJson = {
+  var schemaJson = {
     classes: {
       tree: {
         properties: {
           height: {
-            type: "SCALAR",
-            componentType: "FLOAT32",
+            type: "FLOAT32",
           },
           type: {
-            type: "ENUM",
+            type: "enum",
             enumType: "treeType",
           },
         },
@@ -37,7 +37,7 @@ describe("Scene/MetadataSchemaLoader", function () {
     },
   };
 
-  const resource = new Resource({ url: "https://example.com/schema.json" });
+  var resource = new Resource({ url: "https://example.com/schema.json" });
 
   afterEach(function () {
     ResourceCache.clearForSpecs();
@@ -62,12 +62,10 @@ describe("Scene/MetadataSchemaLoader", function () {
   });
 
   it("rejects promise if schema cannot be fetched", function () {
-    spyOn(Resource.prototype, "fetchJson").and.callFake(function () {
-      const error = new Error("404 Not Found");
-      return Promise.reject(error);
-    });
+    var error = new Error("404 Not Found");
+    spyOn(Resource.prototype, "fetchJson").and.returnValue(when.reject(error));
 
-    const schemaLoader = new MetadataSchemaLoader({
+    var schemaLoader = new MetadataSchemaLoader({
       resource: resource,
     });
 
@@ -77,7 +75,7 @@ describe("Scene/MetadataSchemaLoader", function () {
       .then(function (schemaLoader) {
         fail();
       })
-      .catch(function (runtimeError) {
+      .otherwise(function (runtimeError) {
         expect(runtimeError.message).toBe(
           "Failed to load schema: https://example.com/schema.json\n404 Not Found"
         );
@@ -85,29 +83,29 @@ describe("Scene/MetadataSchemaLoader", function () {
   });
 
   it("loads schema from JSON", function () {
-    const schemaLoader = new MetadataSchemaLoader({
+    var schemaLoader = new MetadataSchemaLoader({
       schema: schemaJson,
     });
     schemaLoader.load();
 
     return schemaLoader.promise.then(function (schemaLoader) {
-      const schema = schemaLoader.schema;
+      var schema = schemaLoader.schema;
       expect(schema).toBeDefined();
 
-      const enums = schema.enums;
+      var enums = schema.enums;
       expect(enums.treeType).toBeDefined();
 
-      const classes = schema.classes;
+      var classes = schema.classes;
       expect(classes.tree).toBeDefined();
     });
   });
 
   it("loads external schema", function () {
-    const fetchJson = spyOn(Resource.prototype, "fetchJson").and.returnValue(
-      Promise.resolve(schemaJson)
+    var fetchJson = spyOn(Resource.prototype, "fetchJson").and.returnValue(
+      when.resolve(schemaJson)
     );
 
-    const schemaLoader = new MetadataSchemaLoader({
+    var schemaLoader = new MetadataSchemaLoader({
       resource: resource,
     });
 
@@ -116,23 +114,23 @@ describe("Scene/MetadataSchemaLoader", function () {
     return schemaLoader.promise.then(function (schemaLoader) {
       expect(fetchJson).toHaveBeenCalled();
 
-      const schema = schemaLoader.schema;
+      var schema = schemaLoader.schema;
       expect(schema).toBeDefined();
 
-      const enums = schema.enums;
+      var enums = schema.enums;
       expect(enums.treeType).toBeDefined();
 
-      const classes = schema.classes;
+      var classes = schema.classes;
       expect(classes.tree).toBeDefined();
     });
   });
 
   it("destroys schema", function () {
     spyOn(Resource.prototype, "fetchJson").and.returnValue(
-      Promise.resolve(schemaJson)
+      when.resolve(schemaJson)
     );
 
-    const schemaLoader = new MetadataSchemaLoader({
+    var schemaLoader = new MetadataSchemaLoader({
       resource: resource,
     });
 
@@ -150,17 +148,13 @@ describe("Scene/MetadataSchemaLoader", function () {
     });
   });
 
-  function resolveJsonAfterDestroy(rejectPromise) {
-    const promise = new Promise(function (resolve, reject) {
-      if (rejectPromise) {
-        reject(new Error());
-      } else {
-        resolve(schemaJson);
-      }
-    });
-    spyOn(Resource.prototype, "fetchJson").and.returnValue(promise);
+  function resolveJsonAfterDestroy(reject) {
+    var deferredPromise = when.defer();
+    spyOn(Resource.prototype, "fetchJson").and.returnValue(
+      deferredPromise.promise
+    );
 
-    const schemaLoader = new MetadataSchemaLoader({
+    var schemaLoader = new MetadataSchemaLoader({
       resource: resource,
     });
 
@@ -169,17 +163,22 @@ describe("Scene/MetadataSchemaLoader", function () {
     schemaLoader.load();
     expect(schemaLoader._state).toBe(ResourceLoaderState.LOADING);
     schemaLoader.destroy();
-    return schemaLoader.promise.then(function () {
-      expect(schemaLoader.schema).not.toBeDefined();
-      expect(schemaLoader.isDestroyed()).toBe(true);
-    });
+
+    if (reject) {
+      deferredPromise.reject(new Error());
+    } else {
+      deferredPromise.resolve(schemaJson);
+    }
+
+    expect(schemaLoader.schema).not.toBeDefined();
+    expect(schemaLoader.isDestroyed()).toBe(true);
   }
 
   it("handles resolving json after destroy", function () {
-    return resolveJsonAfterDestroy(false);
+    resolveJsonAfterDestroy(false);
   });
 
   it("handles rejecting json after destroy", function () {
-    return resolveJsonAfterDestroy(true);
+    resolveJsonAfterDestroy(true);
   });
 });

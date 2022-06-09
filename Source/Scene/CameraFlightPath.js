@@ -17,14 +17,14 @@ import SceneMode from "./SceneMode.js";
  *
  * @private
  */
-const CameraFlightPath = {};
+var CameraFlightPath = {};
 
 function getAltitude(frustum, dx, dy) {
-  let near;
-  let top;
-  let right;
+  var near;
+  var top;
+  var right;
   if (frustum instanceof PerspectiveFrustum) {
-    const tanTheta = Math.tan(0.5 * frustum.fovy);
+    var tanTheta = Math.tan(0.5 * frustum.fovy);
     near = frustum.near;
     top = frustum.near * tanTheta;
     right = frustum.aspectRatio * top;
@@ -39,8 +39,8 @@ function getAltitude(frustum, dx, dy) {
   return Math.max(dx, dy);
 }
 
-const scratchCart = new Cartesian3();
-const scratchCart2 = new Cartesian3();
+var scratchCart = new Cartesian3();
+var scratchCart2 = new Cartesian3();
 
 function createPitchFunction(
   startPitch,
@@ -49,21 +49,21 @@ function createPitchFunction(
   pitchAdjustHeight
 ) {
   if (defined(pitchAdjustHeight) && heightFunction(0.5) > pitchAdjustHeight) {
-    const startHeight = heightFunction(0.0);
-    const endHeight = heightFunction(1.0);
-    const middleHeight = heightFunction(0.5);
+    var startHeight = heightFunction(0.0);
+    var endHeight = heightFunction(1.0);
+    var middleHeight = heightFunction(0.5);
 
-    const d1 = middleHeight - startHeight;
-    const d2 = middleHeight - endHeight;
+    var d1 = middleHeight - startHeight;
+    var d2 = middleHeight - endHeight;
 
     return function (time) {
-      const altitude = heightFunction(time);
+      var altitude = heightFunction(time);
       if (time <= 0.5) {
-        const t1 = (altitude - startHeight) / d1;
+        var t1 = (altitude - startHeight) / d1;
         return CesiumMath.lerp(startPitch, -CesiumMath.PI_OVER_TWO, t1);
       }
 
-      const t2 = (altitude - endHeight) / d2;
+      var t2 = (altitude - endHeight) / d2;
       return CesiumMath.lerp(-CesiumMath.PI_OVER_TWO, endPitch, 1 - t2);
     };
   }
@@ -79,21 +79,21 @@ function createHeightFunction(
   endHeight,
   optionAltitude
 ) {
-  let altitude = optionAltitude;
-  const maxHeight = Math.max(startHeight, endHeight);
+  var altitude = optionAltitude;
+  var maxHeight = Math.max(startHeight, endHeight);
 
   if (!defined(altitude)) {
-    const start = camera.position;
-    const end = destination;
-    const up = camera.up;
-    const right = camera.right;
-    const frustum = camera.frustum;
+    var start = camera.position;
+    var end = destination;
+    var up = camera.up;
+    var right = camera.right;
+    var frustum = camera.frustum;
 
-    const diff = Cartesian3.subtract(start, end, scratchCart);
-    const verticalDistance = Cartesian3.magnitude(
+    var diff = Cartesian3.subtract(start, end, scratchCart);
+    var verticalDistance = Cartesian3.magnitude(
       Cartesian3.multiplyByScalar(up, Cartesian3.dot(diff, up), scratchCart2)
     );
-    const horizontalDistance = Cartesian3.magnitude(
+    var horizontalDistance = Cartesian3.magnitude(
       Cartesian3.multiplyByScalar(
         right,
         Cartesian3.dot(diff, right),
@@ -108,14 +108,14 @@ function createHeightFunction(
   }
 
   if (maxHeight < altitude) {
-    const power = 8.0;
-    const factor = 1000000.0;
+    var power = 8.0;
+    var factor = 1000000.0;
 
-    const s = -Math.pow((altitude - startHeight) * factor, 1.0 / power);
-    const e = Math.pow((altitude - endHeight) * factor, 1.0 / power);
+    var s = -Math.pow((altitude - startHeight) * factor, 1.0 / power);
+    var e = Math.pow((altitude - endHeight) * factor, 1.0 / power);
 
     return function (t) {
-      const x = t * (e - s) + s;
+      var x = t * (e - s) + s;
       return -Math.pow(x, power) / factor + altitude;
     };
   }
@@ -145,7 +145,7 @@ function adjustAngleForLERP(startAngle, endAngle) {
   return startAngle;
 }
 
-const scratchStart = new Cartesian3();
+var scratchStart = new Cartesian3();
 
 function createUpdateCV(
   scene,
@@ -157,14 +157,14 @@ function createUpdateCV(
   optionAltitude,
   optionPitchAdjustHeight
 ) {
-  const camera = scene.camera;
+  var camera = scene.camera;
 
-  const start = Cartesian3.clone(camera.position, scratchStart);
-  const startPitch = camera.pitch;
-  const startHeading = adjustAngleForLERP(camera.heading, heading);
-  const startRoll = adjustAngleForLERP(camera.roll, roll);
+  var start = Cartesian3.clone(camera.position, scratchStart);
+  var startPitch = camera.pitch;
+  var startHeading = adjustAngleForLERP(camera.heading, heading);
+  var startRoll = adjustAngleForLERP(camera.roll, roll);
 
-  const heightFunction = createHeightFunction(
+  var heightFunction = createHeightFunction(
     camera,
     destination,
     start.z,
@@ -172,7 +172,7 @@ function createUpdateCV(
     optionAltitude
   );
 
-  const pitchFunction = createPitchFunction(
+  var pitchFunction = createPitchFunction(
     startPitch,
     pitch,
     heightFunction,
@@ -180,7 +180,7 @@ function createUpdateCV(
   );
 
   function update(value) {
-    const time = value.time / duration;
+    var time = value.time / duration;
 
     camera.setView({
       orientation: {
@@ -205,7 +205,7 @@ function useLongestFlight(startCart, destCart) {
 }
 
 function useShortestFlight(startCart, destCart) {
-  const diff = startCart.longitude - destCart.longitude;
+  var diff = startCart.longitude - destCart.longitude;
   if (diff < -CesiumMath.PI) {
     startCart.longitude += CesiumMath.TWO_PI;
   } else if (diff > CesiumMath.PI) {
@@ -213,8 +213,8 @@ function useShortestFlight(startCart, destCart) {
   }
 }
 
-const scratchStartCart = new Cartographic();
-const scratchEndCart = new Cartographic();
+var scratchStartCart = new Cartographic();
+var scratchEndCart = new Cartographic();
 
 function createUpdate3D(
   scene,
@@ -228,43 +228,40 @@ function createUpdate3D(
   optionFlyOverLongitudeWeight,
   optionPitchAdjustHeight
 ) {
-  const camera = scene.camera;
-  const projection = scene.mapProjection;
-  const ellipsoid = projection.ellipsoid;
+  var camera = scene.camera;
+  var projection = scene.mapProjection;
+  var ellipsoid = projection.ellipsoid;
 
-  const startCart = Cartographic.clone(
+  var startCart = Cartographic.clone(
     camera.positionCartographic,
     scratchStartCart
   );
-  const startPitch = camera.pitch;
-  const startHeading = adjustAngleForLERP(camera.heading, heading);
-  const startRoll = adjustAngleForLERP(camera.roll, roll);
+  var startPitch = camera.pitch;
+  var startHeading = adjustAngleForLERP(camera.heading, heading);
+  var startRoll = adjustAngleForLERP(camera.roll, roll);
 
-  const destCart = ellipsoid.cartesianToCartographic(
-    destination,
-    scratchEndCart
-  );
+  var destCart = ellipsoid.cartesianToCartographic(destination, scratchEndCart);
   startCart.longitude = CesiumMath.zeroToTwoPi(startCart.longitude);
   destCart.longitude = CesiumMath.zeroToTwoPi(destCart.longitude);
 
-  let useLongFlight = false;
+  var useLongFlight = false;
 
   if (defined(optionFlyOverLongitude)) {
-    const hitLon = CesiumMath.zeroToTwoPi(optionFlyOverLongitude);
+    var hitLon = CesiumMath.zeroToTwoPi(optionFlyOverLongitude);
 
-    const lonMin = Math.min(startCart.longitude, destCart.longitude);
-    const lonMax = Math.max(startCart.longitude, destCart.longitude);
+    var lonMin = Math.min(startCart.longitude, destCart.longitude);
+    var lonMax = Math.max(startCart.longitude, destCart.longitude);
 
-    const hitInside = hitLon >= lonMin && hitLon <= lonMax;
+    var hitInside = hitLon >= lonMin && hitLon <= lonMax;
 
     if (defined(optionFlyOverLongitudeWeight)) {
       // Distance inside  (0...2Pi)
-      const din = Math.abs(startCart.longitude - destCart.longitude);
+      var din = Math.abs(startCart.longitude - destCart.longitude);
       // Distance outside (0...2Pi)
-      const dot = CesiumMath.TWO_PI - din;
+      var dot = CesiumMath.TWO_PI - din;
 
-      const hitDistance = hitInside ? din : dot;
-      const offDistance = hitInside ? dot : din;
+      var hitDistance = hitInside ? din : dot;
+      var offDistance = hitInside ? dot : din;
 
       if (
         hitDistance < offDistance * optionFlyOverLongitudeWeight &&
@@ -283,14 +280,14 @@ function createUpdate3D(
     useShortestFlight(startCart, destCart);
   }
 
-  const heightFunction = createHeightFunction(
+  var heightFunction = createHeightFunction(
     camera,
     destination,
     startCart.height,
     destCart.height,
     optionAltitude
   );
-  const pitchFunction = createPitchFunction(
+  var pitchFunction = createPitchFunction(
     startPitch,
     pitch,
     heightFunction,
@@ -303,15 +300,15 @@ function createUpdate3D(
   // createUpdate3D (createAnimationTween)
   // before you played animation, variables will be overwriten.
   function isolateUpdateFunction() {
-    const startLongitude = startCart.longitude;
-    const destLongitude = destCart.longitude;
-    const startLatitude = startCart.latitude;
-    const destLatitude = destCart.latitude;
+    var startLongitude = startCart.longitude;
+    var destLongitude = destCart.longitude;
+    var startLatitude = startCart.latitude;
+    var destLatitude = destCart.latitude;
 
     return function update(value) {
-      const time = value.time / duration;
+      var time = value.time / duration;
 
-      const position = Cartesian3.fromRadians(
+      var position = Cartesian3.fromRadians(
         CesiumMath.lerp(startLongitude, destLongitude, time),
         CesiumMath.lerp(startLatitude, destLatitude, time),
         heightFunction(time),
@@ -340,13 +337,13 @@ function createUpdate2D(
   roll,
   optionAltitude
 ) {
-  const camera = scene.camera;
+  var camera = scene.camera;
 
-  const start = Cartesian3.clone(camera.position, scratchStart);
-  const startHeading = adjustAngleForLERP(camera.heading, heading);
+  var start = Cartesian3.clone(camera.position, scratchStart);
+  var startHeading = adjustAngleForLERP(camera.heading, heading);
 
-  const startHeight = camera.frustum.right - camera.frustum.left;
-  const heightFunction = createHeightFunction(
+  var startHeight = camera.frustum.right - camera.frustum.left;
+  var heightFunction = createHeightFunction(
     camera,
     destination,
     startHeight,
@@ -355,7 +352,7 @@ function createUpdate2D(
   );
 
   function update(value) {
-    const time = value.time / duration;
+    var time = value.time / duration;
 
     camera.setView({
       orientation: {
@@ -365,12 +362,12 @@ function createUpdate2D(
 
     Cartesian2.lerp(start, destination, time, camera.position);
 
-    const zoom = heightFunction(time);
+    var zoom = heightFunction(time);
 
-    const frustum = camera.frustum;
-    const ratio = frustum.top / frustum.right;
+    var frustum = camera.frustum;
+    var ratio = frustum.top / frustum.right;
 
-    const incrementAmount = (zoom - (frustum.right - frustum.left)) * 0.5;
+    var incrementAmount = (zoom - (frustum.right - frustum.left)) * 0.5;
     frustum.right += incrementAmount;
     frustum.left -= incrementAmount;
     frustum.top = ratio * frustum.right;
@@ -379,8 +376,8 @@ function createUpdate2D(
   return update;
 }
 
-const scratchCartographic = new Cartographic();
-const scratchDestination = new Cartesian3();
+var scratchCartographic = new Cartographic();
+var scratchDestination = new Cartesian3();
 
 function emptyFlight(complete, cancel) {
   return {
@@ -405,7 +402,7 @@ function wrapCallback(controller, cb) {
 
 CameraFlightPath.createTween = function (scene, options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  let destination = options.destination;
+  var destination = options.destination;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(scene)) {
@@ -415,33 +412,33 @@ CameraFlightPath.createTween = function (scene, options) {
     throw new DeveloperError("destination is required.");
   }
   //>>includeEnd('debug');
-  const mode = scene.mode;
+  var mode = scene.mode;
 
   if (mode === SceneMode.MORPHING) {
     return emptyFlight();
   }
 
-  const convert = defaultValue(options.convert, true);
-  const projection = scene.mapProjection;
-  const ellipsoid = projection.ellipsoid;
-  const maximumHeight = options.maximumHeight;
-  const flyOverLongitude = options.flyOverLongitude;
-  const flyOverLongitudeWeight = options.flyOverLongitudeWeight;
-  const pitchAdjustHeight = options.pitchAdjustHeight;
-  let easingFunction = options.easingFunction;
+  var convert = defaultValue(options.convert, true);
+  var projection = scene.mapProjection;
+  var ellipsoid = projection.ellipsoid;
+  var maximumHeight = options.maximumHeight;
+  var flyOverLongitude = options.flyOverLongitude;
+  var flyOverLongitudeWeight = options.flyOverLongitudeWeight;
+  var pitchAdjustHeight = options.pitchAdjustHeight;
+  var easingFunction = options.easingFunction;
 
   if (convert && mode !== SceneMode.SCENE3D) {
     ellipsoid.cartesianToCartographic(destination, scratchCartographic);
     destination = projection.project(scratchCartographic, scratchDestination);
   }
 
-  const camera = scene.camera;
-  const transform = options.endTransform;
+  var camera = scene.camera;
+  var transform = options.endTransform;
   if (defined(transform)) {
     camera._setTransform(transform);
   }
 
-  let duration = options.duration;
+  var duration = options.duration;
   if (!defined(duration)) {
     duration =
       Math.ceil(Cartesian3.distance(camera.position, destination) / 1000000.0) +
@@ -449,19 +446,19 @@ CameraFlightPath.createTween = function (scene, options) {
     duration = Math.min(duration, 3.0);
   }
 
-  const heading = defaultValue(options.heading, 0.0);
-  const pitch = defaultValue(options.pitch, -CesiumMath.PI_OVER_TWO);
-  const roll = defaultValue(options.roll, 0.0);
+  var heading = defaultValue(options.heading, 0.0);
+  var pitch = defaultValue(options.pitch, -CesiumMath.PI_OVER_TWO);
+  var roll = defaultValue(options.roll, 0.0);
 
-  const controller = scene.screenSpaceCameraController;
+  var controller = scene.screenSpaceCameraController;
   controller.enableInputs = false;
 
-  const complete = wrapCallback(controller, options.complete);
-  const cancel = wrapCallback(controller, options.cancel);
+  var complete = wrapCallback(controller, options.complete);
+  var cancel = wrapCallback(controller, options.cancel);
 
-  const frustum = camera.frustum;
+  var frustum = camera.frustum;
 
-  let empty = scene.mode === SceneMode.SCENE2D;
+  var empty = scene.mode === SceneMode.SCENE2D;
   empty =
     empty &&
     Cartesian2.equalsEpsilon(camera.position, destination, CesiumMath.EPSILON6);
@@ -504,14 +501,14 @@ CameraFlightPath.createTween = function (scene, options) {
     return emptyFlight(complete, cancel);
   }
 
-  const updateFunctions = new Array(4);
+  var updateFunctions = new Array(4);
   updateFunctions[SceneMode.SCENE2D] = createUpdate2D;
   updateFunctions[SceneMode.SCENE3D] = createUpdate3D;
   updateFunctions[SceneMode.COLUMBUS_VIEW] = createUpdateCV;
 
   if (duration <= 0.0) {
-    const newOnComplete = function () {
-      const update = updateFunctions[mode](
+    var newOnComplete = function () {
+      var update = updateFunctions[mode](
         scene,
         1.0,
         destination,
@@ -532,7 +529,7 @@ CameraFlightPath.createTween = function (scene, options) {
     return emptyFlight(newOnComplete, cancel);
   }
 
-  const update = updateFunctions[mode](
+  var update = updateFunctions[mode](
     scene,
     duration,
     destination,
@@ -546,8 +543,8 @@ CameraFlightPath.createTween = function (scene, options) {
   );
 
   if (!defined(easingFunction)) {
-    const startHeight = camera.positionCartographic.height;
-    const endHeight =
+    var startHeight = camera.positionCartographic.height;
+    var endHeight =
       mode === SceneMode.SCENE3D
         ? ellipsoid.cartesianToCartographic(destination).height
         : destination.z;

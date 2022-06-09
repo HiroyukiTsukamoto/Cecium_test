@@ -1,7 +1,7 @@
 import defined from "./defined.js";
 import getTimestamp from "./getTimestamp.js";
 
-let implementation;
+var implementation;
 if (typeof requestAnimationFrame !== "undefined") {
   implementation = requestAnimationFrame;
 }
@@ -9,25 +9,25 @@ if (typeof requestAnimationFrame !== "undefined") {
 (function () {
   // look for vendor prefixed function
   if (!defined(implementation) && typeof window !== "undefined") {
-    const vendors = ["webkit", "moz", "ms", "o"];
-    let i = 0;
-    const len = vendors.length;
+    var vendors = ["webkit", "moz", "ms", "o"];
+    var i = 0;
+    var len = vendors.length;
     while (i < len && !defined(implementation)) {
-      implementation = window[`${vendors[i]}RequestAnimationFrame`];
+      implementation = window[vendors[i] + "RequestAnimationFrame"];
       ++i;
     }
   }
 
   // build an implementation based on setTimeout
   if (!defined(implementation)) {
-    const msPerFrame = 1000.0 / 60.0;
-    let lastFrameTime = 0;
+    var msPerFrame = 1000.0 / 60.0;
+    var lastFrameTime = 0;
     implementation = function (callback) {
-      const currentTime = getTimestamp();
+      var currentTime = getTimestamp();
 
       // schedule the callback to target 60fps, 16.7ms per frame,
       // accounting for the time taken by the callback
-      const delay = Math.max(msPerFrame - (currentTime - lastFrameTime), 0);
+      var delay = Math.max(msPerFrame - (currentTime - lastFrameTime), 0);
       lastFrameTime = currentTime + delay;
 
       return setTimeout(function () {

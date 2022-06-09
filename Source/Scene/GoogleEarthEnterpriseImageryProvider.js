@@ -14,6 +14,7 @@ import Resource from "../Core/Resource.js";
 import RuntimeError from "../Core/RuntimeError.js";
 import TileProviderError from "../Core/TileProviderError.js";
 import protobuf from "../ThirdParty/protobufjs.js";
+import when from "../ThirdParty/when.js";
 
 /**
  * @private
@@ -79,8 +80,8 @@ GoogleEarthEnterpriseDiscardPolicy.prototype.shouldDiscardImage = function (
  *
  *
  * @example
- * const geeMetadata = new GoogleEarthEnterpriseMetadata('http://www.earthenterprise.org/3d');
- * const gee = new Cesium.GoogleEarthEnterpriseImageryProvider({
+ * var geeMetadata = new GoogleEarthEnterpriseMetadata('http://www.earthenterprise.org/3d');
+ * var gee = new Cesium.GoogleEarthEnterpriseImageryProvider({
  *     metadata : geeMetadata
  * });
  *
@@ -181,11 +182,11 @@ function GoogleEarthEnterpriseImageryProvider(options) {
    */
   this.defaultMagnificationFilter = undefined;
 
-  let metadata;
+  var metadata;
   if (defined(options.metadata)) {
     metadata = options.metadata;
   } else {
-    const resource = Resource.createIfNeeded(options.url);
+    var resource = Resource.createIfNeeded(options.url);
     metadata = new GoogleEarthEnterpriseMetadata(resource);
   }
   this._metadata = metadata;
@@ -203,7 +204,7 @@ function GoogleEarthEnterpriseImageryProvider(options) {
     ellipsoid: options.ellipsoid,
   });
 
-  let credit = options.credit;
+  var credit = options.credit;
   if (typeof credit === "string") {
     credit = new Credit(credit);
   }
@@ -221,13 +222,13 @@ function GoogleEarthEnterpriseImageryProvider(options) {
   this._errorEvent = new Event();
 
   this._ready = false;
-  const that = this;
-  let metadataError;
+  var that = this;
+  var metadataError;
   this._readyPromise = metadata.readyPromise
     .then(function (result) {
       if (!metadata.imageryPresent) {
-        const e = new RuntimeError(
-          `The server ${metadata.url} doesn't have imagery`
+        var e = new RuntimeError(
+          "The server " + metadata.url + " doesn't have imagery"
         );
         metadataError = TileProviderError.handleError(
           metadataError,
@@ -239,14 +240,14 @@ function GoogleEarthEnterpriseImageryProvider(options) {
           undefined,
           e
         );
-        return Promise.reject(e);
+        return when.reject(e);
       }
 
       TileProviderError.handleSuccess(metadataError);
       that._ready = result;
       return result;
     })
-    .catch(function (e) {
+    .otherwise(function (e) {
       metadataError = TileProviderError.handleError(
         metadataError,
         that,
@@ -257,7 +258,7 @@ function GoogleEarthEnterpriseImageryProvider(options) {
         undefined,
         e
       );
-      return Promise.reject(e);
+      return when.reject(e);
     });
 }
 
@@ -526,10 +527,10 @@ GoogleEarthEnterpriseImageryProvider.prototype.getTileCredits = function (
   }
   //>>includeEnd('debug');
 
-  const metadata = this._metadata;
-  const info = metadata.getTileInformation(x, y, level);
+  var metadata = this._metadata;
+  var info = metadata.getTileInformation(x, y, level);
   if (defined(info)) {
-    const credit = metadata.providers[info.imageryProvider];
+    var credit = metadata.providers[info.imageryProvider];
     if (defined(credit)) {
       return [credit];
     }
@@ -546,8 +547,10 @@ GoogleEarthEnterpriseImageryProvider.prototype.getTileCredits = function (
  * @param {Number} y The tile Y coordinate.
  * @param {Number} level The tile level.
  * @param {Request} [request] The request object. Intended for internal use only.
- * @returns {Promise.<ImageryTypes>|undefined} A promise for the image that will resolve when the image is available, or
- *          undefined if there are too many active requests to the server, and the request should be retried later.
+ * @returns {Promise.<HTMLImageElement|HTMLCanvasElement>|undefined} A promise for the image that will resolve when the image is available, or
+ *          undefined if there are too many active requests to the server, and the request
+ *          should be retried later.  The resolved image may be either an
+ *          Image or a Canvas DOM object.
  *
  * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
  */
@@ -565,13 +568,13 @@ GoogleEarthEnterpriseImageryProvider.prototype.requestImage = function (
   }
   //>>includeEnd('debug');
 
-  const invalidImage = this._tileDiscardPolicy._image; // Empty image or undefined depending on discard policy
-  const metadata = this._metadata;
-  const quadKey = GoogleEarthEnterpriseMetadata.tileXYToQuadKey(x, y, level);
-  const info = metadata.getTileInformation(x, y, level);
+  var invalidImage = this._tileDiscardPolicy._image; // Empty image or undefined depending on discard policy
+  var metadata = this._metadata;
+  var quadKey = GoogleEarthEnterpriseMetadata.tileXYToQuadKey(x, y, level);
+  var info = metadata.getTileInformation(x, y, level);
   if (!defined(info)) {
     if (metadata.isValid(quadKey)) {
-      const metadataRequest = new Request({
+      var metadataRequest = new Request({
         throttle: request.throttle,
         throttleByServer: request.throttleByServer,
         type: request.type,
@@ -580,14 +583,14 @@ GoogleEarthEnterpriseImageryProvider.prototype.requestImage = function (
       metadata.populateSubtree(x, y, level, metadataRequest);
       return undefined; // No metadata so return undefined so we can be loaded later
     }
-    return Promise.resolve(invalidImage); // Image doesn't exist
+    return invalidImage; // Image doesn't exist
   }
 
   if (!info.hasImagery()) {
     // Already have info and there isn't any imagery here
-    return Promise.resolve(invalidImage);
+    return invalidImage;
   }
-  const promise = buildImageResource(
+  var promise = buildImageResource(
     this,
     info,
     x,
@@ -601,16 +604,16 @@ GoogleEarthEnterpriseImageryProvider.prototype.requestImage = function (
 
   return promise.then(function (image) {
     decodeGoogleEarthEnterpriseData(metadata.key, image);
-    let a = new Uint8Array(image);
-    let type;
+    var a = new Uint8Array(image);
+    var type;
 
-    const protoImagery = metadata.protoImagery;
+    var protoImagery = metadata.protoImagery;
     if (!defined(protoImagery) || !protoImagery) {
       type = getImageType(a);
     }
 
     if (!defined(type) && (!defined(protoImagery) || protoImagery)) {
-      const message = decodeEarthImageryPacket(a);
+      var message = decodeEarthImageryPacket(a);
       type = message.imageType;
       a = message.imageData;
     }
@@ -636,7 +639,10 @@ GoogleEarthEnterpriseImageryProvider.prototype.requestImage = function (
  * @param {Number} level The tile level.
  * @param {Number} longitude The longitude at which to pick features.
  * @param {Number} latitude  The latitude at which to pick features.
- * @return {undefined} Undefined since picking is not supported.
+ * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise for the picked features that will resolve when the asynchronous
+ *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
+ *                   instances.  The array may be empty if no features are found at the given location.
+ *                   It may also be undefined if picking is not supported.
  */
 GoogleEarthEnterpriseImageryProvider.prototype.pickFeatures = function (
   x,
@@ -652,19 +658,19 @@ GoogleEarthEnterpriseImageryProvider.prototype.pickFeatures = function (
 // Functions to handle imagery packets
 //
 function buildImageResource(imageryProvider, info, x, y, level, request) {
-  const quadKey = GoogleEarthEnterpriseMetadata.tileXYToQuadKey(x, y, level);
-  let version = info.imageryVersion;
+  var quadKey = GoogleEarthEnterpriseMetadata.tileXYToQuadKey(x, y, level);
+  var version = info.imageryVersion;
   version = defined(version) && version > 0 ? version : 1;
 
   return imageryProvider._metadata.resource.getDerivedResource({
-    url: `flatfile?f1-0${quadKey}-i.${version.toString()}`,
+    url: "flatfile?f1-0" + quadKey + "-i." + version.toString(),
     request: request,
   });
 }
 
 // Detects if a Uint8Array is a JPEG or PNG
 function getImageType(image) {
-  const jpeg = "JFIF";
+  var jpeg = "JFIF";
   if (
     image[6] === jpeg.charCodeAt(0) &&
     image[7] === jpeg.charCodeAt(1) &&
@@ -674,7 +680,7 @@ function getImageType(image) {
     return "image/jpeg";
   }
 
-  const png = "PNG";
+  var png = "PNG";
   if (
     image[1] === png.charCodeAt(0) &&
     image[2] === png.charCodeAt(1) &&
@@ -689,12 +695,11 @@ function getImageType(image) {
 // Decodes an Imagery protobuf into the message
 // Partially generated with the help of protobuf.js static generator
 function decodeEarthImageryPacket(data) {
-  const reader = protobuf.Reader.create(data);
-  const end = reader.len;
-  const message = {};
+  var reader = protobuf.Reader.create(data);
+  var end = reader.len;
+  var message = {};
   while (reader.pos < end) {
-    const tag = reader.uint32();
-    let copyrightIds;
+    var tag = reader.uint32();
     switch (tag >>> 3) {
       case 1:
         message.imageType = reader.uint32();
@@ -709,12 +714,12 @@ function decodeEarthImageryPacket(data) {
         message.imageAlpha = reader.bytes();
         break;
       case 5:
-        copyrightIds = message.copyrightIds;
+        var copyrightIds = message.copyrightIds;
         if (!defined(copyrightIds)) {
           copyrightIds = message.copyrightIds = [];
         }
         if ((tag & 7) === 2) {
-          const end2 = reader.uint32() + reader.pos;
+          var end2 = reader.uint32() + reader.pos;
           while (reader.pos < end2) {
             copyrightIds.push(reader.uint32());
           }
@@ -728,7 +733,7 @@ function decodeEarthImageryPacket(data) {
     }
   }
 
-  const imageType = message.imageType;
+  var imageType = message.imageType;
   if (defined(imageType)) {
     switch (imageType) {
       case 0:
@@ -744,7 +749,7 @@ function decodeEarthImageryPacket(data) {
     }
   }
 
-  const alphaType = message.alphaType;
+  var alphaType = message.alphaType;
   if (defined(alphaType) && alphaType !== 0) {
     console.log(
       "GoogleEarthEnterpriseImageryProvider: External alpha not supported."

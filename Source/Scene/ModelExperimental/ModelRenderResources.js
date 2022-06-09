@@ -1,5 +1,5 @@
 import Check from "../../Core/Check.js";
-import ModelAlphaOptions from "./ModelAlphaOptions.js";
+import defined from "../../Core/defined.js";
 import ShaderBuilder from "../../Renderer/ShaderBuilder.js";
 
 /**
@@ -35,37 +35,15 @@ export default function ModelRenderResources(model) {
    * @private
    */
   this.model = model;
-
   /**
-   * A dictionary mapping uniform name to functions that return the uniform
-   * values.
+   * The feature table ID to use for determining features within the model.
    *
-   * @type {Object.<String, Function>}
+   * @type {String}
    * @readonly
    *
    * @private
    */
-  this.uniformMap = {};
-
-  /**
-   * Options for configuring the alpha stage such as pass and alpha mode.
-   *
-   * @type {ModelAlphaOptions}
-   * @readonly
-   *
-   * @private
-   */
-  this.alphaOptions = new ModelAlphaOptions();
-
-  /**
-   * An object storing options for creating a {@link RenderState}.
-   * The pipeline stages simply set the options, the render state is created
-   * when the {@link DrawCommand} is constructed.
-   *
-   * @type {Object}
-   * @readonly
-   *
-   * @private
-   */
-  this.renderStateOptions = {};
+  this.featureTableId = defined(model.content)
+    ? model.content.featureTableId
+    : model.featureTableId;
 }

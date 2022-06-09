@@ -2,7 +2,7 @@ import { Light } from "../../Source/Cesium.js";
 
 describe("Scene/Light", function () {
   it("throws", function () {
-    const light = new Light();
+    var light = new Light();
     expect(function () {
       return light.color;
     }).toThrowDeveloperError();

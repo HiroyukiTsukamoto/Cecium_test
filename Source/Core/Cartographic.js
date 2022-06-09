@@ -89,20 +89,20 @@ Cartographic.fromDegrees = function (longitude, latitude, height, result) {
   return Cartographic.fromRadians(longitude, latitude, height, result);
 };
 
-const cartesianToCartographicN = new Cartesian3();
-const cartesianToCartographicP = new Cartesian3();
-const cartesianToCartographicH = new Cartesian3();
-const wgs84OneOverRadii = new Cartesian3(
+var cartesianToCartographicN = new Cartesian3();
+var cartesianToCartographicP = new Cartesian3();
+var cartesianToCartographicH = new Cartesian3();
+var wgs84OneOverRadii = new Cartesian3(
   1.0 / 6378137.0,
   1.0 / 6378137.0,
   1.0 / 6356752.3142451793
 );
-const wgs84OneOverRadiiSquared = new Cartesian3(
+var wgs84OneOverRadiiSquared = new Cartesian3(
   1.0 / (6378137.0 * 6378137.0),
   1.0 / (6378137.0 * 6378137.0),
   1.0 / (6356752.3142451793 * 6356752.3142451793)
 );
-const wgs84CenterToleranceSquared = CesiumMath.EPSILON1;
+var wgs84CenterToleranceSquared = CesiumMath.EPSILON1;
 
 /**
  * Creates a new Cartographic instance from a Cartesian position. The values in the
@@ -114,18 +114,18 @@ const wgs84CenterToleranceSquared = CesiumMath.EPSILON1;
  * @returns {Cartographic} The modified result parameter, new Cartographic instance if none was provided, or undefined if the cartesian is at the center of the ellipsoid.
  */
 Cartographic.fromCartesian = function (cartesian, ellipsoid, result) {
-  const oneOverRadii = defined(ellipsoid)
+  var oneOverRadii = defined(ellipsoid)
     ? ellipsoid.oneOverRadii
     : wgs84OneOverRadii;
-  const oneOverRadiiSquared = defined(ellipsoid)
+  var oneOverRadiiSquared = defined(ellipsoid)
     ? ellipsoid.oneOverRadiiSquared
     : wgs84OneOverRadiiSquared;
-  const centerToleranceSquared = defined(ellipsoid)
+  var centerToleranceSquared = defined(ellipsoid)
     ? ellipsoid._centerToleranceSquared
     : wgs84CenterToleranceSquared;
 
   //`cartesian is required.` is thrown from scaleToGeodeticSurface
-  const p = scaleToGeodeticSurface(
+  var p = scaleToGeodeticSurface(
     cartesian,
     oneOverRadii,
     oneOverRadiiSquared,
@@ -137,18 +137,18 @@ Cartographic.fromCartesian = function (cartesian, ellipsoid, result) {
     return undefined;
   }
 
-  let n = Cartesian3.multiplyComponents(
+  var n = Cartesian3.multiplyComponents(
     p,
     oneOverRadiiSquared,
     cartesianToCartographicN
   );
   n = Cartesian3.normalize(n, n);
 
-  const h = Cartesian3.subtract(cartesian, p, cartesianToCartographicH);
+  var h = Cartesian3.subtract(cartesian, p, cartesianToCartographicH);
 
-  const longitude = Math.atan2(n.y, n.x);
-  const latitude = Math.asin(n.z);
-  const height =
+  var longitude = Math.atan2(n.y, n.x);
+  var latitude = Math.asin(n.z);
+  var height =
     CesiumMath.sign(Cartesian3.dot(h, cartesian)) * Cartesian3.magnitude(h);
 
   if (!defined(result)) {
@@ -297,6 +297,6 @@ Cartographic.prototype.equalsEpsilon = function (right, epsilon) {
  * @returns {String} A string representing the provided cartographic in the format '(longitude, latitude, height)'.
  */
 Cartographic.prototype.toString = function () {
-  return `(${this.longitude}, ${this.latitude}, ${this.height})`;
+  return "(" + this.longitude + ", " + this.latitude + ", " + this.height + ")";
 };
 export default Cartographic;

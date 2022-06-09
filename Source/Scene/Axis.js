@@ -8,7 +8,7 @@ import Matrix4 from "../Core/Matrix4.js";
  *
  * @enum {Number}
  */
-const Axis = {
+var Axis = {
   /**
    * Denotes the x-axis.
    *

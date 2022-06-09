@@ -2,7 +2,7 @@
 "use strict";
 
 module.exports = function (config) {
-  const options = {
+  var options = {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "..",
 
@@ -83,7 +83,7 @@ module.exports = function (config) {
       },
     },
 
-    // Ridiculous large values because travis is slow.
+    // Rediculous large values because travis is slow.
     captureTimeout: 120000,
     browserDisconnectTolerance: 3,
     browserDisconnectTimeout: 120000,

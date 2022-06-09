@@ -28,51 +28,47 @@ import Rectangle from "./Rectangle.js";
 import VertexFormat from "./VertexFormat.js";
 import WindingOrder from "./WindingOrder.js";
 
-const scratchCarto1 = new Cartographic();
-const scratchCarto2 = new Cartographic();
+var scratchCarto1 = new Cartographic();
+var scratchCarto2 = new Cartographic();
 function adjustPosHeightsForNormal(position, p1, p2, ellipsoid) {
-  const carto1 = ellipsoid.cartesianToCartographic(position, scratchCarto1);
-  const height = carto1.height;
-  const p1Carto = ellipsoid.cartesianToCartographic(p1, scratchCarto2);
+  var carto1 = ellipsoid.cartesianToCartographic(position, scratchCarto1);
+  var height = carto1.height;
+  var p1Carto = ellipsoid.cartesianToCartographic(p1, scratchCarto2);
   p1Carto.height = height;
   ellipsoid.cartographicToCartesian(p1Carto, p1);
 
-  const p2Carto = ellipsoid.cartesianToCartographic(p2, scratchCarto2);
+  var p2Carto = ellipsoid.cartesianToCartographic(p2, scratchCarto2);
   p2Carto.height = height - 100;
   ellipsoid.cartographicToCartesian(p2Carto, p2);
 }
 
-const scratchBoundingRectangle = new BoundingRectangle();
-const scratchPosition = new Cartesian3();
-const scratchNormal = new Cartesian3();
-const scratchTangent = new Cartesian3();
-const scratchBitangent = new Cartesian3();
-const p1Scratch = new Cartesian3();
-const p2Scratch = new Cartesian3();
-let scratchPerPosNormal = new Cartesian3();
-let scratchPerPosTangent = new Cartesian3();
-let scratchPerPosBitangent = new Cartesian3();
+var scratchBoundingRectangle = new BoundingRectangle();
+var scratchPosition = new Cartesian3();
+var scratchNormal = new Cartesian3();
+var scratchTangent = new Cartesian3();
+var scratchBitangent = new Cartesian3();
+var p1Scratch = new Cartesian3();
+var p2Scratch = new Cartesian3();
+var scratchPerPosNormal = new Cartesian3();
+var scratchPerPosTangent = new Cartesian3();
+var scratchPerPosBitangent = new Cartesian3();
 
-const appendTextureCoordinatesOrigin = new Cartesian2();
-const appendTextureCoordinatesCartesian2 = new Cartesian2();
-const appendTextureCoordinatesCartesian3 = new Cartesian3();
-const appendTextureCoordinatesQuaternion = new Quaternion();
-const appendTextureCoordinatesMatrix3 = new Matrix3();
-const tangentMatrixScratch = new Matrix3();
+var appendTextureCoordinatesOrigin = new Cartesian2();
+var appendTextureCoordinatesCartesian2 = new Cartesian2();
+var appendTextureCoordinatesCartesian3 = new Cartesian3();
+var appendTextureCoordinatesQuaternion = new Quaternion();
+var appendTextureCoordinatesMatrix3 = new Matrix3();
+var tangentMatrixScratch = new Matrix3();
 
 function computeAttributes(options) {
-  const vertexFormat = options.vertexFormat;
-  const geometry = options.geometry;
-  const shadowVolume = options.shadowVolume;
-  const flatPositions = geometry.attributes.position.values;
-  const flatTexcoords = defined(geometry.attributes.st)
-    ? geometry.attributes.st.values
-    : undefined;
-
-  let length = flatPositions.length;
-  const wall = options.wall;
-  const top = options.top || wall;
-  const bottom = options.bottom || wall;
+  var vertexFormat = options.vertexFormat;
+  var geometry = options.geometry;
+  var shadowVolume = options.shadowVolume;
+  var flatPositions = geometry.attributes.position.values;
+  var length = flatPositions.length;
+  var wall = options.wall;
+  var top = options.top || wall;
+  var bottom = options.bottom || wall;
   if (
     vertexFormat.st ||
     vertexFormat.normal ||
@@ -82,20 +78,20 @@ function computeAttributes(options) {
   ) {
     // PERFORMANCE_IDEA: Compute before subdivision, then just interpolate during subdivision.
     // PERFORMANCE_IDEA: Compute with createGeometryFromPositions() for fast path when there's no holes.
-    const boundingRectangle = options.boundingRectangle;
-    const tangentPlane = options.tangentPlane;
-    const ellipsoid = options.ellipsoid;
-    const stRotation = options.stRotation;
-    const perPositionHeight = options.perPositionHeight;
+    var boundingRectangle = options.boundingRectangle;
+    var tangentPlane = options.tangentPlane;
+    var ellipsoid = options.ellipsoid;
+    var stRotation = options.stRotation;
+    var perPositionHeight = options.perPositionHeight;
 
-    const origin = appendTextureCoordinatesOrigin;
+    var origin = appendTextureCoordinatesOrigin;
     origin.x = boundingRectangle.x;
     origin.y = boundingRectangle.y;
 
-    const textureCoordinates = vertexFormat.st
+    var textureCoordinates = vertexFormat.st
       ? new Float32Array(2 * (length / 3))
       : undefined;
-    let normals;
+    var normals;
     if (vertexFormat.normal) {
       if (perPositionHeight && top && !wall) {
         normals = geometry.attributes.normal.values;
@@ -103,26 +99,24 @@ function computeAttributes(options) {
         normals = new Float32Array(length);
       }
     }
-    const tangents = vertexFormat.tangent
+    var tangents = vertexFormat.tangent ? new Float32Array(length) : undefined;
+    var bitangents = vertexFormat.bitangent
       ? new Float32Array(length)
       : undefined;
-    const bitangents = vertexFormat.bitangent
-      ? new Float32Array(length)
-      : undefined;
-    const extrudeNormals = shadowVolume ? new Float32Array(length) : undefined;
+    var extrudeNormals = shadowVolume ? new Float32Array(length) : undefined;
 
-    let textureCoordIndex = 0;
-    let attrIndex = 0;
+    var textureCoordIndex = 0;
+    var attrIndex = 0;
 
-    let normal = scratchNormal;
-    let tangent = scratchTangent;
-    let bitangent = scratchBitangent;
-    let recomputeNormal = true;
+    var normal = scratchNormal;
+    var tangent = scratchTangent;
+    var bitangent = scratchBitangent;
+    var recomputeNormal = true;
 
-    let textureMatrix = appendTextureCoordinatesMatrix3;
-    let tangentRotationMatrix = tangentMatrixScratch;
+    var textureMatrix = appendTextureCoordinatesMatrix3;
+    var tangentRotationMatrix = tangentMatrixScratch;
     if (stRotation !== 0.0) {
-      let rotation = Quaternion.fromAxisAngle(
+      var rotation = Quaternion.fromAxisAngle(
         tangentPlane._plane.normal,
         stRotation,
         appendTextureCoordinatesQuaternion
@@ -146,8 +140,8 @@ function computeAttributes(options) {
       );
     }
 
-    let bottomOffset = 0;
-    let bottomOffset2 = 0;
+    var bottomOffset = 0;
+    var bottomOffset2 = 0;
 
     if (top && bottom) {
       bottomOffset = length / 2;
@@ -156,40 +150,38 @@ function computeAttributes(options) {
       length /= 2;
     }
 
-    for (let i = 0; i < length; i += 3) {
-      const position = Cartesian3.fromArray(
+    for (var i = 0; i < length; i += 3) {
+      var position = Cartesian3.fromArray(
         flatPositions,
         i,
         appendTextureCoordinatesCartesian3
       );
 
       if (vertexFormat.st) {
-        if (!defined(flatTexcoords)) {
-          let p = Matrix3.multiplyByVector(
-            textureMatrix,
-            position,
-            scratchPosition
-          );
-          p = ellipsoid.scaleToGeodeticSurface(p, p);
-          const st = tangentPlane.projectPointOntoPlane(
-            p,
-            appendTextureCoordinatesCartesian2
-          );
-          Cartesian2.subtract(st, origin, st);
+        var p = Matrix3.multiplyByVector(
+          textureMatrix,
+          position,
+          scratchPosition
+        );
+        p = ellipsoid.scaleToGeodeticSurface(p, p);
+        var st = tangentPlane.projectPointOntoPlane(
+          p,
+          appendTextureCoordinatesCartesian2
+        );
+        Cartesian2.subtract(st, origin, st);
 
-          const stx = CesiumMath.clamp(st.x / boundingRectangle.width, 0, 1);
-          const sty = CesiumMath.clamp(st.y / boundingRectangle.height, 0, 1);
-          if (bottom) {
-            textureCoordinates[textureCoordIndex + bottomOffset2] = stx;
-            textureCoordinates[textureCoordIndex + 1 + bottomOffset2] = sty;
-          }
-          if (top) {
-            textureCoordinates[textureCoordIndex] = stx;
-            textureCoordinates[textureCoordIndex + 1] = sty;
-          }
-
-          textureCoordIndex += 2;
+        var stx = CesiumMath.clamp(st.x / boundingRectangle.width, 0, 1);
+        var sty = CesiumMath.clamp(st.y / boundingRectangle.height, 0, 1);
+        if (bottom) {
+          textureCoordinates[textureCoordIndex + bottomOffset2] = stx;
+          textureCoordinates[textureCoordIndex + 1 + bottomOffset2] = sty;
         }
+        if (top) {
+          textureCoordinates[textureCoordIndex] = stx;
+          textureCoordinates[textureCoordIndex + 1] = sty;
+        }
+
+        textureCoordIndex += 2;
       }
 
       if (
@@ -198,15 +190,15 @@ function computeAttributes(options) {
         vertexFormat.bitangent ||
         shadowVolume
       ) {
-        const attrIndex1 = attrIndex + 1;
-        const attrIndex2 = attrIndex + 2;
+        var attrIndex1 = attrIndex + 1;
+        var attrIndex2 = attrIndex + 2;
 
         if (wall) {
           if (i + 3 < length) {
-            const p1 = Cartesian3.fromArray(flatPositions, i + 3, p1Scratch);
+            var p1 = Cartesian3.fromArray(flatPositions, i + 3, p1Scratch);
 
             if (recomputeNormal) {
-              const p2 = Cartesian3.fromArray(
+              var p2 = Cartesian3.fromArray(
                 flatPositions,
                 i + length,
                 p2Scratch
@@ -359,7 +351,7 @@ function computeAttributes(options) {
       }
     }
 
-    if (vertexFormat.st && !defined(flatTexcoords)) {
+    if (vertexFormat.st) {
       geometry.attributes.st = new GeometryAttribute({
         componentDatatype: ComponentDatatype.FLOAT,
         componentsPerAttribute: 2,
@@ -401,8 +393,8 @@ function computeAttributes(options) {
   }
 
   if (options.extrude && defined(options.offsetAttribute)) {
-    const size = flatPositions.length / 3;
-    let offsetAttribute = new Uint8Array(size);
+    var size = flatPositions.length / 3;
+    var offsetAttribute = new Uint8Array(size);
 
     if (options.offsetAttribute === GeometryOffsetAttribute.TOP) {
       if ((top && bottom) || wall) {
@@ -411,7 +403,7 @@ function computeAttributes(options) {
         offsetAttribute = arrayFill(offsetAttribute, 1);
       }
     } else {
-      const offsetValue =
+      var offsetValue =
         options.offsetAttribute === GeometryOffsetAttribute.NONE ? 0 : 1;
       offsetAttribute = arrayFill(offsetAttribute, offsetValue);
     }
@@ -426,13 +418,13 @@ function computeAttributes(options) {
   return geometry;
 }
 
-const startCartographicScratch = new Cartographic();
-const endCartographicScratch = new Cartographic();
-const idlCross = {
+var startCartographicScratch = new Cartographic();
+var endCartographicScratch = new Cartographic();
+var idlCross = {
   westOverIDL: 0.0,
   eastOverIDL: 0.0,
 };
-let ellipsoidGeodesic = new EllipsoidGeodesic();
+var ellipsoidGeodesic = new EllipsoidGeodesic();
 function computeRectangle(positions, ellipsoid, arcType, granularity, result) {
   result = defaultValue(result, new Rectangle());
   if (!defined(positions) || positions.length < 3) {
@@ -459,17 +451,17 @@ function computeRectangle(positions, ellipsoid, arcType, granularity, result) {
   idlCross.westOverIDL = Number.POSITIVE_INFINITY;
   idlCross.eastOverIDL = Number.NEGATIVE_INFINITY;
 
-  const inverseChordLength =
+  var inverseChordLength =
     1.0 / CesiumMath.chordLength(granularity, ellipsoid.maximumRadius);
-  const positionsLength = positions.length;
-  let endCartographic = ellipsoid.cartesianToCartographic(
+  var positionsLength = positions.length;
+  var endCartographic = ellipsoid.cartesianToCartographic(
     positions[0],
     endCartographicScratch
   );
-  let startCartographic = startCartographicScratch;
-  let swap;
+  var startCartographic = startCartographicScratch;
+  var swap;
 
-  for (let i = 1; i < positionsLength; i++) {
+  for (var i = 1; i < positionsLength; i++) {
     swap = startCartographic;
     startCartographic = endCartographic;
     endCartographic = ellipsoid.cartesianToCartographic(positions[i], swap);
@@ -508,47 +500,46 @@ function computeRectangle(positions, ellipsoid, arcType, granularity, result) {
   return result;
 }
 
-const interpolatedCartographicScratch = new Cartographic();
+var interpolatedCartographicScratch = new Cartographic();
 function interpolateAndGrowRectangle(
   ellipsoidGeodesic,
   inverseChordLength,
   result,
   idlCross
 ) {
-  const segmentLength = ellipsoidGeodesic.surfaceDistance;
+  var segmentLength = ellipsoidGeodesic.surfaceDistance;
 
-  const numPoints = Math.ceil(segmentLength * inverseChordLength);
-  const subsegmentDistance =
+  var numPoints = Math.ceil(segmentLength * inverseChordLength);
+  var subsegmentDistance =
     numPoints > 0 ? segmentLength / (numPoints - 1) : Number.POSITIVE_INFINITY;
-  let interpolationDistance = 0.0;
+  var interpolationDistance = 0.0;
 
-  for (let i = 0; i < numPoints; i++) {
-    const interpolatedCartographic = ellipsoidGeodesic.interpolateUsingSurfaceDistance(
+  for (var i = 0; i < numPoints; i++) {
+    var interpolatedCartographic = ellipsoidGeodesic.interpolateUsingSurfaceDistance(
       interpolationDistance,
       interpolatedCartographicScratch
     );
     interpolationDistance += subsegmentDistance;
-    const longitude = interpolatedCartographic.longitude;
-    const latitude = interpolatedCartographic.latitude;
+    var longitude = interpolatedCartographic.longitude;
+    var latitude = interpolatedCartographic.latitude;
 
     result.west = Math.min(result.west, longitude);
     result.east = Math.max(result.east, longitude);
     result.south = Math.min(result.south, latitude);
     result.north = Math.max(result.north, latitude);
 
-    const lonAdjusted =
+    var lonAdjusted =
       longitude >= 0 ? longitude : longitude + CesiumMath.TWO_PI;
     idlCross.westOverIDL = Math.min(idlCross.westOverIDL, lonAdjusted);
     idlCross.eastOverIDL = Math.max(idlCross.eastOverIDL, lonAdjusted);
   }
 }
 
-const createGeometryFromPositionsExtrudedPositions = [];
+var createGeometryFromPositionsExtrudedPositions = [];
 
 function createGeometryFromPositionsExtruded(
   ellipsoid,
   polygon,
-  textureCoordinates,
   granularity,
   hierarchy,
   perPositionHeight,
@@ -557,29 +548,28 @@ function createGeometryFromPositionsExtruded(
   vertexFormat,
   arcType
 ) {
-  const geos = {
+  var geos = {
     walls: [],
   };
-  let i;
+  var i;
 
   if (closeTop || closeBottom) {
-    const topGeo = PolygonGeometryLibrary.createGeometryFromPositions(
+    var topGeo = PolygonGeometryLibrary.createGeometryFromPositions(
       ellipsoid,
       polygon,
-      textureCoordinates,
       granularity,
       perPositionHeight,
       vertexFormat,
       arcType
     );
 
-    const edgePoints = topGeo.attributes.position.values;
-    const indices = topGeo.indices;
-    let numPositions;
-    let newIndices;
+    var edgePoints = topGeo.attributes.position.values;
+    var indices = topGeo.indices;
+    var numPositions;
+    var newIndices;
 
     if (closeTop && closeBottom) {
-      const topBottomPositions = edgePoints.concat(edgePoints);
+      var topBottomPositions = edgePoints.concat(edgePoints);
 
       numPositions = topBottomPositions.length / 3;
 
@@ -588,14 +578,14 @@ function createGeometryFromPositionsExtruded(
         indices.length * 2
       );
       newIndices.set(indices);
-      const ilength = indices.length;
+      var ilength = indices.length;
 
-      const length = numPositions / 2;
+      var length = numPositions / 2;
 
       for (i = 0; i < ilength; i += 3) {
-        const i0 = newIndices[i] + length;
-        const i1 = newIndices[i + 1] + length;
-        const i2 = newIndices[i + 2] + length;
+        var i0 = newIndices[i] + length;
+        var i1 = newIndices[i + 1] + length;
+        var i2 = newIndices[i + 2] + length;
 
         newIndices[i + ilength] = i2;
         newIndices[i + 1 + ilength] = i1;
@@ -604,19 +594,12 @@ function createGeometryFromPositionsExtruded(
 
       topGeo.attributes.position.values = topBottomPositions;
       if (perPositionHeight && vertexFormat.normal) {
-        const normals = topGeo.attributes.normal.values;
+        var normals = topGeo.attributes.normal.values;
         topGeo.attributes.normal.values = new Float32Array(
           topBottomPositions.length
         );
         topGeo.attributes.normal.values.set(normals);
       }
-
-      if (vertexFormat.st && defined(textureCoordinates)) {
-        const texcoords = topGeo.attributes.st.values;
-        topGeo.attributes.st.values = new Float32Array(numPositions * 2);
-        topGeo.attributes.st.values = texcoords.concat(texcoords);
-      }
-
       topGeo.indices = newIndices;
     } else if (closeBottom) {
       numPositions = edgePoints.length / 3;
@@ -636,21 +619,20 @@ function createGeometryFromPositionsExtruded(
     });
   }
 
-  let outerRing = hierarchy.outerRing;
-  let tangentPlane = EllipsoidTangentPlane.fromPoints(outerRing, ellipsoid);
-  let positions2D = tangentPlane.projectPointsOntoPlane(
+  var outerRing = hierarchy.outerRing;
+  var tangentPlane = EllipsoidTangentPlane.fromPoints(outerRing, ellipsoid);
+  var positions2D = tangentPlane.projectPointsOntoPlane(
     outerRing,
     createGeometryFromPositionsExtrudedPositions
   );
 
-  let windingOrder = PolygonPipeline.computeWindingOrder2D(positions2D);
+  var windingOrder = PolygonPipeline.computeWindingOrder2D(positions2D);
   if (windingOrder === WindingOrder.CLOCKWISE) {
     outerRing = outerRing.slice().reverse();
   }
 
-  let wallGeo = PolygonGeometryLibrary.computeWallGeometry(
+  var wallGeo = PolygonGeometryLibrary.computeWallGeometry(
     outerRing,
-    textureCoordinates,
     ellipsoid,
     granularity,
     perPositionHeight,
@@ -662,9 +644,9 @@ function createGeometryFromPositionsExtruded(
     })
   );
 
-  const holes = hierarchy.holes;
+  var holes = hierarchy.holes;
   for (i = 0; i < holes.length; i++) {
-    let hole = holes[i];
+    var hole = holes[i];
 
     tangentPlane = EllipsoidTangentPlane.fromPoints(hole, ellipsoid);
     positions2D = tangentPlane.projectPointsOntoPlane(
@@ -679,7 +661,6 @@ function createGeometryFromPositionsExtruded(
 
     wallGeo = PolygonGeometryLibrary.computeWallGeometry(
       hole,
-      textureCoordinates,
       ellipsoid,
       granularity,
       perPositionHeight,
@@ -713,7 +694,6 @@ function createGeometryFromPositionsExtruded(
  * @param {Boolean} [options.closeTop=true] When false, leaves off the top of an extruded polygon open.
  * @param {Boolean} [options.closeBottom=true] When false, leaves off the bottom of an extruded polygon open.
  * @param {ArcType} [options.arcType=ArcType.GEODESIC] The type of line the polygon edges must follow. Valid options are {@link ArcType.GEODESIC} and {@link ArcType.RHUMB}.
- * @param {PolygonHierarchy} [options.textureCoordinates] Texture coordinates as a {@link PolygonHierarchy} of {@link Cartesian2} points. Has no effect for ground primitives.
  *
  * @see PolygonGeometry#createGeometry
  * @see PolygonGeometry#fromPositions
@@ -722,7 +702,7 @@ function createGeometryFromPositionsExtruded(
  *
  * @example
  * // 1. create a polygon from points
- * const polygon = new Cesium.PolygonGeometry({
+ * var polygon = new Cesium.PolygonGeometry({
  *   polygonHierarchy : new Cesium.PolygonHierarchy(
  *     Cesium.Cartesian3.fromDegreesArray([
  *       -72.0, 40.0,
@@ -733,10 +713,10 @@ function createGeometryFromPositionsExtruded(
  *     ])
  *   )
  * });
- * const geometry = Cesium.PolygonGeometry.createGeometry(polygon);
+ * var geometry = Cesium.PolygonGeometry.createGeometry(polygon);
  *
  * // 2. create a nested polygon with holes
- * const polygonWithHole = new Cesium.PolygonGeometry({
+ * var polygonWithHole = new Cesium.PolygonGeometry({
  *   polygonHierarchy : new Cesium.PolygonHierarchy(
  *     Cesium.Cartesian3.fromDegreesArray([
  *       -109.0, 30.0,
@@ -770,10 +750,10 @@ function createGeometryFromPositionsExtruded(
  *     )]
  *   )
  * });
- * const geometry = Cesium.PolygonGeometry.createGeometry(polygonWithHole);
+ * var geometry = Cesium.PolygonGeometry.createGeometry(polygonWithHole);
  *
  * // 3. create extruded polygon
- * const extrudedPolygon = new Cesium.PolygonGeometry({
+ * var extrudedPolygon = new Cesium.PolygonGeometry({
  *   polygonHierarchy : new Cesium.PolygonHierarchy(
  *     Cesium.Cartesian3.fromDegreesArray([
  *       -72.0, 40.0,
@@ -785,7 +765,7 @@ function createGeometryFromPositionsExtruded(
  *   ),
  *   extrudedHeight: 300000
  * });
- * const geometry = Cesium.PolygonGeometry.createGeometry(extrudedPolygon);
+ * var geometry = Cesium.PolygonGeometry.createGeometry(extrudedPolygon);
  */
 function PolygonGeometry(options) {
   //>>includeStart('debug', pragmas.debug);
@@ -811,23 +791,22 @@ function PolygonGeometry(options) {
   }
   //>>includeEnd('debug');
 
-  const polygonHierarchy = options.polygonHierarchy;
-  const vertexFormat = defaultValue(options.vertexFormat, VertexFormat.DEFAULT);
-  const ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
-  const granularity = defaultValue(
+  var polygonHierarchy = options.polygonHierarchy;
+  var vertexFormat = defaultValue(options.vertexFormat, VertexFormat.DEFAULT);
+  var ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
+  var granularity = defaultValue(
     options.granularity,
     CesiumMath.RADIANS_PER_DEGREE
   );
-  const stRotation = defaultValue(options.stRotation, 0.0);
-  const textureCoordinates = options.textureCoordinates;
-  const perPositionHeight = defaultValue(options.perPositionHeight, false);
-  const perPositionHeightExtrude =
+  var stRotation = defaultValue(options.stRotation, 0.0);
+  var perPositionHeight = defaultValue(options.perPositionHeight, false);
+  var perPositionHeightExtrude =
     perPositionHeight && defined(options.extrudedHeight);
-  let height = defaultValue(options.height, 0.0);
-  let extrudedHeight = defaultValue(options.extrudedHeight, height);
+  var height = defaultValue(options.height, 0.0);
+  var extrudedHeight = defaultValue(options.extrudedHeight, height);
 
   if (!perPositionHeightExtrude) {
-    const h = Math.max(height, extrudedHeight);
+    var h = Math.max(height, extrudedHeight);
     extrudedHeight = Math.min(height, extrudedHeight);
     height = h;
   }
@@ -850,25 +829,15 @@ function PolygonGeometry(options) {
 
   this._rectangle = undefined;
   this._textureCoordinateRotationPoints = undefined;
-  this._textureCoordinates = textureCoordinates;
 
   /**
    * The number of elements used to pack the object into an array.
    * @type {Number}
    */
   this.packedLength =
-    PolygonGeometryLibrary.computeHierarchyPackedLength(
-      polygonHierarchy,
-      Cartesian3
-    ) +
+    PolygonGeometryLibrary.computeHierarchyPackedLength(polygonHierarchy) +
     Ellipsoid.packedLength +
     VertexFormat.packedLength +
-    (textureCoordinates
-      ? PolygonGeometryLibrary.computeHierarchyPackedLength(
-          textureCoordinates,
-          Cartesian2
-        )
-      : 1) +
     12;
 }
 
@@ -887,12 +856,12 @@ function PolygonGeometry(options) {
  * @param {Boolean} [options.closeTop=true] When false, leaves off the top of an extruded polygon open.
  * @param {Boolean} [options.closeBottom=true] When false, leaves off the bottom of an extruded polygon open.
  * @param {ArcType} [options.arcType=ArcType.GEODESIC] The type of line the polygon edges must follow. Valid options are {@link ArcType.GEODESIC} and {@link ArcType.RHUMB}.
- * @param {PolygonHierarchy} [options.textureCoordinates] Texture coordinates as a {@link PolygonHierarchy} of {@link Cartesian2} points. Has no effect for ground primitives.
  * @returns {PolygonGeometry}
+ *
  *
  * @example
  * // create a polygon from points
- * const polygon = Cesium.PolygonGeometry.fromPositions({
+ * var polygon = Cesium.PolygonGeometry.fromPositions({
  *   positions : Cesium.Cartesian3.fromDegreesArray([
  *     -72.0, 40.0,
  *     -70.0, 35.0,
@@ -901,7 +870,7 @@ function PolygonGeometry(options) {
  *     -68.0, 40.0
  *   ])
  * });
- * const geometry = Cesium.PolygonGeometry.createGeometry(polygon);
+ * var geometry = Cesium.PolygonGeometry.createGeometry(polygon);
  *
  * @see PolygonGeometry#createGeometry
  */
@@ -912,7 +881,7 @@ PolygonGeometry.fromPositions = function (options) {
   Check.defined("options.positions", options.positions);
   //>>includeEnd('debug');
 
-  const newOptions = {
+  var newOptions = {
     polygonHierarchy: {
       positions: options.positions,
     },
@@ -927,7 +896,6 @@ PolygonGeometry.fromPositions = function (options) {
     closeBottom: options.closeBottom,
     offsetAttribute: options.offsetAttribute,
     arcType: options.arcType,
-    textureCoordinates: options.textureCoordinates,
   };
   return new PolygonGeometry(newOptions);
 };
@@ -952,8 +920,7 @@ PolygonGeometry.pack = function (value, array, startingIndex) {
   startingIndex = PolygonGeometryLibrary.packPolygonHierarchy(
     value._polygonHierarchy,
     array,
-    startingIndex,
-    Cartesian3
+    startingIndex
   );
 
   Ellipsoid.pack(value._ellipsoid, array, startingIndex);
@@ -973,25 +940,16 @@ PolygonGeometry.pack = function (value, array, startingIndex) {
   array[startingIndex++] = value._shadowVolume ? 1.0 : 0.0;
   array[startingIndex++] = defaultValue(value._offsetAttribute, -1);
   array[startingIndex++] = value._arcType;
-  if (defined(value._textureCoordinates)) {
-    startingIndex = PolygonGeometryLibrary.packPolygonHierarchy(
-      value._textureCoordinates,
-      array,
-      startingIndex,
-      Cartesian2
-    );
-  } else {
-    array[startingIndex++] = -1.0;
-  }
-  array[startingIndex++] = value.packedLength;
+  array[startingIndex] = value.packedLength;
+
   return array;
 };
 
-const scratchEllipsoid = Ellipsoid.clone(Ellipsoid.UNIT_SPHERE);
-const scratchVertexFormat = new VertexFormat();
+var scratchEllipsoid = Ellipsoid.clone(Ellipsoid.UNIT_SPHERE);
+var scratchVertexFormat = new VertexFormat();
 
 //Only used to avoid inability to default construct.
-const dummyOptions = {
+var dummyOptions = {
   polygonHierarchy: {},
 };
 
@@ -1009,50 +967,35 @@ PolygonGeometry.unpack = function (array, startingIndex, result) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  const polygonHierarchy = PolygonGeometryLibrary.unpackPolygonHierarchy(
+  var polygonHierarchy = PolygonGeometryLibrary.unpackPolygonHierarchy(
     array,
-    startingIndex,
-    Cartesian3
+    startingIndex
   );
   startingIndex = polygonHierarchy.startingIndex;
   delete polygonHierarchy.startingIndex;
 
-  const ellipsoid = Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
+  var ellipsoid = Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
   startingIndex += Ellipsoid.packedLength;
 
-  const vertexFormat = VertexFormat.unpack(
+  var vertexFormat = VertexFormat.unpack(
     array,
     startingIndex,
     scratchVertexFormat
   );
   startingIndex += VertexFormat.packedLength;
 
-  const height = array[startingIndex++];
-  const extrudedHeight = array[startingIndex++];
-  const granularity = array[startingIndex++];
-  const stRotation = array[startingIndex++];
-  const perPositionHeightExtrude = array[startingIndex++] === 1.0;
-  const perPositionHeight = array[startingIndex++] === 1.0;
-  const closeTop = array[startingIndex++] === 1.0;
-  const closeBottom = array[startingIndex++] === 1.0;
-  const shadowVolume = array[startingIndex++] === 1.0;
-  const offsetAttribute = array[startingIndex++];
-  const arcType = array[startingIndex++];
-  const textureCoordinates =
-    array[startingIndex] === -1.0
-      ? undefined
-      : PolygonGeometryLibrary.unpackPolygonHierarchy(
-          array,
-          startingIndex,
-          Cartesian2
-        );
-  if (defined(textureCoordinates)) {
-    startingIndex = textureCoordinates.startingIndex;
-    delete textureCoordinates.startingIndex;
-  } else {
-    startingIndex++;
-  }
-  const packedLength = array[startingIndex++];
+  var height = array[startingIndex++];
+  var extrudedHeight = array[startingIndex++];
+  var granularity = array[startingIndex++];
+  var stRotation = array[startingIndex++];
+  var perPositionHeightExtrude = array[startingIndex++] === 1.0;
+  var perPositionHeight = array[startingIndex++] === 1.0;
+  var closeTop = array[startingIndex++] === 1.0;
+  var closeBottom = array[startingIndex++] === 1.0;
+  var shadowVolume = array[startingIndex++] === 1.0;
+  var offsetAttribute = array[startingIndex++];
+  var arcType = array[startingIndex++];
+  var packedLength = array[startingIndex];
 
   if (!defined(result)) {
     result = new PolygonGeometry(dummyOptions);
@@ -1073,9 +1016,7 @@ PolygonGeometry.unpack = function (array, startingIndex, result) {
   result._offsetAttribute =
     offsetAttribute === -1 ? undefined : offsetAttribute;
   result._arcType = arcType;
-  result._textureCoordinates = textureCoordinates;
   result.packedLength = packedLength;
-
   return result;
 };
 
@@ -1097,11 +1038,11 @@ PolygonGeometry.computeRectangle = function (options, result) {
   Check.typeOf.object("options.polygonHierarchy", options.polygonHierarchy);
   //>>includeEnd('debug');
 
-  const granularity = defaultValue(
+  var granularity = defaultValue(
     options.granularity,
     CesiumMath.RADIANS_PER_DEGREE
   );
-  const arcType = defaultValue(options.arcType, ArcType.GEODESIC);
+  var arcType = defaultValue(options.arcType, ArcType.GEODESIC);
   //>>includeStart('debug', pragmas.debug);
   if (arcType !== ArcType.GEODESIC && arcType !== ArcType.RHUMB) {
     throw new DeveloperError(
@@ -1110,8 +1051,8 @@ PolygonGeometry.computeRectangle = function (options, result) {
   }
   //>>includeEnd('debug');
 
-  const polygonHierarchy = options.polygonHierarchy;
-  const ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
+  var polygonHierarchy = options.polygonHierarchy;
+  var ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
 
   return computeRectangle(
     polygonHierarchy.positions,
@@ -1129,59 +1070,42 @@ PolygonGeometry.computeRectangle = function (options, result) {
  * @returns {Geometry|undefined} The computed vertices and indices.
  */
 PolygonGeometry.createGeometry = function (polygonGeometry) {
-  const vertexFormat = polygonGeometry._vertexFormat;
-  const ellipsoid = polygonGeometry._ellipsoid;
-  const granularity = polygonGeometry._granularity;
-  const stRotation = polygonGeometry._stRotation;
-  const polygonHierarchy = polygonGeometry._polygonHierarchy;
-  const perPositionHeight = polygonGeometry._perPositionHeight;
-  const closeTop = polygonGeometry._closeTop;
-  const closeBottom = polygonGeometry._closeBottom;
-  const arcType = polygonGeometry._arcType;
-  const textureCoordinates = polygonGeometry._textureCoordinates;
+  var vertexFormat = polygonGeometry._vertexFormat;
+  var ellipsoid = polygonGeometry._ellipsoid;
+  var granularity = polygonGeometry._granularity;
+  var stRotation = polygonGeometry._stRotation;
+  var polygonHierarchy = polygonGeometry._polygonHierarchy;
+  var perPositionHeight = polygonGeometry._perPositionHeight;
+  var closeTop = polygonGeometry._closeTop;
+  var closeBottom = polygonGeometry._closeBottom;
+  var arcType = polygonGeometry._arcType;
 
-  const hasTextureCoordinates = defined(textureCoordinates);
-
-  let outerPositions = polygonHierarchy.positions;
+  var outerPositions = polygonHierarchy.positions;
   if (outerPositions.length < 3) {
     return;
   }
 
-  const tangentPlane = EllipsoidTangentPlane.fromPoints(
+  var tangentPlane = EllipsoidTangentPlane.fromPoints(
     outerPositions,
     ellipsoid
   );
 
-  const results = PolygonGeometryLibrary.polygonsFromHierarchy(
+  var results = PolygonGeometryLibrary.polygonsFromHierarchy(
     polygonHierarchy,
-    hasTextureCoordinates,
     tangentPlane.projectPointsOntoPlane.bind(tangentPlane),
     !perPositionHeight,
     ellipsoid
   );
 
-  const hierarchy = results.hierarchy;
-  const polygons = results.polygons;
-
-  const dummyFunction = function (identity) {
-    return identity;
-  };
-
-  const textureCoordinatePolygons = hasTextureCoordinates
-    ? PolygonGeometryLibrary.polygonsFromHierarchy(
-        textureCoordinates,
-        true,
-        dummyFunction,
-        false
-      ).polygons
-    : undefined;
+  var hierarchy = results.hierarchy;
+  var polygons = results.polygons;
 
   if (hierarchy.length === 0) {
     return;
   }
 
   outerPositions = hierarchy[0].outerRing;
-  const boundingRectangle = PolygonGeometryLibrary.computeBoundingRectangle(
+  var boundingRectangle = PolygonGeometryLibrary.computeBoundingRectangle(
     tangentPlane.plane.normal,
     tangentPlane.projectPointOntoPlane.bind(tangentPlane),
     outerPositions,
@@ -1189,15 +1113,15 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     scratchBoundingRectangle
   );
 
-  const geometries = [];
+  var geometries = [];
 
-  const height = polygonGeometry._height;
-  const extrudedHeight = polygonGeometry._extrudedHeight;
-  const extrude =
+  var height = polygonGeometry._height;
+  var extrudedHeight = polygonGeometry._extrudedHeight;
+  var extrude =
     polygonGeometry._perPositionHeightExtrude ||
     !CesiumMath.equalsEpsilon(height, extrudedHeight, 0, CesiumMath.EPSILON2);
 
-  const options = {
+  var options = {
     perPositionHeight: perPositionHeight,
     vertexFormat: vertexFormat,
     geometry: undefined,
@@ -1205,7 +1129,6 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     boundingRectangle: boundingRectangle,
     ellipsoid: ellipsoid,
     stRotation: stRotation,
-    textureCoordinates: undefined,
     bottom: false,
     top: true,
     wall: false,
@@ -1213,7 +1136,7 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     arcType: arcType,
   };
 
-  let i;
+  var i;
 
   if (extrude) {
     options.extrude = true;
@@ -1222,10 +1145,9 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     options.shadowVolume = polygonGeometry._shadowVolume;
     options.offsetAttribute = polygonGeometry._offsetAttribute;
     for (i = 0; i < polygons.length; i++) {
-      const splitGeometry = createGeometryFromPositionsExtruded(
+      var splitGeometry = createGeometryFromPositionsExtruded(
         ellipsoid,
         polygons[i],
-        hasTextureCoordinates ? textureCoordinatePolygons[i] : undefined,
         granularity,
         hierarchy[i],
         perPositionHeight,
@@ -1235,7 +1157,7 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
         arcType
       );
 
-      let topAndBottom;
+      var topAndBottom;
       if (closeTop && closeBottom) {
         topAndBottom = splitGeometry.topAndBottom;
         options.geometry = PolygonGeometryLibrary.scaleToGeodeticHeightExtruded(
@@ -1270,10 +1192,10 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
         geometries.push(topAndBottom);
       }
 
-      const walls = splitGeometry.walls;
+      var walls = splitGeometry.walls;
       options.wall = true;
-      for (let k = 0; k < walls.length; k++) {
-        const wall = walls[k];
+      for (var k = 0; k < walls.length; k++) {
+        var wall = walls[k];
         options.geometry = PolygonGeometryLibrary.scaleToGeodeticHeightExtruded(
           wall.geometry,
           height,
@@ -1287,11 +1209,10 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     }
   } else {
     for (i = 0; i < polygons.length; i++) {
-      const geometryInstance = new GeometryInstance({
+      var geometryInstance = new GeometryInstance({
         geometry: PolygonGeometryLibrary.createGeometryFromPositions(
           ellipsoid,
           polygons[i],
-          hasTextureCoordinates ? textureCoordinatePolygons[i] : undefined,
           granularity,
           perPositionHeight,
           vertexFormat,
@@ -1305,14 +1226,13 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
         !perPositionHeight
       );
       options.geometry = geometryInstance.geometry;
-
       geometryInstance.geometry = computeAttributes(options);
 
       if (defined(polygonGeometry._offsetAttribute)) {
-        const length =
+        var length =
           geometryInstance.geometry.attributes.position.values.length;
-        const applyOffset = new Uint8Array(length / 3);
-        const offsetValue =
+        var applyOffset = new Uint8Array(length / 3);
+        var offsetValue =
           polygonGeometry._offsetAttribute === GeometryOffsetAttribute.NONE
             ? 0
             : 1;
@@ -1330,7 +1250,7 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     }
   }
 
-  const geometry = GeometryPipeline.combineInstances(geometries)[0];
+  var geometry = GeometryPipeline.combineInstances(geometries)[0];
   geometry.attributes.position.values = new Float64Array(
     geometry.attributes.position.values
   );
@@ -1339,10 +1259,8 @@ PolygonGeometry.createGeometry = function (polygonGeometry) {
     geometry.indices
   );
 
-  const attributes = geometry.attributes;
-  const boundingSphere = BoundingSphere.fromVertices(
-    attributes.position.values
-  );
+  var attributes = geometry.attributes;
+  var boundingSphere = BoundingSphere.fromVertices(attributes.position.values);
 
   if (!vertexFormat.position) {
     delete attributes.position;
@@ -1365,11 +1283,11 @@ PolygonGeometry.createShadowVolume = function (
   minHeightFunc,
   maxHeightFunc
 ) {
-  const granularity = polygonGeometry._granularity;
-  const ellipsoid = polygonGeometry._ellipsoid;
+  var granularity = polygonGeometry._granularity;
+  var ellipsoid = polygonGeometry._ellipsoid;
 
-  const minHeight = minHeightFunc(granularity, ellipsoid);
-  const maxHeight = maxHeightFunc(granularity, ellipsoid);
+  var minHeight = minHeightFunc(granularity, ellipsoid);
+  var maxHeight = maxHeightFunc(granularity, ellipsoid);
 
   return new PolygonGeometry({
     polygonHierarchy: polygonGeometry._polygonHierarchy,
@@ -1386,13 +1304,13 @@ PolygonGeometry.createShadowVolume = function (
 };
 
 function textureCoordinateRotationPoints(polygonGeometry) {
-  const stRotation = -polygonGeometry._stRotation;
+  var stRotation = -polygonGeometry._stRotation;
   if (stRotation === 0.0) {
     return [0, 0, 0, 1, 1, 0];
   }
-  const ellipsoid = polygonGeometry._ellipsoid;
-  const positions = polygonGeometry._polygonHierarchy.positions;
-  const boundingRectangle = polygonGeometry.rectangle;
+  var ellipsoid = polygonGeometry._ellipsoid;
+  var positions = polygonGeometry._polygonHierarchy.positions;
+  var boundingRectangle = polygonGeometry.rectangle;
   return Geometry._textureCoordinateRotationPoints(
     positions,
     stRotation,
@@ -1408,7 +1326,7 @@ Object.defineProperties(PolygonGeometry.prototype, {
   rectangle: {
     get: function () {
       if (!defined(this._rectangle)) {
-        const positions = this._polygonHierarchy.positions;
+        var positions = this._polygonHierarchy.positions;
         this._rectangle = computeRectangle(
           positions,
           this._ellipsoid,

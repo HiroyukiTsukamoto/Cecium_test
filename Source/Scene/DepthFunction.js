@@ -5,7 +5,7 @@ import WebGLConstants from "../Core/WebGLConstants.js";
  *
  * @enum {Number}
  */
-const DepthFunction = {
+var DepthFunction = {
   /**
    * The depth test never passes.
    *

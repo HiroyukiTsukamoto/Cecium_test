@@ -2,7 +2,7 @@ import { Cartesian3, Color, DirectionalLight } from "../../Source/Cesium.js";
 
 describe("Scene/DirectionalLight", function () {
   it("constructs with default options", function () {
-    const light = new DirectionalLight({
+    var light = new DirectionalLight({
       direction: Cartesian3.UNIT_X,
     });
 
@@ -13,7 +13,7 @@ describe("Scene/DirectionalLight", function () {
   });
 
   it("constructs with all options", function () {
-    const light = new DirectionalLight({
+    var light = new DirectionalLight({
       direction: Cartesian3.UNIT_X,
       color: Color.RED,
       intensity: 2.0,

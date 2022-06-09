@@ -8,7 +8,7 @@ import createContext from "../createContext.js";
 describe(
   "Renderer/ShaderBuilder",
   function () {
-    let context;
+    var context;
     beforeAll(function () {
       context = createContext();
     });
@@ -25,7 +25,7 @@ describe(
       // the ShaderBuilder joins the generated lines with \n
       // to avoid creating #line 0 at every line. We need to do the same here
       expectedSources = [expectedSources.join("\n")];
-      const expectedText = new ShaderSource({
+      var expectedText = new ShaderSource({
         defines: expectedDefines,
         sources: expectedSources,
       }).createCombinedVertexShader(context);
@@ -40,7 +40,7 @@ describe(
       // the ShaderBuilder joins the generated lines with \n
       // to avoid creating #line 0 at every line. We need to do the same here
       expectedSources = [expectedSources.join("\n")];
-      const expectedText = new ShaderSource({
+      var expectedText = new ShaderSource({
         defines: expectedDefines,
         sources: expectedSources,
       }).createCombinedFragmentShader(context);
@@ -48,44 +48,44 @@ describe(
     }
 
     it("creates an empty shader by default", function () {
-      const shaderBuilder = new ShaderBuilder();
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderBuilder = new ShaderBuilder();
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, [], []);
       checkFragmentShader(shaderProgram, [], []);
     });
 
     it("addDefine throws for undefined identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addDefine(undefined);
       }).toThrowDeveloperError();
     });
 
     it("addDefine throws for invalid identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addDefine(42);
       }).toThrowDeveloperError();
     });
 
     it("addDefine defines macros without values", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addDefine("USE_SHADOWS");
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, ["USE_SHADOWS"], []);
       checkFragmentShader(shaderProgram, ["USE_SHADOWS"], []);
     });
 
     it("addDefine defines macros with values", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addDefine("PI", 3.1415);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, ["PI 3.1415"], []);
       checkFragmentShader(shaderProgram, ["PI 3.1415"], []);
     });
 
     it("addDefine puts the define in the destination shader(s)", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addDefine("POINT_SIZE", 2, ShaderDestination.VERTEX);
       shaderBuilder.addDefine("PI", 3.1415, ShaderDestination.FRAGMENT);
       shaderBuilder.addDefine(
@@ -93,7 +93,7 @@ describe(
         1,
         ShaderDestination.BOTH
       );
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(
         shaderProgram,
         ["POINT_SIZE 2", "USE_FRAGMENT_SHADING 1"],
@@ -107,15 +107,15 @@ describe(
     });
 
     it("addDefine defaults to both shaders", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addDefine("PI", 3.1415);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, ["PI 3.1415"], []);
       checkFragmentShader(shaderProgram, ["PI 3.1415"], []);
     });
 
     it("addStruct throws for undefined structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addStruct(
           undefined,
@@ -126,7 +126,7 @@ describe(
     });
 
     it("addStruct throws for invalid structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addStruct(
           {},
@@ -137,7 +137,7 @@ describe(
     });
 
     it("addStruct throws for undefined structName", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addStruct(
           "testStruct",
@@ -148,7 +148,7 @@ describe(
     });
 
     it("addStruct throws for invalid structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addStruct(
           "testStruct",
@@ -159,21 +159,21 @@ describe(
     });
 
     it("addStruct throws for undefined destination", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addStruct("testStruct", "TestStruct", undefined);
       }).toThrowDeveloperError();
     });
 
     it("addStruct throws for invalid structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addStruct("testStruct", "TestStruct", "vertex");
       }).toThrowDeveloperError();
     });
 
     it("addStruct adds a struct to the shader", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -185,7 +185,7 @@ describe(
         ShaderDestination.FRAGMENT
       );
 
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(
         shaderProgram,
         [],
@@ -199,7 +199,7 @@ describe(
     });
 
     it("addStructField throws for undefined structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -211,7 +211,7 @@ describe(
     });
 
     it("addStructField throws for invalid structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -223,7 +223,7 @@ describe(
     });
 
     it("addStructField throws for undefined type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -239,7 +239,7 @@ describe(
     });
 
     it("addStructField throws for invalid type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -251,7 +251,7 @@ describe(
     });
 
     it("addStructField throws for undefined identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -263,7 +263,7 @@ describe(
     });
 
     it("addStructField throws for invalid identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -275,7 +275,7 @@ describe(
     });
 
     it("addStructField adds a struct field to the shader", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addStruct(
         "structVS",
         "TestStruct",
@@ -291,7 +291,7 @@ describe(
       shaderBuilder.addStructField("structFS", "vec3", "positionMC");
       shaderBuilder.addStructField("structFS", "float", "temperature");
 
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(
         shaderProgram,
         [],
@@ -310,9 +310,9 @@ describe(
       );
     });
 
-    const signature = "float circleMask(float radius)";
+    var signature = "float circleMask(float radius)";
     it("addFunction throws for undefined functionName", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFunction(
           undefined,
@@ -323,7 +323,7 @@ describe(
     });
 
     it("addFunction throws for invalid functionName", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFunction(
           {},
@@ -334,7 +334,7 @@ describe(
     });
 
     it("addFunction throws for undefined signature", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFunction(
           "testFunction",
@@ -345,7 +345,7 @@ describe(
     });
 
     it("addFunction throws for invalid signature", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFunction(
           "testFunction",
@@ -356,21 +356,21 @@ describe(
     });
 
     it("addFunction throws for undefined destination", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFunction("testFunction", signature, undefined);
       }).toThrowDeveloperError();
     });
 
     it("addFunction throws for invalid structId", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFunction("testFunction", signature, "fragment");
       }).toThrowDeveloperError();
     });
 
     it("addFunction adds a struct to the shader", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addFunction(
         "testFunctionVS",
         signature,
@@ -382,13 +382,13 @@ describe(
         ShaderDestination.FRAGMENT
       );
 
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, [], [signature, "{", "}"]);
       checkFragmentShader(shaderProgram, [], [signature, "{", "}"]);
     });
 
     it("addFunctionLines throws for undefined functionName", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addFunction(
         "testFunctionVS",
         signature,
@@ -400,7 +400,7 @@ describe(
     });
 
     it("addFunctionLines throws for invalid functionName", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addFunction(
         "testFunctionVS",
         signature,
@@ -412,7 +412,7 @@ describe(
     });
 
     it("addFunctionLines throws for undefined lines", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addFunction(
         "testFunctionVS",
         signature,
@@ -424,7 +424,7 @@ describe(
     });
 
     it("addFunctionLines throws for invalid lines", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addFunction(
         "testFunctionVS",
         signature,
@@ -436,7 +436,7 @@ describe(
     });
 
     it("addFunctionLines adds lines to the body of a function", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addFunction(
         "testFunctionVS",
         signature,
@@ -456,7 +456,7 @@ describe(
         "return 1.0 - step(0.3, radius);",
       ]);
 
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(
         shaderProgram,
         [],
@@ -470,35 +470,35 @@ describe(
     });
 
     it("addUniform throws for undefined type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addUniform(undefined, "u_time");
       }).toThrowDeveloperError();
     });
 
     it("addUniform throws for invalid type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addUniform(10, "u_time");
       }).toThrowDeveloperError();
     });
 
     it("addUniform throws for undefined identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addUniform("vec3");
       }).toThrowDeveloperError();
     });
 
     it("addUniform throws for invalid identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addUniform("vec3", 0);
       }).toThrowDeveloperError();
     });
 
     it("addUniform puts the uniform in the destination shader(s)", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addUniform(
         "vec3",
         "u_gridDimensions",
@@ -510,7 +510,7 @@ describe(
         ShaderDestination.FRAGMENT
       );
       shaderBuilder.addUniform("float", "u_time", ShaderDestination.BOTH);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(
         shaderProgram,
         [],
@@ -524,63 +524,61 @@ describe(
     });
 
     it("addUniform defaults to both shaders", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addUniform("float", "u_time");
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, [], ["uniform float u_time;"]);
       checkFragmentShader(shaderProgram, [], ["uniform float u_time;"]);
     });
 
     it("setPositionAttribute throws for undefined type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.setPositionAttribute(undefined, "a_position");
       }).toThrowDeveloperError();
     });
 
     it("setPositionAttribute throws for invalid type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.setPositionAttribute(0, "a_position");
       }).toThrowDeveloperError();
     });
 
     it("setPositionAttribute throws for undefined identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.setPositionAttribute("vec3", undefined);
       }).toThrowDeveloperError();
     });
 
     it("setPositionAttribute throws for invalid identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.setPositionAttribute("vec3", 0);
       }).toThrowDeveloperError();
     });
 
     it("setPositionAttribute creates a position attribute in location 0", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
 
-      // Even though these are declared out of order, position will always
-      // be assigned to location 0, and other attributes are assigned to
-      // locations 1 or greater.
-      const normalLocation = shaderBuilder.addAttribute("vec3", "a_normal");
-      const positionLocation = shaderBuilder.setPositionAttribute(
+      // even though these are declared out of order, the results to
+      var normalLocation = shaderBuilder.addAttribute("vec3", "a_normal");
+      var positionLocation = shaderBuilder.setPositionAttribute(
         "vec3",
         "a_position"
       );
       expect(positionLocation).toBe(0);
       expect(normalLocation).toBe(1);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
-      const expectedAttributes = [
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var expectedAttributes = [
         "attribute vec3 a_position;",
         "attribute vec3 a_normal;",
       ];
       checkVertexShader(shaderProgram, [], expectedAttributes);
       checkFragmentShader(shaderProgram, [], []);
 
-      const expectedLocations = {
+      var expectedLocations = {
         a_position: 0,
         a_normal: 1,
       };
@@ -589,8 +587,8 @@ describe(
     });
 
     it("setPositionAttribute throws if called twice", function () {
-      const shaderBuilder = new ShaderBuilder();
-      const positionLocation = shaderBuilder.setPositionAttribute(
+      var shaderBuilder = new ShaderBuilder();
+      var positionLocation = shaderBuilder.setPositionAttribute(
         "vec3",
         "a_position"
       );
@@ -601,48 +599,49 @@ describe(
     });
 
     it("addAttribute throws for undefined type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addAttribute(undefined, "a_position");
       }).toThrowDeveloperError();
     });
 
     it("addAttribute throws for invalid type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addAttribute(0, "a_position");
       }).toThrowDeveloperError();
     });
 
     it("addAttribute throws for undefined identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addAttribute("vec2", undefined);
       }).toThrowDeveloperError();
     });
 
     it("addAttribute throws for invalid identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addAttribute("vec2", 0);
       }).toThrowDeveloperError();
     });
 
     it("addAttribute creates an attribute in the vertex shader", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
 
-      const colorLocation = shaderBuilder.addAttribute("vec4", "a_color");
-      const normalLocation = shaderBuilder.addAttribute("vec3", "a_normal");
+      // even though these are declared out of order, the results to
+      var colorLocation = shaderBuilder.addAttribute("vec4", "a_color");
+      var normalLocation = shaderBuilder.addAttribute("vec3", "a_normal");
       expect(colorLocation).toBe(1);
       expect(normalLocation).toBe(2);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
-      const expectedAttributes = [
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var expectedAttributes = [
         "attribute vec4 a_color;",
         "attribute vec3 a_normal;",
       ];
       checkVertexShader(shaderProgram, [], expectedAttributes);
       checkFragmentShader(shaderProgram, [], []);
-      const expectedLocations = {
+      var expectedLocations = {
         a_color: 1,
         a_normal: 2,
       };
@@ -650,135 +649,111 @@ describe(
       expect(shaderProgram._attributeLocations).toEqual(expectedLocations);
     });
 
-    it("addAttribute handles matrix attribute locations correctly", function () {
-      const shaderBuilder = new ShaderBuilder();
-
-      const matrixLocation = shaderBuilder.addAttribute("mat3", "a_warpMatrix");
-      const colorLocation = shaderBuilder.addAttribute("vec3", "a_color");
-      expect(matrixLocation).toBe(1);
-
-      // this is 4 because the mat3 takes up locations 1, 2 and 3
-      expect(colorLocation).toBe(4);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
-      const expectedAttributes = [
-        "attribute mat3 a_warpMatrix;",
-        "attribute vec3 a_color;",
-      ];
-      checkVertexShader(shaderProgram, [], expectedAttributes);
-      checkFragmentShader(shaderProgram, [], []);
-      const expectedLocations = {
-        a_warpMatrix: 1,
-        a_color: 4,
-      };
-      expect(shaderBuilder.attributeLocations).toEqual(expectedLocations);
-      expect(shaderProgram._attributeLocations).toEqual(expectedLocations);
-    });
-
     it("addVarying throws for undefined type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addVarying(undefined, "v_uv");
       }).toThrowDeveloperError();
     });
 
     it("addVarying throws for invalid type", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addVarying(0, "v_uv");
       }).toThrowDeveloperError();
     });
 
     it("addVarying throws for undefined identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addVarying("vec2", undefined);
       }).toThrowDeveloperError();
     });
 
     it("addVarying throws for invalid identifier", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addVarying("vec2", 0);
       }).toThrowDeveloperError();
     });
 
     it("addVarying adds varyings to both shaders", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.addVarying("vec2", "v_uv");
-      const expectedLines = ["varying vec2 v_uv;"];
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var expectedLines = ["varying vec2 v_uv;"];
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, [], expectedLines);
       checkFragmentShader(shaderProgram, [], expectedLines);
     });
 
     it("addVertexLines throws for undefined lines", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addVertexLines(undefined);
       }).toThrowDeveloperError();
     });
 
     it("addVertexLines throws for invalid lines", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addVertexLines("v_uv = a_uv;");
       }).toThrowDeveloperError();
     });
 
     it("addVertexLines appends lines to the vertex shader", function () {
-      const shaderBuilder = new ShaderBuilder();
-      const vertexLines = [
+      var shaderBuilder = new ShaderBuilder();
+      var vertexLines = [
         "void main()",
         "{",
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);",
         "}",
       ];
       shaderBuilder.addVertexLines(vertexLines);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(shaderProgram, [], vertexLines);
     });
 
     it("addFragmentLines throws for undefined lines", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFragmentLines(undefined);
       }).toThrowDeveloperError();
     });
 
     it("addFragmentLines throws for invalid lines", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.addFragmentLines("gl_FragColor = vec4(1.0);");
       }).toThrowDeveloperError();
     });
 
     it("addFragmentLines appends lines to the vertex shader", function () {
-      const shaderBuilder = new ShaderBuilder();
-      const fragmentLines = [
+      var shaderBuilder = new ShaderBuilder();
+      var fragmentLines = [
         "void main()",
         "{",
         "    gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);",
         "}",
       ];
       shaderBuilder.addFragmentLines(fragmentLines);
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkFragmentShader(shaderProgram, [], fragmentLines);
     });
 
     it("buildShaderProgram throws for undefined context", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       expect(function () {
         return shaderBuilder.buildShaderProgram(undefined);
       }).toThrowDeveloperError();
     });
 
     it("buildShaderProgram creates a shaderProgram", function () {
-      const shaderBuilder = new ShaderBuilder();
+      var shaderBuilder = new ShaderBuilder();
       shaderBuilder.setPositionAttribute("vec3", "a_position");
       shaderBuilder.addAttribute("vec3", "a_uv");
       shaderBuilder.addVarying("vec2", "v_uv");
       shaderBuilder.addDefine("BLUE_TINT", 0.5, ShaderDestination.FRAGMENT);
-      const vertexLines = [
+      var vertexLines = [
         "void main()",
         "{",
         "    v_uv = a_uv",
@@ -787,7 +762,7 @@ describe(
       ];
       shaderBuilder.addVertexLines(vertexLines);
 
-      const fragmentLines = [
+      var fragmentLines = [
         "void main()",
         "{",
         "    gl_FragColor = vec4(v_uv, BLUE_TINT, 1.0);",
@@ -795,14 +770,14 @@ describe(
       ];
       shaderBuilder.addFragmentLines(fragmentLines);
 
-      const expectedAttributes = [
+      var expectedAttributes = [
         "attribute vec3 a_position;",
         "attribute vec3 a_uv;",
       ];
 
-      const expectedVaryings = ["varying vec2 v_uv;"];
+      var expectedVaryings = ["varying vec2 v_uv;"];
 
-      const shaderProgram = shaderBuilder.buildShaderProgram(context);
+      var shaderProgram = shaderBuilder.buildShaderProgram(context);
       checkVertexShader(
         shaderProgram,
         [],

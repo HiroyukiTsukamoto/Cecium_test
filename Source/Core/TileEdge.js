@@ -1,7 +1,7 @@
 /**
  * @private
  */
-const TileEdge = {
+var TileEdge = {
   WEST: 0,
   NORTH: 1,
   EAST: 2,

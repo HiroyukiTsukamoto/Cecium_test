@@ -7,11 +7,10 @@ import { CircleEmitter } from "../../Source/Cesium.js";
 import { ParticleBurst } from "../../Source/Cesium.js";
 import { ParticleSystem } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
-import pollToPromise from "../pollToPromise.js";
 
 describe("Scene/ParticleSystem", function () {
-  let scene;
-  let greenImage;
+  var scene;
+  var greenImage;
 
   beforeAll(function () {
     scene = createScene();
@@ -27,7 +26,7 @@ describe("Scene/ParticleSystem", function () {
   });
 
   it("default constructor", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(p.show).toEqual(true);
     expect(p.forces).toBeUndefined();
     expect(p.emitter).toBeDefined();
@@ -58,7 +57,7 @@ describe("Scene/ParticleSystem", function () {
   });
 
   it("constructor", function () {
-    const options = {
+    var options = {
       show: false,
       updateCallback: function (p) {
         p.mass++;
@@ -95,7 +94,7 @@ describe("Scene/ParticleSystem", function () {
       lifetime: 32.0,
       sizeInMeters: true,
     };
-    const p = new ParticleSystem(options);
+    var p = new ParticleSystem(options);
     expect(p.show).toEqual(options.show);
     expect(p.updateCallback).toEqual(options.updateCallback);
     expect(p.emitter).toEqual(options.emitter);
@@ -124,25 +123,15 @@ describe("Scene/ParticleSystem", function () {
   });
 
   it("getters/setters", function () {
-    const show = false;
-    const forces = [
+    var show = false;
+    var forces = [
       function (p) {
         p.mass++;
       },
     ];
-    const emitter = new CircleEmitter(10.0);
-    const modelMatrix = new Matrix4(
-      1.0,
-      2.0,
-      3.0,
-      4.0,
-      5.0,
-      6.0,
-      7.0,
-      8.0,
-      9.0
-    );
-    const emitterModelMatrix = new Matrix4(
+    var emitter = new CircleEmitter(10.0);
+    var modelMatrix = new Matrix4(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    var emitterModelMatrix = new Matrix4(
       10.0,
       11.0,
       12.0,
@@ -153,26 +142,26 @@ describe("Scene/ParticleSystem", function () {
       17.0,
       18.0
     );
-    const startColor = Color.MAGENTA;
-    const endColor = Color.LAVENDAR_BLUSH;
-    const startScale = 19.0;
-    const endScale = 20.0;
-    const emissionRate = 21.0;
-    const bursts = [new ParticleBurst()];
-    const loop = false;
-    const minimumSpeed = 22.0;
-    const maximumSpeed = 23.0;
-    const minimumParticleLife = 24.0;
-    const maximumParticleLife = 25.0;
-    const minimumMass = 26.0;
-    const maximumMass = 27.0;
-    const image = "url/to/image";
-    const minimumImageSize = new Cartesian2(28.0, 30.0);
-    const maximumImageSize = new Cartesian2(29.0, 31.0);
-    const lifetime = 32.0;
-    const sizeInMeters = true;
+    var startColor = Color.MAGENTA;
+    var endColor = Color.LAVENDAR_BLUSH;
+    var startScale = 19.0;
+    var endScale = 20.0;
+    var emissionRate = 21.0;
+    var bursts = [new ParticleBurst()];
+    var loop = false;
+    var minimumSpeed = 22.0;
+    var maximumSpeed = 23.0;
+    var minimumParticleLife = 24.0;
+    var maximumParticleLife = 25.0;
+    var minimumMass = 26.0;
+    var maximumMass = 27.0;
+    var image = "url/to/image";
+    var minimumImageSize = new Cartesian2(28.0, 30.0);
+    var maximumImageSize = new Cartesian2(29.0, 31.0);
+    var lifetime = 32.0;
+    var sizeInMeters = true;
 
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     p.show = show;
     p.forces = forces;
     p.emitter = emitter;
@@ -225,145 +214,145 @@ describe("Scene/ParticleSystem", function () {
   });
 
   it("throws with invalid emitter", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.emitter = undefined;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid modelMatrix", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.modelMatrix = undefined;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid emitterModelMatrix", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.emitterModelMatrix = undefined;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid startColor", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.startColor = undefined;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid endColor", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.endColor = undefined;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid startScale", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.startScale = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid endScale", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.endScale = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid emissionRate", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.emissionRate = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid minimumSpeed", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.minimumSpeed = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid maximumSpeed", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.maximumSpeed = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid minimumParticleLife", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.minimumParticleLife = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid maximumParticleLife", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.maximumParticleLife = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid minimumMass", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.minimumMass = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid maximumMass", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.maximumMass = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid minimumWidth", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.minimumImageSize = new Cartesian2(-1.0, 2.0);
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid maximumWidth", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.maximumImageSize = new Cartesian2(-1.0, 2.0);
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid minimumHeight", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.minimumImageSize = new Cartesian2(2.0, -1.0);
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid maximumHeight", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.maximumImageSize = new Cartesian2(2.0, -1.0);
     }).toThrowDeveloperError();
   });
 
   it("throws with invalid lifetime", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(function () {
       p.lifetime = -1.0;
     }).toThrowDeveloperError();
   });
 
   it("clones default image size", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(p.maximumImageSize).not.toBe(p.minimumImageSize);
   });
 
   it("renders", function () {
-    const system = scene.primitives.add(
+    scene.primitives.add(
       new ParticleSystem({
         image: greenImage,
         emitter: new CircleEmitter(1.0),
@@ -379,17 +368,13 @@ describe("Scene/ParticleSystem", function () {
     // no particles emitted at time 0
     scene.renderForSpecs();
     // billboard collection needs to create texture atlas
-    return pollToPromise(function () {
-      scene.renderForSpecs();
-      return system._billboardCollection.get(0).ready;
-    }).then(function () {
-      // finally render
-      expect(scene).toRender([0, 255, 0, 255]);
-    });
+    scene.renderForSpecs();
+    // finally render
+    expect(scene).toRender([0, 255, 0, 255]);
   });
 
   it("isDestroyed", function () {
-    const p = new ParticleSystem();
+    var p = new ParticleSystem();
     expect(p.isDestroyed()).toEqual(false);
     p.destroy();
     expect(p.isDestroyed()).toEqual(true);

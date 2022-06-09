@@ -35,7 +35,7 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "DataSources/PolylineGeometryUpdater",
   function () {
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
       scene.globe = new Globe();
@@ -52,29 +52,20 @@ describe(
       ApproximateTerrainHeights._terrainHeights = undefined;
     });
 
-    const time = JulianDate.now();
+    var time = JulianDate.now();
 
-    const basicPositions = Cartesian3.fromRadiansArray([
-      0,
-      0,
-      1,
-      0,
-      1,
-      1,
-      0,
-      1,
-    ]);
+    var basicPositions = Cartesian3.fromRadiansArray([0, 0, 1, 0, 1, 1, 0, 1]);
     function createBasicPolyline() {
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty(basicPositions);
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       return entity;
     }
 
     it("Constructor sets expected defaults", function () {
-      const entity = new Entity();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = new Entity();
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
       expect(updater.isDestroyed()).toBe(false);
       expect(updater.entity).toBe(entity);
@@ -100,8 +91,8 @@ describe(
     });
 
     it("No geometry available when polyline is undefined ", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline = undefined;
 
       expect(updater.fillEnabled).toBe(false);
@@ -110,8 +101,8 @@ describe(
     });
 
     it("No geometry available when not shown.", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.show = new ConstantProperty(false);
 
       expect(updater.fillEnabled).toBe(false);
@@ -120,8 +111,8 @@ describe(
     });
 
     it("Values correct when using default graphics", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
       expect(updater.isClosed).toBe(false);
       expect(updater.fillEnabled).toBe(true);
@@ -146,15 +137,15 @@ describe(
     });
 
     it("Polyline material is correctly exposed.", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.material = new ColorMaterialProperty();
       expect(updater.fillMaterialProperty).toBe(entity.polyline.material);
     });
 
     it("Polyline depth fail material is correctly exposed.", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.depthFailMaterial = new ColorMaterialProperty();
       expect(updater.depthFailMaterialProperty).toBe(
         entity.polyline.depthFailMaterial
@@ -162,13 +153,13 @@ describe(
     });
 
     it("A time-varying positions causes geometry to be dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const point1 = new SampledPositionProperty();
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var point1 = new SampledPositionProperty();
       point1.addSample(time, new Cartesian3());
-      const point2 = new SampledPositionProperty();
+      var point2 = new SampledPositionProperty();
       point2.addSample(time, new Cartesian3());
-      const point3 = new SampledPositionProperty();
+      var point3 = new SampledPositionProperty();
       point3.addSample(time, new Cartesian3());
 
       entity.polyline.positions = new PropertyArray();
@@ -177,15 +168,15 @@ describe(
     });
 
     it("A time-varying width causes geometry to be dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.width = new SampledProperty(Number);
       entity.polyline.width.addSample(time, 1);
       expect(updater.isDynamic).toBe(true);
     });
 
     it("A time-varying arcType causes geometry to be dynamic", function () {
-      const arcType = new TimeIntervalCollectionProperty();
+      var arcType = new TimeIntervalCollectionProperty();
       arcType.intervals.addInterval(
         new TimeInterval({
           start: new JulianDate(0, 0),
@@ -194,49 +185,49 @@ describe(
         })
       );
 
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.arcType = arcType;
       expect(updater.isDynamic).toBe(true);
     });
 
     it("A time-varying granularity causes geometry to be dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.granularity = new SampledProperty(Number);
       entity.polyline.granularity.addSample(time, 1);
       expect(updater.isDynamic).toBe(true);
     });
 
     it("A time-varying clampToGround causes geometry to be dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.clampToGround = new SampledProperty(Number);
       entity.polyline.clampToGround.addSample(time, true);
       expect(updater.isDynamic).toBe(true);
     });
 
     it("A time-varying arcType causes geometry to be dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.arcType = new SampledProperty(Number);
       entity.polyline.arcType.addSample(time, 1);
       expect(updater.isDynamic).toBe(true);
     });
 
     it("A time-varying zIndex causes geometry to be dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       entity.polyline.zIndex = new SampledProperty(Number);
       entity.polyline.zIndex.addSample(time, 1);
       expect(updater.isDynamic).toBe(true);
     });
 
     function validateGeometryInstance(options) {
-      const entity = createBasicPolyline();
-      const clampToGround = options.clampToGround;
+      var entity = createBasicPolyline();
+      var clampToGround = options.clampToGround;
 
-      const polyline = entity.polyline;
+      var polyline = entity.polyline;
       polyline.show = new ConstantProperty(options.show);
       polyline.material = options.material;
       polyline.depthFailMaterial = options.depthFailMaterial;
@@ -247,11 +238,14 @@ describe(
       polyline.clampToGround = new ConstantProperty(clampToGround);
       polyline.arcType = new ConstantProperty(options.arcType);
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
-      const instance = updater.createFillGeometryInstance(time);
-      const geometry = instance.geometry;
-      const attributes = instance.attributes;
+      var instance;
+      var geometry;
+      var attributes;
+      instance = updater.createFillGeometryInstance(time);
+      geometry = instance.geometry;
+      attributes = instance.attributes;
 
       if (clampToGround) {
         expect(geometry.width).toEqual(options.width);
@@ -419,11 +413,11 @@ describe(
     });
 
     it("Attributes have expected values at creation time", function () {
-      const time1 = new JulianDate(0, 0);
-      const time2 = new JulianDate(10, 0);
-      const time3 = new JulianDate(20, 0);
+      var time1 = new JulianDate(0, 0);
+      var time2 = new JulianDate(10, 0);
+      var time3 = new JulianDate(20, 0);
 
-      const show = new TimeIntervalCollectionProperty();
+      var show = new TimeIntervalCollectionProperty();
       show.intervals.addInterval(
         new TimeInterval({
           start: time1,
@@ -440,20 +434,20 @@ describe(
         })
       );
 
-      const colorMaterial = new ColorMaterialProperty();
+      var colorMaterial = new ColorMaterialProperty();
       colorMaterial.color = new SampledProperty(Color);
       colorMaterial.color.addSample(time, Color.YELLOW);
       colorMaterial.color.addSample(time2, Color.BLUE);
       colorMaterial.color.addSample(time3, Color.RED);
 
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.show = show;
       entity.polyline.material = colorMaterial;
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
-      const instance = updater.createFillGeometryInstance(time2);
-      const attributes = instance.attributes;
+      var instance = updater.createFillGeometryInstance(time2);
+      var attributes = instance.attributes;
       expect(attributes.color.value).toEqual(
         ColorGeometryInstanceAttribute.toValue(
           colorMaterial.color.getValue(time2)
@@ -465,27 +459,27 @@ describe(
     });
 
     it("createFillGeometryInstance obeys Entity.show is false.", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.show = false;
       entity.polyline.fill = true;
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const instance = updater.createFillGeometryInstance(new JulianDate());
-      const attributes = instance.attributes;
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var instance = updater.createFillGeometryInstance(new JulianDate());
+      var attributes = instance.attributes;
       expect(attributes.show.value).toEqual(
         ShowGeometryInstanceAttribute.toValue(false)
       );
     });
 
     it("dynamic updater sets properties", function () {
-      const entity = new Entity();
-      const polyline = new PolylineGraphics();
+      var entity = new Entity();
+      var polyline = new PolylineGraphics();
       entity.polyline = polyline;
 
-      const time = new JulianDate(0, 0);
-      const time2 = new JulianDate(10, 0);
-      const time3 = new JulianDate(20, 0);
+      var time = new JulianDate(0, 0);
+      var time2 = new JulianDate(10, 0);
+      var time3 = new JulianDate(20, 0);
 
-      const width = new SampledProperty(Number);
+      var width = new SampledProperty(Number);
       width.addSample(time, 1);
       width.addSample(time2, 2);
       width.addSample(time3, 3);
@@ -500,12 +494,12 @@ describe(
       polyline.granularity = new ConstantProperty(0.001);
       polyline.arcType = new ConstantProperty(ArcType.NONE);
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
-      const primitives = scene.primitives;
+      var primitives = scene.primitives;
       expect(primitives.length).toBe(0);
 
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var dynamicUpdater = updater.createDynamicUpdater(
         primitives,
         scene.groundPrimitives
       );
@@ -514,8 +508,8 @@ describe(
       dynamicUpdater.update(time2);
 
       expect(primitives.length).toBe(1);
-      const polylineCollection = primitives.get(0);
-      const primitive = polylineCollection.get(0);
+      var polylineCollection = primitives.get(0);
+      var primitive = polylineCollection.get(0);
 
       expect(primitive.show).toEqual(true);
       expect(primitive.width).toEqual(2);
@@ -540,14 +534,14 @@ describe(
         return;
       }
 
-      const entity = new Entity();
-      const polyline = new PolylineGraphics();
+      var entity = new Entity();
+      var polyline = new PolylineGraphics();
       entity.polyline = polyline;
 
-      const time = new JulianDate(0, 0);
+      var time = new JulianDate(0, 0);
 
-      let isClampedToGround = true;
-      const clampToGround = new CallbackProperty(function () {
+      var isClampedToGround = true;
+      var clampToGround = new CallbackProperty(function () {
         return isClampedToGround;
       }, false);
 
@@ -561,12 +555,12 @@ describe(
       polyline.granularity = new ConstantProperty(0.001);
       polyline.clampToGround = clampToGround;
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
-      const groundPrimitives = scene.groundPrimitives;
+      var groundPrimitives = scene.groundPrimitives;
       expect(groundPrimitives.length).toBe(0);
 
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         groundPrimitives
       );
@@ -576,7 +570,7 @@ describe(
       dynamicUpdater.update(time);
 
       expect(groundPrimitives.length).toBe(1);
-      const primitive = groundPrimitives.get(0);
+      var primitive = groundPrimitives.get(0);
 
       expect(primitive.show).toEqual(true);
 
@@ -592,14 +586,14 @@ describe(
     });
 
     it("arcType can be dynamic", function () {
-      const entity = new Entity();
-      const polyline = new PolylineGraphics();
+      var entity = new Entity();
+      var polyline = new PolylineGraphics();
       entity.polyline = polyline;
 
-      const time = new JulianDate(0, 0);
+      var time = new JulianDate(0, 0);
 
-      let arcTypeVar = ArcType.GEODESIC;
-      const arcType = new CallbackProperty(function () {
+      var arcTypeVar = ArcType.GEODESIC;
+      var arcType = new CallbackProperty(function () {
         return arcTypeVar;
       }, false);
 
@@ -614,12 +608,12 @@ describe(
       polyline.clampToGround = new ConstantProperty(false);
       polyline.arcType = arcType;
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
 
-      const primitives = scene.primitives;
+      var primitives = scene.primitives;
       expect(primitives.length).toBe(0);
 
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var dynamicUpdater = updater.createDynamicUpdater(
         primitives,
         scene.groundPrimitives
       );
@@ -629,12 +623,12 @@ describe(
       dynamicUpdater.update(time);
 
       expect(primitives.length).toBe(1);
-      const polylineCollection = primitives.get(0);
-      const polylineObject = polylineCollection.get(0);
+      var polylineCollection = primitives.get(0);
+      var polylineObject = polylineCollection.get(0);
 
       expect(polylineObject.show).toEqual(true);
 
-      const geodesicPolylinePositionsLength = polylineObject.positions.length;
+      var geodesicPolylinePositionsLength = polylineObject.positions.length;
 
       arcTypeVar = ArcType.NONE;
       dynamicUpdater.update(time);
@@ -652,9 +646,9 @@ describe(
     });
 
     it("geometryChanged event is raised when expected", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const listener = jasmine.createSpy("listener");
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var listener = jasmine.createSpy("listener");
       updater.geometryChanged.addEventListener(listener);
 
       entity.polyline.positions = new ConstantProperty(
@@ -680,32 +674,32 @@ describe(
     });
 
     it("createFillGeometryInstance throws if object is not shown", function () {
-      const entity = new Entity();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = new Entity();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(function () {
         return updater.createFillGeometryInstance(time);
       }).toThrowDeveloperError();
     });
 
     it("createFillGeometryInstance throws if no time provided", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(function () {
         return updater.createFillGeometryInstance(undefined);
       }).toThrowDeveloperError();
     });
 
     it("createOutlineGeometryInstance throws", function () {
-      const entity = new Entity();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = new Entity();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(function () {
         return updater.createOutlineGeometryInstance();
       }).toThrowDeveloperError();
     });
 
     it("createDynamicUpdater throws if not dynamic", function () {
-      const entity = createBasicPolyline();
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var entity = createBasicPolyline();
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(function () {
         return updater.createDynamicUpdater(
           scene.primitives,
@@ -716,10 +710,10 @@ describe(
     });
 
     it("createDynamicUpdater throws if primitives undefined", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = new SampledProperty(Number);
       entity.polyline.width.addSample(time, 4);
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(updater.isDynamic).toBe(true);
       expect(function () {
         return updater.createDynamicUpdater(undefined, scene.groundPrimitives);
@@ -728,10 +722,10 @@ describe(
     });
 
     it("createDynamicUpdater throws if groundPrimitives undefined", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = new SampledProperty(Number);
       entity.polyline.width.addSample(time, 4);
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(updater.isDynamic).toBe(true);
       expect(function () {
         return updater.createDynamicUpdater(scene.primitives);
@@ -740,11 +734,11 @@ describe(
     });
 
     it("dynamicUpdater.update throws if no time specified", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = new SampledProperty(Number);
       entity.polyline.width.addSample(time, 4);
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
@@ -762,29 +756,29 @@ describe(
     });
 
     it("Constructor throws if no scene supplied", function () {
-      const entity = new Entity();
+      var entity = new Entity();
       expect(function () {
         return new PolylineGeometryUpdater(entity, undefined);
       }).toThrowDeveloperError();
     });
 
     it("Computes dynamic geometry bounding sphere for fill.", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = createDynamicProperty(1);
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
       dynamicUpdater.update(time);
 
-      const result = new BoundingSphere(0);
-      const state = dynamicUpdater.getBoundingSphere(result);
+      var result = new BoundingSphere(0);
+      var state = dynamicUpdater.getBoundingSphere(result);
       expect(state).toBe(BoundingSphereState.DONE);
 
-      const primitive = scene.primitives.get(0);
-      const line = primitive.get(0);
+      var primitive = scene.primitives.get(0);
+      var line = primitive.get(0);
       expect(result).toEqual(BoundingSphere.fromPoints(line.positions));
 
       dynamicUpdater.destroy();
@@ -799,19 +793,19 @@ describe(
         return;
       }
 
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = createDynamicProperty(1);
       entity.polyline.clampToGround = true;
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
       dynamicUpdater.update(time);
 
-      const result = new BoundingSphere(0);
-      let state = dynamicUpdater.getBoundingSphere(result);
+      var result = new BoundingSphere(0);
+      var state = dynamicUpdater.getBoundingSphere(result);
       expect(state).toBe(BoundingSphereState.PENDING);
 
       return pollToPromise(function () {
@@ -820,9 +814,9 @@ describe(
         state = dynamicUpdater.getBoundingSphere(result);
         return state !== BoundingSphereState.PENDING;
       }).then(function () {
-        const primitive = scene.groundPrimitives.get(0);
+        var primitive = scene.groundPrimitives.get(0);
         expect(state).toBe(BoundingSphereState.DONE);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(result).toEqual(attributes.boundingSphere);
 
         dynamicUpdater.destroy();
@@ -834,16 +828,16 @@ describe(
     });
 
     it("Fails dynamic geometry bounding sphere for entity without billboard.", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = createDynamicProperty(1);
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const result = new BoundingSphere();
-      const state = dynamicUpdater.getBoundingSphere(result);
+      var result = new BoundingSphere();
+      var state = dynamicUpdater.getBoundingSphere(result);
       expect(state).toBe(BoundingSphereState.FAILED);
 
       dynamicUpdater.destroy();
@@ -854,10 +848,10 @@ describe(
     });
 
     it("Compute dynamic geometry bounding sphere throws without result.", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = createDynamicProperty(1);
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
@@ -874,12 +868,12 @@ describe(
     });
 
     it("calls generateCartesianRhumbArc for RHUMB arcType", function () {
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = createDynamicProperty(1);
       entity.polyline.arcType = ArcType.RHUMB;
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
@@ -898,11 +892,11 @@ describe(
         return;
       }
 
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
       entity.polyline.width = createDynamicProperty(1);
       scene.globe = undefined;
-      const updater = new PolylineGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         scene.primitives,
         scene.groundPrimitives
       );
@@ -923,16 +917,16 @@ describe(
         return false;
       });
 
-      const entity = createBasicPolyline();
+      var entity = createBasicPolyline();
 
-      const polyline = entity.polyline;
+      var polyline = entity.polyline;
       polyline.show = new ConstantProperty(true);
       polyline.clampToGround = new ConstantProperty(true);
 
-      const updater = new PolylineGeometryUpdater(entity, scene);
+      var updater = new PolylineGeometryUpdater(entity, scene);
       expect(updater.clampToGround).toBe(false);
 
-      const instance = updater.createFillGeometryInstance(time);
+      var instance = updater.createFillGeometryInstance(time);
       expect(instance.geometry).not.toBeInstanceOf(GroundPolylineGeometry);
 
       updater.destroy();

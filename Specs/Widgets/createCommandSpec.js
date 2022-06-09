@@ -3,8 +3,8 @@ import { knockout } from "../../Source/Cesium.js";
 import { createCommand } from "../../Source/Cesium.js";
 
 describe("Widgets/createCommand", function () {
-  let spyFunction;
-  const spyFunctionReturnValue = 5;
+  var spyFunction;
+  var spyFunctionReturnValue = 5;
 
   beforeEach(function () {
     spyFunction = jasmine
@@ -13,14 +13,14 @@ describe("Widgets/createCommand", function () {
   });
 
   it("works with default value of canExecute", function () {
-    const command = createCommand(spyFunction);
+    var command = createCommand(spyFunction);
     expect(command.canExecute).toBe(true);
     expect(command()).toBe(spyFunctionReturnValue);
     expect(spyFunction).toHaveBeenCalled();
   });
 
   it("throws when canExecute value is false", function () {
-    const command = createCommand(spyFunction, false);
+    var command = createCommand(spyFunction, false);
     expect(function () {
       command();
     }).toThrowDeveloperError();
@@ -34,8 +34,8 @@ describe("Widgets/createCommand", function () {
   });
 
   it("works with custom canExecute observable", function () {
-    const canExecute = knockout.observable(false);
-    const command = createCommand(spyFunction, canExecute);
+    var canExecute = knockout.observable(false);
+    var command = createCommand(spyFunction, canExecute);
 
     expect(command.canExecute).toBe(false);
     expect(function () {
@@ -51,13 +51,13 @@ describe("Widgets/createCommand", function () {
   });
 
   it("calls pre/post events", function () {
-    const command = createCommand(spyFunction);
-    const myArg = {};
+    var command = createCommand(spyFunction);
+    var myArg = {};
 
-    const beforeExecuteSpy = jasmine.createSpy("beforeExecute");
+    var beforeExecuteSpy = jasmine.createSpy("beforeExecute");
     command.beforeExecute.addEventListener(beforeExecuteSpy);
 
-    const afterExecuteSpy = jasmine.createSpy("afterExecute");
+    var afterExecuteSpy = jasmine.createSpy("afterExecute");
     command.afterExecute.addEventListener(afterExecuteSpy);
 
     expect(command(myArg)).toBe(spyFunctionReturnValue);
@@ -73,17 +73,17 @@ describe("Widgets/createCommand", function () {
   });
 
   it("cancels a command if beforeExecute sets cancel to true", function () {
-    const command = createCommand(spyFunction);
-    const myArg = {};
+    var command = createCommand(spyFunction);
+    var myArg = {};
 
-    const beforeExecuteSpy = jasmine
+    var beforeExecuteSpy = jasmine
       .createSpy("beforeExecute")
       .and.callFake(function (info) {
         info.cancel = true;
       });
     command.beforeExecute.addEventListener(beforeExecuteSpy);
 
-    const afterExecuteSpy = jasmine.createSpy("afterExecute");
+    var afterExecuteSpy = jasmine.createSpy("afterExecute");
     command.afterExecute.addEventListener(afterExecuteSpy);
 
     expect(command(myArg)).toBeUndefined();

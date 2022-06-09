@@ -8,8 +8,8 @@ describe("Scene/StyleExpression", function () {
   };
 
   it("throws", function () {
-    const expression = new StyleExpression();
-    const feature = new MockFeature();
+    var expression = new StyleExpression();
+    var feature = new MockFeature();
 
     expect(function () {
       return expression.evaluate(feature);

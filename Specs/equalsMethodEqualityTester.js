@@ -1,7 +1,7 @@
 import { defined } from "../Source/Cesium.js";
 
 function equalsMethodEqualityTester(a, b) {
-  let to_run;
+  var to_run;
   // if either a or b have an equals method, call it.
   if (a !== null && defined(a)) {
     if (typeof a.equals === "function") {

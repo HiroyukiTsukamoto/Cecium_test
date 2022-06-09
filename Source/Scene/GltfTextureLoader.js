@@ -6,6 +6,7 @@ import PixelFormat from "../Core/PixelFormat.js";
 import Texture from "../Renderer/Texture.js";
 import TextureMinificationFilter from "../Renderer/TextureMinificationFilter.js";
 import TextureWrap from "../Renderer/TextureWrap.js";
+import when from "../ThirdParty/when.js";
 import GltfLoaderUtil from "./GltfLoaderUtil.js";
 import JobType from "./JobType.js";
 import ResourceLoader from "./ResourceLoader.js";
@@ -35,14 +36,14 @@ import ResourceLoaderState from "./ResourceLoaderState.js";
  */
 export default function GltfTextureLoader(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const resourceCache = options.resourceCache;
-  const gltf = options.gltf;
-  const textureInfo = options.textureInfo;
-  const gltfResource = options.gltfResource;
-  const baseResource = options.baseResource;
-  const supportedImageFormats = options.supportedImageFormats;
-  const cacheKey = options.cacheKey;
-  const asynchronous = defaultValue(options.asynchronous, true);
+  var resourceCache = options.resourceCache;
+  var gltf = options.gltf;
+  var textureInfo = options.textureInfo;
+  var gltfResource = options.gltfResource;
+  var baseResource = options.baseResource;
+  var supportedImageFormats = options.supportedImageFormats;
+  var cacheKey = options.cacheKey;
+  var asynchronous = defaultValue(options.asynchronous, true);
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.func("options.resourceCache", resourceCache);
@@ -53,11 +54,11 @@ export default function GltfTextureLoader(options) {
   Check.typeOf.object("options.supportedImageFormats", supportedImageFormats);
   //>>includeEnd('debug');
 
-  const textureId = textureInfo.index;
+  var textureId = textureInfo.index;
 
   // imageId is guaranteed to be defined otherwise the GltfTextureLoader
   // wouldn't have been created
-  const imageId = GltfLoaderUtil.getImageIdFromTexture({
+  var imageId = GltfLoaderUtil.getImageIdFromTexture({
     gltf: gltf,
     textureId: textureId,
     supportedImageFormats: supportedImageFormats,
@@ -76,8 +77,7 @@ export default function GltfTextureLoader(options) {
   this._mipLevels = undefined;
   this._texture = undefined;
   this._state = ResourceLoaderState.UNLOADED;
-  this._promise = undefined;
-  this._process = function (loader, frameState) {};
+  this._promise = when.defer();
 }
 
 if (defined(Object.create)) {
@@ -87,17 +87,17 @@ if (defined(Object.create)) {
 
 Object.defineProperties(GltfTextureLoader.prototype, {
   /**
-   * A promise that resolves to the resource when the resource is ready, or undefined if the resource hasn't started loading.
+   * A promise that resolves to the resource when the resource is ready.
    *
    * @memberof GltfTextureLoader.prototype
    *
-   * @type {Promise.<GltfTextureLoader>|undefined}
+   * @type {Promise.<GltfTextureLoader>}
    * @readonly
    * @private
    */
   promise: {
     get: function () {
-      return this._promise;
+      return this._promise.promise;
     },
   },
   /**
@@ -130,16 +130,13 @@ Object.defineProperties(GltfTextureLoader.prototype, {
   },
 });
 
-const scratchTextureJob = new CreateTextureJob();
-
 /**
  * Loads the resource.
- * @returns {Promise.<GltfDracoLoader>} A promise which resolves to the loader when the resource loading is completed.
  * @private
  */
 GltfTextureLoader.prototype.load = function () {
-  const resourceCache = this._resourceCache;
-  const imageLoader = resourceCache.loadImage({
+  var resourceCache = this._resourceCache;
+  var imageLoader = resourceCache.loadImage({
     gltf: this._gltf,
     imageId: this._imageId,
     gltfResource: this._gltfResource,
@@ -148,56 +145,10 @@ GltfTextureLoader.prototype.load = function () {
 
   this._imageLoader = imageLoader;
   this._state = ResourceLoaderState.LOADING;
-  const that = this;
-  const processPromise = new Promise(function (resolve) {
-    that._process = function (loader, frameState) {
-      if (defined(loader._texture)) {
-        // Already created texture
-        return;
-      }
 
-      if (!defined(loader._image)) {
-        // Not ready to create texture
-        return;
-      }
+  var that = this;
 
-      let texture;
-
-      if (loader._asynchronous) {
-        const textureJob = scratchTextureJob;
-        textureJob.set(
-          loader._gltf,
-          loader._textureInfo,
-          loader._image,
-          loader._mipLevels,
-          frameState.context
-        );
-        const jobScheduler = frameState.jobScheduler;
-        if (!jobScheduler.execute(textureJob, JobType.TEXTURE)) {
-          // Job scheduler is full. Try again next frame.
-          return;
-        }
-        texture = textureJob.texture;
-      } else {
-        texture = createTexture(
-          loader._gltf,
-          loader._textureInfo,
-          loader._image,
-          loader._mipLevels,
-          frameState.context
-        );
-      }
-
-      // Unload everything except the texture
-      loader.unload();
-
-      loader._texture = texture;
-      loader._state = ResourceLoaderState.READY;
-      resolve(loader);
-    };
-  });
-
-  this._promise = imageLoader.promise
+  imageLoader.promise
     .then(function () {
       if (that.isDestroyed()) {
         return;
@@ -206,19 +157,16 @@ GltfTextureLoader.prototype.load = function () {
       that._image = imageLoader.image;
       that._mipLevels = imageLoader.mipLevels;
       that._state = ResourceLoaderState.PROCESSING;
-      return processPromise;
     })
-    .catch(function (error) {
+    .otherwise(function (error) {
       if (that.isDestroyed()) {
         return;
       }
       that.unload();
       that._state = ResourceLoaderState.FAILED;
-      const errorMessage = "Failed to load texture";
-      return Promise.reject(that.getError(errorMessage, error));
+      var errorMessage = "Failed to load texture";
+      that._promise.reject(that.getError(errorMessage, error));
     });
-
-  return this._promise;
 };
 
 function CreateTextureJob() {
@@ -254,10 +202,10 @@ CreateTextureJob.prototype.execute = function () {
 };
 
 function resizeImageToNextPowerOfTwo(image) {
-  const canvas = document.createElement("canvas");
+  var canvas = document.createElement("canvas");
   canvas.width = CesiumMath.nextPowerOfTwo(image.width);
   canvas.height = CesiumMath.nextPowerOfTwo(image.height);
-  const canvasContext = canvas.getContext("2d");
+  var canvasContext = canvas.getContext("2d");
   canvasContext.drawImage(
     image,
     0,
@@ -274,24 +222,24 @@ function resizeImageToNextPowerOfTwo(image) {
 
 function createTexture(gltf, textureInfo, image, mipLevels, context) {
   // internalFormat is only defined for CompressedTextureBuffer
-  const internalFormat = image.internalFormat;
+  var internalFormat = image.internalFormat;
 
-  let compressedTextureNoMipmap = false;
+  var compressedTextureNoMipmap = false;
   if (PixelFormat.isCompressedFormat(internalFormat) && !defined(mipLevels)) {
     compressedTextureNoMipmap = true;
   }
 
-  const sampler = GltfLoaderUtil.createSampler({
+  var sampler = GltfLoaderUtil.createSampler({
     gltf: gltf,
     textureInfo: textureInfo,
     compressedTextureNoMipmap: compressedTextureNoMipmap,
   });
 
-  const minFilter = sampler.minificationFilter;
-  const wrapS = sampler.wrapS;
-  const wrapT = sampler.wrapT;
+  var minFilter = sampler.minificationFilter;
+  var wrapS = sampler.wrapS;
+  var wrapT = sampler.wrapT;
 
-  const samplerRequiresMipmap =
+  var samplerRequiresMipmap =
     minFilter === TextureMinificationFilter.NEAREST_MIPMAP_NEAREST ||
     minFilter === TextureMinificationFilter.NEAREST_MIPMAP_LINEAR ||
     minFilter === TextureMinificationFilter.LINEAR_MIPMAP_NEAREST ||
@@ -304,23 +252,23 @@ function createTexture(gltf, textureInfo, image, mipLevels, context) {
   //   When a texture refers to a sampler with mipmap minification or when the
   //   sampler is undefined, the KTX2 image SHOULD contain a full mip pyramid.
   //
-  const generateMipmap = !defined(internalFormat) && samplerRequiresMipmap;
+  var generateMipmap = !defined(internalFormat) && samplerRequiresMipmap;
 
   // WebGL 1 requires power-of-two texture dimensions for mipmapping and REPEAT/MIRRORED_REPEAT wrap modes.
-  const requiresPowerOfTwo =
+  var requiresPowerOfTwo =
     generateMipmap ||
     wrapS === TextureWrap.REPEAT ||
     wrapS === TextureWrap.MIRRORED_REPEAT ||
     wrapT === TextureWrap.REPEAT ||
     wrapT === TextureWrap.MIRRORED_REPEAT;
 
-  const nonPowerOfTwo =
+  var nonPowerOfTwo =
     !CesiumMath.isPowerOfTwo(image.width) ||
     !CesiumMath.isPowerOfTwo(image.height);
 
-  const requiresResize = requiresPowerOfTwo && nonPowerOfTwo;
+  var requiresResize = requiresPowerOfTwo && nonPowerOfTwo;
 
-  let texture;
+  var texture;
   if (defined(internalFormat)) {
     if (
       !context.webgl2 &&
@@ -364,6 +312,8 @@ function createTexture(gltf, textureInfo, image, mipLevels, context) {
   return texture;
 }
 
+var scratchTextureJob = new CreateTextureJob();
+
 /**
  * Processes the resource until it becomes ready.
  *
@@ -375,7 +325,49 @@ GltfTextureLoader.prototype.process = function (frameState) {
   Check.typeOf.object("frameState", frameState);
   //>>includeEnd('debug');
 
-  return this._process(this, frameState);
+  if (defined(this._texture)) {
+    // Already created texture
+    return;
+  }
+
+  if (!defined(this._image)) {
+    // Not ready to create texture
+    return;
+  }
+
+  var texture;
+
+  if (this._asynchronous) {
+    var textureJob = scratchTextureJob;
+    textureJob.set(
+      this._gltf,
+      this._textureInfo,
+      this._image,
+      this._mipLevels,
+      frameState.context
+    );
+    var jobScheduler = frameState.jobScheduler;
+    if (!jobScheduler.execute(textureJob, JobType.TEXTURE)) {
+      // Job scheduler is full. Try again next frame.
+      return;
+    }
+    texture = textureJob.texture;
+  } else {
+    texture = createTexture(
+      this._gltf,
+      this._textureInfo,
+      this._image,
+      this._mipLevels,
+      frameState.context
+    );
+  }
+
+  // Unload everything except the texture
+  this.unload();
+
+  this._texture = texture;
+  this._state = ResourceLoaderState.READY;
+  this._promise.resolve(this);
 };
 
 /**

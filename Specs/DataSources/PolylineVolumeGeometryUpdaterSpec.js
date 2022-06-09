@@ -18,8 +18,8 @@ import createScene from "../createScene.js";
 describe(
   "DataSources/PolylineVolumeGeometryUpdater",
   function () {
-    let scene;
-    let time;
+    var scene;
+    var time;
 
     beforeAll(function () {
       scene = createScene();
@@ -30,7 +30,7 @@ describe(
       scene.destroyForSpecs();
     });
 
-    const shape = [
+    var shape = [
       new Cartesian2(-1, -1),
       new Cartesian2(1, -1),
       new Cartesian2(1, 1),
@@ -38,25 +38,25 @@ describe(
     ];
 
     function createBasicPolylineVolume() {
-      const polylineVolume = new PolylineVolumeGraphics();
+      var polylineVolume = new PolylineVolumeGraphics();
       polylineVolume.positions = new ConstantProperty(
         Cartesian3.fromDegreesArray([0, 0, 1, 0, 1, 1, 0, 1])
       );
       polylineVolume.shape = new ConstantProperty(shape);
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polylineVolume = polylineVolume;
       return entity;
     }
 
     function createDynamicPolylineVolume() {
-      const entity = createBasicPolylineVolume();
+      var entity = createBasicPolylineVolume();
       entity.polylineVolume.shape = createDynamicProperty(shape);
       return entity;
     }
 
     it("A time-varying positions causes geometry to be dynamic", function () {
-      const entity = createBasicPolylineVolume();
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var entity = createBasicPolylineVolume();
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
       entity.polylineVolume.positions = createDynamicProperty(
         Cartesian3.fromRadiansArray([0, 0, 1, 0, 1, 1, 0, 1])
       );
@@ -66,8 +66,8 @@ describe(
     });
 
     it("A time-varying shape causes geometry to be dynamic", function () {
-      const entity = createBasicPolylineVolume();
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var entity = createBasicPolylineVolume();
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
       entity.polylineVolume.shape = createDynamicProperty(shape);
       updater._onEntityPropertyChanged(entity, "polylineVolume");
 
@@ -75,8 +75,8 @@ describe(
     });
 
     it("A time-varying granularity causes geometry to be dynamic", function () {
-      const entity = createBasicPolylineVolume();
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var entity = createBasicPolylineVolume();
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
       entity.polylineVolume.granularity = createDynamicProperty(1);
       updater._onEntityPropertyChanged(entity, "polylineVolume");
 
@@ -84,8 +84,8 @@ describe(
     });
 
     it("A time-varying cornerType causes geometry to be dynamic", function () {
-      const entity = createBasicPolylineVolume();
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var entity = createBasicPolylineVolume();
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
       entity.polylineVolume.cornerType = new TimeIntervalCollectionProperty();
       entity.polylineVolume.cornerType.intervals.addInterval(
         new TimeInterval({
@@ -100,24 +100,24 @@ describe(
     });
 
     it("Creates geometry with expected properties", function () {
-      const options = {
+      var options = {
         shape: shape,
         granularity: 0.97,
         cornerType: CornerType.MITERED,
       };
 
-      const entity = createBasicPolylineVolume();
+      var entity = createBasicPolylineVolume();
 
-      const polylineVolume = entity.polylineVolume;
+      var polylineVolume = entity.polylineVolume;
       polylineVolume.outline = true;
       polylineVolume.cornerType = new ConstantProperty(options.cornerType);
       polylineVolume.shape = new ConstantProperty(options.shape);
       polylineVolume.granularity = new ConstantProperty(options.granularity);
 
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
 
-      let instance;
-      let geometry;
+      var instance;
+      var geometry;
       instance = updater.createFillGeometryInstance(time);
       geometry = instance.geometry;
       expect(geometry._shape).toEqual(options.shape);
@@ -131,7 +131,7 @@ describe(
     });
 
     it("dynamic updater sets properties", function () {
-      const polylineVolume = new PolylineVolumeGraphics();
+      var polylineVolume = new PolylineVolumeGraphics();
       polylineVolume.positions = createDynamicProperty(
         Cartesian3.fromRadiansArray([0, 0, 1, 0, 1, 1, 0, 1])
       );
@@ -142,17 +142,17 @@ describe(
       polylineVolume.granularity = createDynamicProperty(2);
       polylineVolume.cornerType = createDynamicProperty(CornerType.MITERED);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polylineVolume = polylineVolume;
 
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         new PrimitiveCollection(),
         new PrimitiveCollection()
       );
       dynamicUpdater.update(time);
 
-      const options = dynamicUpdater._options;
+      var options = dynamicUpdater._options;
       expect(options.id).toEqual(entity);
       expect(options.polylinePositions).toEqual(
         polylineVolume.positions.getValue()
@@ -165,9 +165,9 @@ describe(
     });
 
     it("geometryChanged event is raised when expected", function () {
-      const entity = createBasicPolylineVolume();
-      const updater = new PolylineVolumeGeometryUpdater(entity, scene);
-      const listener = jasmine.createSpy("listener");
+      var entity = createBasicPolylineVolume();
+      var updater = new PolylineVolumeGeometryUpdater(entity, scene);
+      var listener = jasmine.createSpy("listener");
       updater.geometryChanged.addEventListener(listener);
 
       entity.polylineVolume.positions = new ConstantProperty([]);

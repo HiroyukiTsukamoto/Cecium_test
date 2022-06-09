@@ -1,18 +1,18 @@
 import defined from "./defined.js";
 import DeveloperError from "./DeveloperError.js";
 
-const leftScratchArray = [];
-const rightScratchArray = [];
+var leftScratchArray = [];
+var rightScratchArray = [];
 
 function merge(array, compare, userDefinedObject, start, middle, end) {
-  const leftLength = middle - start + 1;
-  const rightLength = end - middle;
+  var leftLength = middle - start + 1;
+  var rightLength = end - middle;
 
-  const left = leftScratchArray;
-  const right = rightScratchArray;
+  var left = leftScratchArray;
+  var right = rightScratchArray;
 
-  let i;
-  let j;
+  var i;
+  var j;
 
   for (i = 0; i < leftLength; ++i) {
     left[i] = array[start + i];
@@ -24,9 +24,9 @@ function merge(array, compare, userDefinedObject, start, middle, end) {
 
   i = 0;
   j = 0;
-  for (let k = start; k <= end; ++k) {
-    const leftElement = left[i];
-    const rightElement = right[j];
+  for (var k = start; k <= end; ++k) {
+    var leftElement = left[i];
+    var rightElement = right[j];
     if (
       i < leftLength &&
       (j >= rightLength ||
@@ -46,7 +46,7 @@ function sort(array, compare, userDefinedObject, start, end) {
     return;
   }
 
-  const middle = Math.floor((start + end) * 0.5);
+  var middle = Math.floor((start + end) * 0.5);
   sort(array, compare, userDefinedObject, start, middle);
   sort(array, compare, userDefinedObject, middle + 1, end);
   merge(array, compare, userDefinedObject, start, middle, end);
@@ -63,7 +63,7 @@ function sort(array, compare, userDefinedObject, start, end) {
  * @example
  * // Assume array contains BoundingSpheres in world coordinates.
  * // Sort them in ascending order of distance from the camera.
- * const position = camera.positionWC;
+ * var position = camera.positionWC;
  * Cesium.mergeSort(array, function(a, b, position) {
  *     return Cesium.BoundingSphere.distanceSquaredTo(b, position) - Cesium.BoundingSphere.distanceSquaredTo(a, position);
  * }, position);
@@ -78,8 +78,8 @@ function mergeSort(array, comparator, userDefinedObject) {
   }
   //>>includeEnd('debug');
 
-  const length = array.length;
-  const scratchLength = Math.ceil(length * 0.5);
+  var length = array.length;
+  var scratchLength = Math.ceil(length * 0.5);
 
   // preallocate space in scratch arrays
   leftScratchArray.length = scratchLength;

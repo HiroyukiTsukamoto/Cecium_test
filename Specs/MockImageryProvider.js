@@ -1,11 +1,9 @@
 import createTileKey from "./createTileKey.js";
 import runLater from "./runLater.js";
-import {
-  Event,
-  GeographicTilingScheme,
-  Resource,
-  RuntimeError,
-} from "../Source/Cesium.js";
+import { GeographicTilingScheme } from "../Source/Cesium.js";
+import { Resource } from "../Source/Cesium.js";
+import { RuntimeError } from "../Source/Cesium.js";
+import { when } from "../Source/Cesium.js";
 
 function MockImageryProvider() {
   this.tilingScheme = new GeographicTilingScheme();
@@ -13,10 +11,9 @@ function MockImageryProvider() {
   this.rectangle = this.tilingScheme.rectangle;
   this.tileWidth = 256;
   this.tileHeight = 256;
-  this.errorEvent = new Event();
   this._requestImageWillSucceed = {};
 
-  const that = this;
+  var that = this;
   Resource.fetchImage("./Data/Images/Green.png").then(function (image) {
     that.ready = true;
     that._image = image;
@@ -24,12 +21,12 @@ function MockImageryProvider() {
 }
 
 MockImageryProvider.prototype.requestImage = function (x, y, level, request) {
-  const willSucceed = this._requestImageWillSucceed[createTileKey(x, y, level)];
+  var willSucceed = this._requestImageWillSucceed[createTileKey(x, y, level)];
   if (willSucceed === undefined) {
     return undefined; // defer by default
   }
 
-  const that = this;
+  var that = this;
   return runLater(function () {
     if (willSucceed === true) {
       return that._image;
@@ -37,7 +34,7 @@ MockImageryProvider.prototype.requestImage = function (x, y, level, request) {
       throw new RuntimeError("requestImage failed as request.");
     }
 
-    return Promise.resolve(willSucceed).then(function () {
+    return when(willSucceed).then(function () {
       return that._image;
     });
   });

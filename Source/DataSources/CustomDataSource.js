@@ -14,9 +14,9 @@ import EntityCollection from "./EntityCollection.js";
  * @param {String} [name] A human-readable name for this instance.
  *
  * @example
- * const dataSource = new Cesium.CustomDataSource('myData');
+ * var dataSource = new Cesium.CustomDataSource('myData');
  *
- * const entity = dataSource.entities.add({
+ * var entity = dataSource.entities.add({
  *    position : Cesium.Cartesian3.fromDegrees(1, 2, 0),
  *    billboard : {
  *        image : 'image.png'

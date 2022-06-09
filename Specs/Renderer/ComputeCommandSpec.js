@@ -13,8 +13,8 @@ import createScene from "../createScene.js";
 describe(
   "Renderer/ComputeCommand",
   function () {
-    let scene;
-    let context;
+    var scene;
+    var context;
 
     beforeAll(function () {
       scene = createScene();
@@ -37,13 +37,13 @@ describe(
     }
 
     it("throws if no shader is provided", function () {
-      const outputTexture = new Texture({
+      var outputTexture = new Texture({
         context: context,
         width: 1,
         height: 1,
         pixelFormat: PixelFormat.RGBA,
       });
-      const computeCommand = new ComputeCommand({
+      var computeCommand = new ComputeCommand({
         outputTexture: outputTexture,
       });
       scene.primitives.add(new CommandMockPrimitive(computeCommand));
@@ -54,7 +54,7 @@ describe(
     });
 
     it("throws if no output texture is provided", function () {
-      const computeCommand = new ComputeCommand({
+      var computeCommand = new ComputeCommand({
         fragmentShaderSource: "void main() { gl_FragColor = vec4(1.0); }",
       });
       scene.primitives.add(new CommandMockPrimitive(computeCommand));
@@ -65,10 +65,10 @@ describe(
     });
 
     it("renderer resources are preserved or destroyed based on the persists flag", function () {
-      const vertexShader =
+      var vertexShader =
         "attribute vec4 position; void main() { gl_PointSize = 1.0; gl_Position = position; }";
-      const fragmentShader = "void main() { gl_FragColor = vec4(1.0); }";
-      const shaderProgram = ShaderProgram.fromCache({
+      var fragmentShader = "void main() { gl_FragColor = vec4(1.0); }";
+      var shaderProgram = ShaderProgram.fromCache({
         context: context,
         vertexShaderSource: vertexShader,
         fragmentShaderSource: fragmentShader,
@@ -77,7 +77,7 @@ describe(
         },
       });
 
-      const vertexArray = new VertexArray({
+      var vertexArray = new VertexArray({
         context: context,
         attributes: [
           {
@@ -92,14 +92,14 @@ describe(
         ],
       });
 
-      const outputTexture = new Texture({
+      var outputTexture = new Texture({
         context: context,
         width: 1,
         height: 1,
         pixelFormat: PixelFormat.RGBA,
       });
 
-      const computeCommand = new ComputeCommand({
+      var computeCommand = new ComputeCommand({
         vertexArray: vertexArray,
         shaderProgram: shaderProgram,
         outputTexture: outputTexture,
@@ -130,18 +130,18 @@ describe(
     });
 
     it("renders to a texture and draws that texture to the screen", function () {
-      const outputTexture = new Texture({
+      var outputTexture = new Texture({
         context: context,
         width: 1,
         height: 1,
         pixelFormat: PixelFormat.RGBA,
       });
-      const computeCommand = new ComputeCommand({
+      var computeCommand = new ComputeCommand({
         fragmentShaderSource: "void main() { gl_FragColor = vec4(1.0); }",
         outputTexture: outputTexture,
       });
 
-      const viewportQuad = new ViewportQuad();
+      var viewportQuad = new ViewportQuad();
       viewportQuad.rectangle = new BoundingRectangle(0, 0, 1, 1);
       viewportQuad.material = Material.fromType(Material.ImageType);
       viewportQuad.material.uniforms.image = outputTexture;

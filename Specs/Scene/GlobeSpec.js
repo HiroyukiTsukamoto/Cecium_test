@@ -7,15 +7,14 @@ import { Color } from "../../Source/Cesium.js";
 import { Cartesian3 } from "../../Source/Cesium.js";
 import { HeadingPitchRoll } from "../../Source/Cesium.js";
 import { NearFarScalar } from "../../Source/Cesium.js";
-import { JulianDate } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 import pollToPromise from "../pollToPromise.js";
 
 describe(
   "Scene/Globe",
   function () {
-    let scene;
-    let globe;
+    var scene;
+    var globe;
 
     beforeAll(function () {
       scene = createScene();
@@ -37,7 +36,7 @@ describe(
     });
 
     function returnTileJson(path) {
-      const oldLoad = Resource._Implementations.loadWithXhr;
+      var oldLoad = Resource._Implementations.loadWithXhr;
       Resource._Implementations.loadWithXhr = function (
         url,
         responseType,
@@ -92,7 +91,7 @@ describe(
     it("renders with enableLighting", function () {
       globe.enableLighting = true;
 
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Red16x16.png" })
@@ -114,7 +113,7 @@ describe(
       globe.enableLighting = true;
       globe.dynamicAtmosphereLighting = true;
 
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Red16x16.png" })
@@ -137,7 +136,7 @@ describe(
       globe.dynamicAtmosphereLighting = true;
       globe.dynamicAtmosphereLightingFromSun = true;
 
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Red16x16.png" })
@@ -158,7 +157,7 @@ describe(
     it("renders with showWaterEffect set to false", function () {
       globe.showWaterEffect = false;
 
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Red16x16.png" })
@@ -177,14 +176,14 @@ describe(
     });
 
     it("ImageryLayersUpdated event fires when layer is added, hidden, shown, moved, or removed", function () {
-      let timesEventRaised = 0;
+      var timesEventRaised = 0;
       globe.imageryLayersUpdatedEvent.addEventListener(function () {
         ++timesEventRaised;
       });
 
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
-      const layer = layerCollection.addImageryProvider(
+      var layer = layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Red16x16.png" })
       );
       layerCollection.addImageryProvider(
@@ -221,12 +220,12 @@ describe(
     });
 
     it("terrainProviderChanged event fires", function () {
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: "made/up/url",
         requestVertexNormals: true,
       });
 
-      const spyListener = jasmine.createSpy("listener");
+      var spyListener = jasmine.createSpy("listener");
       globe.terrainProviderChanged.addEventListener(spyListener);
 
       globe.terrainProvider = terrainProvider;
@@ -255,7 +254,7 @@ describe(
       globe._surface._tileLoadQueueLow.length = 0;
       expect(globe.tilesLoaded).toBe(true);
 
-      const terrainProvider = new CesiumTerrainProvider({
+      var terrainProvider = new CesiumTerrainProvider({
         url: "made/up/url",
         requestVertexNormals: true,
       });
@@ -266,118 +265,55 @@ describe(
     });
 
     it("renders terrain with enableLighting", function () {
-      const renderOptions = {
-        scene: scene,
-        time: new JulianDate(2557522.0),
-      };
       globe.enableLighting = true;
 
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
-      const imageryProvider = new SingleTileImageryProvider({
-        url: "Data/Images/Red16x16.png",
-      });
-      layerCollection.addImageryProvider(imageryProvider);
-      return imageryProvider.readyPromise.then(function () {
-        Resource._Implementations.loadWithXhr = function (
-          url,
+      layerCollection.addImageryProvider(
+        new SingleTileImageryProvider({ url: "Data/Images/Red16x16.png" })
+      );
+
+      Resource._Implementations.loadWithXhr = function (
+        url,
+        responseType,
+        method,
+        data,
+        headers,
+        deferred,
+        overrideMimeType
+      ) {
+        Resource._DefaultImplementations.loadWithXhr(
+          "Data/CesiumTerrainTileJson/tile.vertexnormals.terrain",
           responseType,
           method,
           data,
           headers,
-          deferred,
-          overrideMimeType
-        ) {
-          Resource._DefaultImplementations.loadWithXhr(
-            "Data/CesiumTerrainTileJson/tile.vertexnormals.terrain",
-            responseType,
-            method,
-            data,
-            headers,
-            deferred
-          );
-        };
-
-        returnVertexNormalTileJson();
-
-        const terrainProvider = new CesiumTerrainProvider({
-          url: "made/up/url",
-          requestVertexNormals: true,
-        });
-
-        globe.terrainProvider = terrainProvider;
-        scene.camera.setView({
-          destination: new Rectangle(0.0001, 0.0001, 0.0025, 0.0025),
-        });
-
-        return updateUntilDone(globe).then(function () {
-          expect(renderOptions).notToRender([0, 0, 0, 255]);
-
-          scene.globe.show = false;
-          expect(renderOptions).toRender([0, 0, 0, 255]);
-        });
-      });
-    });
-
-    it("renders terrain with lambertDiffuseMultiplier", function () {
-      const renderOptions = {
-        scene: scene,
-        time: new JulianDate(2557522.0),
+          deferred
+        );
       };
-      globe.enableLighting = true;
 
-      const layerCollection = globe.imageryLayers;
-      layerCollection.removeAll();
-      const imageryProvider = new SingleTileImageryProvider({
-        url: "Data/Images/Red16x16.png",
+      returnVertexNormalTileJson();
+
+      var terrainProvider = new CesiumTerrainProvider({
+        url: "made/up/url",
+        requestVertexNormals: true,
       });
-      layerCollection.addImageryProvider(imageryProvider);
-      return imageryProvider.readyPromise.then(function () {
-        Resource._Implementations.loadWithXhr = function (
-          url,
-          responseType,
-          method,
-          data,
-          headers,
-          deferred,
-          overrideMimeType
-        ) {
-          Resource._DefaultImplementations.loadWithXhr(
-            "Data/CesiumTerrainTileJson/tile.vertexnormals.terrain",
-            responseType,
-            method,
-            data,
-            headers,
-            deferred
-          );
-        };
 
-        returnVertexNormalTileJson();
+      globe.terrainProvider = terrainProvider;
+      scene.camera.setView({
+        destination: new Rectangle(0.0001, 0.0001, 0.0025, 0.0025),
+      });
 
-        const terrainProvider = new CesiumTerrainProvider({
-          url: "made/up/url",
-          requestVertexNormals: true,
-        });
+      return updateUntilDone(globe).then(function () {
+        expect(scene).notToRender([0, 0, 0, 255]);
 
-        globe.terrainProvider = terrainProvider;
-        scene.camera.setView({
-          destination: new Rectangle(0.0001, 0.0001, 0.0025, 0.0025),
-        });
-
-        return updateUntilDone(globe).then(function () {
-          let initialRgba;
-          expect(renderOptions).toRenderAndCall(function (rgba) {
-            initialRgba = rgba;
-            expect(renderOptions).notToRender([0, 0, 0, 255]);
-          });
-          globe.lambertDiffuseMultiplier = 10.0;
-          expect(renderOptions).notToRender(initialRgba);
-        });
+        scene.globe.show = false;
+        expect(scene).toRender([0, 0, 0, 255]);
       });
     });
 
     it("renders with hue shift", function () {
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Blue.png" })
@@ -399,7 +335,7 @@ describe(
     });
 
     it("renders with saturation shift", function () {
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Blue.png" })
@@ -421,7 +357,7 @@ describe(
     });
 
     it("renders with brightness shift", function () {
-      const layerCollection = globe.imageryLayers;
+      var layerCollection = globe.imageryLayers;
       layerCollection.removeAll();
       layerCollection.addImageryProvider(
         new SingleTileImageryProvider({ url: "Data/Images/Blue.png" })
@@ -450,7 +386,7 @@ describe(
       return updateUntilDone(globe).then(function () {
         globe.backFaceCulling = true;
         scene.render();
-        let command = scene.frameState.commandList[0];
+        var command = scene.frameState.commandList[0];
         expect(command.renderState.cull.enabled).toBe(true);
         globe.backFaceCulling = false;
         scene.render();
@@ -467,8 +403,8 @@ describe(
       return updateUntilDone(globe).then(function () {
         globe.showSkirts = true;
         scene.render();
-        let command = scene.frameState.commandList[0];
-        const indexCount = command.count;
+        var command = scene.frameState.commandList[0];
+        var indexCount = command.count;
         expect(indexCount).toBe(command.owner.data.renderedMesh.indices.length);
 
         globe.showSkirts = false;
@@ -513,7 +449,7 @@ describe(
     it("sets underground color by distance", function () {
       globe.baseColor = Color.BLACK;
       globe.undergroundColor = Color.RED;
-      const radius = globe.ellipsoid.maximumRadius;
+      var radius = globe.ellipsoid.maximumRadius;
       globe.undergroundColorAlphaByDistance = new NearFarScalar(
         radius * 0.25,
         0.0,

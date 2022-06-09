@@ -1,18 +1,16 @@
 //This file is automatically rebuilt by the Cesium build process.
-export default "void geometryStage(inout ProcessedAttributes attributes, mat4 modelView, mat3 normal) \n\
+export default "void pointStage()\n\
+{\n\
+    gl_PointSize = 4.0;\n\
+}\n\
+\n\
+void geometryStage(inout ProcessedAttributes attributes) \n\
 {\n\
     // Compute positions in different coordinate systems\n\
     vec3 positionMC = attributes.positionMC;\n\
     v_positionMC = positionMC;\n\
-    v_positionEC = (modelView * vec4(positionMC, 1.0)).xyz;\n\
-\n\
-    #ifdef USE_2D_POSITIONS\n\
-    vec3 position2D = attributes.position2D;\n\
-    vec3 positionEC = (u_modelView2D * vec4(position2D, 1.0)).xyz;\n\
-    gl_Position = czm_projection * vec4(positionEC, 1.0);\n\
-    #else\n\
-    gl_Position = czm_projection * vec4(v_positionEC, 1.0);\n\
-    #endif\n\
+    v_positionEC = (czm_modelView * vec4(positionMC, 1.0)).xyz;\n\
+    gl_Position = czm_modelViewProjection * vec4(positionMC, 1.0);\n\
 \n\
     // Sometimes the fragment shader needs this (e.g. custom shaders)\n\
     #ifdef COMPUTE_POSITION_WC\n\
@@ -22,15 +20,15 @@ export default "void geometryStage(inout ProcessedAttributes attributes, mat4 mo
     #endif\n\
 \n\
     #ifdef HAS_NORMALS\n\
-    v_normalEC = normal * attributes.normalMC;\n\
+    v_normalEC = czm_normal * attributes.normalMC;\n\
     #endif\n\
 \n\
     #ifdef HAS_TANGENTS\n\
-    v_tangentEC = normalize(normal * attributes.tangentMC);    \n\
+    v_tangentEC = normalize(czm_normal * attributes.tangentMC);    \n\
     #endif\n\
 \n\
     #ifdef HAS_BITANGENTS\n\
-    v_bitangentEC = normalize(normal * attributes.bitangentMC);\n\
+    v_bitangentEC = normalize(czm_normal * attributes.bitangentMC);\n\
     #endif\n\
 \n\
     // All other varyings need to be dynamically generated in\n\

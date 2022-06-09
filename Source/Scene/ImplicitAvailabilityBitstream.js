@@ -21,30 +21,36 @@ import RuntimeError from "../Core/RuntimeError.js";
  * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
  */
 export default function ImplicitAvailabilityBitstream(options) {
-  const lengthBits = options.lengthBits;
-  let availableCount = options.availableCount;
+  var lengthBits = options.lengthBits;
+  var availableCount = options.availableCount;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number("options.lengthBits", lengthBits);
   //>>includeEnd('debug');
 
-  const constant = options.constant;
-  const bitstream = options.bitstream;
+  var constant = options.constant;
+  var bitstream = options.bitstream;
 
   if (defined(constant)) {
     // if defined, constant must be 1 which means all tiles are available
     availableCount = lengthBits;
   } else {
-    const expectedLength = Math.ceil(lengthBits / 8);
+    var expectedLength = Math.ceil(lengthBits / 8);
     if (bitstream.length !== expectedLength) {
       throw new RuntimeError(
-        `Availability bitstream must be exactly ${expectedLength} bytes long to store ${lengthBits} bits. Actual bitstream was ${bitstream.length} bytes long.`
+        "Availability bitstream must be exactly " +
+          expectedLength +
+          " bytes long to store " +
+          lengthBits +
+          " bits. Actual bitstream was " +
+          bitstream.length +
+          " bytes long."
       );
     }
 
     // Only compute the available count if requested, as this involves looping
     // over the bitstream.
-    const computeAvailableCountEnabled = defaultValue(
+    var computeAvailableCountEnabled = defaultValue(
       options.computeAvailableCountEnabled,
       false
     );
@@ -68,10 +74,10 @@ export default function ImplicitAvailabilityBitstream(options) {
  * @private
  */
 function count1Bits(bitstream, lengthBits) {
-  let count = 0;
-  for (let i = 0; i < lengthBits; i++) {
-    const byteIndex = i >> 3;
-    const bitIndex = i % 8;
+  var count = 0;
+  for (var i = 0; i < lengthBits; i++) {
+    var byteIndex = i >> 3;
+    var bitIndex = i % 8;
     count += (bitstream[byteIndex] >> bitIndex) & 1;
   }
   return count;
@@ -128,8 +134,8 @@ ImplicitAvailabilityBitstream.prototype.getBit = function (index) {
   }
 
   // byteIndex is floor(index / 8)
-  const byteIndex = index >> 3;
-  const bitIndex = index % 8;
+  var byteIndex = index >> 3;
+  var bitIndex = index % 8;
 
   return ((this._bitstream[byteIndex] >> bitIndex) & 1) === 1;
 };

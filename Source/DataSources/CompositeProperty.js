@@ -9,11 +9,11 @@ function subscribeAll(property, eventHelper, definitionChanged, intervals) {
   function callback() {
     definitionChanged.raiseEvent(property);
   }
-  const items = [];
+  var items = [];
   eventHelper.removeAll();
-  const length = intervals.length;
-  for (let i = 0; i < length; i++) {
-    const interval = intervals.get(i);
+  var length = intervals.length;
+  for (var i = 0; i < length; i++) {
+    var interval = intervals.get(i);
     if (defined(interval.data) && items.indexOf(interval.data) === -1) {
       eventHelper.add(interval.data.definitionChanged, callback);
     }
@@ -30,14 +30,14 @@ function subscribeAll(property, eventHelper, definitionChanged, intervals) {
  *
  *
  * @example
- * const constantProperty = ...;
- * const sampledProperty = ...;
+ * var constantProperty = ...;
+ * var sampledProperty = ...;
  *
  * //Create a composite property from two previously defined properties
  * //where the property is valid on August 1st, 2012 and uses a constant
  * //property for the first half of the day and a sampled property for the
  * //remaining half.
- * const composite = new Cesium.CompositeProperty();
+ * var composite = new Cesium.CompositeProperty();
  * composite.intervals.addInterval(Cesium.TimeInterval.fromIso8601({
  *     iso8601 : '2012-08-01T00:00:00.00Z/2012-08-01T12:00:00.00Z',
  *     data : constantProperty
@@ -117,7 +117,7 @@ CompositeProperty.prototype.getValue = function (time, result) {
   }
   //>>includeEnd('debug');
 
-  const innerProperty = this._intervals.findDataForIntervalContainingDate(time);
+  var innerProperty = this._intervals.findDataForIntervalContainingDate(time);
   if (defined(innerProperty)) {
     return innerProperty.getValue(time, result);
   }

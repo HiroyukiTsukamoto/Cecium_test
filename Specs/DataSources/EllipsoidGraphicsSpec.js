@@ -10,7 +10,7 @@ import testMaterialDefinitionChanged from "../testMaterialDefinitionChanged.js";
 
 describe("DataSources/EllipsoidGraphics", function () {
   it("creates expected instance from raw assignment and construction", function () {
-    const options = {
+    var options = {
       material: Color.BLUE,
       show: true,
       stackPartitions: 1,
@@ -24,7 +24,7 @@ describe("DataSources/EllipsoidGraphics", function () {
       distanceDisplayCondition: new DistanceDisplayCondition(),
     };
 
-    const ellipsoid = new EllipsoidGraphics(options);
+    var ellipsoid = new EllipsoidGraphics(options);
     expect(ellipsoid.material).toBeInstanceOf(ColorMaterialProperty);
     expect(ellipsoid.show).toBeInstanceOf(ConstantProperty);
     expect(ellipsoid.stackPartitions).toBeInstanceOf(ConstantProperty);
@@ -57,7 +57,7 @@ describe("DataSources/EllipsoidGraphics", function () {
   });
 
   it("merge assigns unassigned properties", function () {
-    const source = new EllipsoidGraphics();
+    var source = new EllipsoidGraphics();
     source.material = new ColorMaterialProperty();
     source.radii = new ConstantProperty();
     source.innerRadii = new ConstantProperty();
@@ -78,7 +78,7 @@ describe("DataSources/EllipsoidGraphics", function () {
       new DistanceDisplayCondition()
     );
 
-    const target = new EllipsoidGraphics();
+    var target = new EllipsoidGraphics();
     target.merge(source);
 
     expect(target.material).toBe(source.material);
@@ -103,27 +103,27 @@ describe("DataSources/EllipsoidGraphics", function () {
   });
 
   it("merge does not assign assigned properties", function () {
-    const source = new EllipsoidGraphics();
+    var source = new EllipsoidGraphics();
 
-    const material = new ColorMaterialProperty();
-    const radii = new ConstantProperty();
-    const innerRadii = new ConstantProperty();
-    const minimumClock = new ConstantProperty();
-    const maximumClock = new ConstantProperty();
-    const minimumCone = new ConstantProperty();
-    const maximumCone = new ConstantProperty();
-    const show = new ConstantProperty();
-    const stackPartitions = new ConstantProperty();
-    const slicePartitions = new ConstantProperty();
-    const subdivisions = new ConstantProperty();
-    const fill = new ConstantProperty();
-    const outline = new ConstantProperty();
-    const outlineColor = new ConstantProperty();
-    const outlineWidth = new ConstantProperty();
-    const shadows = new ConstantProperty();
-    const distanecDisplayCondition = new ConstantProperty();
+    var material = new ColorMaterialProperty();
+    var radii = new ConstantProperty();
+    var innerRadii = new ConstantProperty();
+    var minimumClock = new ConstantProperty();
+    var maximumClock = new ConstantProperty();
+    var minimumCone = new ConstantProperty();
+    var maximumCone = new ConstantProperty();
+    var show = new ConstantProperty();
+    var stackPartitions = new ConstantProperty();
+    var slicePartitions = new ConstantProperty();
+    var subdivisions = new ConstantProperty();
+    var fill = new ConstantProperty();
+    var outline = new ConstantProperty();
+    var outlineColor = new ConstantProperty();
+    var outlineWidth = new ConstantProperty();
+    var shadows = new ConstantProperty();
+    var distanecDisplayCondition = new ConstantProperty();
 
-    const target = new EllipsoidGraphics();
+    var target = new EllipsoidGraphics();
     target.material = material;
     target.radii = radii;
     target.innerRadii = innerRadii;
@@ -165,7 +165,7 @@ describe("DataSources/EllipsoidGraphics", function () {
   });
 
   it("clone works", function () {
-    const source = new EllipsoidGraphics();
+    var source = new EllipsoidGraphics();
     source.material = new ColorMaterialProperty();
     source.radii = new ConstantProperty();
     source.show = new ConstantProperty();
@@ -179,7 +179,7 @@ describe("DataSources/EllipsoidGraphics", function () {
     source.shadows = new ConstantProperty();
     source.distanceDisplayCondition = new ConstantProperty();
 
-    let result = source.clone();
+    var result = source.clone();
     expect(result.material).toBe(source.material);
     expect(result.radii).toBe(source.radii);
     expect(result.show).toBe(source.show);
@@ -214,14 +214,14 @@ describe("DataSources/EllipsoidGraphics", function () {
   });
 
   it("merge throws if source undefined", function () {
-    const target = new EllipsoidGraphics();
+    var target = new EllipsoidGraphics();
     expect(function () {
       target.merge(undefined);
     }).toThrowDeveloperError();
   });
 
   it("raises definitionChanged when a property is assigned or modified", function () {
-    const property = new EllipsoidGraphics();
+    var property = new EllipsoidGraphics();
     testMaterialDefinitionChanged(property, "material", Color.RED, Color.BLUE);
     testDefinitionChanged(
       property,

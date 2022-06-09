@@ -11,14 +11,14 @@ import OrientedBoundingBox from "../Core/OrientedBoundingBox.js";
 import PerInstanceColorAppearance from "./PerInstanceColorAppearance.js";
 import Primitive from "./Primitive.js";
 
-const scratchU = new Cartesian3();
-const scratchV = new Cartesian3();
-const scratchW = new Cartesian3();
-const scratchCartesian = new Cartesian3();
+var scratchU = new Cartesian3();
+var scratchV = new Cartesian3();
+var scratchW = new Cartesian3();
+var scratchCartesian = new Cartesian3();
 
 function computeMissingVector(a, b, result) {
   result = Cartesian3.cross(a, b, result);
-  const magnitude = Cartesian3.magnitude(result);
+  var magnitude = Cartesian3.magnitude(result);
   return Cartesian3.multiplyByScalar(
     result,
     CesiumMath.EPSILON7 / magnitude,
@@ -27,25 +27,21 @@ function computeMissingVector(a, b, result) {
 }
 
 function findOrthogonalVector(a, result) {
-  const temp = Cartesian3.normalize(a, scratchCartesian);
-  const b = Cartesian3.equalsEpsilon(
-    temp,
-    Cartesian3.UNIT_X,
-    CesiumMath.EPSILON6
-  )
+  var temp = Cartesian3.normalize(a, scratchCartesian);
+  var b = Cartesian3.equalsEpsilon(temp, Cartesian3.UNIT_X, CesiumMath.EPSILON6)
     ? Cartesian3.UNIT_Y
     : Cartesian3.UNIT_X;
   return computeMissingVector(a, b, result);
 }
 
 function checkHalfAxes(halfAxes) {
-  let u = Matrix3.getColumn(halfAxes, 0, scratchU);
-  let v = Matrix3.getColumn(halfAxes, 1, scratchV);
-  let w = Matrix3.getColumn(halfAxes, 2, scratchW);
+  var u = Matrix3.getColumn(halfAxes, 0, scratchU);
+  var v = Matrix3.getColumn(halfAxes, 1, scratchV);
+  var w = Matrix3.getColumn(halfAxes, 2, scratchW);
 
-  const uZero = Cartesian3.equals(u, Cartesian3.ZERO);
-  const vZero = Cartesian3.equals(v, Cartesian3.ZERO);
-  const wZero = Cartesian3.equals(w, Cartesian3.ZERO);
+  var uZero = Cartesian3.equals(u, Cartesian3.ZERO);
+  var vZero = Cartesian3.equals(v, Cartesian3.ZERO);
+  var wZero = Cartesian3.equals(w, Cartesian3.ZERO);
 
   if (!uZero && !vZero && !wZero) {
     return halfAxes;
@@ -189,16 +185,16 @@ TileOrientedBoundingBox.prototype.createDebugVolume = function (color) {
   Check.defined("color", color);
   //>>includeEnd('debug');
 
-  const geometry = new BoxOutlineGeometry({
+  var geometry = new BoxOutlineGeometry({
     // Make a 2x2x2 cube
     minimum: new Cartesian3(-1.0, -1.0, -1.0),
     maximum: new Cartesian3(1.0, 1.0, 1.0),
   });
-  const modelMatrix = Matrix4.fromRotationTranslation(
+  var modelMatrix = Matrix4.fromRotationTranslation(
     this.boundingVolume.halfAxes,
     this.boundingVolume.center
   );
-  const instance = new GeometryInstance({
+  var instance = new GeometryInstance({
     geometry: geometry,
     id: "outline",
     modelMatrix: modelMatrix,

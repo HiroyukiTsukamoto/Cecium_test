@@ -35,6 +35,7 @@ import StripeMaterial from "../Shaders/Materials/StripeMaterial.js";
 import TextureMagnificationFilter from "../Renderer/TextureMagnificationFilter.js";
 import TextureMinificationFilter from "../Renderer/TextureMinificationFilter.js";
 import WaterMaterial from "../Shaders/Materials/Water.js";
+import when from "../ThirdParty/when.js";
 
 /**
  * A Material defines surface appearance through a combination of diffuse, specular,
@@ -356,25 +357,27 @@ Material._uniformList = {};
  * @exception {DeveloperError} material with that type does not exist.
  *
  * @example
- * const material = Cesium.Material.fromType('Color', {
+ * var material = Cesium.Material.fromType('Color', {
  *     color : new Cesium.Color(1.0, 0.0, 0.0, 1.0)
  * });
  */
 Material.fromType = function (type, uniforms) {
   //>>includeStart('debug', pragmas.debug);
   if (!defined(Material._materialCache.getMaterial(type))) {
-    throw new DeveloperError(`material with type '${type}' does not exist.`);
+    throw new DeveloperError(
+      "material with type '" + type + "' does not exist."
+    );
   }
   //>>includeEnd('debug');
 
-  const material = new Material({
+  var material = new Material({
     fabric: {
       type: type,
     },
   });
 
   if (defined(uniforms)) {
-    for (const name in uniforms) {
+    for (var name in uniforms) {
       if (uniforms.hasOwnProperty(name)) {
         material.uniforms[name] = uniforms[name];
       }
@@ -397,11 +400,11 @@ Material.prototype.isTranslucent = function () {
     return this.translucent;
   }
 
-  let translucent = true;
-  const funcs = this._translucentFunctions;
-  const length = funcs.length;
-  for (let i = 0; i < length; ++i) {
-    const func = funcs[i];
+  var translucent = true;
+  var funcs = this._translucentFunctions;
+  var length = funcs.length;
+  for (var i = 0; i < length; ++i) {
+    var func = funcs[i];
     if (typeof func === "function") {
       translucent = translucent && func();
     } else {
@@ -421,19 +424,19 @@ Material.prototype.isTranslucent = function () {
 Material.prototype.update = function (context) {
   this._defaultTexture = context.defaultTexture;
 
-  let i;
-  let uniformId;
+  var i;
+  var uniformId;
 
-  const loadedImages = this._loadedImages;
-  let length = loadedImages.length;
+  var loadedImages = this._loadedImages;
+  var length = loadedImages.length;
   for (i = 0; i < length; ++i) {
-    const loadedImage = loadedImages[i];
+    var loadedImage = loadedImages[i];
     uniformId = loadedImage.id;
-    let image = loadedImage.image;
+    var image = loadedImage.image;
 
     // Images transcoded from KTX2 can contain multiple mip levels:
     // https://github.khronos.org/KTX-Specification/#_mip_level_array
-    let mipLevels;
+    var mipLevels;
     if (Array.isArray(image)) {
       // highest detail mip should be level 0
       mipLevels = image.slice(1, image.length).map(function (mipLevel) {
@@ -442,12 +445,12 @@ Material.prototype.update = function (context) {
       image = image[0];
     }
 
-    const sampler = new Sampler({
+    var sampler = new Sampler({
       minificationFilter: this._minificationFilter,
       magnificationFilter: this._magnificationFilter,
     });
 
-    let texture;
+    var texture;
     if (defined(image.internalFormat)) {
       texture = new Texture({
         context: context,
@@ -471,16 +474,16 @@ Material.prototype.update = function (context) {
     // The material destroys its old texture only after the new one has been loaded.
     // This will ensure a smooth swap of textures and prevent the default texture
     // from appearing for a few frames.
-    const oldTexture = this._textures[uniformId];
+    var oldTexture = this._textures[uniformId];
     if (defined(oldTexture) && oldTexture !== this._defaultTexture) {
       oldTexture.destroy();
     }
 
     this._textures[uniformId] = texture;
 
-    const uniformDimensionsName = `${uniformId}Dimensions`;
+    var uniformDimensionsName = uniformId + "Dimensions";
     if (this.uniforms.hasOwnProperty(uniformDimensionsName)) {
-      const uniformDimensions = this.uniforms[uniformDimensionsName];
+      var uniformDimensions = this.uniforms[uniformDimensionsName];
       uniformDimensions.x = texture._width;
       uniformDimensions.y = texture._height;
     }
@@ -488,15 +491,15 @@ Material.prototype.update = function (context) {
 
   loadedImages.length = 0;
 
-  const loadedCubeMaps = this._loadedCubeMaps;
+  var loadedCubeMaps = this._loadedCubeMaps;
   length = loadedCubeMaps.length;
 
   for (i = 0; i < length; ++i) {
-    const loadedCubeMap = loadedCubeMaps[i];
+    var loadedCubeMap = loadedCubeMaps[i];
     uniformId = loadedCubeMap.id;
-    const images = loadedCubeMap.images;
+    var images = loadedCubeMap.images;
 
-    const cubeMap = new CubeMap({
+    var cubeMap = new CubeMap({
       context: context,
       source: {
         positiveX: images[0],
@@ -517,14 +520,14 @@ Material.prototype.update = function (context) {
 
   loadedCubeMaps.length = 0;
 
-  const updateFunctions = this._updateFunctions;
+  var updateFunctions = this._updateFunctions;
   length = updateFunctions.length;
   for (i = 0; i < length; ++i) {
     updateFunctions[i](this, context);
   }
 
-  const subMaterials = this.materials;
-  for (const name in subMaterials) {
+  var subMaterials = this.materials;
+  for (var name in subMaterials) {
     if (subMaterials.hasOwnProperty(name)) {
       subMaterials[name].update(context);
     }
@@ -562,18 +565,18 @@ Material.prototype.isDestroyed = function () {
  * @see Material#isDestroyed
  */
 Material.prototype.destroy = function () {
-  const textures = this._textures;
-  for (const texture in textures) {
+  var textures = this._textures;
+  for (var texture in textures) {
     if (textures.hasOwnProperty(texture)) {
-      const instance = textures[texture];
+      var instance = textures[texture];
       if (instance !== this._defaultTexture) {
         instance.destroy();
       }
     }
   }
 
-  const materials = this.materials;
-  for (const material in materials) {
+  var materials = this.materials;
+  for (var material in materials) {
     if (materials.hasOwnProperty(material)) {
       materials[material].destroy();
     }
@@ -605,12 +608,12 @@ function initializeMaterial(options, result) {
   result._uniforms = {};
   result._translucentFunctions = [];
 
-  let translucent;
+  var translucent;
 
   // If the cache contains this material type, build the material template off of the stored template.
-  const cachedMaterial = Material._materialCache.getMaterial(result.type);
+  var cachedMaterial = Material._materialCache.getMaterial(result.type);
   if (defined(cachedMaterial)) {
-    const template = clone(cachedMaterial.fabric, true);
+    var template = clone(cachedMaterial.fabric, true);
     result._template = combine(result._template, template, true);
     translucent = cachedMaterial.translucent;
   }
@@ -627,14 +630,14 @@ function initializeMaterial(options, result) {
   createUniforms(result);
   createSubMaterials(result);
 
-  const defaultTranslucent =
+  var defaultTranslucent =
     result._translucentFunctions.length === 0 ? true : undefined;
   translucent = defaultValue(translucent, defaultTranslucent);
   translucent = defaultValue(options.translucent, translucent);
 
   if (defined(translucent)) {
     if (typeof translucent === "function") {
-      const wrappedTranslucent = function () {
+      var wrappedTranslucent = function () {
         return translucent(result);
       };
       result._translucentFunctions.push(wrappedTranslucent);
@@ -646,9 +649,9 @@ function initializeMaterial(options, result) {
 
 function checkForValidProperties(object, properties, result, throwNotFound) {
   if (defined(object)) {
-    for (const property in object) {
+    for (var property in object) {
       if (object.hasOwnProperty(property)) {
-        const hasProperty = properties.indexOf(property) !== -1;
+        var hasProperty = properties.indexOf(property) !== -1;
         if (
           (throwNotFound && !hasProperty) ||
           (!throwNotFound && hasProperty)
@@ -662,11 +665,14 @@ function checkForValidProperties(object, properties, result, throwNotFound) {
 
 function invalidNameError(property, properties) {
   //>>includeStart('debug', pragmas.debug);
-  let errorString = `fabric: property name '${property}' is not valid. It should be `;
-  for (let i = 0; i < properties.length; i++) {
-    const propertyName = `'${properties[i]}'`;
+  var errorString =
+    "fabric: property name '" + property + "' is not valid. It should be ";
+  for (var i = 0; i < properties.length; i++) {
+    var propertyName = "'" + properties[i] + "'";
     errorString +=
-      i === properties.length - 1 ? `or ${propertyName}.` : `${propertyName}, `;
+      i === properties.length - 1
+        ? "or " + propertyName + "."
+        : propertyName + ", ";
   }
   throw new DeveloperError(errorString);
   //>>includeEnd('debug');
@@ -674,19 +680,22 @@ function invalidNameError(property, properties) {
 
 function duplicateNameError(property, properties) {
   //>>includeStart('debug', pragmas.debug);
-  const errorString = `fabric: uniforms and materials cannot share the same property '${property}'`;
+  var errorString =
+    "fabric: uniforms and materials cannot share the same property '" +
+    property +
+    "'";
   throw new DeveloperError(errorString);
   //>>includeEnd('debug');
 }
 
-const templateProperties = [
+var templateProperties = [
   "type",
   "materials",
   "uniforms",
   "components",
   "source",
 ];
-const componentProperties = [
+var componentProperties = [
   "diffuse",
   "specular",
   "shininess",
@@ -696,10 +705,10 @@ const componentProperties = [
 ];
 
 function checkForTemplateErrors(material) {
-  const template = material._template;
-  const uniforms = template.uniforms;
-  const materials = template.materials;
-  const components = template.components;
+  var template = material._template;
+  var uniforms = template.uniforms;
+  var materials = template.materials;
+  var components = template.components;
 
   // Make sure source and components do not exist in the same template.
   //>>includeStart('debug', pragmas.debug);
@@ -720,8 +729,8 @@ function checkForTemplateErrors(material) {
   );
 
   // Make sure uniforms and materials do not share any of the same names.
-  const materialNames = [];
-  for (const property in materials) {
+  var materialNames = [];
+  for (var property in materials) {
     if (materials.hasOwnProperty(property)) {
       materialNames.push(property);
     }
@@ -730,8 +739,8 @@ function checkForTemplateErrors(material) {
 }
 
 function isMaterialFused(shaderComponent, material) {
-  const materials = material._template.materials;
-  for (const subMaterialId in materials) {
+  var materials = material._template.materials;
+  for (var subMaterialId in materials) {
     if (materials.hasOwnProperty(subMaterialId)) {
       if (shaderComponent.indexOf(subMaterialId) > -1) {
         return true;
@@ -744,32 +753,35 @@ function isMaterialFused(shaderComponent, material) {
 
 // Create the czm_getMaterial method body using source or components.
 function createMethodDefinition(material) {
-  const components = material._template.components;
-  const source = material._template.source;
+  var components = material._template.components;
+  var source = material._template.source;
   if (defined(source)) {
-    material.shaderSource += `${source}\n`;
+    material.shaderSource += source + "\n";
   } else {
     material.shaderSource +=
       "czm_material czm_getMaterial(czm_materialInput materialInput)\n{\n";
     material.shaderSource +=
       "czm_material material = czm_getDefaultMaterial(materialInput);\n";
     if (defined(components)) {
-      const isMultiMaterial =
+      var isMultiMaterial =
         Object.keys(material._template.materials).length > 0;
-      for (const component in components) {
+      for (var component in components) {
         if (components.hasOwnProperty(component)) {
           if (component === "diffuse" || component === "emission") {
-            const isFusion =
+            var isFusion =
               isMultiMaterial &&
               isMaterialFused(components[component], material);
-            const componentSource = isFusion
+            var componentSource = isFusion
               ? components[component]
-              : `czm_gammaCorrect(${components[component]})`;
-            material.shaderSource += `material.${component} = ${componentSource}; \n`;
+              : "czm_gammaCorrect(" + components[component] + ")";
+            material.shaderSource +=
+              "material." + component + " = " + componentSource + "; \n";
           } else if (component === "alpha") {
-            material.shaderSource += `material.alpha = ${components.alpha}; \n`;
+            material.shaderSource +=
+              "material.alpha = " + components.alpha + "; \n";
           } else {
-            material.shaderSource += `material.${component} = ${components[component]};\n`;
+            material.shaderSource +=
+              "material." + component + " = " + components[component] + ";\n";
           }
         }
       }
@@ -778,27 +790,27 @@ function createMethodDefinition(material) {
   }
 }
 
-const matrixMap = {
+var matrixMap = {
   mat2: Matrix2,
   mat3: Matrix3,
   mat4: Matrix4,
 };
 
-const ktx2Regex = /\.ktx2$/i;
+var ktx2Regex = /\.ktx2$/i;
 
 function createTexture2DUpdateFunction(uniformId) {
-  let oldUniformValue;
+  var oldUniformValue;
   return function (material, context) {
-    const uniforms = material.uniforms;
-    const uniformValue = uniforms[uniformId];
-    const uniformChanged = oldUniformValue !== uniformValue;
-    const uniformValueIsDefaultImage =
+    var uniforms = material.uniforms;
+    var uniformValue = uniforms[uniformId];
+    var uniformChanged = oldUniformValue !== uniformValue;
+    var uniformValueIsDefaultImage =
       !defined(uniformValue) || uniformValue === Material.DefaultImageId;
     oldUniformValue = uniformValue;
 
-    let texture = material._textures[uniformId];
-    let uniformDimensionsName;
-    let uniformDimensions;
+    var texture = material._textures[uniformId];
+    var uniformDimensionsName;
+    var uniformDimensions;
 
     if (uniformValue instanceof HTMLVideoElement) {
       // HTMLVideoElement.readyState >=2 means we have enough data for the current frame.
@@ -812,7 +824,7 @@ function createTexture2DUpdateFunction(uniformId) {
         }
 
         if (!defined(texture) || texture === context.defaultTexture) {
-          const sampler = new Sampler({
+          var sampler = new Sampler({
             minificationFilter: material._minificationFilter,
             magnificationFilter: material._magnificationFilter,
           });
@@ -836,13 +848,13 @@ function createTexture2DUpdateFunction(uniformId) {
 
     if (uniformValue instanceof Texture && uniformValue !== texture) {
       material._texturePaths[uniformId] = undefined;
-      const tmp = material._textures[uniformId];
+      var tmp = material._textures[uniformId];
       if (defined(tmp) && tmp !== material._defaultTexture) {
         tmp.destroy();
       }
       material._textures[uniformId] = uniformValue;
 
-      uniformDimensionsName = `${uniformId}Dimensions`;
+      uniformDimensionsName = uniformId + "Dimensions";
       if (uniforms.hasOwnProperty(uniformDimensionsName)) {
         uniformDimensions = uniforms[uniformDimensionsName];
         uniformDimensions.x = uniformValue._width;
@@ -866,7 +878,7 @@ function createTexture2DUpdateFunction(uniformId) {
       material._texturePaths[uniformId] = undefined;
       texture = material._textures[uniformId] = material._defaultTexture;
 
-      uniformDimensionsName = `${uniformId}Dimensions`;
+      uniformDimensionsName = uniformId + "Dimensions";
       if (uniforms.hasOwnProperty(uniformDimensionsName)) {
         uniformDimensions = uniforms[uniformDimensionsName];
         uniformDimensions.x = texture._width;
@@ -882,7 +894,7 @@ function createTexture2DUpdateFunction(uniformId) {
     //  they are clonable. That's why we check the url property for Resources
     //  because the instances aren't the same and we keep trying to load the same
     //  image if it fails to load.
-    const isResource = uniformValue instanceof Resource;
+    var isResource = uniformValue instanceof Resource;
     if (
       !defined(material._texturePaths[uniformId]) ||
       (isResource &&
@@ -890,25 +902,25 @@ function createTexture2DUpdateFunction(uniformId) {
       (!isResource && uniformValue !== material._texturePaths[uniformId])
     ) {
       if (typeof uniformValue === "string" || isResource) {
-        const resource = isResource
+        var resource = isResource
           ? uniformValue
           : Resource.createIfNeeded(uniformValue);
 
-        let promise;
+        var promise;
         if (ktx2Regex.test(resource.url)) {
           promise = loadKTX2(resource.url);
         } else {
           promise = resource.fetchImage();
         }
 
-        Promise.resolve(promise)
+        promise
           .then(function (image) {
             material._loadedImages.push({
               id: uniformId,
               image: image,
             });
           })
-          .catch(function () {
+          .otherwise(function () {
             if (defined(texture) && texture !== material._defaultTexture) {
               texture.destroy();
             }
@@ -931,10 +943,10 @@ function createTexture2DUpdateFunction(uniformId) {
 
 function createCubeMapUpdateFunction(uniformId) {
   return function (material, context) {
-    const uniformValue = material.uniforms[uniformId];
+    var uniformValue = material.uniforms[uniformId];
 
     if (uniformValue instanceof CubeMap) {
-      const tmp = material._textures[uniformId];
+      var tmp = material._textures[uniformId];
       if (tmp !== material._defaultTexture) {
         tmp.destroy();
       }
@@ -952,7 +964,7 @@ function createCubeMapUpdateFunction(uniformId) {
       return;
     }
 
-    const path =
+    var path =
       uniformValue.positiveX +
       uniformValue.negativeX +
       uniformValue.positiveY +
@@ -961,7 +973,7 @@ function createCubeMapUpdateFunction(uniformId) {
       uniformValue.negativeZ;
 
     if (path !== material._texturePaths[uniformId]) {
-      const promises = [
+      var promises = [
         Resource.createIfNeeded(uniformValue.positiveX).fetchImage(),
         Resource.createIfNeeded(uniformValue.negativeX).fetchImage(),
         Resource.createIfNeeded(uniformValue.positiveY).fetchImage(),
@@ -970,7 +982,7 @@ function createCubeMapUpdateFunction(uniformId) {
         Resource.createIfNeeded(uniformValue.negativeZ).fetchImage(),
       ];
 
-      Promise.all(promises).then(function (images) {
+      when.all(promises).then(function (images) {
         material._loadedCubeMaps.push({
           id: uniformId,
           images: images,
@@ -983,8 +995,8 @@ function createCubeMapUpdateFunction(uniformId) {
 }
 
 function createUniforms(material) {
-  const uniforms = material._template.uniforms;
-  for (const uniformId in uniforms) {
+  var uniforms = material._template.uniforms;
+  for (var uniformId in uniforms) {
     if (uniforms.hasOwnProperty(uniformId)) {
       createUniform(material, uniformId);
     }
@@ -994,26 +1006,26 @@ function createUniforms(material) {
 // Writes uniform declarations to the shader file and connects uniform values with
 // corresponding material properties through the returnUniforms function.
 function createUniform(material, uniformId) {
-  const strict = material._strict;
-  const materialUniforms = material._template.uniforms;
-  const uniformValue = materialUniforms[uniformId];
-  const uniformType = getUniformType(uniformValue);
+  var strict = material._strict;
+  var materialUniforms = material._template.uniforms;
+  var uniformValue = materialUniforms[uniformId];
+  var uniformType = getUniformType(uniformValue);
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(uniformType)) {
     throw new DeveloperError(
-      `fabric: uniform '${uniformId}' has invalid type.`
+      "fabric: uniform '" + uniformId + "' has invalid type."
     );
   }
   //>>includeEnd('debug');
 
-  let replacedTokenCount;
+  var replacedTokenCount;
   if (uniformType === "channels") {
     replacedTokenCount = replaceToken(material, uniformId, uniformValue, false);
     //>>includeStart('debug', pragmas.debug);
     if (replacedTokenCount === 0 && strict) {
       throw new DeveloperError(
-        `strict: shader source does not use channels '${uniformId}'.`
+        "strict: shader source does not use channels '" + uniformId + "'."
       );
     }
     //>>includeEnd('debug');
@@ -1021,7 +1033,7 @@ function createUniform(material, uniformId) {
     // Since webgl doesn't allow texture dimension queries in glsl, create a uniform to do it.
     // Check if the shader source actually uses texture dimensions before creating the uniform.
     if (uniformType === "sampler2D") {
-      const imageDimensionsUniformName = `${uniformId}Dimensions`;
+      var imageDimensionsUniformName = uniformId + "Dimensions";
       if (getNumberOfTokens(material, imageDimensionsUniformName) > 0) {
         materialUniforms[imageDimensionsUniformName] = {
           type: "ivec3",
@@ -1033,20 +1045,20 @@ function createUniform(material, uniformId) {
     }
 
     // Add uniform declaration to source code.
-    const uniformDeclarationRegex = new RegExp(
-      `uniform\\s+${uniformType}\\s+${uniformId}\\s*;`
+    var uniformDeclarationRegex = new RegExp(
+      "uniform\\s+" + uniformType + "\\s+" + uniformId + "\\s*;"
     );
     if (!uniformDeclarationRegex.test(material.shaderSource)) {
-      const uniformDeclaration = `uniform ${uniformType} ${uniformId};`;
+      var uniformDeclaration = "uniform " + uniformType + " " + uniformId + ";";
       material.shaderSource = uniformDeclaration + material.shaderSource;
     }
 
-    const newUniformId = `${uniformId}_${material._count++}`;
+    var newUniformId = uniformId + "_" + material._count++;
     replacedTokenCount = replaceToken(material, uniformId, newUniformId);
     //>>includeStart('debug', pragmas.debug);
     if (replacedTokenCount === 1 && strict) {
       throw new DeveloperError(
-        `strict: shader source does not use uniform '${uniformId}'.`
+        "strict: shader source does not use uniform '" + uniformId + "'."
       );
     }
     //>>includeEnd('debug');
@@ -1065,7 +1077,7 @@ function createUniform(material, uniformId) {
       };
       material._updateFunctions.push(createCubeMapUpdateFunction(uniformId));
     } else if (uniformType.indexOf("mat") !== -1) {
-      const scratchMatrix = new matrixMap[uniformType]();
+      var scratchMatrix = new matrixMap[uniformType]();
       material._uniforms[newUniformId] = function () {
         return matrixMap[uniformType].fromColumnMajorArray(
           material.uniforms[uniformId],
@@ -1082,9 +1094,9 @@ function createUniform(material, uniformId) {
 
 // Determines the uniform type based on the uniform in the template.
 function getUniformType(uniformValue) {
-  let uniformType = uniformValue.type;
+  var uniformType = uniformValue.type;
   if (!defined(uniformType)) {
-    const type = typeof uniformValue;
+    var type = typeof uniformValue;
     if (type === "number") {
       uniformType = "float";
     } else if (type === "boolean") {
@@ -1109,17 +1121,17 @@ function getUniformType(uniformValue) {
           uniformValue.length === 9 ||
           uniformValue.length === 16
         ) {
-          uniformType = `mat${Math.sqrt(uniformValue.length)}`;
+          uniformType = "mat" + Math.sqrt(uniformValue.length);
         }
       } else {
-        let numAttributes = 0;
-        for (const attribute in uniformValue) {
+        var numAttributes = 0;
+        for (var attribute in uniformValue) {
           if (uniformValue.hasOwnProperty(attribute)) {
             numAttributes += 1;
           }
         }
         if (numAttributes >= 2 && numAttributes <= 4) {
-          uniformType = `vec${numAttributes}`;
+          uniformType = "vec" + numAttributes;
         } else if (numAttributes === 6) {
           uniformType = "samplerCube";
         }
@@ -1131,12 +1143,12 @@ function getUniformType(uniformValue) {
 
 // Create all sub-materials by combining source and uniforms together.
 function createSubMaterials(material) {
-  const strict = material._strict;
-  const subMaterialTemplates = material._template.materials;
-  for (const subMaterialId in subMaterialTemplates) {
+  var strict = material._strict;
+  var subMaterialTemplates = material._template.materials;
+  for (var subMaterialId in subMaterialTemplates) {
     if (subMaterialTemplates.hasOwnProperty(subMaterialId)) {
       // Construct the sub-material.
-      const subMaterial = new Material({
+      var subMaterial = new Material({
         strict: strict,
         fabric: subMaterialTemplates[subMaterialId],
         count: material._count,
@@ -1154,14 +1166,14 @@ function createSubMaterials(material) {
       );
 
       // Make the material's czm_getMaterial unique by appending the sub-material type.
-      const originalMethodName = "czm_getMaterial";
-      const newMethodName = `${originalMethodName}_${material._count++}`;
+      var originalMethodName = "czm_getMaterial";
+      var newMethodName = originalMethodName + "_" + material._count++;
       replaceToken(subMaterial, originalMethodName, newMethodName);
       material.shaderSource = subMaterial.shaderSource + material.shaderSource;
 
       // Replace each material id with an czm_getMaterial method call.
-      const materialMethodCall = `${newMethodName}(materialInput)`;
-      const tokensReplacedCount = replaceToken(
+      var materialMethodCall = newMethodName + "(materialInput)";
+      var tokensReplacedCount = replaceToken(
         material,
         subMaterialId,
         materialMethodCall
@@ -1169,7 +1181,7 @@ function createSubMaterials(material) {
       //>>includeStart('debug', pragmas.debug);
       if (tokensReplacedCount === 0 && strict) {
         throw new DeveloperError(
-          `strict: shader source does not use material '${subMaterialId}'.`
+          "strict: shader source does not use material '" + subMaterialId + "'."
         );
       }
       //>>includeEnd('debug');
@@ -1182,10 +1194,10 @@ function createSubMaterials(material) {
 // http://stackoverflow.com/questions/641407/javascript-negative-lookbehind-equivalent
 function replaceToken(material, token, newToken, excludePeriod) {
   excludePeriod = defaultValue(excludePeriod, true);
-  let count = 0;
-  const suffixChars = "([\\w])?";
-  const prefixChars = `([\\w${excludePeriod ? "." : ""}])?`;
-  const regExp = new RegExp(prefixChars + token + suffixChars, "g");
+  var count = 0;
+  var suffixChars = "([\\w])?";
+  var prefixChars = "([\\w" + (excludePeriod ? "." : "") + "])?";
+  var regExp = new RegExp(prefixChars + token + suffixChars, "g");
   material.shaderSource = material.shaderSource.replace(regExp, function (
     $0,
     $1,
@@ -1416,7 +1428,7 @@ Material._materialCache.addMaterial(Material.GridType, {
     source: GridMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return uniforms.color.alpha < 1.0 || uniforms.cellAlpha < 1.0;
   },
 });
@@ -1440,7 +1452,7 @@ Material._materialCache.addMaterial(Material.StripeType, {
     source: StripeMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return uniforms.evenColor.alpha < 1.0 || uniforms.oddColor.alpha < 1.0;
   },
 });
@@ -1462,7 +1474,7 @@ Material._materialCache.addMaterial(Material.CheckerboardType, {
     source: CheckerboardMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return uniforms.lightColor.alpha < 1.0 || uniforms.darkColor.alpha < 1.0;
   },
 });
@@ -1484,7 +1496,7 @@ Material._materialCache.addMaterial(Material.DotType, {
     source: DotMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return uniforms.lightColor.alpha < 1.0 || uniforms.darkColor.alpha < 1.0;
   },
 });
@@ -1512,7 +1524,7 @@ Material._materialCache.addMaterial(Material.WaterType, {
     source: WaterMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return (
       uniforms.baseWaterColor.alpha < 1.0 || uniforms.blendColor.alpha < 1.0
     );
@@ -1536,7 +1548,7 @@ Material._materialCache.addMaterial(Material.RimLightingType, {
     source: RimLightingMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return uniforms.color.alpha < 1.0 || uniforms.rimColor.alpha < 1.0;
   },
 });
@@ -1564,7 +1576,7 @@ Material._materialCache.addMaterial(Material.FadeType, {
     source: FadeMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return (
       uniforms.fadeInColor.alpha < 1.0 || uniforms.fadeOutColor.alpha < 1.0
     );
@@ -1644,7 +1656,7 @@ Material._materialCache.addMaterial(Material.PolylineOutlineType, {
     source: PolylineOutlineMaterial,
   },
   translucent: function (material) {
-    const uniforms = material.uniforms;
+    var uniforms = material.uniforms;
     return uniforms.color.alpha < 1.0 || uniforms.outlineColor.alpha < 1.0;
   },
 });

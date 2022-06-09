@@ -10,8 +10,8 @@ import HeightReference from "../Scene/HeightReference.js";
 import SceneMode from "../Scene/SceneMode.js";
 import Property from "./Property.js";
 
-const scratchPosition = new Cartesian3();
-const scratchCarto = new Cartographic();
+var scratchPosition = new Cartesian3();
+var scratchCarto = new Cartographic();
 
 /**
  * @private
@@ -42,7 +42,7 @@ function TerrainOffsetProperty(
   this._removeEventListener = undefined;
   this._removeModeListener = undefined;
 
-  const that = this;
+  var that = this;
   if (defined(scene.globe)) {
     this._removeEventListener = scene.terrainProviderChanged.addEventListener(
       function () {
@@ -57,7 +57,7 @@ function TerrainOffsetProperty(
   }
 
   if (positionProperty.isConstant) {
-    const position = positionProperty.getValue(
+    var position = positionProperty.getValue(
       Iso8601.MINIMUM_VALUE,
       scratchPosition
     );
@@ -114,23 +114,23 @@ TerrainOffsetProperty.prototype._updateClamping = function () {
     this._removeCallbackFunc();
   }
 
-  const scene = this._scene;
-  const globe = scene.globe;
-  const position = this._position;
+  var scene = this._scene;
+  var globe = scene.globe;
+  var position = this._position;
 
   if (!defined(globe) || Cartesian3.equals(position, Cartesian3.ZERO)) {
     this._terrainHeight = 0;
     return;
   }
-  const ellipsoid = globe.ellipsoid;
-  const surface = globe._surface;
+  var ellipsoid = globe.ellipsoid;
+  var surface = globe._surface;
 
-  const that = this;
-  const cartographicPosition = ellipsoid.cartesianToCartographic(
+  var that = this;
+  var cartographicPosition = ellipsoid.cartesianToCartographic(
     position,
     this._cartographicPosition
   );
-  const height = globe.getHeight(cartographicPosition);
+  var height = globe.getHeight(cartographicPosition);
   if (defined(height)) {
     this._terrainHeight = height;
   } else {
@@ -139,7 +139,7 @@ TerrainOffsetProperty.prototype._updateClamping = function () {
 
   function updateFunction(clampedPosition) {
     if (scene.mode === SceneMode.SCENE3D) {
-      const carto = ellipsoid.cartesianToCartographic(
+      var carto = ellipsoid.cartesianToCartographic(
         clampedPosition,
         scratchCarto
       );
@@ -161,12 +161,12 @@ TerrainOffsetProperty.prototype._updateClamping = function () {
  * @returns {Cartesian3} The offset
  */
 TerrainOffsetProperty.prototype.getValue = function (time, result) {
-  const heightReference = Property.getValueOrDefault(
+  var heightReference = Property.getValueOrDefault(
     this._heightReference,
     time,
     HeightReference.NONE
   );
-  const extrudedHeightReference = Property.getValueOrDefault(
+  var extrudedHeightReference = Property.getValueOrDefault(
     this._extrudedHeightReference,
     time,
     HeightReference.NONE
@@ -188,8 +188,8 @@ TerrainOffsetProperty.prototype.getValue = function (time, result) {
     );
   }
 
-  const scene = this._scene;
-  const position = this._positionProperty.getValue(time, scratchPosition);
+  var scene = this._scene;
+  var position = this._positionProperty.getValue(time, scratchPosition);
   if (
     !defined(position) ||
     Cartesian3.equals(position, Cartesian3.ZERO) ||
@@ -212,7 +212,7 @@ TerrainOffsetProperty.prototype.getValue = function (time, result) {
 
   this._updateClamping();
 
-  const normal = scene.globe.ellipsoid.geodeticSurfaceNormal(
+  var normal = scene.globe.ellipsoid.geodeticSurfaceNormal(
     position,
     this._normal
   );

@@ -7,7 +7,7 @@ import { Cesium3DTilesetHeatmap } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 
 describe("Scene/Cesium3DTilesetHeatmap", function () {
-  const tileWithBoundingSphere = {
+  var tileWithBoundingSphere = {
     geometricError: 1,
     refine: "REPLACE",
     children: [],
@@ -16,14 +16,14 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
     },
   };
 
-  const mockTileset = {
+  var mockTileset = {
     debugShowBoundingVolume: true,
     debugShowViewerRequestVolume: true,
     modelMatrix: Matrix4.IDENTITY,
     _geometricError: 2,
   };
 
-  let scene;
+  var scene;
   beforeEach(function () {
     scene = createScene();
     scene.frameState.passes.render = true;
@@ -34,20 +34,20 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
   });
 
   function verifyColor(tileColor, expectedColor) {
-    const diff = new Color(
+    var diff = new Color(
       Math.abs(expectedColor.red - tileColor.red),
       Math.abs(expectedColor.green - tileColor.green),
       Math.abs(expectedColor.blue - tileColor.blue)
     );
 
-    const threshold = 0.11;
+    var threshold = 0.11;
     expect(diff.red).toBeLessThan(threshold);
     expect(diff.green).toBeLessThan(threshold);
     expect(diff.blue).toBeLessThan(threshold);
   }
 
   it("resetMinimumMaximum", function () {
-    const heatmap = new Cesium3DTilesetHeatmap("_centerZDepth");
+    var heatmap = new Cesium3DTilesetHeatmap("_centerZDepth");
     heatmap._minimum = -1;
     heatmap._maximum = 1;
     heatmap.resetMinimumMaximum(); // Preparing for next frame, previousMinimum/Maximum take current frame's values
@@ -59,11 +59,11 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
   });
 
   it("uses reference minimum maximum", function () {
-    const tilePropertyName = "_loadTimestamp";
-    const heatmap = new Cesium3DTilesetHeatmap(tilePropertyName);
+    var tilePropertyName = "_loadTimestamp";
+    var heatmap = new Cesium3DTilesetHeatmap(tilePropertyName);
 
-    const referenceMinimumJulianDate = new JulianDate();
-    const referenceMaximumJulianDate = new JulianDate();
+    var referenceMinimumJulianDate = new JulianDate();
+    var referenceMaximumJulianDate = new JulianDate();
     JulianDate.now(referenceMinimumJulianDate);
     JulianDate.addSeconds(
       referenceMinimumJulianDate,
@@ -76,8 +76,8 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
       referenceMaximumJulianDate,
       tilePropertyName
     ); // User wants to colorize to a fixed reference.
-    const referenceMinimum = heatmap._referenceMinimum[tilePropertyName];
-    const referenceMaximum = heatmap._referenceMaximum[tilePropertyName];
+    var referenceMinimum = heatmap._referenceMinimum[tilePropertyName];
+    var referenceMaximum = heatmap._referenceMaximum[tilePropertyName];
 
     heatmap._minimum = -1;
     heatmap._maximum = 1;
@@ -90,9 +90,9 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
   });
 
   it("expected color", function () {
-    const heatmap = new Cesium3DTilesetHeatmap("_centerZDepth");
+    var heatmap = new Cesium3DTilesetHeatmap("_centerZDepth");
 
-    const tile = new Cesium3DTile(
+    var tile = new Cesium3DTile(
       mockTileset,
       "/some_url",
       tileWithBoundingSphere,
@@ -100,9 +100,9 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
     );
     tile._contentState = Cesium3DTileContentState.READY;
     tile.hasEmptyContent = false;
-    const frameState = scene.frameState;
+    var frameState = scene.frameState;
     tile._selectedFrame = frameState.frameNumber;
-    const originalColor = tile._debugColor;
+    var originalColor = tile._debugColor;
 
     // This is first frame, previousMinimum/Maximum are unititialized so no coloring occurs
     tile._centerZDepth = 1;
@@ -120,7 +120,7 @@ describe("Scene/Cesium3DTilesetHeatmap", function () {
     tile._centerZDepth = -1;
     heatmap.colorize(tile, frameState);
 
-    const expectedColor = Color.BLACK;
+    var expectedColor = Color.BLACK;
     verifyColor(tile._debugColor, expectedColor);
   });
 });

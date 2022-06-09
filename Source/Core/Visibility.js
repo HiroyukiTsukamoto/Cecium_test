@@ -6,7 +6,7 @@
  *
  * @enum {Number}
  */
-const Visibility = {
+var Visibility = {
   /**
    * Represents that no part of an object is visible.
    *

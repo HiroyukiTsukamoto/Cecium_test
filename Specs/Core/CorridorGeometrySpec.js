@@ -25,7 +25,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("createGeometry returns undefined without 2 unique positions", function () {
-    let geometry = CorridorGeometry.createGeometry(
+    var geometry = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -30.0]),
         width: 10000,
@@ -54,7 +54,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes positions", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -63,14 +63,14 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 12; //6 left + 6 right
-    const numTriangles = 10; //5 segments x 2 triangles per segment
+    var numVertices = 12; //6 left + 6 right
+    var numTriangles = 10; //5 segments x 2 triangles per segment
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.indices.length).toEqual(numTriangles * 3);
   });
 
   it("compute all vertex attributes", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.ALL,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -79,8 +79,8 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 12;
-    const numTriangles = 10;
+    var numVertices = 12;
+    var numTriangles = 10;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.attributes.st.values.length).toEqual(numVertices * 2);
     expect(m.attributes.normal.values.length).toEqual(numVertices * 3);
@@ -90,7 +90,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes positions extruded", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -100,14 +100,14 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 72; // 6 positions x 4 for a box at each position x 3 to duplicate for normals
-    const numTriangles = 44; // 5 segments * 8 triangles per segment + 2 triangles x 2 ends
+    var numVertices = 72; // 6 positions x 4 for a box at each position x 3 to duplicate for normals
+    var numTriangles = 44; // 5 segments * 8 triangles per segment + 2 triangles x 2 ends
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.indices.length).toEqual(numTriangles * 3);
   });
 
   it("compute all vertex attributes extruded", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.ALL,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -117,8 +117,8 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 72;
-    const numTriangles = 44;
+    var numVertices = 72;
+    var numTriangles = 44;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.attributes.st.values.length).toEqual(numVertices * 2);
     expect(m.attributes.normal.values.length).toEqual(numVertices * 3);
@@ -128,7 +128,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes offset attribute", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -138,18 +138,18 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 12;
+    var numVertices = 12;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
   it("computes offset attribute extruded for top vertices", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -160,12 +160,12 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 72;
+    var numVertices = 72;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 0);
     expected = arrayFill(expected, 1, 0, 12);
     expected = arrayFill(expected, 1, 24, 48);
@@ -173,7 +173,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes offset attribute extruded for all vertices", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -35.0]),
@@ -184,18 +184,18 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const numVertices = 72;
+    var numVertices = 72;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
   it("computes right turn", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
@@ -216,7 +216,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes left turn", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
@@ -237,7 +237,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes with rounded corners", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_AND_ST,
         positions: Cartesian3.fromDegreesArray([
@@ -255,17 +255,17 @@ describe("Core/CorridorGeometry", function () {
       })
     );
 
-    const endCaps = 72; // 36 points * 2 end caps
-    const corners = 37; // 18 for one corner + 19 for the other
-    const numVertices = 10 + endCaps + corners;
-    const numTriangles = 8 + endCaps + corners;
+    var endCaps = 72; // 36 points * 2 end caps
+    var corners = 37; // 18 for one corner + 19 for the other
+    var numVertices = 10 + endCaps + corners;
+    var numTriangles = 8 + endCaps + corners;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
     expect(m.attributes.st.values.length).toEqual(numVertices * 2);
     expect(m.indices.length).toEqual(numTriangles * 3);
   });
 
   it("computes with beveled corners", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
@@ -288,7 +288,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes sharp turns", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
@@ -313,7 +313,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computes straight corridors", function () {
-    const m = CorridorGeometry.createGeometry(
+    var m = CorridorGeometry.createGeometry(
       new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
@@ -338,12 +338,12 @@ describe("Core/CorridorGeometry", function () {
     "undefined is returned if there are less than two positions or the width is equal to " +
       "or less than zero",
     function () {
-      const corridor0 = new CorridorGeometry({
+      var corridor0 = new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([-72.0, 35.0]),
         width: 100000,
       });
-      const corridor1 = new CorridorGeometry({
+      var corridor1 = new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
           -67.655,
@@ -355,7 +355,7 @@ describe("Core/CorridorGeometry", function () {
         ]),
         width: 0,
       });
-      const corridor2 = new CorridorGeometry({
+      var corridor2 = new CorridorGeometry({
         vertexFormat: VertexFormat.POSITION_ONLY,
         positions: Cartesian3.fromDegreesArray([
           -67.655,
@@ -368,9 +368,9 @@ describe("Core/CorridorGeometry", function () {
         width: -100,
       });
 
-      const geometry0 = CorridorGeometry.createGeometry(corridor0);
-      const geometry1 = CorridorGeometry.createGeometry(corridor1);
-      const geometry2 = CorridorGeometry.createGeometry(corridor2);
+      var geometry0 = CorridorGeometry.createGeometry(corridor0);
+      var geometry1 = CorridorGeometry.createGeometry(corridor1);
+      var geometry2 = CorridorGeometry.createGeometry(corridor2);
 
       expect(geometry0).toBeUndefined();
       expect(geometry1).toBeUndefined();
@@ -379,7 +379,7 @@ describe("Core/CorridorGeometry", function () {
   );
 
   it("computing rectangle property", function () {
-    const c = new CorridorGeometry({
+    var c = new CorridorGeometry({
       vertexFormat: VertexFormat.POSITION_ONLY,
       positions: Cartesian3.fromDegreesArray([
         -67.655,
@@ -394,7 +394,7 @@ describe("Core/CorridorGeometry", function () {
       granularity: Math.PI / 6.0,
     });
 
-    const r = c.rectangle;
+    var r = c.rectangle;
     expect(CesiumMath.toDegrees(r.north)).toEqualEpsilon(
       20.0,
       CesiumMath.EPSILON13
@@ -408,7 +408,7 @@ describe("Core/CorridorGeometry", function () {
   });
 
   it("computeRectangle", function () {
-    const options = {
+    var options = {
       vertexFormat: VertexFormat.POSITION_ONLY,
       positions: Cartesian3.fromDegreesArray([
         -67.655,
@@ -421,16 +421,16 @@ describe("Core/CorridorGeometry", function () {
       cornerType: CornerType.MITERED,
       width: 1,
     };
-    const geometry = new CorridorGeometry(options);
+    var geometry = new CorridorGeometry(options);
 
-    const expected = geometry.rectangle;
-    const result = CorridorGeometry.computeRectangle(options);
+    var expected = geometry.rectangle;
+    var result = CorridorGeometry.computeRectangle(options);
 
     expect(result).toEqual(expected);
   });
 
   it("computeRectangle with result parameter", function () {
-    const options = {
+    var options = {
       positions: Cartesian3.fromDegreesArray([
         72.0,
         0.0,
@@ -441,18 +441,18 @@ describe("Core/CorridorGeometry", function () {
       ]),
       width: 5,
     };
-    const geometry = new CorridorGeometry(options);
+    var geometry = new CorridorGeometry(options);
 
-    const result = new Rectangle();
-    const expected = geometry.rectangle;
-    const returned = CorridorGeometry.computeRectangle(options, result);
+    var result = new Rectangle();
+    var expected = geometry.rectangle;
+    var returned = CorridorGeometry.computeRectangle(options, result);
 
     expect(returned).toEqual(expected);
     expect(returned).toBe(result);
   });
 
   it("computing textureCoordinateRotationPoints property", function () {
-    const c = new CorridorGeometry({
+    var c = new CorridorGeometry({
       vertexFormat: VertexFormat.POSITION_ONLY,
       positions: Cartesian3.fromDegreesArray([
         -67.655,
@@ -468,7 +468,7 @@ describe("Core/CorridorGeometry", function () {
     });
 
     // Corridors don't support geometry orientation or stRotation, so expect this to equal the original coordinate system.
-    const textureCoordinateRotationPoints = c.textureCoordinateRotationPoints;
+    var textureCoordinateRotationPoints = c.textureCoordinateRotationPoints;
     expect(textureCoordinateRotationPoints.length).toEqual(6);
     expect(textureCoordinateRotationPoints[0]).toEqualEpsilon(
       0,
@@ -496,8 +496,8 @@ describe("Core/CorridorGeometry", function () {
     );
   });
 
-  const positions = Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -31.0]);
-  const corridor = new CorridorGeometry({
+  var positions = Cartesian3.fromDegreesArray([90.0, -30.0, 90.0, -31.0]);
+  var corridor = new CorridorGeometry({
     vertexFormat: VertexFormat.POSITION_ONLY,
     positions: positions,
     cornerType: CornerType.BEVELED,
@@ -505,7 +505,7 @@ describe("Core/CorridorGeometry", function () {
     granularity: 0.1,
   });
 
-  const packedInstance = [
+  var packedInstance = [
     2,
     positions[0].x,
     positions[0].y,

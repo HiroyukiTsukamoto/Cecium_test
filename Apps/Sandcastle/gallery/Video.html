@@ -54,17 +54,17 @@
       Your browser does not support the <code>video</code> element.
     </video>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           showRenderLoopErrors: false,
           shouldAnimate: true,
         });
 
-        const videoElement = document.getElementById("trailer");
+        var videoElement = document.getElementById("trailer");
 
-        const sphere = viewer.entities.add({
+        var sphere = viewer.entities.add({
           position: Cesium.Cartesian3.fromDegrees(-79, 39, 1000),
           ellipsoid: {
             radii: new Cesium.Cartesian3(1000, 1000, 1000),
@@ -74,7 +74,7 @@
 
         viewer.trackedEntity = sphere;
 
-        let synchronizer;
+        var synchronizer;
         Sandcastle.addToggleButton("Clock synchronization", false, function (
           checked
         ) {
@@ -97,7 +97,7 @@
 
         // Since it's just an image material, we can modify the number
         // of times the video repeats in each direction..
-        let isRepeating = true;
+        var isRepeating = true;
         Sandcastle.addToggleButton("Image Repeat", isRepeating, function (
           checked
         ) {
@@ -146,10 +146,10 @@
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

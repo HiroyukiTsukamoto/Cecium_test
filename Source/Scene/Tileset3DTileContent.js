@@ -1,4 +1,5 @@
 import destroyObject from "../Core/destroyObject.js";
+import when from "../ThirdParty/when.js";
 
 /**
  * Represents content for a tile in a
@@ -17,13 +18,12 @@ function Tileset3DTileContent(tileset, tile, resource, json) {
   this._tileset = tileset;
   this._tile = tile;
   this._resource = resource;
+  this._readyPromise = when.defer();
 
   this.featurePropertiesDirty = false;
+  this._groupMetadata = undefined;
 
-  this._metadata = undefined;
-  this._group = undefined;
-
-  this._readyPromise = initialize(this, json);
+  initialize(this, json);
 }
 
 Object.defineProperties(Tileset3DTileContent.prototype, {
@@ -71,7 +71,7 @@ Object.defineProperties(Tileset3DTileContent.prototype, {
 
   readyPromise: {
     get: function () {
-      return this._readyPromise;
+      return this._readyPromise.promise;
     },
   },
 
@@ -99,28 +99,19 @@ Object.defineProperties(Tileset3DTileContent.prototype, {
     },
   },
 
-  metadata: {
+  groupMetadata: {
     get: function () {
-      return this._metadata;
+      return this._groupMetadata;
     },
     set: function (value) {
-      this._metadata = value;
-    },
-  },
-
-  group: {
-    get: function () {
-      return this._group;
-    },
-    set: function (value) {
-      this._group = value;
+      this._groupMetadata = value;
     },
   },
 });
 
 function initialize(content, json) {
   content._tileset.loadTileset(content._resource, json, content._tile);
-  return Promise.resolve(content);
+  content._readyPromise.resolve(content);
 }
 
 /**

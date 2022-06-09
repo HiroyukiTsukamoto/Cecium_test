@@ -27,18 +27,18 @@ import createScene from "../createScene.js";
 describe(
   "Scene/TranslucentTileClassification",
   function () {
-    let scene;
-    let context;
-    let passState;
-    let globeDepthFramebuffer;
-    let ellipsoid;
+    var scene;
+    var context;
+    var passState;
+    var globeDepthFramebuffer;
+    var ellipsoid;
 
-    const positions = Cartesian3.fromDegreesArray([0.01, 0.0, 0.03, 0.0]);
+    var positions = Cartesian3.fromDegreesArray([0.01, 0.0, 0.03, 0.0]);
 
-    const lookPosition = Cartesian3.fromDegrees(0.02, 0.0);
-    const lookOffset = new Cartesian3(0.0, 0.0, 10.0);
-    let translucentPrimitive;
-    let groundPolylinePrimitive;
+    var lookPosition = Cartesian3.fromDegrees(0.02, 0.0);
+    var lookOffset = new Cartesian3(0.0, 0.0, 10.0);
+    var translucentPrimitive;
+    var groundPolylinePrimitive;
 
     beforeAll(function () {
       scene = createScene();
@@ -71,13 +71,13 @@ describe(
     }
 
     SpecPrimitive.prototype.update = function (frameState) {
-      const commandList = frameState.commandList;
-      const startLength = commandList.length;
+      var commandList = frameState.commandList;
+      var startLength = commandList.length;
       this._primitive.update(frameState);
 
       this.commands = [];
-      for (let i = startLength; i < commandList.length; ++i) {
-        const command = commandList[i];
+      for (var i = startLength; i < commandList.length; ++i) {
+        var command = commandList[i];
         command.pass = this._pass;
         command.depthForTranslucentClassification = this._depthForTranslucentClassification;
         this.commands.push(command);
@@ -98,7 +98,7 @@ describe(
       scene.render(); // clear any afterRender commands
       scene.camera.lookAt(lookPosition, lookOffset);
 
-      const renderState = RenderState.fromCache({
+      var renderState = RenderState.fromCache({
         stencilTest: StencilConstants.setCesium3DTileBit(),
         stencilMask: StencilConstants.CESIUM_3D_TILE_MASK,
         depthTest: {
@@ -106,7 +106,7 @@ describe(
         },
       });
 
-      let primitive = new Primitive({
+      var primitive = new Primitive({
         geometryInstances: new GeometryInstance({
           geometry: new RectangleGeometry({
             ellipsoid: ellipsoid,
@@ -167,7 +167,7 @@ describe(
     });
 
     it("checks for support in the context on construction", function () {
-      let translucentTileClassification = new TranslucentTileClassification({
+      var translucentTileClassification = new TranslucentTileClassification({
         depthTexture: true,
       });
 
@@ -183,26 +183,20 @@ describe(
 
     function expectResources(translucentTileClassification, toBeDefined) {
       expect(
-        defined(
-          translucentTileClassification._drawClassificationFBO.framebuffer
-        )
+        defined(translucentTileClassification._drawClassificationFBO)
       ).toBe(toBeDefined);
-      expect(defined(translucentTileClassification._packFBO.framebuffer)).toBe(
-        toBeDefined
-      );
+      expect(defined(translucentTileClassification._packFBO)).toBe(toBeDefined);
       expect(
         defined(translucentTileClassification._opaqueDepthStencilTexture)
       ).toBe(toBeDefined);
-      expect(
-        defined(
-          translucentTileClassification._drawClassificationFBO.getColorTexture()
-        )
-      ).toBe(toBeDefined);
+      expect(defined(translucentTileClassification._colorTexture)).toBe(
+        toBeDefined
+      );
       expect(
         defined(translucentTileClassification._translucentDepthStencilTexture)
       ).toBe(toBeDefined);
       expect(
-        defined(translucentTileClassification._packFBO.getColorTexture())
+        defined(translucentTileClassification._packedTranslucentDepth)
       ).toBe(toBeDefined);
       expect(defined(translucentTileClassification._packDepthCommand)).toBe(
         toBeDefined
@@ -219,7 +213,7 @@ describe(
     }
 
     it("does not create resources if unsupported", function () {
-      const translucentTileClassification = new TranslucentTileClassification({
+      var translucentTileClassification = new TranslucentTileClassification({
         depthTexture: false,
       });
 
@@ -230,7 +224,7 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        undefined
+        globeDepthFramebuffer
       );
 
       expectResources(translucentTileClassification, false);
@@ -239,7 +233,7 @@ describe(
     });
 
     it("creates resources on demand", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
@@ -255,7 +249,7 @@ describe(
         executeCommand,
         passState,
         [],
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
       expectResources(translucentTileClassification, false);
@@ -265,7 +259,7 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
       expectResources(translucentTileClassification, true);
@@ -284,7 +278,7 @@ describe(
     }
 
     it("draws translucent commands into a buffer for depth", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
@@ -292,26 +286,26 @@ describe(
       }
       scene.render(); // prep scene
 
-      const packedDepthFBO = translucentTileClassification._packFBO.framebuffer;
+      var packedDepthFBO = translucentTileClassification._packFBO;
 
       translucentTileClassification.executeTranslucentCommands(
         scene,
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
       expect(translucentTileClassification.hasTranslucentDepth).toBe(true);
 
-      const postTranslucentPixels = readPixels(packedDepthFBO);
+      var postTranslucentPixels = readPixels(packedDepthFBO);
       expect(postTranslucentPixels).not.toEqual([0, 0, 0, 0]);
 
       translucentTileClassification.destroy();
     });
 
     it("draws classification commands into a buffer", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
@@ -324,14 +318,14 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const drawClassificationFBO =
-        translucentTileClassification._drawClassificationFBO.framebuffer;
-      const preClassifyPixels = readPixels(drawClassificationFBO);
+      var drawClassificationFBO =
+        translucentTileClassification._drawClassificationFBO;
+      var preClassifyPixels = readPixels(drawClassificationFBO);
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -346,14 +340,14 @@ describe(
         frustumCommands
       );
 
-      const postClassifyPixels = readPixels(drawClassificationFBO);
+      var postClassifyPixels = readPixels(drawClassificationFBO);
       expect(postClassifyPixels).not.toEqual(preClassifyPixels);
 
       translucentTileClassification.destroy();
     });
 
     it("draws classification commands into a separate accumulation buffer for multifrustum", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
@@ -366,15 +360,14 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const accumulationFBO =
-        translucentTileClassification._accumulationFBO.framebuffer;
-      const drawClassificationFBO =
-        translucentTileClassification._drawClassificationFBO.framebuffer;
+      var accumulationFBO = translucentTileClassification._accumulationFBO;
+      var drawClassificationFBO =
+        translucentTileClassification._drawClassificationFBO;
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -396,7 +389,7 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
       translucentTileClassification.executeClassificationCommands(
         scene,
@@ -405,10 +398,10 @@ describe(
         frustumCommands
       );
 
-      const secondFrustumAccumulation = accumulationFBO;
-      const accumulationPixels = readPixels(secondFrustumAccumulation);
-      const classificationPixels = readPixels(drawClassificationFBO);
-      const expectedPixels = [
+      var secondFrustumAccumulation = accumulationFBO;
+      var accumulationPixels = readPixels(secondFrustumAccumulation);
+      var classificationPixels = readPixels(drawClassificationFBO);
+      var expectedPixels = [
         // Multiply by two to account for premultiplied alpha
         classificationPixels[0] * 2,
         classificationPixels[1] * 2,
@@ -423,7 +416,7 @@ describe(
     });
 
     it("does not draw classification commands if there is no translucent depth", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
@@ -431,20 +424,20 @@ describe(
       }
       scene.render(); // prep scene
 
-      const drawClassificationFBO =
-        translucentTileClassification._drawClassificationFBO.framebuffer;
+      var drawClassificationFBO =
+        translucentTileClassification._drawClassificationFBO;
 
       translucentTileClassification.executeTranslucentCommands(
         scene,
         executeCommand,
         passState,
         [],
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const preClassifyPixels = readPixels(drawClassificationFBO);
+      var preClassifyPixels = readPixels(drawClassificationFBO);
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -459,21 +452,21 @@ describe(
         frustumCommands
       );
 
-      const postClassifyPixels = readPixels(drawClassificationFBO);
+      var postClassifyPixels = readPixels(drawClassificationFBO);
       expect(postClassifyPixels).toEqual(preClassifyPixels);
 
       translucentTileClassification.destroy();
     });
 
     it("composites classification into a buffer", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
         return; // don't fail because of lack of support
       }
 
-      const colorTexture = new Texture({
+      var colorTexture = new Texture({
         context: context,
         width: 1,
         height: 1,
@@ -481,7 +474,7 @@ describe(
         pixelDatatype: PixelDatatype.UNSIGNED_BYTE,
       });
 
-      const targetColorFBO = new Framebuffer({
+      var targetColorFBO = new Framebuffer({
         context: context,
         colorTextures: [colorTexture],
       });
@@ -493,10 +486,10 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -511,23 +504,23 @@ describe(
         frustumCommands
       );
 
-      const preCompositePixels = readPixels(targetColorFBO);
-      const pixelsToComposite = readPixels(
-        translucentTileClassification._drawClassificationFBO.framebuffer
+      var preCompositePixels = readPixels(targetColorFBO);
+      var pixelsToComposite = readPixels(
+        translucentTileClassification._drawClassificationFBO
       );
 
-      const framebuffer = passState.framebuffer;
+      var framebuffer = passState.framebuffer;
       passState.framebuffer = targetColorFBO;
       translucentTileClassification.execute(scene, passState);
       passState.framebuffer = framebuffer;
 
-      const postCompositePixels = readPixels(targetColorFBO);
+      var postCompositePixels = readPixels(targetColorFBO);
       expect(postCompositePixels).not.toEqual(preCompositePixels);
 
-      const red = Math.round(pixelsToComposite[0]) + preCompositePixels[0];
-      const green = Math.round(pixelsToComposite[1]) + preCompositePixels[1];
-      const blue = Math.round(pixelsToComposite[2]) + preCompositePixels[2];
-      const alpha = pixelsToComposite[3] + preCompositePixels[3];
+      var red = Math.round(pixelsToComposite[0]) + preCompositePixels[0];
+      var green = Math.round(pixelsToComposite[1]) + preCompositePixels[1];
+      var blue = Math.round(pixelsToComposite[2]) + preCompositePixels[2];
+      var alpha = pixelsToComposite[3] + preCompositePixels[3];
 
       expect(postCompositePixels[0]).toEqual(red);
       expect(postCompositePixels[1]).toEqual(green);
@@ -539,22 +532,22 @@ describe(
     });
 
     it("composites from an accumulation texture when there are multiple frustums", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
         return; // don't fail because of lack of support
       }
 
-      const clearCommandRed = new ClearCommand({
+      var clearCommandRed = new ClearCommand({
         color: new Color(1.0, 0.0, 0.0, 1.0),
       });
 
-      const clearCommandGreen = new ClearCommand({
+      var clearCommandGreen = new ClearCommand({
         color: new Color(0.0, 1.0, 0.0, 1.0),
       });
 
-      const colorTexture = new Texture({
+      var colorTexture = new Texture({
         context: context,
         width: 1,
         height: 1,
@@ -562,7 +555,7 @@ describe(
         pixelDatatype: PixelDatatype.UNSIGNED_BYTE,
       });
 
-      const targetColorFBO = new Framebuffer({
+      var targetColorFBO = new Framebuffer({
         context: context,
         colorTextures: [colorTexture],
       });
@@ -574,10 +567,10 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -600,7 +593,7 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
       translucentTileClassification.executeClassificationCommands(
@@ -610,21 +603,20 @@ describe(
         frustumCommands
       );
 
-      const framebuffer = passState.framebuffer;
+      var framebuffer = passState.framebuffer;
 
       // Replace classification and accumulation colors to distinguish which is composited
       passState.framebuffer =
-        translucentTileClassification._drawClassificationFBO.framebuffer;
+        translucentTileClassification._drawClassificationFBO;
       clearCommandRed.execute(context, passState);
-      passState.framebuffer =
-        translucentTileClassification._accumulationFBO.framebuffer;
+      passState.framebuffer = translucentTileClassification._accumulationFBO;
       clearCommandGreen.execute(context, passState);
 
       passState.framebuffer = targetColorFBO;
       translucentTileClassification.execute(scene, passState);
       passState.framebuffer = framebuffer;
 
-      const postCompositePixels = readPixels(targetColorFBO);
+      var postCompositePixels = readPixels(targetColorFBO);
       expect(postCompositePixels).toEqual([0, 255, 0, 255]);
 
       translucentTileClassification.destroy();
@@ -632,14 +624,14 @@ describe(
     });
 
     it("does not composite classification if there is no translucent depth", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
         return; // don't fail because of lack of support
       }
 
-      const colorTexture = new Texture({
+      var colorTexture = new Texture({
         context: context,
         width: 1,
         height: 1,
@@ -647,7 +639,7 @@ describe(
         pixelDatatype: PixelDatatype.UNSIGNED_BYTE,
       });
 
-      const targetColorFBO = new Framebuffer({
+      var targetColorFBO = new Framebuffer({
         context: context,
         colorTextures: [colorTexture],
       });
@@ -659,10 +651,10 @@ describe(
         executeCommand,
         passState,
         [],
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -677,14 +669,14 @@ describe(
         frustumCommands
       );
 
-      const preCompositePixels = readPixels(targetColorFBO);
+      var preCompositePixels = readPixels(targetColorFBO);
 
-      const framebuffer = passState.framebuffer;
+      var framebuffer = passState.framebuffer;
       passState.framebuffer = targetColorFBO;
       translucentTileClassification.execute(scene, passState);
       passState.framebuffer = framebuffer;
 
-      const postCompositePixels = readPixels(targetColorFBO);
+      var postCompositePixels = readPixels(targetColorFBO);
       expect(postCompositePixels).toEqual(preCompositePixels);
 
       translucentTileClassification.destroy();
@@ -692,7 +684,7 @@ describe(
     });
 
     it("clears the classification buffer", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {
@@ -705,14 +697,14 @@ describe(
         executeCommand,
         passState,
         translucentPrimitive.commands,
-        globeDepthFramebuffer.depthStencilTexture
+        globeDepthFramebuffer
       );
 
-      const drawClassificationFBO =
-        translucentTileClassification._drawClassificationFBO.framebuffer;
-      const preClassifyPixels = readPixels(drawClassificationFBO);
+      var drawClassificationFBO =
+        translucentTileClassification._drawClassificationFBO;
+      var preClassifyPixels = readPixels(drawClassificationFBO);
 
-      const frustumCommands = {
+      var frustumCommands = {
         commands: [],
         indices: [],
       };
@@ -727,12 +719,12 @@ describe(
         frustumCommands
       );
 
-      const postClassifyPixels = readPixels(drawClassificationFBO);
+      var postClassifyPixels = readPixels(drawClassificationFBO);
       expect(postClassifyPixels).not.toEqual(preClassifyPixels);
 
       translucentTileClassification.execute(scene, passState);
 
-      const postClearPixels = readPixels(drawClassificationFBO);
+      var postClearPixels = readPixels(drawClassificationFBO);
       expect(postClearPixels).not.toEqual(postClassifyPixels);
       expect(postClearPixels).toEqual(preClassifyPixels);
 
@@ -740,7 +732,7 @@ describe(
     });
 
     it("does not clear the classification buffer if there is no translucent depth", function () {
-      const translucentTileClassification = new TranslucentTileClassification(
+      var translucentTileClassification = new TranslucentTileClassification(
         context
       );
       if (!translucentTileClassification.isSupported()) {

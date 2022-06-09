@@ -9,8 +9,7 @@ import ImplicitSubdivisionScheme from "./ImplicitSubdivisionScheme.js";
  * are (level, x, y) for quadtrees or (level, x, y, z) for octrees.
  * <p>
  * Level numbers are 0-indexed and typically start at the root of the implicit
- * tileset (the tile with either implicitTiling in its JSON (3D Tiles 1.1) or
- * the <code>3DTILES_implicit_tiling</code> extension).
+ * tileset (the tile with the <code>3DTILES_implicit_tiling</code> extension).
  * This object can also represent the relative offset from one set of coordinates
  * to another. See {@link ImplicitTileCoordinates#getOffsetCoordinates}. The term
  * local coordinates refers to coordinates that are relative to the root of a
@@ -75,7 +74,7 @@ export default function ImplicitTileCoordinates(options) {
   }
 
   // Check for values that are too large
-  const dimensionAtLevel = 1 << options.level;
+  var dimensionAtLevel = 1 << options.level;
   if (options.x >= dimensionAtLevel) {
     throw new DeveloperError("x is out of range");
   }
@@ -108,9 +107,8 @@ export default function ImplicitTileCoordinates(options) {
   this.subtreeLevels = options.subtreeLevels;
 
   /**
-   * Level of this tile, relative to the tile with implicit tiling in its JSON
-   * (3D Tiles 1.1) or the <code>3DTILES_implicit_tiling</code> extension.
-   * Level numbers start at 0.
+   * Level of this tile, relative to the tile with the
+   * <code>3DTILES_implicit_tiling</code> extension. Level numbers start at 0.
    *
    * @type {Number}
    * @readonly
@@ -165,7 +163,7 @@ Object.defineProperties(ImplicitTileCoordinates.prototype, {
    */
   childIndex: {
     get: function () {
-      let childIndex = 0;
+      var childIndex = 0;
       childIndex |= this.x & 1;
       childIndex |= (this.y & 1) << 1;
       if (this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
@@ -202,14 +200,14 @@ Object.defineProperties(ImplicitTileCoordinates.prototype, {
    */
   tileIndex: {
     get: function () {
-      const levelOffset =
+      var levelOffset =
         this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE
           ? // (8^N - 1) / (8-1)
             ((1 << (3 * this.level)) - 1) / 7
           : // (4^N - 1) / (4-1)
             ((1 << (2 * this.level)) - 1) / 3;
 
-      const mortonIndex = this.mortonIndex;
+      var mortonIndex = this.mortonIndex;
       return levelOffset + mortonIndex;
     },
   },
@@ -245,13 +243,12 @@ ImplicitTileCoordinates.prototype.getDescendantCoordinates = function (
   checkMatchingSubtreeShape(this, offsetCoordinates);
   //>>includeEnd('debug');
 
-  const descendantLevel = this.level + offsetCoordinates.level;
-  const descendantX = (this.x << offsetCoordinates.level) + offsetCoordinates.x;
-  const descendantY = (this.y << offsetCoordinates.level) + offsetCoordinates.y;
+  var descendantLevel = this.level + offsetCoordinates.level;
+  var descendantX = (this.x << offsetCoordinates.level) + offsetCoordinates.x;
+  var descendantY = (this.y << offsetCoordinates.level) + offsetCoordinates.y;
 
   if (this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
-    const descendantZ =
-      (this.z << offsetCoordinates.level) + offsetCoordinates.z;
+    var descendantZ = (this.z << offsetCoordinates.level) + offsetCoordinates.z;
 
     return new ImplicitTileCoordinates({
       subdivisionScheme: this.subdivisionScheme,
@@ -293,13 +290,13 @@ ImplicitTileCoordinates.prototype.getAncestorCoordinates = function (
   }
   //>>includeEnd('debug');
 
-  const divisor = 1 << offsetLevels;
-  const ancestorLevel = this.level - offsetLevels;
-  const ancestorX = Math.floor(this.x / divisor);
-  const ancestorY = Math.floor(this.y / divisor);
+  var divisor = 1 << offsetLevels;
+  var ancestorLevel = this.level - offsetLevels;
+  var ancestorX = Math.floor(this.x / divisor);
+  var ancestorY = Math.floor(this.y / divisor);
 
   if (this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
-    const ancestorZ = Math.floor(this.z / divisor);
+    var ancestorZ = Math.floor(this.z / divisor);
 
     return new ImplicitTileCoordinates({
       subdivisionScheme: this.subdivisionScheme,
@@ -341,14 +338,14 @@ ImplicitTileCoordinates.prototype.getOffsetCoordinates = function (
   checkMatchingSubtreeShape(this, descendantCoordinates);
   //>>includeEnd('debug');
 
-  const offsetLevel = descendantCoordinates.level - this.level;
-  const dimensionAtOffsetLevel = 1 << offsetLevel;
+  var offsetLevel = descendantCoordinates.level - this.level;
+  var dimensionAtOffsetLevel = 1 << offsetLevel;
 
-  const offsetX = descendantCoordinates.x % dimensionAtOffsetLevel;
-  const offsetY = descendantCoordinates.y % dimensionAtOffsetLevel;
+  var offsetX = descendantCoordinates.x % dimensionAtOffsetLevel;
+  var offsetY = descendantCoordinates.y % dimensionAtOffsetLevel;
 
   if (this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
-    const offsetZ = descendantCoordinates.z % dimensionAtOffsetLevel;
+    var offsetZ = descendantCoordinates.z % dimensionAtOffsetLevel;
 
     return new ImplicitTileCoordinates({
       subdivisionScheme: this.subdivisionScheme,
@@ -381,22 +378,22 @@ ImplicitTileCoordinates.prototype.getOffsetCoordinates = function (
 ImplicitTileCoordinates.prototype.getChildCoordinates = function (childIndex) {
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number("childIndex", childIndex);
-  const branchingFactor = ImplicitSubdivisionScheme.getBranchingFactor(
+  var branchingFactor = ImplicitSubdivisionScheme.getBranchingFactor(
     this.subdivisionScheme
   );
   if (childIndex < 0 || branchingFactor <= childIndex) {
     throw new DeveloperError(
-      `childIndex must be at least 0 and less than ${branchingFactor}`
+      "childIndex must be at least 0 and less than " + branchingFactor
     );
   }
   //>>includeEnd('debug');
 
-  const level = this.level + 1;
-  const x = 2 * this.x + (childIndex % 2);
-  const y = 2 * this.y + (Math.floor(childIndex / 2) % 2);
+  var level = this.level + 1;
+  var x = 2 * this.x + (childIndex % 2);
+  var y = 2 * this.y + (Math.floor(childIndex / 2) % 2);
 
   if (this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
-    const z = 2 * this.z + (Math.floor(childIndex / 4) % 2);
+    var z = 2 * this.z + (Math.floor(childIndex / 4) % 2);
     return new ImplicitTileCoordinates({
       subdivisionScheme: this.subdivisionScheme,
       subtreeLevels: this.subtreeLevels,
@@ -455,19 +452,19 @@ ImplicitTileCoordinates.prototype.isAncestor = function (
   checkMatchingSubtreeShape(this, descendantCoordinates);
   //>>includeEnd('debug');
 
-  const levelDifference = descendantCoordinates.level - this.level;
+  var levelDifference = descendantCoordinates.level - this.level;
   if (levelDifference <= 0) {
     return false;
   }
 
-  const ancestorX = descendantCoordinates.x >> levelDifference;
-  const ancestorY = descendantCoordinates.y >> levelDifference;
-  const isAncestorX = this.x === ancestorX;
-  const isAncestorY = this.y === ancestorY;
+  var ancestorX = descendantCoordinates.x >> levelDifference;
+  var ancestorY = descendantCoordinates.y >> levelDifference;
+  var isAncestorX = this.x === ancestorX;
+  var isAncestorY = this.y === ancestorY;
 
   if (this.subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
-    const ancestorZ = descendantCoordinates.z >> levelDifference;
-    const isAncestorZ = this.z === ancestorZ;
+    var ancestorZ = descendantCoordinates.z >> levelDifference;
+    var isAncestorZ = this.z === ancestorZ;
     return isAncestorX && isAncestorY && isAncestorZ;
   }
 
@@ -536,7 +533,7 @@ ImplicitTileCoordinates.prototype.isBottomOfSubtree = function () {
  * @private
  */
 ImplicitTileCoordinates.prototype.getTemplateValues = function () {
-  const values = {
+  var values = {
     level: this.level,
     x: this.x,
     y: this.y,
@@ -548,7 +545,7 @@ ImplicitTileCoordinates.prototype.getTemplateValues = function () {
   return values;
 };
 
-const scratchCoordinatesArray = [0, 0, 0];
+var scratchCoordinatesArray = [0, 0, 0];
 
 /**
  * Given a level number, morton index, and whether the tileset is an
@@ -567,7 +564,7 @@ ImplicitTileCoordinates.fromMortonIndex = function (
   level,
   mortonIndex
 ) {
-  let coordinatesArray;
+  var coordinatesArray;
   if (subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
     coordinatesArray = MortonOrder.decode3D(
       mortonIndex,
@@ -608,9 +605,9 @@ ImplicitTileCoordinates.fromTileIndex = function (
   subtreeLevels,
   tileIndex
 ) {
-  let level;
-  let levelOffset;
-  let mortonIndex;
+  var level;
+  var levelOffset;
+  var mortonIndex;
 
   if (subdivisionScheme === ImplicitSubdivisionScheme.OCTREE) {
     // Node count up to octree level: (8^L - 1) / (8-1)

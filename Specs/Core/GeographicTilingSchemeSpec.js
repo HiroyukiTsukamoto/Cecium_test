@@ -13,12 +13,12 @@ describe("Core/GeographicTilingScheme", function () {
 
   describe("Conversions from tile indices to cartographic rectangles.", function () {
     it("tileXYToRectangle returns full rectangle for single root tile.", function () {
-      const tilingScheme = new GeographicTilingScheme({
+      var tilingScheme = new GeographicTilingScheme({
         numberOfLevelZeroTilesX: 1,
         numberOfLevelZeroTilesY: 1,
       });
-      const tilingSchemeRectangle = tilingScheme.rectangle;
-      const rectangle = tilingScheme.tileXYToRectangle(0, 0, 0);
+      var tilingSchemeRectangle = tilingScheme.rectangle;
+      var rectangle = tilingScheme.tileXYToRectangle(0, 0, 0);
       expect(rectangle.west).toEqualEpsilon(
         tilingSchemeRectangle.west,
         CesiumMath.EPSILON10
@@ -38,13 +38,13 @@ describe("Core/GeographicTilingScheme", function () {
     });
 
     it("tileXYToRectangle uses result parameter if provided", function () {
-      const tilingScheme = new GeographicTilingScheme({
+      var tilingScheme = new GeographicTilingScheme({
         numberOfLevelZeroTilesX: 1,
         numberOfLevelZeroTilesY: 1,
       });
-      const tilingSchemeRectangle = tilingScheme.rectangle;
-      const result = new Rectangle(0.0, 0.0, 0.0);
-      const rectangle = tilingScheme.tileXYToRectangle(0, 0, 0, result);
+      var tilingSchemeRectangle = tilingScheme.rectangle;
+      var result = new Rectangle(0.0, 0.0, 0.0);
+      var rectangle = tilingScheme.tileXYToRectangle(0, 0, 0, result);
       expect(result).toEqual(rectangle);
       expect(rectangle.west).toEqualEpsilon(
         tilingSchemeRectangle.west,
@@ -65,14 +65,14 @@ describe("Core/GeographicTilingScheme", function () {
     });
 
     it("tiles are numbered from the northwest corner.", function () {
-      const tilingScheme = new GeographicTilingScheme({
+      var tilingScheme = new GeographicTilingScheme({
         numberOfLevelZeroTilesX: 2,
         numberOfLevelZeroTilesY: 2,
       });
-      const northwest = tilingScheme.tileXYToRectangle(0, 0, 1);
-      const northeast = tilingScheme.tileXYToRectangle(1, 0, 1);
-      const southeast = tilingScheme.tileXYToRectangle(1, 1, 1);
-      const southwest = tilingScheme.tileXYToRectangle(0, 1, 1);
+      var northwest = tilingScheme.tileXYToRectangle(0, 0, 1);
+      var northeast = tilingScheme.tileXYToRectangle(1, 0, 1);
+      var southeast = tilingScheme.tileXYToRectangle(1, 1, 1);
+      var southwest = tilingScheme.tileXYToRectangle(0, 1, 1);
 
       expect(northeast.north).toEqual(northwest.north);
       expect(northeast.south).toEqual(northwest.south);
@@ -96,14 +96,14 @@ describe("Core/GeographicTilingScheme", function () {
     });
 
     it("adjacent tiles have overlapping coordinates", function () {
-      const tilingScheme = new GeographicTilingScheme({
+      var tilingScheme = new GeographicTilingScheme({
         numberOfLevelZeroTilesX: 2,
         numberOfLevelZeroTilesY: 2,
       });
-      const northwest = tilingScheme.tileXYToRectangle(0, 0, 1);
-      const northeast = tilingScheme.tileXYToRectangle(1, 0, 1);
-      const southeast = tilingScheme.tileXYToRectangle(1, 1, 1);
-      const southwest = tilingScheme.tileXYToRectangle(0, 1, 1);
+      var northwest = tilingScheme.tileXYToRectangle(0, 0, 1);
+      var northeast = tilingScheme.tileXYToRectangle(1, 0, 1);
+      var southeast = tilingScheme.tileXYToRectangle(1, 1, 1);
+      var southwest = tilingScheme.tileXYToRectangle(0, 1, 1);
 
       expect(northeast.south).toEqualEpsilon(
         southeast.north,
@@ -126,15 +126,15 @@ describe("Core/GeographicTilingScheme", function () {
   });
 
   it("uses a GeographicProjection", function () {
-    const tilingScheme = new GeographicTilingScheme();
+    var tilingScheme = new GeographicTilingScheme();
     expect(tilingScheme.projection).toBeInstanceOf(GeographicProjection);
   });
 
   describe("rectangleToNativeRectangle", function () {
     it("converts radians to degrees", function () {
-      const tilingScheme = new GeographicTilingScheme();
-      const rectangleInRadians = new Rectangle(0.1, 0.2, 0.3, 0.4);
-      const nativeRectangle = tilingScheme.rectangleToNativeRectangle(
+      var tilingScheme = new GeographicTilingScheme();
+      var rectangleInRadians = new Rectangle(0.1, 0.2, 0.3, 0.4);
+      var nativeRectangle = tilingScheme.rectangleToNativeRectangle(
         rectangleInRadians
       );
       expect(nativeRectangle.west).toEqualEpsilon(
@@ -156,10 +156,10 @@ describe("Core/GeographicTilingScheme", function () {
     });
 
     it("uses result parameter if provided", function () {
-      const tilingScheme = new GeographicTilingScheme();
-      const rectangleInRadians = new Rectangle(0.1, 0.2, 0.3, 0.4);
-      const resultRectangle = new Rectangle(0.0, 0.0, 0.0, 0.0);
-      const outputRectangle = tilingScheme.rectangleToNativeRectangle(
+      var tilingScheme = new GeographicTilingScheme();
+      var rectangleInRadians = new Rectangle(0.1, 0.2, 0.3, 0.4);
+      var resultRectangle = new Rectangle(0.0, 0.0, 0.0, 0.0);
+      var outputRectangle = tilingScheme.rectangleToNativeRectangle(
         rectangleInRadians,
         resultRectangle
       );
@@ -185,29 +185,29 @@ describe("Core/GeographicTilingScheme", function () {
 
   describe("positionToTileXY", function () {
     it("returns undefined when outside rectangle", function () {
-      const tilingScheme = new GeographicTilingScheme({
+      var tilingScheme = new GeographicTilingScheme({
         rectangle: new Rectangle(0.1, 0.2, 0.3, 0.4),
       });
 
-      const tooFarWest = new Cartographic(0.05, 0.3);
+      var tooFarWest = new Cartographic(0.05, 0.3);
       expect(tilingScheme.positionToTileXY(tooFarWest, 0)).toBeUndefined();
-      const tooFarSouth = new Cartographic(0.2, 0.1);
+      var tooFarSouth = new Cartographic(0.2, 0.1);
       expect(tilingScheme.positionToTileXY(tooFarSouth, 0)).toBeUndefined();
-      const tooFarEast = new Cartographic(0.4, 0.3);
+      var tooFarEast = new Cartographic(0.4, 0.3);
       expect(tilingScheme.positionToTileXY(tooFarEast, 0)).toBeUndefined();
-      const tooFarNorth = new Cartographic(0.2, 0.5);
+      var tooFarNorth = new Cartographic(0.2, 0.5);
       expect(tilingScheme.positionToTileXY(tooFarNorth, 0)).toBeUndefined();
     });
 
     it("returns correct tile for position in center of tile", function () {
-      const tilingScheme = new GeographicTilingScheme();
+      var tilingScheme = new GeographicTilingScheme();
 
-      const centerOfWesternRootTile = new Cartographic(-Math.PI / 2.0, 0.0);
+      var centerOfWesternRootTile = new Cartographic(-Math.PI / 2.0, 0.0);
       expect(tilingScheme.positionToTileXY(centerOfWesternRootTile, 0)).toEqual(
         new Cartesian2(0, 0)
       );
 
-      const centerOfNortheastChildOfEasternRootTile = new Cartographic(
+      var centerOfNortheastChildOfEasternRootTile = new Cartographic(
         (3.0 * Math.PI) / 4.0,
         Math.PI / 2.0
       );
@@ -220,32 +220,32 @@ describe("Core/GeographicTilingScheme", function () {
     });
 
     it("returns Southeast tile when on the boundary between tiles", function () {
-      const tilingScheme = new GeographicTilingScheme();
+      var tilingScheme = new GeographicTilingScheme();
 
-      const centerOfMap = new Cartographic(0.0, 0.0);
+      var centerOfMap = new Cartographic(0.0, 0.0);
       expect(tilingScheme.positionToTileXY(centerOfMap, 1)).toEqual(
         new Cartesian2(2, 1)
       );
     });
 
     it("does not return tile outside valid range", function () {
-      const tilingScheme = new GeographicTilingScheme();
+      var tilingScheme = new GeographicTilingScheme();
 
-      const southeastCorner = new Cartographic(Math.PI, -Math.PI / 2.0);
+      var southeastCorner = new Cartographic(Math.PI, -Math.PI / 2.0);
       expect(tilingScheme.positionToTileXY(southeastCorner, 0)).toEqual(
         new Cartesian2(1, 0)
       );
     });
 
     it("uses result parameter if supplied", function () {
-      const tilingScheme = new GeographicTilingScheme();
+      var tilingScheme = new GeographicTilingScheme();
 
-      const centerOfNortheastChildOfEasternRootTile = new Cartographic(
+      var centerOfNortheastChildOfEasternRootTile = new Cartographic(
         (3.0 * Math.PI) / 4.0,
         Math.PI / 2.0
       );
-      const resultParameter = new Cartesian2(0, 0);
-      const returnedResult = tilingScheme.positionToTileXY(
+      var resultParameter = new Cartesian2(0, 0);
+      var returnedResult = tilingScheme.positionToTileXY(
         centerOfNortheastChildOfEasternRootTile,
         1,
         resultParameter

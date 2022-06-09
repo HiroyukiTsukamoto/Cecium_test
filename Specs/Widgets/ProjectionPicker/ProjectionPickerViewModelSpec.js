@@ -7,7 +7,7 @@ import { ProjectionPickerViewModel } from "../../../Source/Cesium.js";
 describe(
   "Widgets/ProjectionPicker/ProjectionPickerViewModel",
   function () {
-    let scene;
+    var scene;
 
     beforeEach(function () {
       scene = createScene();
@@ -18,7 +18,7 @@ describe(
     });
 
     it("Can construct and destroy", function () {
-      const viewModel = new ProjectionPickerViewModel(scene);
+      var viewModel = new ProjectionPickerViewModel(scene);
       expect(viewModel.scene).toBe(scene);
       expect(scene.morphComplete.numberOfListeners).toEqual(1);
       expect(scene.preRender.numberOfListeners).toEqual(1);
@@ -30,7 +30,7 @@ describe(
     });
 
     it("dropDownVisible and toggleDropDown work", function () {
-      const viewModel = new ProjectionPickerViewModel(scene);
+      var viewModel = new ProjectionPickerViewModel(scene);
 
       expect(viewModel.dropDownVisible).toEqual(false);
       viewModel.toggleDropDown();
@@ -42,7 +42,7 @@ describe(
     });
 
     it("morphing to 2D calls correct transition", function () {
-      const viewModel = new ProjectionPickerViewModel(scene);
+      var viewModel = new ProjectionPickerViewModel(scene);
 
       expect(scene.mode).toEqual(SceneMode.SCENE3D);
       expect(viewModel.isOrthographicProjection).toEqual(false);
@@ -55,7 +55,7 @@ describe(
     });
 
     it("switching projection calls correct transition", function () {
-      const viewModel = new ProjectionPickerViewModel(scene);
+      var viewModel = new ProjectionPickerViewModel(scene);
 
       expect(scene.mode).toEqual(SceneMode.SCENE3D);
       expect(viewModel.isOrthographicProjection).toEqual(false);
@@ -73,7 +73,7 @@ describe(
     });
 
     it("selectedTooltip changes on transition", function () {
-      const viewModel = new ProjectionPickerViewModel(scene);
+      var viewModel = new ProjectionPickerViewModel(scene);
 
       viewModel.switchToOrthographic();
       expect(viewModel.selectedTooltip).toEqual(viewModel.tooltipOrthographic);

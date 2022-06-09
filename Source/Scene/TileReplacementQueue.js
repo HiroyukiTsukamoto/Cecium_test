@@ -30,8 +30,8 @@ TileReplacementQueue.prototype.markStartOfRenderFrame = function () {
  * @param {Number} maximumTiles The maximum number of tiles in the queue.
  */
 TileReplacementQueue.prototype.trimTiles = function (maximumTiles) {
-  let tileToTrim = this.tail;
-  let keepTrimming = true;
+  var tileToTrim = this.tail;
+  var keepTrimming = true;
   while (
     keepTrimming &&
     defined(this._lastBeforeStartOfFrame) &&
@@ -42,7 +42,7 @@ TileReplacementQueue.prototype.trimTiles = function (maximumTiles) {
     // current frame.
     keepTrimming = tileToTrim !== this._lastBeforeStartOfFrame;
 
-    const previous = tileToTrim.replacementPrevious;
+    var previous = tileToTrim.replacementPrevious;
 
     if (tileToTrim.eligibleForUnloading) {
       tileToTrim.freeResources();
@@ -54,8 +54,8 @@ TileReplacementQueue.prototype.trimTiles = function (maximumTiles) {
 };
 
 function remove(tileReplacementQueue, item) {
-  const previous = item.replacementPrevious;
-  const next = item.replacementNext;
+  var previous = item.replacementPrevious;
+  var next = item.replacementNext;
 
   if (item === tileReplacementQueue._lastBeforeStartOfFrame) {
     tileReplacementQueue._lastBeforeStartOfFrame = next;
@@ -86,7 +86,7 @@ function remove(tileReplacementQueue, item) {
  * @param {TileReplacementQueue} item The tile that was rendered.
  */
 TileReplacementQueue.prototype.markTileRendered = function (item) {
-  const head = this.head;
+  var head = this.head;
   if (head === item) {
     if (item === this._lastBeforeStartOfFrame) {
       this._lastBeforeStartOfFrame = item.replacementNext;

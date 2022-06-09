@@ -7,23 +7,23 @@ import { TimeIntervalCollectionProperty } from "../../Source/Cesium.js";
 
 describe("DataSources/PolylineOutlineMaterialProperty", function () {
   it("constructor provides the expected defaults", function () {
-    const property = new PolylineOutlineMaterialProperty();
+    var property = new PolylineOutlineMaterialProperty();
     expect(property.getType()).toEqual("PolylineOutline");
 
-    const result = property.getValue();
+    var result = property.getValue();
     expect(result.color).toEqual(Color.WHITE);
     expect(result.outlineColor).toEqual(Color.BLACK);
     expect(result.outlineWidth).toEqual(1.0);
   });
 
   it("constructor sets options and allows raw assignment", function () {
-    const options = {
+    var options = {
       color: Color.RED,
       outlineColor: Color.BLUE,
       outlineWidth: 5,
     };
 
-    const property = new PolylineOutlineMaterialProperty(options);
+    var property = new PolylineOutlineMaterialProperty(options);
     expect(property.color).toBeInstanceOf(ConstantProperty);
     expect(property.outlineColor).toBeInstanceOf(ConstantProperty);
     expect(property.outlineWidth).toBeInstanceOf(ConstantProperty);
@@ -34,22 +34,22 @@ describe("DataSources/PolylineOutlineMaterialProperty", function () {
   });
 
   it("works with constant values", function () {
-    const property = new PolylineOutlineMaterialProperty();
+    var property = new PolylineOutlineMaterialProperty();
     property.color = new ConstantProperty(Color.RED);
     property.outlineColor = new ConstantProperty(Color.BLUE);
 
-    const result = property.getValue(JulianDate.now());
+    var result = property.getValue(JulianDate.now());
     expect(result.color).toEqual(Color.RED);
     expect(result.outlineColor).toEqual(Color.BLUE);
   });
 
   it("works with dynamic values", function () {
-    const property = new PolylineOutlineMaterialProperty();
+    var property = new PolylineOutlineMaterialProperty();
     property.color = new TimeIntervalCollectionProperty();
     property.outlineColor = new TimeIntervalCollectionProperty();
 
-    const start = new JulianDate(1, 0);
-    const stop = new JulianDate(2, 0);
+    var start = new JulianDate(1, 0);
+    var stop = new JulianDate(2, 0);
     property.color.intervals.addInterval(
       new TimeInterval({
         start: start,
@@ -65,33 +65,33 @@ describe("DataSources/PolylineOutlineMaterialProperty", function () {
       })
     );
 
-    const result = property.getValue(start);
+    var result = property.getValue(start);
     expect(result.color).toEqual(Color.BLUE);
     expect(result.outlineColor).toEqual(Color.RED);
   });
 
   it("works with a result parameter", function () {
-    const property = new PolylineOutlineMaterialProperty();
+    var property = new PolylineOutlineMaterialProperty();
     property.color = new ConstantProperty(Color.RED);
     property.outlineColor = new ConstantProperty(Color.BLUE);
 
-    const result = {
+    var result = {
       color: Color.YELLOW.clone(),
       outlineColor: Color.BROWN.clone(),
     };
-    const returnedResult = property.getValue(JulianDate.now(), result);
+    var returnedResult = property.getValue(JulianDate.now(), result);
     expect(returnedResult).toBe(result);
     expect(result.color).toEqual(Color.RED);
     expect(result.outlineColor).toEqual(Color.BLUE);
   });
 
   it("equals works", function () {
-    const left = new PolylineOutlineMaterialProperty();
+    var left = new PolylineOutlineMaterialProperty();
     left.color = new ConstantProperty(Color.WHITE);
     left.outlineColor = new ConstantProperty(Color.BLACK);
     left.outlineWidth = new ConstantProperty(5);
 
-    const right = new PolylineOutlineMaterialProperty();
+    var right = new PolylineOutlineMaterialProperty();
     right.color = new ConstantProperty(Color.WHITE);
     right.outlineColor = new ConstantProperty(Color.BLACK);
     right.outlineWidth = new ConstantProperty(5);
@@ -110,11 +110,11 @@ describe("DataSources/PolylineOutlineMaterialProperty", function () {
   });
 
   it("raises definitionChanged when a property is assigned or modified", function () {
-    const property = new PolylineOutlineMaterialProperty();
-    const listener = jasmine.createSpy("listener");
+    var property = new PolylineOutlineMaterialProperty();
+    var listener = jasmine.createSpy("listener");
     property.definitionChanged.addEventListener(listener);
 
-    let oldValue = property.color;
+    var oldValue = property.color;
     property.color = new ConstantProperty(Color.RED);
     expect(listener).toHaveBeenCalledWith(
       property,
@@ -183,7 +183,7 @@ describe("DataSources/PolylineOutlineMaterialProperty", function () {
   });
 
   it("isConstant is only true when all properties are constant or undefined", function () {
-    const property = new PolylineOutlineMaterialProperty();
+    var property = new PolylineOutlineMaterialProperty();
     expect(property.isConstant).toBe(true);
 
     property.color = undefined;
@@ -191,8 +191,8 @@ describe("DataSources/PolylineOutlineMaterialProperty", function () {
     property.outlineWidth = undefined;
     expect(property.isConstant).toBe(true);
 
-    const start = new JulianDate(1, 0);
-    const stop = new JulianDate(2, 0);
+    var start = new JulianDate(1, 0);
+    var stop = new JulianDate(2, 0);
     property.color = new TimeIntervalCollectionProperty();
     property.color.intervals.addInterval(
       new TimeInterval({

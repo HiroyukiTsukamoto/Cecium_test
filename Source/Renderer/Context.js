@@ -32,7 +32,7 @@ import UniformState from "./UniformState.js";
 import VertexArray from "./VertexArray.js";
 
 function errorToString(gl, error) {
-  let message = "WebGL Error:  ";
+  var message = "WebGL Error:  ";
   switch (error) {
     case gl.INVALID_ENUM:
       message += "INVALID_ENUM";
@@ -50,16 +50,16 @@ function errorToString(gl, error) {
       message += "CONTEXT_LOST_WEBGL lost";
       break;
     default:
-      message += `Unknown (${error})`;
+      message += "Unknown (" + error + ")";
   }
 
   return message;
 }
 
 function createErrorMessage(gl, glFunc, glFuncArguments, error) {
-  let message = `${errorToString(gl, error)}: ${glFunc.name}(`;
+  var message = errorToString(gl, error) + ": " + glFunc.name + "(";
 
-  for (let i = 0; i < glFuncArguments.length; ++i) {
+  for (var i = 0; i < glFuncArguments.length; ++i) {
     if (i !== 0) {
       message += ", ";
     }
@@ -71,7 +71,7 @@ function createErrorMessage(gl, glFunc, glFuncArguments, error) {
 }
 
 function throwOnError(gl, glFunc, glFuncArguments) {
-  const error = gl.getError();
+  var error = gl.getError();
   if (error !== gl.NO_ERROR) {
     throw new RuntimeError(
       createErrorMessage(gl, glFunc, glFuncArguments, error)
@@ -82,13 +82,13 @@ function throwOnError(gl, glFunc, glFuncArguments) {
 function makeGetterSetter(gl, propertyName, logFunction) {
   return {
     get: function () {
-      const value = gl[propertyName];
-      logFunction(gl, `get: ${propertyName}`, value);
+      var value = gl[propertyName];
+      logFunction(gl, "get: " + propertyName, value);
       return gl[propertyName];
     },
     set: function (value) {
       gl[propertyName] = value;
-      logFunction(gl, `set: ${propertyName}`, value);
+      logFunction(gl, "set: " + propertyName, value);
     },
   };
 }
@@ -100,20 +100,20 @@ function wrapGL(gl, logFunction) {
 
   function wrapFunction(property) {
     return function () {
-      const result = property.apply(gl, arguments);
+      var result = property.apply(gl, arguments);
       logFunction(gl, property, arguments);
       return result;
     };
   }
 
-  const glWrapper = {};
+  var glWrapper = {};
 
   // JavaScript linters normally demand that a for..in loop must directly contain an if,
   // but in our loop below, we actually intend to iterate all properties, including
   // those in the prototype.
   /*eslint-disable guard-for-in*/
-  for (const propertyName in gl) {
-    const property = gl[propertyName];
+  for (var propertyName in gl) {
+    var property = gl[propertyName];
 
     // wrap any functions we encounter, otherwise just copy the property to the wrapper.
     if (property instanceof Function) {
@@ -132,9 +132,9 @@ function wrapGL(gl, logFunction) {
 }
 
 function getExtension(gl, names) {
-  const length = names.length;
-  for (let i = 0; i < length; ++i) {
-    const extension = gl.getExtension(names[i]);
+  var length = names.length;
+  for (var i = 0; i < length; ++i) {
+    var extension = gl.getExtension(names[i]);
     if (extension) {
       return extension;
     }
@@ -168,19 +168,19 @@ function Context(canvas, options) {
     options.allowTextureFilterAnisotropic,
     true
   );
-  const webglOptions = defaultValue(options.webgl, {});
+  var webglOptions = defaultValue(options.webgl, {});
 
   // Override select WebGL defaults
   webglOptions.alpha = defaultValue(webglOptions.alpha, false); // WebGL default is true
   webglOptions.stencil = defaultValue(webglOptions.stencil, true); // WebGL default is false
 
-  const requestWebgl2 =
+  var requestWebgl2 =
     defaultValue(options.requestWebgl2, false) &&
     typeof WebGL2RenderingContext !== "undefined";
-  let webgl2 = false;
+  var webgl2 = false;
 
-  let glContext;
-  const getWebGLStub = options.getWebGLStub;
+  var glContext;
+  var getWebGLStub = options.getWebGLStub;
 
   if (!defined(getWebGLStub)) {
     if (requestWebgl2) {
@@ -223,7 +223,7 @@ function Context(canvas, options) {
   this._shaderCache = new ShaderCache(this);
   this._textureCache = new TextureCache();
 
-  const gl = glContext;
+  var gl = glContext;
 
   this._stencilBits = gl.getParameter(gl.STENCIL_BITS);
 
@@ -256,28 +256,24 @@ function Context(canvas, options) {
     gl.MAX_VERTEX_UNIFORM_VECTORS
   ); // min: 128
 
-  ContextLimits._maximumSamples = this._webgl2
-    ? gl.getParameter(gl.MAX_SAMPLES)
-    : 0;
-
-  const aliasedLineWidthRange = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE); // must include 1
+  var aliasedLineWidthRange = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE); // must include 1
   ContextLimits._minimumAliasedLineWidth = aliasedLineWidthRange[0];
   ContextLimits._maximumAliasedLineWidth = aliasedLineWidthRange[1];
 
-  const aliasedPointSizeRange = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE); // must include 1
+  var aliasedPointSizeRange = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE); // must include 1
   ContextLimits._minimumAliasedPointSize = aliasedPointSizeRange[0];
   ContextLimits._maximumAliasedPointSize = aliasedPointSizeRange[1];
 
-  const maximumViewportDimensions = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+  var maximumViewportDimensions = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
   ContextLimits._maximumViewportWidth = maximumViewportDimensions[0];
   ContextLimits._maximumViewportHeight = maximumViewportDimensions[1];
 
-  const highpFloat = gl.getShaderPrecisionFormat(
+  var highpFloat = gl.getShaderPrecisionFormat(
     gl.FRAGMENT_SHADER,
     gl.HIGH_FLOAT
   );
   ContextLimits._highpFloatSupported = highpFloat.precision !== 0;
-  const highpInt = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_INT);
+  var highpInt = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_INT);
   ContextLimits._highpIntSupported = highpInt.rangeMax !== 0;
 
   this._antialias = gl.getContextAttributes().antialias;
@@ -335,7 +331,7 @@ function Context(canvas, options) {
     this._bc7
   );
 
-  const textureFilterAnisotropic = options.allowTextureFilterAnisotropic
+  var textureFilterAnisotropic = options.allowTextureFilterAnisotropic
     ? getExtension(gl, [
         "EXT_texture_filter_anisotropic",
         "WEBKIT_EXT_texture_filter_anisotropic",
@@ -348,22 +344,22 @@ function Context(canvas, options) {
     ? gl.getParameter(textureFilterAnisotropic.MAX_TEXTURE_MAX_ANISOTROPY_EXT)
     : 1.0;
 
-  let glCreateVertexArray;
-  let glBindVertexArray;
-  let glDeleteVertexArray;
+  var glCreateVertexArray;
+  var glBindVertexArray;
+  var glDeleteVertexArray;
 
-  let glDrawElementsInstanced;
-  let glDrawArraysInstanced;
-  let glVertexAttribDivisor;
+  var glDrawElementsInstanced;
+  var glDrawArraysInstanced;
+  var glVertexAttribDivisor;
 
-  let glDrawBuffers;
+  var glDrawBuffers;
 
-  let vertexArrayObject;
-  let instancedArrays;
-  let drawBuffers;
+  var vertexArrayObject;
+  var instancedArrays;
+  var drawBuffers;
 
   if (webgl2) {
-    const that = this;
+    var that = this;
 
     glCreateVertexArray = function () {
       return that._gl.createVertexArray();
@@ -471,9 +467,9 @@ function Context(canvas, options) {
   this._clearDepth = 1.0;
   this._clearStencil = 0;
 
-  const us = new UniformState();
-  const ps = new PassState(this);
-  const rs = RenderState.fromCache();
+  var us = new UniformState();
+  var ps = new PassState(this);
+  var rs = RenderState.fromCache();
 
   this._defaultPassState = ps;
   this._defaultRenderState = rs;
@@ -494,7 +490,7 @@ function Context(canvas, options) {
   // Vertex attribute divisor state cache. Workaround for ANGLE (also look at VertexArray.setVertexAttribDivisor)
   this._vertexAttribDivisors = [];
   this._previousDrawInstanced = false;
-  for (let i = 0; i < ContextLimits._maximumVertexAttributes; i++) {
+  for (var i = 0; i < ContextLimits._maximumVertexAttributes; i++) {
     this._vertexAttribDivisors.push(0);
   }
 
@@ -532,7 +528,7 @@ function Context(canvas, options) {
   RenderState.apply(gl, rs, ps);
 }
 
-const defaultFramebufferMarker = {};
+var defaultFramebufferMarker = {};
 
 Object.defineProperties(Context.prototype, {
   id: {
@@ -599,18 +595,6 @@ Object.defineProperties(Context.prototype, {
   antialias: {
     get: function () {
       return this._antialias;
-    },
-  },
-
-  /**
-   * <code>true</code> if the WebGL context supports multisample antialiasing. Requires
-   * WebGL2.
-   * @memberof Context.prototype
-   * @type {Boolean}
-   */
-  msaa: {
-    get: function () {
-      return this._webgl2;
     },
   },
 
@@ -1040,7 +1024,7 @@ Object.defineProperties(Context.prototype, {
   defaultCubeMap: {
     get: function () {
       if (this._defaultCubeMap === undefined) {
-        const face = {
+        var face = {
           width: 1,
           height: 1,
           arrayBufferView: new Uint8Array([255, 255, 255, 255]),
@@ -1110,11 +1094,11 @@ Object.defineProperties(Context.prototype, {
 function validateFramebuffer(context) {
   //>>includeStart('debug', pragmas.debug);
   if (context.validateFramebuffer) {
-    const gl = context._gl;
-    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    var gl = context._gl;
+    var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
 
     if (status !== gl.FRAMEBUFFER_COMPLETE) {
-      let message;
+      var message;
 
       switch (status) {
         case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
@@ -1142,8 +1126,8 @@ function validateFramebuffer(context) {
 }
 
 function applyRenderState(context, renderState, passState, clear) {
-  const previousRenderState = context._currentRenderState;
-  const previousPassState = context._currentPassState;
+  var previousRenderState = context._currentRenderState;
+  var previousPassState = context._currentPassState;
   context._currentRenderState = renderState;
   context._currentPassState = passState;
   RenderState.partialApply(
@@ -1156,7 +1140,7 @@ function applyRenderState(context, renderState, passState, clear) {
   );
 }
 
-let scratchBackBufferArray;
+var scratchBackBufferArray;
 // this check must use typeof, not defined, because defined doesn't work with undeclared variables.
 if (typeof WebGLRenderingContext !== "undefined") {
   scratchBackBufferArray = [WebGLConstants.BACK];
@@ -1165,7 +1149,7 @@ if (typeof WebGLRenderingContext !== "undefined") {
 function bindFramebuffer(context, framebuffer) {
   if (framebuffer !== context._currentFramebuffer) {
     context._currentFramebuffer = framebuffer;
-    let buffers = scratchBackBufferArray;
+    var buffers = scratchBackBufferArray;
 
     if (defined(framebuffer)) {
       framebuffer._bind();
@@ -1174,7 +1158,7 @@ function bindFramebuffer(context, framebuffer) {
       // TODO: Need a way for a command to give what draw buffers are active.
       buffers = framebuffer._getActiveColorAttachments();
     } else {
-      const gl = context._gl;
+      var gl = context._gl;
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
 
@@ -1184,18 +1168,18 @@ function bindFramebuffer(context, framebuffer) {
   }
 }
 
-const defaultClearCommand = new ClearCommand();
+var defaultClearCommand = new ClearCommand();
 
 Context.prototype.clear = function (clearCommand, passState) {
   clearCommand = defaultValue(clearCommand, defaultClearCommand);
   passState = defaultValue(passState, this._defaultPassState);
 
-  const gl = this._gl;
-  let bitmask = 0;
+  var gl = this._gl;
+  var bitmask = 0;
 
-  const c = clearCommand.color;
-  const d = clearCommand.depth;
-  const s = clearCommand.stencil;
+  var c = clearCommand.color;
+  var d = clearCommand.depth;
+  var s = clearCommand.stencil;
 
   if (defined(c)) {
     if (!Color.equals(this._clearColor, c)) {
@@ -1221,11 +1205,11 @@ Context.prototype.clear = function (clearCommand, passState) {
     bitmask |= gl.STENCIL_BUFFER_BIT;
   }
 
-  const rs = defaultValue(clearCommand.renderState, this._defaultRenderState);
+  var rs = defaultValue(clearCommand.renderState, this._defaultRenderState);
   applyRenderState(this, rs, passState, true);
 
   // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-  const framebuffer = defaultValue(
+  var framebuffer = defaultValue(
     clearCommand.framebuffer,
     passState.framebuffer
   );
@@ -1261,11 +1245,11 @@ function beginDraw(
 }
 
 function continueDraw(context, drawCommand, shaderProgram, uniformMap) {
-  const primitiveType = drawCommand._primitiveType;
-  const va = drawCommand._vertexArray;
-  let offset = drawCommand._offset;
-  let count = drawCommand._count;
-  const instanceCount = drawCommand.instanceCount;
+  var primitiveType = drawCommand._primitiveType;
+  var va = drawCommand._vertexArray;
+  var offset = drawCommand._offset;
+  var count = drawCommand._count;
+  var instanceCount = drawCommand.instanceCount;
 
   //>>includeStart('debug', pragmas.debug);
   if (!PrimitiveType.validate(primitiveType)) {
@@ -1297,7 +1281,7 @@ function continueDraw(context, drawCommand, shaderProgram, uniformMap) {
   );
 
   va._bind();
-  const indexBuffer = va.indexBuffer;
+  var indexBuffer = va.indexBuffer;
 
   if (defined(indexBuffer)) {
     offset = offset * indexBuffer.bytesPerIndex; // offset in vertices to offset in bytes
@@ -1348,11 +1332,11 @@ Context.prototype.draw = function (
 
   passState = defaultValue(passState, this._defaultPassState);
   // The command's framebuffer takes presidence over the pass' framebuffer, e.g., for off-screen rendering.
-  const framebuffer = defaultValue(
+  var framebuffer = defaultValue(
     drawCommand._framebuffer,
     passState.framebuffer
   );
-  const renderState = defaultValue(
+  var renderState = defaultValue(
     drawCommand._renderState,
     this._defaultRenderState
   );
@@ -1364,21 +1348,21 @@ Context.prototype.draw = function (
 };
 
 Context.prototype.endFrame = function () {
-  const gl = this._gl;
+  var gl = this._gl;
   gl.useProgram(null);
 
   this._currentFramebuffer = undefined;
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-  const buffers = scratchBackBufferArray;
+  var buffers = scratchBackBufferArray;
   if (this.drawBuffers) {
     this.glDrawBuffers(buffers);
   }
 
-  const length = this._maxFrameTextureUnitIndex;
+  var length = this._maxFrameTextureUnitIndex;
   this._maxFrameTextureUnitIndex = 0;
 
-  for (let i = 0; i < length; ++i) {
+  for (var i = 0; i < length; ++i) {
     gl.activeTexture(gl.TEXTURE0 + i);
     gl.bindTexture(gl.TEXTURE_2D, null);
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -1386,26 +1370,26 @@ Context.prototype.endFrame = function () {
 };
 
 Context.prototype.readPixels = function (readState) {
-  const gl = this._gl;
+  var gl = this._gl;
 
   readState = defaultValue(readState, defaultValue.EMPTY_OBJECT);
-  const x = Math.max(defaultValue(readState.x, 0), 0);
-  const y = Math.max(defaultValue(readState.y, 0), 0);
-  const width = defaultValue(readState.width, gl.drawingBufferWidth);
-  const height = defaultValue(readState.height, gl.drawingBufferHeight);
-  const framebuffer = readState.framebuffer;
+  var x = Math.max(defaultValue(readState.x, 0), 0);
+  var y = Math.max(defaultValue(readState.y, 0), 0);
+  var width = defaultValue(readState.width, gl.drawingBufferWidth);
+  var height = defaultValue(readState.height, gl.drawingBufferHeight);
+  var framebuffer = readState.framebuffer;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number.greaterThan("readState.width", width, 0);
   Check.typeOf.number.greaterThan("readState.height", height, 0);
   //>>includeEnd('debug');
 
-  let pixelDatatype = PixelDatatype.UNSIGNED_BYTE;
+  var pixelDatatype = PixelDatatype.UNSIGNED_BYTE;
   if (defined(framebuffer) && framebuffer.numberOfColorAttachments > 0) {
     pixelDatatype = framebuffer.getColorTexture(0).pixelDatatype;
   }
 
-  const pixels = PixelFormat.createTypedArray(
+  var pixels = PixelFormat.createTypedArray(
     PixelFormat.RGBA,
     pixelDatatype,
     width,
@@ -1427,17 +1411,17 @@ Context.prototype.readPixels = function (readState) {
   return pixels;
 };
 
-const viewportQuadAttributeLocations = {
+var viewportQuadAttributeLocations = {
   position: 0,
   textureCoordinates: 1,
 };
 
 Context.prototype.getViewportQuadVertexArray = function () {
   // Per-context cache for viewport quads
-  let vertexArray = this.cache.viewportQuad_vertexArray;
+  var vertexArray = this.cache.viewportQuad_vertexArray;
 
   if (!defined(vertexArray)) {
-    const geometry = new Geometry({
+    var geometry = new Geometry({
       attributes: {
         position: new GeometryAttribute({
           componentDatatype: ComponentDatatype.FLOAT,
@@ -1500,7 +1484,7 @@ Context.prototype.createViewportQuadCommand = function (
  * @returns {Object} The object associated with the pick color, or undefined if no object is associated with that color.
  *
  * @example
- * const object = context.getObjectByPickColor(pickColor);
+ * var object = context.getObjectByPickColor(pickColor);
  *
  * @see Context#createPickId
  */
@@ -1561,7 +1545,7 @@ Context.prototype.createPickId = function (object) {
   // the increment and assignment have to be separate statements to
   // actually detect overflow in the Uint32 value
   ++this._nextPickColor[0];
-  const key = this._nextPickColor[0];
+  var key = this._nextPickColor[0];
   if (key === 0) {
     // In case of overflow
     throw new RuntimeError("Out of unique Pick IDs.");
@@ -1577,10 +1561,10 @@ Context.prototype.isDestroyed = function () {
 
 Context.prototype.destroy = function () {
   // Destroy all objects in the cache that have a destroy method.
-  const cache = this.cache;
-  for (const property in cache) {
+  var cache = this.cache;
+  for (var property in cache) {
     if (cache.hasOwnProperty(property)) {
-      const propertyValue = cache[property];
+      var propertyValue = cache[property];
       if (defined(propertyValue.destroy)) {
         propertyValue.destroy();
       }

@@ -5,8 +5,8 @@ import DeveloperError from "../Core/DeveloperError.js";
 import Resource from "../Core/Resource.js";
 import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
 
-const trailingSlashRegex = /\/$/;
-const defaultCredit = new Credit(
+var trailingSlashRegex = /\/$/;
+var defaultCredit = new Credit(
   '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/">Improve this map</a></strong>'
 );
 
@@ -40,7 +40,7 @@ const defaultCredit = new Credit(
  *
  * @example
  * // Mapbox style provider
- * const mapbox = new Cesium.MapboxStyleImageryProvider({
+ * var mapbox = new Cesium.MapboxStyleImageryProvider({
  *     styleId: 'streets-v11',
  *     accessToken: 'thisIsMyAccessToken'
  * });
@@ -50,14 +50,14 @@ const defaultCredit = new Credit(
  */
 function MapboxStyleImageryProvider(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const styleId = options.styleId;
+  var styleId = options.styleId;
   //>>includeStart('debug', pragmas.debug);
   if (!defined(styleId)) {
     throw new DeveloperError("options.styleId is required.");
   }
   //>>includeEnd('debug');
 
-  const accessToken = options.accessToken;
+  var accessToken = options.accessToken;
   //>>includeStart('debug', pragmas.debug);
   if (!defined(accessToken)) {
     throw new DeveloperError("options.accessToken is required.");
@@ -150,33 +150,40 @@ function MapboxStyleImageryProvider(options) {
    */
   this.defaultMagnificationFilter = undefined;
 
-  const resource = Resource.createIfNeeded(
+  var resource = Resource.createIfNeeded(
     defaultValue(options.url, "https://api.mapbox.com/styles/v1/")
   );
 
   this._styleId = styleId;
   this._accessToken = accessToken;
 
-  const tilesize = defaultValue(options.tilesize, 512);
+  var tilesize = defaultValue(options.tilesize, 512);
   this._tilesize = tilesize;
 
-  const username = defaultValue(options.username, "mapbox");
+  var username = defaultValue(options.username, "mapbox");
   this._username = username;
 
-  const scaleFactor = defined(options.scaleFactor) ? "@2x" : "";
+  var scaleFactor = defined(options.scaleFactor) ? "@2x" : "";
 
-  let templateUrl = resource.getUrlComponent();
+  var templateUrl = resource.getUrlComponent();
   if (!trailingSlashRegex.test(templateUrl)) {
     templateUrl += "/";
   }
-  templateUrl += `${this._username}/${styleId}/tiles/${this._tilesize}/{z}/{x}/{y}${scaleFactor}`;
+  templateUrl +=
+    this._username +
+    "/" +
+    styleId +
+    "/tiles/" +
+    this._tilesize +
+    "/{z}/{x}/{y}" +
+    scaleFactor;
   resource.url = templateUrl;
 
   resource.setQueryParameters({
     access_token: accessToken,
   });
 
-  let credit;
+  var credit;
   if (defined(options.credit)) {
     credit = options.credit;
     if (typeof credit === "string") {
@@ -410,8 +417,10 @@ MapboxStyleImageryProvider.prototype.getTileCredits = function (x, y, level) {
  * @param {Number} y The tile Y coordinate.
  * @param {Number} level The tile level.
  * @param {Request} [request] The request object. Intended for internal use only.
- * @returns {Promise.<ImageryTypes>|undefined} A promise for the image that will resolve when the image is available, or
- *          undefined if there are too many active requests to the server, and the request should be retried later.
+ * @returns {Promise.<HTMLImageElement|HTMLCanvasElement>|undefined} A promise for the image that will resolve when the image is available, or
+ *          undefined if there are too many active requests to the server, and the request
+ *          should be retried later.  The resolved image may be either an
+ *          Image or a Canvas DOM object.
  *
  * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
  */

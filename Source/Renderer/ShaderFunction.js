@@ -1,3 +1,5 @@
+import Check from "../Core/Check.js";
+
 /**
  * A utility for dynamically-generating a GLSL function
  *
@@ -14,26 +16,32 @@
  * //    v_positionEC = (czm_modelView * vec4(a_position, 1.0)).xyz;
  * //    v_texCoord = a_texCoord;
  * // }
- * const signature = "void assignVaryings(vec3 position)";
- * const func = new ShaderFunction(signature);
+ * var signature = "void assignVaryings(vec3 position)";
+ * var func = new ShaderFunction(signature);
  * func.addLine("v_positionEC = (czm_modelView * vec4(a_position, 1.0)).xyz;");
  * func.addLine("v_texCoord = a_texCoord;");
- * const generatedLines = func.generateGlslLines();
+ * var generatedLines = func.generateGlslLines();
  *
  * @private
  */
 export default function ShaderFunction(signature) {
+  //>>includeStart('debug', pragmas.debug);
+  Check.typeOf.string("signature", signature);
+  //>>includeEnd('debug');
   this.signature = signature;
   this.body = [];
 }
 
 /**
- * Add an array of lines to the body of the function
- * @param {String[]} lines An array of lines of GLSL code to add to the function body. Do not include any preceding or ending whitespace, but do include the semicolon for each line.
+ * Add a single line to the body of the function
+ * @param {String} lines Line of GLSL code to add to the function body. Do not include any preceding whitespace, but do include the semicolon for each line.
  */
 ShaderFunction.prototype.addLines = function (lines) {
-  const paddedLines = lines.map(function (line) {
-    return `    ${line}`;
+  //>>includeStart('debug', pragmas.debug);
+  Check.typeOf.object("line", lines);
+  //>>includeEnd('debug');
+  var paddedLines = lines.map(function (line) {
+    return "    " + line;
   });
   Array.prototype.push.apply(this.body, paddedLines);
 };

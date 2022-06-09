@@ -3,7 +3,7 @@ import Cartesian3 from "./Cartesian3.js";
 /**
  * @private
  */
-const TerrainExaggeration = {};
+var TerrainExaggeration = {};
 
 /**
  * Scales a height relative to an offset.
@@ -16,7 +16,7 @@ TerrainExaggeration.getHeight = function (height, scale, relativeHeight) {
   return (height - relativeHeight) * scale + relativeHeight;
 };
 
-const scratchCartographic = new Cartesian3();
+var scratchCartographic = new Cartesian3();
 
 /**
  * Scales a position by exaggeration.
@@ -28,11 +28,11 @@ TerrainExaggeration.getPosition = function (
   terrainExaggerationRelativeHeight,
   result
 ) {
-  const cartographic = ellipsoid.cartesianToCartographic(
+  var cartographic = ellipsoid.cartesianToCartographic(
     position,
     scratchCartographic
   );
-  const newHeight = TerrainExaggeration.getHeight(
+  var newHeight = TerrainExaggeration.getHeight(
     cartographic.height,
     terrainExaggeration,
     terrainExaggerationRelativeHeight

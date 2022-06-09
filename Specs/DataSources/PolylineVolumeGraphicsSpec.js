@@ -10,7 +10,7 @@ import testMaterialDefinitionChanged from "../testMaterialDefinitionChanged.js";
 
 describe("DataSources/PolylineVolumeGraphics", function () {
   it("creates expected instance from raw assignment and construction", function () {
-    const options = {
+    var options = {
       material: Color.BLUE,
       positions: [],
       shape: [],
@@ -25,7 +25,7 @@ describe("DataSources/PolylineVolumeGraphics", function () {
       distanceDisplayCondition: new DistanceDisplayCondition(),
     };
 
-    const polylineVolume = new PolylineVolumeGraphics(options);
+    var polylineVolume = new PolylineVolumeGraphics(options);
     expect(polylineVolume.material).toBeInstanceOf(ColorMaterialProperty);
     expect(polylineVolume.positions).toBeInstanceOf(ConstantProperty);
     expect(polylineVolume.show).toBeInstanceOf(ConstantProperty);
@@ -62,7 +62,7 @@ describe("DataSources/PolylineVolumeGraphics", function () {
   });
 
   it("merge assigns unassigned properties", function () {
-    const source = new PolylineVolumeGraphics();
+    var source = new PolylineVolumeGraphics();
     source.material = new ColorMaterialProperty();
     source.positions = new ConstantProperty();
     source.show = new ConstantProperty();
@@ -78,7 +78,7 @@ describe("DataSources/PolylineVolumeGraphics", function () {
       new DistanceDisplayCondition()
     );
 
-    const target = new PolylineVolumeGraphics();
+    var target = new PolylineVolumeGraphics();
     target.merge(source);
 
     expect(target.material).toBe(source.material);
@@ -98,22 +98,22 @@ describe("DataSources/PolylineVolumeGraphics", function () {
   });
 
   it("merge does not assign assigned properties", function () {
-    const source = new PolylineVolumeGraphics();
+    var source = new PolylineVolumeGraphics();
 
-    const material = new ColorMaterialProperty();
-    const positions = new ConstantProperty();
-    const show = new ConstantProperty();
-    const shape = new ConstantProperty();
-    const granularity = new ConstantProperty();
-    const fill = new ConstantProperty();
-    const outline = new ConstantProperty();
-    const outlineColor = new ConstantProperty();
-    const outlineWidth = new ConstantProperty();
-    const cornerType = new ConstantProperty();
-    const shadows = new ConstantProperty();
-    const distanceDisplayCondition = new ConstantProperty();
+    var material = new ColorMaterialProperty();
+    var positions = new ConstantProperty();
+    var show = new ConstantProperty();
+    var shape = new ConstantProperty();
+    var granularity = new ConstantProperty();
+    var fill = new ConstantProperty();
+    var outline = new ConstantProperty();
+    var outlineColor = new ConstantProperty();
+    var outlineWidth = new ConstantProperty();
+    var cornerType = new ConstantProperty();
+    var shadows = new ConstantProperty();
+    var distanceDisplayCondition = new ConstantProperty();
 
-    const target = new PolylineVolumeGraphics();
+    var target = new PolylineVolumeGraphics();
     target.material = material;
     target.positions = positions;
     target.show = show;
@@ -144,7 +144,7 @@ describe("DataSources/PolylineVolumeGraphics", function () {
   });
 
   it("clone works", function () {
-    const source = new PolylineVolumeGraphics();
+    var source = new PolylineVolumeGraphics();
     source.material = new ColorMaterialProperty();
     source.positions = new ConstantProperty();
     source.show = new ConstantProperty();
@@ -158,7 +158,7 @@ describe("DataSources/PolylineVolumeGraphics", function () {
     source.shadows = new ConstantProperty();
     source.distanceDisplayCondition = new ConstantProperty();
 
-    const result = source.clone();
+    var result = source.clone();
     expect(result.material).toBe(source.material);
     expect(result.positions).toBe(source.positions);
     expect(result.show).toBe(source.show);
@@ -176,14 +176,14 @@ describe("DataSources/PolylineVolumeGraphics", function () {
   });
 
   it("merge throws if source undefined", function () {
-    const target = new PolylineVolumeGraphics();
+    var target = new PolylineVolumeGraphics();
     expect(function () {
       target.merge(undefined);
     }).toThrowDeveloperError();
   });
 
   it("raises definitionChanged when a property is assigned or modified", function () {
-    const property = new PolylineVolumeGraphics();
+    var property = new PolylineVolumeGraphics();
     testMaterialDefinitionChanged(property, "material", Color.RED, Color.BLUE);
     testDefinitionChanged(property, "positions", [], []);
     testDefinitionChanged(property, "shape", [], []);

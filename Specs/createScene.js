@@ -10,7 +10,7 @@ function createScene(options) {
   options = defaultValue(options, {});
 
   // save the canvas so we don't try to clone an HTMLCanvasElement
-  const canvas = defined(options.canvas) ? options.canvas : createCanvas();
+  var canvas = defined(options.canvas) ? options.canvas : createCanvas();
   options.canvas = undefined;
 
   options = clone(options, true);
@@ -18,7 +18,7 @@ function createScene(options) {
   options.canvas = canvas;
   options.contextOptions = defaultValue(options.contextOptions, {});
 
-  const contextOptions = options.contextOptions;
+  var contextOptions = options.contextOptions;
   contextOptions.webgl = defaultValue(contextOptions.webgl, {});
   contextOptions.webgl.antialias = defaultValue(
     contextOptions.webgl.antialias,
@@ -32,11 +32,11 @@ function createScene(options) {
     contextOptions.getWebGLStub = getWebGLStub;
   }
 
-  const scene = new Scene(options);
+  var scene = new Scene(options);
   scene.highDynamicRange = false;
 
   if (!!window.webglValidation) {
-    const context = scene.context;
+    var context = scene.context;
     context.validateShaderProgram = true;
     context.validateFramebuffer = true;
     context.logShaderCompilation = true;
@@ -45,7 +45,7 @@ function createScene(options) {
 
   // Add functions for test
   scene.destroyForSpecs = function () {
-    const canvas = this.canvas;
+    var canvas = this.canvas;
     this.destroy();
     document.body.removeChild(canvas);
   };

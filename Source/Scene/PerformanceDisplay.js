@@ -11,7 +11,7 @@ import getElement from "../Widgets/getElement.js";
 function PerformanceDisplay(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const container = getElement(options.container);
+  var container = getElement(options.container);
   //>>includeStart('debug', pragmas.debug);
   if (!defined(container)) {
     throw new DeveloperError("container is required");
@@ -20,13 +20,13 @@ function PerformanceDisplay(options) {
 
   this._container = container;
 
-  const display = document.createElement("div");
+  var display = document.createElement("div");
   display.className = "cesium-performanceDisplay";
-  const fpsElement = document.createElement("div");
+  var fpsElement = document.createElement("div");
   fpsElement.className = "cesium-performanceDisplay-fps";
   this._fpsText = document.createTextNode("");
   fpsElement.appendChild(this._fpsText);
-  const msElement = document.createElement("div");
+  var msElement = document.createElement("div");
   msElement.className = "cesium-performanceDisplay-ms";
   this._msText = document.createTextNode("");
   msElement.appendChild(this._msText);
@@ -40,7 +40,7 @@ function PerformanceDisplay(options) {
   this._msFrameCount = 0;
 
   this._throttled = false;
-  const throttledElement = document.createElement("div");
+  var throttledElement = document.createElement("div");
   throttledElement.className = "cesium-performanceDisplay-throttled";
   this._throttledText = document.createTextNode("");
   throttledElement.appendChild(this._throttledText);
@@ -81,31 +81,31 @@ Object.defineProperties(PerformanceDisplay.prototype, {
  * @param {Boolean} [renderedThisFrame=true] If provided, the FPS count will only update and display if true.
  */
 PerformanceDisplay.prototype.update = function (renderedThisFrame) {
-  const time = getTimestamp();
-  const updateDisplay = defaultValue(renderedThisFrame, true);
+  var time = getTimestamp();
+  var updateDisplay = defaultValue(renderedThisFrame, true);
 
   this._fpsFrameCount++;
-  const fpsElapsedTime = time - this._lastFpsSampleTime;
+  var fpsElapsedTime = time - this._lastFpsSampleTime;
   if (fpsElapsedTime > 1000) {
-    let fps = "N/A";
+    var fps = "N/A";
     if (updateDisplay) {
       fps = ((this._fpsFrameCount * 1000) / fpsElapsedTime) | 0;
     }
 
-    this._fpsText.nodeValue = `${fps} FPS`;
+    this._fpsText.nodeValue = fps + " FPS";
     this._lastFpsSampleTime = time;
     this._fpsFrameCount = 0;
   }
 
   this._msFrameCount++;
-  const msElapsedTime = time - this._lastMsSampleTime;
+  var msElapsedTime = time - this._lastMsSampleTime;
   if (msElapsedTime > 200) {
-    let ms = "N/A";
+    var ms = "N/A";
     if (updateDisplay) {
       ms = (msElapsedTime / this._msFrameCount).toFixed(2);
     }
 
-    this._msText.nodeValue = `${ms} MS`;
+    this._msText.nodeValue = ms + " MS";
     this._lastMsSampleTime = time;
     this._msFrameCount = 0;
   }

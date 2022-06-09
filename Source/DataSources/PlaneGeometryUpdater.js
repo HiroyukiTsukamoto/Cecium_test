@@ -20,8 +20,8 @@ import DynamicGeometryUpdater from "./DynamicGeometryUpdater.js";
 import GeometryUpdater from "./GeometryUpdater.js";
 import Property from "./Property.js";
 
-const positionScratch = new Cartesian3();
-const scratchColor = new Color();
+var positionScratch = new Cartesian3();
+var scratchColor = new Color();
 
 function PlaneGeometryOptions(entity) {
   this.id = entity;
@@ -75,26 +75,26 @@ PlaneGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
 
-  let attributes;
+  var attributes;
 
-  let color;
-  const show = new ShowGeometryInstanceAttribute(
+  var color;
+  var show = new ShowGeometryInstanceAttribute(
     isAvailable &&
       entity.isShowing &&
       this._showProperty.getValue(time) &&
       this._fillProperty.getValue(time)
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
-  const distanceDisplayConditionAttribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
+  var distanceDisplayConditionAttribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
     distanceDisplayCondition
   );
   if (this._materialProperty instanceof ColorMaterialProperty) {
-    let currentColor;
+    var currentColor;
     if (
       defined(this._materialProperty.color) &&
       (this._materialProperty.color.isConstant || isAvailable)
@@ -117,15 +117,15 @@ PlaneGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
     };
   }
 
-  const planeGraphics = entity.plane;
-  const options = this._options;
-  let modelMatrix = entity.computeModelMatrix(time);
-  const plane = Property.getValueOrDefault(
+  var planeGraphics = entity.plane;
+  var options = this._options;
+  var modelMatrix = entity.computeModelMatrix(time);
+  var plane = Property.getValueOrDefault(
     planeGraphics.plane,
     time,
     options.plane
   );
-  const dimensions = Property.getValueOrUndefined(
+  var dimensions = Property.getValueOrUndefined(
     planeGraphics.dimensions,
     time,
     options.dimensions
@@ -168,27 +168,27 @@ PlaneGeometryUpdater.prototype.createOutlineGeometryInstance = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
-  const outlineColor = Property.getValueOrDefault(
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
+  var outlineColor = Property.getValueOrDefault(
     this._outlineColorProperty,
     time,
     Color.BLACK,
     scratchColor
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
 
-  const planeGraphics = entity.plane;
-  const options = this._options;
-  let modelMatrix = entity.computeModelMatrix(time);
-  const plane = Property.getValueOrDefault(
+  var planeGraphics = entity.plane;
+  var options = this._options;
+  var modelMatrix = entity.computeModelMatrix(time);
+  var plane = Property.getValueOrDefault(
     planeGraphics.plane,
     time,
     options.plane
   );
-  const dimensions = Property.getValueOrUndefined(
+  var dimensions = Property.getValueOrUndefined(
     planeGraphics.dimensions,
     time,
     options.dimensions
@@ -247,10 +247,9 @@ PlaneGeometryUpdater.prototype._isDynamic = function (entity, plane) {
 };
 
 PlaneGeometryUpdater.prototype._setStaticOptions = function (entity, plane) {
-  const isColorMaterial =
-    this._materialProperty instanceof ColorMaterialProperty;
+  var isColorMaterial = this._materialProperty instanceof ColorMaterialProperty;
 
-  const options = this._options;
+  var options = this._options;
   options.vertexFormat = isColorMaterial
     ? PerInstanceColorAppearance.VERTEX_FORMAT
     : MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat;
@@ -291,8 +290,8 @@ DynamicPlaneGeometryUpdater.prototype._isHidden = function (
   plane,
   time
 ) {
-  const options = this._options;
-  const position = Property.getValueOrUndefined(
+  var options = this._options;
+  var position = Property.getValueOrUndefined(
     entity.position,
     time,
     positionScratch
@@ -310,7 +309,7 @@ DynamicPlaneGeometryUpdater.prototype._setOptions = function (
   plane,
   time
 ) {
-  const options = this._options;
+  var options = this._options;
   options.plane = Property.getValueOrDefault(plane.plane, time, options.plane);
   options.dimensions = Property.getValueOrUndefined(
     plane.dimensions,
@@ -319,24 +318,24 @@ DynamicPlaneGeometryUpdater.prototype._setOptions = function (
   );
 };
 
-const scratchAxis = new Cartesian3();
-const scratchUp = new Cartesian3();
-const scratchTranslation = new Cartesian3();
-const scratchScale = new Cartesian3();
-const scratchRotation = new Matrix3();
-const scratchRotationScale = new Matrix3();
-const scratchLocalTransform = new Matrix4();
+var scratchAxis = new Cartesian3();
+var scratchUp = new Cartesian3();
+var scratchTranslation = new Cartesian3();
+var scratchScale = new Cartesian3();
+var scratchRotation = new Matrix3();
+var scratchRotationScale = new Matrix3();
+var scratchLocalTransform = new Matrix4();
 function createPrimitiveMatrix(plane, dimensions, transform, result) {
-  const normal = plane.normal;
-  const distance = plane.distance;
+  var normal = plane.normal;
+  var distance = plane.distance;
 
-  const translation = Cartesian3.multiplyByScalar(
+  var translation = Cartesian3.multiplyByScalar(
     normal,
     -distance,
     scratchTranslation
   );
 
-  let up = Cartesian3.clone(Cartesian3.UNIT_Z, scratchUp);
+  var up = Cartesian3.clone(Cartesian3.UNIT_Z, scratchUp);
   if (
     CesiumMath.equalsEpsilon(
       Math.abs(Cartesian3.dot(up, normal)),
@@ -347,29 +346,29 @@ function createPrimitiveMatrix(plane, dimensions, transform, result) {
     up = Cartesian3.clone(Cartesian3.UNIT_Y, up);
   }
 
-  const left = Cartesian3.cross(up, normal, scratchAxis);
+  var left = Cartesian3.cross(up, normal, scratchAxis);
   up = Cartesian3.cross(normal, left, up);
   Cartesian3.normalize(left, left);
   Cartesian3.normalize(up, up);
 
-  const rotationMatrix = scratchRotation;
+  var rotationMatrix = scratchRotation;
   Matrix3.setColumn(rotationMatrix, 0, left, rotationMatrix);
   Matrix3.setColumn(rotationMatrix, 1, up, rotationMatrix);
   Matrix3.setColumn(rotationMatrix, 2, normal, rotationMatrix);
 
-  const scale = Cartesian3.fromElements(
+  var scale = Cartesian3.fromElements(
     dimensions.x,
     dimensions.y,
     1.0,
     scratchScale
   );
-  const rotationScaleMatrix = Matrix3.multiplyByScale(
+  var rotationScaleMatrix = Matrix3.multiplyByScale(
     rotationMatrix,
     scale,
     scratchRotationScale
   );
 
-  const localTransform = Matrix4.fromRotationTranslation(
+  var localTransform = Matrix4.fromRotationTranslation(
     rotationScaleMatrix,
     translation,
     scratchLocalTransform

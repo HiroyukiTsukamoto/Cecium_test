@@ -11,9 +11,9 @@ import createScene from "../createScene.js";
 describe(
   "Scene/EllipsoidSurfaceAppearance",
   function () {
-    let scene;
-    let rectangle;
-    let primitive;
+    var scene;
+    var rectangle;
+    var primitive;
 
     beforeAll(function () {
       scene = createScene();
@@ -37,7 +37,7 @@ describe(
     });
 
     it("constructor", function () {
-      const a = new EllipsoidSurfaceAppearance();
+      var a = new EllipsoidSurfaceAppearance();
 
       expect(a.material).toBeDefined();
       expect(a.material.type).toEqual(Material.ColorType);

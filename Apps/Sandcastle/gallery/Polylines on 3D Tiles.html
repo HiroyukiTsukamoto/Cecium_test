@@ -32,20 +32,20 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
         // Power Plant design model provided by Bentley Systems
-        const viewer = new Cesium.Viewer("cesiumContainer");
-        const scene = viewer.scene;
+        var viewer = new Cesium.Viewer("cesiumContainer");
+        var scene = viewer.scene;
 
-        const powerplant = scene.primitives.add(
+        var powerplant = scene.primitives.add(
           new Cesium.Cesium3DTileset({
             url: Cesium.IonResource.fromAssetId(8564),
             show: false,
           })
         );
-        const pipes = viewer.entities.add({
+        var pipes = viewer.entities.add({
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArray([
               -76.36053390920833,
@@ -66,12 +66,12 @@
           },
         });
 
-        const building = viewer.scene.primitives.add(
+        var building = viewer.scene.primitives.add(
           new Cesium.Cesium3DTileset({
             url: Cesium.IonResource.fromAssetId(40866),
           })
         );
-        const route = viewer.entities.add({
+        var route = viewer.entities.add({
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArray([
               -75.59604807301078,
@@ -140,10 +140,10 @@
           },
         ]); //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

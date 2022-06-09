@@ -38,7 +38,7 @@ function ProviderViewModel(options) {
   }
   //>>includeEnd('debug');
 
-  let creationCommand = options.creationFunction;
+  var creationCommand = options.creationFunction;
   if (!defined(creationCommand.canExecute)) {
     creationCommand = createCommand(creationCommand);
   }

@@ -1,5 +1,5 @@
 /* This file is automatically rebuilt by the Cesium build process. */
-define(['./defaultValue-94c3e563'], (function (defaultValue) { 'use strict';
+define(['./when-8166c7dd'], (function (when) { 'use strict';
 
   /**
    * Formats an error object into a String.  If available, uses name, message, and stack
@@ -11,19 +11,19 @@ define(['./defaultValue-94c3e563'], (function (defaultValue) { 'use strict';
    * @returns {String} A string containing the formatted error.
    */
   function formatError(object) {
-    let result;
+    var result;
 
-    const name = object.name;
-    const message = object.message;
-    if (defaultValue.defined(name) && defaultValue.defined(message)) {
-      result = `${name}: ${message}`;
+    var name = object.name;
+    var message = object.message;
+    if (when.defined(name) && when.defined(message)) {
+      result = name + ": " + message;
     } else {
       result = object.toString();
     }
 
-    const stack = object.stack;
-    if (defaultValue.defined(stack)) {
-      result += `\n${stack}`;
+    var stack = object.stack;
+    if (when.defined(stack)) {
+      result += "\n" + stack;
     }
 
     return result;
@@ -31,15 +31,15 @@ define(['./defaultValue-94c3e563'], (function (defaultValue) { 'use strict';
 
   // createXXXGeometry functions may return Geometry or a Promise that resolves to Geometry
   // if the function requires access to ApproximateTerrainHeights.
-  // For fully synchronous functions, just wrapping the function call in a Promise doesn't
+  // For fully synchronous functions, just wrapping the function call in a `when` Promise doesn't
   // handle errors correctly, hence try-catch
   function callAndWrap(workerFunction, parameters, transferableObjects) {
-    let resultOrPromise;
+    var resultOrPromise;
     try {
       resultOrPromise = workerFunction(parameters, transferableObjects);
       return resultOrPromise; // errors handled by Promise
     } catch (e) {
-      return Promise.reject(e);
+      return when.when.reject(e);
     }
   }
 
@@ -69,25 +69,25 @@ define(['./defaultValue-94c3e563'], (function (defaultValue) { 'use strict';
    * @see {@link http://www.w3.org/TR/html5/common-dom-interfaces.html#transferable-objects|Transferable objects}
    */
   function createTaskProcessorWorker(workerFunction) {
-    let postMessage;
+    var postMessage;
 
     return function (event) {
-      const data = event.data;
+      var data = event.data;
 
-      const transferableObjects = [];
-      const responseMessage = {
+      var transferableObjects = [];
+      var responseMessage = {
         id: data.id,
         result: undefined,
         error: undefined,
       };
 
-      return Promise.resolve(
+      return when.when(
         callAndWrap(workerFunction, data.parameters, transferableObjects)
       )
         .then(function (result) {
           responseMessage.result = result;
         })
-        .catch(function (e) {
+        .otherwise(function (e) {
           if (e instanceof Error) {
             // Errors can't be posted in a message, copy the properties
             responseMessage.error = {
@@ -99,9 +99,9 @@ define(['./defaultValue-94c3e563'], (function (defaultValue) { 'use strict';
             responseMessage.error = e;
           }
         })
-        .finally(function () {
-          if (!defaultValue.defined(postMessage)) {
-            postMessage = defaultValue.defaultValue(self.webkitPostMessage, self.postMessage);
+        .always(function () {
+          if (!when.defined(postMessage)) {
+            postMessage = when.defaultValue(self.webkitPostMessage, self.postMessage);
           }
 
           if (!data.canTransferArrayBuffer) {
@@ -114,9 +114,11 @@ define(['./defaultValue-94c3e563'], (function (defaultValue) { 'use strict';
             // something went wrong trying to post the message, post a simpler
             // error that we can be sure will be cloneable
             responseMessage.result = undefined;
-            responseMessage.error = `postMessage failed with error: ${formatError(
-            e
-          )}\n  with responseMessage: ${JSON.stringify(responseMessage)}`;
+            responseMessage.error =
+              "postMessage failed with error: " +
+              formatError(e) +
+              "\n  with responseMessage: " +
+              JSON.stringify(responseMessage);
             postMessage(responseMessage);
           }
         });

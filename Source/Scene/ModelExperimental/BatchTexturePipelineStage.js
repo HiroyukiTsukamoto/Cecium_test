@@ -1,5 +1,6 @@
 import combine from "../../Core/combine.js";
 import defaultValue from "../../Core/defaultValue.js";
+import defined from "../../Core/defined.js";
 
 /**
  * The batch texture stage is responsible for setting up the batch texture for the primitive.
@@ -7,7 +8,7 @@ import defaultValue from "../../Core/defaultValue.js";
  * @namespace BatchTexturePipelineStage
  * @private
  */
-const BatchTexturePipelineStage = {};
+var BatchTexturePipelineStage = {};
 BatchTexturePipelineStage.name = "BatchTexturePipelineStage"; // Helps with debugging
 
 /**
@@ -26,22 +27,28 @@ BatchTexturePipelineStage.process = function (
   primitive,
   frameState
 ) {
-  const shaderBuilder = renderResources.shaderBuilder;
-  const batchTextureUniforms = {};
+  var shaderBuilder = renderResources.shaderBuilder;
+  var batchTextureUniforms = {};
 
-  const model = renderResources.model;
+  var model = renderResources.model;
+  var featureTable;
 
-  const featureTable = model.featureTables[model.featureTableId];
+  var content = model.content;
+  if (defined(content)) {
+    featureTable = content.featureTables[renderResources.featureTableId];
+  } else {
+    featureTable = model.featureTables[renderResources.featureTableId];
+  }
 
   // Number of features in the feature table.
-  const featuresLength = featureTable.featuresLength;
-  shaderBuilder.addUniform("int", "model_featuresLength");
+  var featuresLength = featureTable.featuresLength;
+  shaderBuilder.addUniform("float", "model_featuresLength");
   batchTextureUniforms.model_featuresLength = function () {
     return featuresLength;
   };
 
   // Batch texture
-  const batchTexture = featureTable.batchTexture;
+  var batchTexture = featureTable.batchTexture;
   shaderBuilder.addUniform("sampler2D", "model_batchTexture");
   batchTextureUniforms.model_batchTexture = function () {
     return defaultValue(batchTexture.batchTexture, batchTexture.defaultTexture);

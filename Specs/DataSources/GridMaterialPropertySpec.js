@@ -9,7 +9,7 @@ import { TimeIntervalCollectionProperty } from "../../Source/Cesium.js";
 
 describe("DataSources/GridMaterialProperty", function () {
   it("constructor provides the expected defaults", function () {
-    const property = new GridMaterialProperty();
+    var property = new GridMaterialProperty();
     expect(property.color).toBeUndefined();
     expect(property.cellAlpha).toBeUndefined();
     expect(property.lineCount).toBeUndefined();
@@ -18,7 +18,7 @@ describe("DataSources/GridMaterialProperty", function () {
 
     expect(property.getType()).toEqual("Grid");
 
-    const result = property.getValue();
+    var result = property.getValue();
     expect(result.color).toEqual(Color.WHITE);
     expect(result.cellAlpha).toEqual(0.1);
     expect(result.lineCount).toEqual(new Cartesian2(8, 8));
@@ -27,7 +27,7 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("constructor sets options and allows raw assignment", function () {
-    const options = {
+    var options = {
       color: Color.RED,
       cellAlpha: 1,
       lineCount: new Cartesian2(2, 3),
@@ -35,7 +35,7 @@ describe("DataSources/GridMaterialProperty", function () {
       lineOffset: new Cartesian2(6, 7),
     };
 
-    const property = new GridMaterialProperty(options);
+    var property = new GridMaterialProperty(options);
     expect(property.color).toBeInstanceOf(ConstantProperty);
     expect(property.cellAlpha).toBeInstanceOf(ConstantProperty);
     expect(property.lineCount).toBeInstanceOf(ConstantProperty);
@@ -50,14 +50,14 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("works with constant values", function () {
-    const property = new GridMaterialProperty();
+    var property = new GridMaterialProperty();
     property.color = new ConstantProperty(Color.RED);
     property.cellAlpha = new ConstantProperty(1.0);
     property.lineCount = new ConstantProperty(new Cartesian2(3.4, 5.0));
     property.lineThickness = new ConstantProperty(new Cartesian2(2, 3));
     property.lineOffset = new ConstantProperty(new Cartesian2(0.7, 0.8));
 
-    const result = property.getValue(JulianDate.now());
+    var result = property.getValue(JulianDate.now());
     expect(result.color).toEqual(Color.RED);
     expect(result.cellAlpha).toEqual(1);
     expect(result.lineCount).toEqual(new Cartesian2(3.4, 5.0));
@@ -66,15 +66,15 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("works with dynamic values", function () {
-    const property = new GridMaterialProperty();
+    var property = new GridMaterialProperty();
     property.color = new TimeIntervalCollectionProperty();
     property.cellAlpha = new TimeIntervalCollectionProperty();
     property.lineCount = new TimeIntervalCollectionProperty();
     property.lineThickness = new TimeIntervalCollectionProperty();
     property.lineOffset = new TimeIntervalCollectionProperty();
 
-    const start = new JulianDate(1, 0);
-    const stop = new JulianDate(2, 0);
+    var start = new JulianDate(1, 0);
+    var stop = new JulianDate(2, 0);
     property.color.intervals.addInterval(
       new TimeInterval({
         start: start,
@@ -111,7 +111,7 @@ describe("DataSources/GridMaterialProperty", function () {
       })
     );
 
-    const result = property.getValue(start);
+    var result = property.getValue(start);
     expect(result.color).toEqual(Color.BLUE);
     expect(result.cellAlpha).toEqual(1);
     expect(result.lineCount).toEqual(new Cartesian2(3.4, 5.0));
@@ -120,15 +120,15 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("works with a result parameter", function () {
-    const property = new GridMaterialProperty();
+    var property = new GridMaterialProperty();
     property.color = new ConstantProperty(Color.RED);
     property.cellAlpha = new ConstantProperty(1.0);
     property.lineCount = new ConstantProperty(new Cartesian2(3.4, 5.0));
     property.lineThickness = new ConstantProperty(new Cartesian2(2, 3));
     property.lineOffset = new ConstantProperty(new Cartesian2(0.7, 0.8));
 
-    const result = {};
-    const returnedResult = property.getValue(JulianDate.now(), result);
+    var result = {};
+    var returnedResult = property.getValue(JulianDate.now(), result);
     expect(result).toBe(returnedResult);
     expect(result.color).toEqual(Color.RED);
     expect(result.cellAlpha).toEqual(1.0);
@@ -138,14 +138,14 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("equals works", function () {
-    const left = new GridMaterialProperty();
+    var left = new GridMaterialProperty();
     left.color = new ConstantProperty(Color.RED);
     left.cellAlpha = new ConstantProperty(1.0);
     left.lineCount = new ConstantProperty(new Cartesian2(3.4, 5.0));
     left.lineThickness = new ConstantProperty(new Cartesian2(2, 3));
     left.lineOffset = new ConstantProperty(new Cartesian2(0.7, 0.8));
 
-    const right = new GridMaterialProperty();
+    var right = new GridMaterialProperty();
     right.color = new ConstantProperty(Color.RED);
     right.cellAlpha = new ConstantProperty(1.0);
     right.lineCount = new ConstantProperty(new Cartesian2(3.4, 5.0));
@@ -178,11 +178,11 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("raises definitionChanged when a property is assigned or modified", function () {
-    const property = new GridMaterialProperty();
-    const listener = jasmine.createSpy("listener");
+    var property = new GridMaterialProperty();
+    var listener = jasmine.createSpy("listener");
     property.definitionChanged.addEventListener(listener);
 
-    let oldValue = property.color;
+    var oldValue = property.color;
     property.color = new ConstantProperty(Color.WHITE);
     expect(listener).toHaveBeenCalledWith(
       property,
@@ -294,7 +294,7 @@ describe("DataSources/GridMaterialProperty", function () {
   });
 
   it("isConstant is only true when all properties are constant or undefined", function () {
-    const property = new GridMaterialProperty();
+    var property = new GridMaterialProperty();
     expect(property.isConstant).toBe(true);
 
     property.color = undefined;

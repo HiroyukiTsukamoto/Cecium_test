@@ -74,16 +74,16 @@ function DebugCameraPrimitive(options) {
   this._planesPrimitives = [];
 }
 
-const scratchRight = new Cartesian3();
-const scratchRotation = new Matrix3();
-const scratchOrientation = new Quaternion();
-const scratchPerspective = new PerspectiveFrustum();
-const scratchPerspectiveOffCenter = new PerspectiveOffCenterFrustum();
-const scratchOrthographic = new OrthographicFrustum();
-const scratchOrthographicOffCenter = new OrthographicOffCenterFrustum();
+var scratchRight = new Cartesian3();
+var scratchRotation = new Matrix3();
+var scratchOrientation = new Quaternion();
+var scratchPerspective = new PerspectiveFrustum();
+var scratchPerspectiveOffCenter = new PerspectiveOffCenterFrustum();
+var scratchOrthographic = new OrthographicFrustum();
+var scratchOrthographicOffCenter = new OrthographicOffCenterFrustum();
 
-const scratchColor = new Color();
-const scratchSplits = [1.0, 100000.0];
+var scratchColor = new Color();
+var scratchSplits = [1.0, 100000.0];
 
 /**
  * @private
@@ -93,10 +93,10 @@ DebugCameraPrimitive.prototype.update = function (frameState) {
     return;
   }
 
-  const planesPrimitives = this._planesPrimitives;
-  const outlinePrimitives = this._outlinePrimitives;
-  let i;
-  let length;
+  var planesPrimitives = this._planesPrimitives;
+  var outlinePrimitives = this._outlinePrimitives;
+  var i;
+  var length;
 
   if (this._updateOnChange) {
     // Recreate the primitive every frame
@@ -112,9 +112,9 @@ DebugCameraPrimitive.prototype.update = function (frameState) {
   }
 
   if (planesPrimitives.length === 0) {
-    const camera = this._camera;
-    const cameraFrustum = camera.frustum;
-    let frustum;
+    var camera = this._camera;
+    var cameraFrustum = camera.frustum;
+    var frustum;
     if (cameraFrustum instanceof PerspectiveFrustum) {
       frustum = scratchPerspective;
     } else if (cameraFrustum instanceof PerspectiveOffCenterFrustum) {
@@ -126,8 +126,8 @@ DebugCameraPrimitive.prototype.update = function (frameState) {
     }
     frustum = cameraFrustum.clone(frustum);
 
-    let numFrustums;
-    let frustumSplits = this._frustumSplits;
+    var numFrustums;
+    var frustumSplits = this._frustumSplits;
     if (!defined(frustumSplits) || frustumSplits.length <= 1) {
       // Use near and far planes if no splits created
       frustumSplits = scratchSplits;
@@ -138,18 +138,18 @@ DebugCameraPrimitive.prototype.update = function (frameState) {
       numFrustums = frustumSplits.length - 1;
     }
 
-    const position = camera.positionWC;
-    const direction = camera.directionWC;
-    const up = camera.upWC;
-    let right = camera.rightWC;
+    var position = camera.positionWC;
+    var direction = camera.directionWC;
+    var up = camera.upWC;
+    var right = camera.rightWC;
     right = Cartesian3.negate(right, scratchRight);
 
-    const rotation = scratchRotation;
+    var rotation = scratchRotation;
     Matrix3.setColumn(rotation, 0, right, rotation);
     Matrix3.setColumn(rotation, 1, up, rotation);
     Matrix3.setColumn(rotation, 2, direction, rotation);
 
-    const orientation = Quaternion.fromRotationMatrix(
+    var orientation = Quaternion.fromRotationMatrix(
       rotation,
       scratchOrientation
     );
@@ -245,8 +245,8 @@ DebugCameraPrimitive.prototype.isDestroyed = function () {
  * @see DebugCameraPrimitive#isDestroyed
  */
 DebugCameraPrimitive.prototype.destroy = function () {
-  const length = this._planesPrimitives.length;
-  for (let i = 0; i < length; ++i) {
+  var length = this._planesPrimitives.length;
+  for (var i = 0; i < length; ++i) {
     this._outlinePrimitives[i] =
       this._outlinePrimitives[i] && this._outlinePrimitives[i].destroy();
     this._planesPrimitives[i] =

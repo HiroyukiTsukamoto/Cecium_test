@@ -2,6 +2,7 @@ import Check from "../Core/Check.js";
 import defined from "../Core/defined.js";
 import DeveloperError from "../Core/DeveloperError.js";
 import Resource from "../Core/Resource.js";
+import when from "../ThirdParty/when.js";
 import CubeMap from "./CubeMap.js";
 
 /**
@@ -29,7 +30,7 @@ import CubeMap from "./CubeMap.js";
  *     negativeZ : 'skybox_nz.png'
  * }).then(function(cubeMap) {
  *     // use the cubemap
- * }).catch(function(error) {
+ * }).otherwise(function(error) {
  *     // an error occurred
  * });
  *
@@ -61,13 +62,13 @@ function loadCubeMap(context, urls, skipColorSpaceConversion) {
   //
   // Also, it is perhaps acceptable to use the context here in the callbacks, but
   // ideally, we would do it in the primitive's update function.
-  const flipOptions = {
+  var flipOptions = {
     flipY: true,
     skipColorSpaceConversion: skipColorSpaceConversion,
     preferImageBitmap: true,
   };
 
-  const facePromises = [
+  var facePromises = [
     Resource.createIfNeeded(urls.positiveX).fetchImage(flipOptions),
     Resource.createIfNeeded(urls.negativeX).fetchImage(flipOptions),
     Resource.createIfNeeded(urls.positiveY).fetchImage(flipOptions),
@@ -76,7 +77,7 @@ function loadCubeMap(context, urls, skipColorSpaceConversion) {
     Resource.createIfNeeded(urls.negativeZ).fetchImage(flipOptions),
   ];
 
-  return Promise.all(facePromises).then(function (images) {
+  return when.all(facePromises, function (images) {
     return new CubeMap({
       context: context,
       source: {

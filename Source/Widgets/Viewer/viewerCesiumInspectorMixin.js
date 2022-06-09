@@ -15,7 +15,7 @@ import CesiumInspector from "../CesiumInspector/CesiumInspector.js";
  * @demo {@link https://sandcastle.cesium.com/index.html?src=Cesium%20Inspector.html|Cesium Sandcastle Cesium Inspector Demo}
  *
  * @example
- * const viewer = new Cesium.Viewer('cesiumContainer');
+ * var viewer = new Cesium.Viewer('cesiumContainer');
  * viewer.extend(Cesium.viewerCesiumInspectorMixin);
  */
 function viewerCesiumInspectorMixin(viewer) {
@@ -25,10 +25,10 @@ function viewerCesiumInspectorMixin(viewer) {
   }
   //>>includeEnd('debug');
 
-  const cesiumInspectorContainer = document.createElement("div");
+  var cesiumInspectorContainer = document.createElement("div");
   cesiumInspectorContainer.className = "cesium-viewer-cesiumInspectorContainer";
   viewer.container.appendChild(cesiumInspectorContainer);
-  const cesiumInspector = new CesiumInspector(
+  var cesiumInspector = new CesiumInspector(
     cesiumInspectorContainer,
     viewer.scene
   );

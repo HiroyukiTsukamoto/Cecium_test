@@ -7,7 +7,7 @@ import { PerformanceWatchdogViewModel } from "../../../Source/Cesium.js";
 describe(
   "Widgets/PerformanceWatchdog/PerformanceWatchdogViewModel",
   function () {
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
     });
@@ -16,7 +16,7 @@ describe(
       scene.destroyForSpecs();
     });
 
-    let viewModel;
+    var viewModel;
     afterEach(function () {
       if (defined(viewModel)) {
         viewModel.destroy();
@@ -28,7 +28,7 @@ describe(
 
     function spinWait(milliseconds) {
       /*eslint-disable no-empty*/
-      const endTime = getTimestamp() + milliseconds;
+      var endTime = getTimestamp() + milliseconds;
       while (getTimestamp() < endTime) {}
       /*eslint-enable no-empty*/
     }
@@ -55,7 +55,7 @@ describe(
     });
 
     it("honors parameters to the constructor", function () {
-      const options = {
+      var options = {
         scene: scene,
         lowFrameRateMessage: "why so slow?",
       };
@@ -67,7 +67,7 @@ describe(
     });
 
     it("shows a message on low frame rate", function () {
-      const monitor = FrameRateMonitor.fromScene(scene);
+      var monitor = FrameRateMonitor.fromScene(scene);
       monitor.quietPeriod = 0.001;
       monitor.warmupPeriod = 0.001;
       monitor.samplingWindow = 0.001;
@@ -98,7 +98,7 @@ describe(
     });
 
     it("does not report a low frame rate during the queit period", function () {
-      const monitor = FrameRateMonitor.fromScene(scene);
+      var monitor = FrameRateMonitor.fromScene(scene);
       monitor.quietPeriod = 1.0;
       monitor.warmupPeriod = 0.001;
       monitor.samplingWindow = 0.001;
@@ -121,7 +121,7 @@ describe(
     });
 
     it("the low frame rate message goes away after the warmup period if the frame rate returns to nominal", function () {
-      const monitor = FrameRateMonitor.fromScene(scene);
+      var monitor = FrameRateMonitor.fromScene(scene);
       monitor.quietPeriod = 0.001;
       monitor.warmupPeriod = 0.001;
       monitor.samplingWindow = 0.001;
@@ -151,7 +151,7 @@ describe(
       expect(viewModel.showingLowFrameRateMessage).toBe(true);
 
       // Render as fast as possible for a samplingWindow, quietPeriod, and warmupPeriod.
-      const endTime = getTimestamp() + 50;
+      var endTime = getTimestamp() + 50;
       while (getTimestamp() < endTime) {
         scene.render();
       }
@@ -161,7 +161,7 @@ describe(
     });
 
     it("does not show the low frame rate message again once it is dismissed", function () {
-      const monitor = FrameRateMonitor.fromScene(scene);
+      var monitor = FrameRateMonitor.fromScene(scene);
       monitor.quietPeriod = 0.001;
       monitor.warmupPeriod = 0.001;
       monitor.samplingWindow = 0.001;

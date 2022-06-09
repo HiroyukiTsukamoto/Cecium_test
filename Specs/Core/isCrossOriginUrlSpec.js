@@ -9,7 +9,7 @@ describe("Core/isCrossOriginUrl", function () {
   });
 
   it("returns false for absolute urls that are not cross-origin", function () {
-    let absoluteUrl = getAbsoluteUri("/some/url.jpg");
+    var absoluteUrl = getAbsoluteUri("/some/url.jpg");
     expect(isCrossOriginUrl(absoluteUrl)).toEqual(false);
 
     absoluteUrl = getAbsoluteUri("some/url.jpg");
@@ -22,15 +22,15 @@ describe("Core/isCrossOriginUrl", function () {
     );
 
     // a different scheme counts as cross-origin
-    let pageUri = new Uri(location.href);
+    var pageUri = new Uri(location.href);
     pageUri.scheme(location.protocol === "https:" ? "http" : "https");
 
-    let absoluteUrl = pageUri.toString();
+    var absoluteUrl = pageUri.toString();
     expect(isCrossOriginUrl(absoluteUrl)).toEqual(true);
 
     // so does a different port
     pageUri = new Uri(location.href);
-    pageUri.authority(`${location.hostname}:${+location.port + 1}`);
+    pageUri.authority(location.hostname + ":" + (+location.port + 1));
 
     absoluteUrl = pageUri.toString();
     expect(isCrossOriginUrl(absoluteUrl)).toEqual(true);

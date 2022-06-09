@@ -13,10 +13,10 @@ function freezeRenderState(renderState) {
     return renderState;
   }
 
-  let propName;
-  const propNames = Object.keys(renderState);
+  var propName;
+  var propNames = Object.keys(renderState);
 
-  for (let i = 0; i < propNames.length; i++) {
+  for (var i = 0; i < propNames.length; i++) {
     propName = propNames[i];
     if (
       renderState.hasOwnProperty(propName) &&

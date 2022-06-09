@@ -11,7 +11,7 @@ import createContext from "../createContext.js";
 describe(
   "Renderer/loadCubeMap",
   function () {
-    let context;
+    var context;
 
     beforeAll(function () {
       context = createContext();
@@ -33,13 +33,13 @@ describe(
         expect(cm.width).toEqual(1);
         expect(cm.height).toEqual(1);
 
-        const vs =
+        var vs =
           "attribute vec4 position; void main() { gl_PointSize = 1.0; gl_Position = position; }";
-        const fs =
+        var fs =
           "uniform samplerCube u_texture;" +
           "uniform mediump vec3 u_direction;" +
           "void main() { gl_FragColor = textureCube(u_texture, normalize(u_direction)); }";
-        const sp = ShaderProgram.fromCache({
+        var sp = ShaderProgram.fromCache({
           context: context,
           vertexShaderSource: vs,
           fragmentShaderSource: fs,
@@ -47,7 +47,7 @@ describe(
             position: 0,
           },
         });
-        const uniformMap = {
+        var uniformMap = {
           direction: undefined,
 
           u_texture: function () {
@@ -58,7 +58,7 @@ describe(
           },
         };
 
-        const va = new VertexArray({
+        var va = new VertexArray({
           context: context,
           attributes: [
             {
@@ -72,7 +72,7 @@ describe(
           ],
         });
 
-        const command = new DrawCommand({
+        var command = new DrawCommand({
           primitiveType: PrimitiveType.POINTS,
           shaderProgram: sp,
           vertexArray: va,
@@ -127,7 +127,7 @@ describe(
         .then(function (cubeMap) {
           fail("should not be called");
         })
-        .catch(function () {});
+        .otherwise(function () {});
     });
 
     it("calls error function when negativeX does not exist", function () {
@@ -142,7 +142,7 @@ describe(
         .then(function (cubeMap) {
           fail("should not be called");
         })
-        .catch(function () {});
+        .otherwise(function () {});
     });
 
     it("calls error function when positiveY does not exist", function () {
@@ -157,7 +157,7 @@ describe(
         .then(function (cubeMap) {
           fail("should not be called");
         })
-        .catch(function () {});
+        .otherwise(function () {});
     });
 
     it("calls error function when negativeY does not exist", function () {
@@ -172,7 +172,7 @@ describe(
         .then(function (cubeMap) {
           fail("should not be called");
         })
-        .catch(function () {});
+        .otherwise(function () {});
     });
 
     it("calls error function when positiveZ does not exist", function () {
@@ -187,7 +187,7 @@ describe(
         .then(function (cubeMap) {
           fail("should not be called");
         })
-        .catch(function () {});
+        .otherwise(function () {});
     });
 
     it("calls error function when negativeZ does not exist", function () {
@@ -202,7 +202,7 @@ describe(
         .then(function (cubeMap) {
           fail("should not be called");
         })
-        .catch(function () {});
+        .otherwise(function () {});
     });
 
     it("throws without a context", function () {

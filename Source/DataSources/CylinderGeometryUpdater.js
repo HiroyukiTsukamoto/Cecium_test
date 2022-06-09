@@ -21,11 +21,11 @@ import GeometryUpdater from "./GeometryUpdater.js";
 import heightReferenceOnEntityPropertyChanged from "./heightReferenceOnEntityPropertyChanged.js";
 import Property from "./Property.js";
 
-const defaultOffset = Cartesian3.ZERO;
+var defaultOffset = Cartesian3.ZERO;
 
-const offsetScratch = new Cartesian3();
-const positionScratch = new Cartesian3();
-const scratchColor = new Color();
+var offsetScratch = new Cartesian3();
+var positionScratch = new Cartesian3();
+var scratchColor = new Color();
 
 function CylinderGeometryOptions(entity) {
   this.id = entity;
@@ -103,30 +103,30 @@ CylinderGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
 
-  const show = new ShowGeometryInstanceAttribute(
+  var show = new ShowGeometryInstanceAttribute(
     isAvailable &&
       entity.isShowing &&
       this._showProperty.getValue(time) &&
       this._fillProperty.getValue(time)
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
-  const distanceDisplayConditionAttribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
+  var distanceDisplayConditionAttribute = DistanceDisplayConditionGeometryInstanceAttribute.fromDistanceDisplayCondition(
     distanceDisplayCondition
   );
 
-  const attributes = {
+  var attributes = {
     show: show,
     distanceDisplayCondition: distanceDisplayConditionAttribute,
     color: undefined,
     offset: undefined,
   };
   if (this._materialProperty instanceof ColorMaterialProperty) {
-    let currentColor;
+    var currentColor;
     if (
       defined(this._materialProperty.color) &&
       (this._materialProperty.color.isConstant || isAvailable)
@@ -184,19 +184,19 @@ CylinderGeometryUpdater.prototype.createOutlineGeometryInstance = function (
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
-  const outlineColor = Property.getValueOrDefault(
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
+  var outlineColor = Property.getValueOrDefault(
     this._outlineColorProperty,
     time,
     Color.BLACK,
     scratchColor
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
 
-  const attributes = {
+  var attributes = {
     show: new ShowGeometryInstanceAttribute(
       isAvailable &&
         entity.isShowing &&
@@ -264,12 +264,12 @@ CylinderGeometryUpdater.prototype._setStaticOptions = function (
   entity,
   cylinder
 ) {
-  const heightReference = Property.getValueOrDefault(
+  var heightReference = Property.getValueOrDefault(
     cylinder.heightReference,
     Iso8601.MINIMUM_VALUE,
     HeightReference.NONE
   );
-  const options = this._options;
+  var options = this._options;
   options.vertexFormat =
     this._materialProperty instanceof ColorMaterialProperty
       ? PerInstanceColorAppearance.VERTEX_FORMAT
@@ -323,8 +323,8 @@ DynamicCylinderGeometryUpdater.prototype._isHidden = function (
   cylinder,
   time
 ) {
-  const options = this._options;
-  const position = Property.getValueOrUndefined(
+  var options = this._options;
+  var position = Property.getValueOrUndefined(
     entity.position,
     time,
     positionScratch
@@ -348,12 +348,12 @@ DynamicCylinderGeometryUpdater.prototype._setOptions = function (
   cylinder,
   time
 ) {
-  const heightReference = Property.getValueOrDefault(
+  var heightReference = Property.getValueOrDefault(
     cylinder.heightReference,
     time,
     HeightReference.NONE
   );
-  const options = this._options;
+  var options = this._options;
   options.length = Property.getValueOrUndefined(cylinder.length, time);
   options.topRadius = Property.getValueOrUndefined(cylinder.topRadius, time);
   options.bottomRadius = Property.getValueOrUndefined(

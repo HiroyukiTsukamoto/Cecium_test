@@ -1,7 +1,7 @@
 import { JsonMetadataTable } from "../../Source/Cesium.js";
 
 describe("Scene/JsonMetadataTable", function () {
-  const properties = {
+  var properties = {
     priority: [2, 1, 0],
     labels: ["Point Cloud", "Mesh", "Raster"],
     uri: ["tree.las", "building.gltf", "map.tif"],
@@ -20,9 +20,9 @@ describe("Scene/JsonMetadataTable", function () {
     ],
     mixedValues: ["red", 3, false],
   };
-  const count = 3;
+  var count = 3;
 
-  let table;
+  var table;
   beforeEach(function () {
     table = new JsonMetadataTable({
       count: count,
@@ -49,8 +49,8 @@ describe("Scene/JsonMetadataTable", function () {
   });
 
   it("constructor clones properties", function () {
-    const oldValue = properties.sizeInfo[0];
-    const sizeInfo = {
+    var oldValue = properties.sizeInfo[0];
+    var sizeInfo = {
       lengthBytes: 1024,
     };
     table.setProperty(0, "sizeInfo", sizeInfo);
@@ -105,8 +105,8 @@ describe("Scene/JsonMetadataTable", function () {
   });
 
   it("getProperty returns copy of value", function () {
-    const value1 = table.getProperty(1, "sizeInfo");
-    const value2 = table.getProperty(1, "sizeInfo");
+    var value1 = table.getProperty(1, "sizeInfo");
+    var value2 = table.getProperty(1, "sizeInfo");
     expect(value1).toEqual(properties.sizeInfo[1]);
     expect(value1).toEqual(value2);
     expect(value2).not.toBe(value1);
@@ -141,7 +141,7 @@ describe("Scene/JsonMetadataTable", function () {
   });
 
   it("setProperty sets property value", function () {
-    const sizeInfo = {
+    var sizeInfo = {
       lengthBytes: 1024,
     };
     expect(table.setProperty(0, "sizeInfo", sizeInfo)).toBe(true);
@@ -149,7 +149,7 @@ describe("Scene/JsonMetadataTable", function () {
   });
 
   it("setProperty copies value", function () {
-    const sizeInfo = {
+    var sizeInfo = {
       lengthBytes: 1024,
     };
     table.setProperty(1, "sizeInfo", sizeInfo);

@@ -1,7 +1,6 @@
 import ArcType from "./ArcType.js";
 import arrayFill from "./arrayFill.js";
 import BoundingSphere from "./BoundingSphere.js";
-import Cartesian3 from "./Cartesian3.js";
 import Check from "./Check.js";
 import ComponentDatatype from "./ComponentDatatype.js";
 import defaultValue from "./defaultValue.js";
@@ -21,8 +20,8 @@ import PolygonGeometryLibrary from "./PolygonGeometryLibrary.js";
 import PolygonPipeline from "./PolygonPipeline.js";
 import PrimitiveType from "./PrimitiveType.js";
 import WindingOrder from "./WindingOrder.js";
-const createGeometryFromPositionsPositions = [];
-const createGeometryFromPositionsSubdivided = [];
+var createGeometryFromPositionsPositions = [];
+var createGeometryFromPositionsSubdivided = [];
 
 function createGeometryFromPositions(
   ellipsoid,
@@ -31,28 +30,26 @@ function createGeometryFromPositions(
   perPositionHeight,
   arcType
 ) {
-  const tangentPlane = EllipsoidTangentPlane.fromPoints(positions, ellipsoid);
-  const positions2D = tangentPlane.projectPointsOntoPlane(
+  var tangentPlane = EllipsoidTangentPlane.fromPoints(positions, ellipsoid);
+  var positions2D = tangentPlane.projectPointsOntoPlane(
     positions,
     createGeometryFromPositionsPositions
   );
 
-  const originalWindingOrder = PolygonPipeline.computeWindingOrder2D(
-    positions2D
-  );
+  var originalWindingOrder = PolygonPipeline.computeWindingOrder2D(positions2D);
   if (originalWindingOrder === WindingOrder.CLOCKWISE) {
     positions2D.reverse();
     positions = positions.slice().reverse();
   }
 
-  let subdividedPositions;
-  let i;
+  var subdividedPositions;
+  var i;
 
-  let length = positions.length;
-  let index = 0;
+  var length = positions.length;
+  var index = 0;
 
   if (!perPositionHeight) {
-    let numVertices = 0;
+    var numVertices = 0;
     if (arcType === ArcType.GEODESIC) {
       for (i = 0; i < length; i++) {
         numVertices += PolygonGeometryLibrary.subdivideLineCount(
@@ -73,7 +70,7 @@ function createGeometryFromPositions(
     }
     subdividedPositions = new Float64Array(numVertices * 3);
     for (i = 0; i < length; i++) {
-      let tempPositions;
+      var tempPositions;
       if (arcType === ArcType.GEODESIC) {
         tempPositions = PolygonGeometryLibrary.subdivideLine(
           positions[i],
@@ -90,16 +87,16 @@ function createGeometryFromPositions(
           createGeometryFromPositionsSubdivided
         );
       }
-      const tempPositionsLength = tempPositions.length;
-      for (let j = 0; j < tempPositionsLength; ++j) {
+      var tempPositionsLength = tempPositions.length;
+      for (var j = 0; j < tempPositionsLength; ++j) {
         subdividedPositions[index++] = tempPositions[j];
       }
     }
   } else {
     subdividedPositions = new Float64Array(length * 2 * 3);
     for (i = 0; i < length; i++) {
-      const p0 = positions[i];
-      const p1 = positions[(i + 1) % length];
+      var p0 = positions[i];
+      var p1 = positions[(i + 1) % length];
       subdividedPositions[index++] = p0.x;
       subdividedPositions[index++] = p0.y;
       subdividedPositions[index++] = p0.z;
@@ -110,8 +107,8 @@ function createGeometryFromPositions(
   }
 
   length = subdividedPositions.length / 3;
-  const indicesSize = length * 2;
-  const indices = IndexDatatype.createTypedArray(length, indicesSize);
+  var indicesSize = length * 2;
+  var indices = IndexDatatype.createTypedArray(length, indicesSize);
   index = 0;
   for (i = 0; i < length - 1; i++) {
     indices[index++] = i;
@@ -142,29 +139,27 @@ function createGeometryFromPositionsExtruded(
   perPositionHeight,
   arcType
 ) {
-  const tangentPlane = EllipsoidTangentPlane.fromPoints(positions, ellipsoid);
-  const positions2D = tangentPlane.projectPointsOntoPlane(
+  var tangentPlane = EllipsoidTangentPlane.fromPoints(positions, ellipsoid);
+  var positions2D = tangentPlane.projectPointsOntoPlane(
     positions,
     createGeometryFromPositionsPositions
   );
 
-  const originalWindingOrder = PolygonPipeline.computeWindingOrder2D(
-    positions2D
-  );
+  var originalWindingOrder = PolygonPipeline.computeWindingOrder2D(positions2D);
   if (originalWindingOrder === WindingOrder.CLOCKWISE) {
     positions2D.reverse();
     positions = positions.slice().reverse();
   }
 
-  let subdividedPositions;
-  let i;
+  var subdividedPositions;
+  var i;
 
-  let length = positions.length;
-  const corners = new Array(length);
-  let index = 0;
+  var length = positions.length;
+  var corners = new Array(length);
+  var index = 0;
 
   if (!perPositionHeight) {
-    let numVertices = 0;
+    var numVertices = 0;
     if (arcType === ArcType.GEODESIC) {
       for (i = 0; i < length; i++) {
         numVertices += PolygonGeometryLibrary.subdivideLineCount(
@@ -187,7 +182,7 @@ function createGeometryFromPositionsExtruded(
     subdividedPositions = new Float64Array(numVertices * 3 * 2);
     for (i = 0; i < length; ++i) {
       corners[i] = index / 3;
-      let tempPositions;
+      var tempPositions;
       if (arcType === ArcType.GEODESIC) {
         tempPositions = PolygonGeometryLibrary.subdivideLine(
           positions[i],
@@ -204,8 +199,8 @@ function createGeometryFromPositionsExtruded(
           createGeometryFromPositionsSubdivided
         );
       }
-      const tempPositionsLength = tempPositions.length;
-      for (let j = 0; j < tempPositionsLength; ++j) {
+      var tempPositionsLength = tempPositions.length;
+      for (var j = 0; j < tempPositionsLength; ++j) {
         subdividedPositions[index++] = tempPositions[j];
       }
     }
@@ -213,8 +208,8 @@ function createGeometryFromPositionsExtruded(
     subdividedPositions = new Float64Array(length * 2 * 3 * 2);
     for (i = 0; i < length; ++i) {
       corners[i] = index / 3;
-      const p0 = positions[i];
-      const p1 = positions[(i + 1) % length];
+      var p0 = positions[i];
+      var p1 = positions[(i + 1) % length];
 
       subdividedPositions[index++] = p0.x;
       subdividedPositions[index++] = p0.y;
@@ -226,10 +221,10 @@ function createGeometryFromPositionsExtruded(
   }
 
   length = subdividedPositions.length / (3 * 2);
-  const cornersLength = corners.length;
+  var cornersLength = corners.length;
 
-  const indicesSize = (length * 2 + cornersLength) * 2;
-  const indices = IndexDatatype.createTypedArray(
+  var indicesSize = (length * 2 + cornersLength) * 2;
+  var indices = IndexDatatype.createTypedArray(
     length + cornersLength,
     indicesSize
   );
@@ -243,7 +238,7 @@ function createGeometryFromPositionsExtruded(
   }
 
   for (i = 0; i < cornersLength; i++) {
-    const corner = corners[i];
+    var corner = corners[i];
     indices[index++] = corner;
     indices[index++] = corner + length;
   }
@@ -284,7 +279,7 @@ function createGeometryFromPositionsExtruded(
  *
  * @example
  * // 1. create a polygon outline from points
- * const polygon = new Cesium.PolygonOutlineGeometry({
+ * var polygon = new Cesium.PolygonOutlineGeometry({
  *   polygonHierarchy : new Cesium.PolygonHierarchy(
  *     Cesium.Cartesian3.fromDegreesArray([
  *       -72.0, 40.0,
@@ -295,10 +290,10 @@ function createGeometryFromPositionsExtruded(
  *     ])
  *   )
  * });
- * const geometry = Cesium.PolygonOutlineGeometry.createGeometry(polygon);
+ * var geometry = Cesium.PolygonOutlineGeometry.createGeometry(polygon);
  *
  * // 2. create a nested polygon with holes outline
- * const polygonWithHole = new Cesium.PolygonOutlineGeometry({
+ * var polygonWithHole = new Cesium.PolygonOutlineGeometry({
  *   polygonHierarchy : new Cesium.PolygonHierarchy(
  *     Cesium.Cartesian3.fromDegreesArray([
  *       -109.0, 30.0,
@@ -332,10 +327,10 @@ function createGeometryFromPositionsExtruded(
  *     )]
  *   )
  * });
- * const geometry = Cesium.PolygonOutlineGeometry.createGeometry(polygonWithHole);
+ * var geometry = Cesium.PolygonOutlineGeometry.createGeometry(polygonWithHole);
  *
  * // 3. create extruded polygon outline
- * const extrudedPolygon = new Cesium.PolygonOutlineGeometry({
+ * var extrudedPolygon = new Cesium.PolygonOutlineGeometry({
  *   polygonHierarchy : new Cesium.PolygonHierarchy(
  *     Cesium.Cartesian3.fromDegreesArray([
  *       -72.0, 40.0,
@@ -347,7 +342,7 @@ function createGeometryFromPositionsExtruded(
  *   ),
  *   extrudedHeight: 300000
  * });
- * const geometry = Cesium.PolygonOutlineGeometry.createGeometry(extrudedPolygon);
+ * var geometry = Cesium.PolygonOutlineGeometry.createGeometry(extrudedPolygon);
  */
 function PolygonOutlineGeometry(options) {
   //>>includeStart('debug', pragmas.debug);
@@ -370,22 +365,22 @@ function PolygonOutlineGeometry(options) {
   }
   //>>includeEnd('debug');
 
-  const polygonHierarchy = options.polygonHierarchy;
-  const ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
-  const granularity = defaultValue(
+  var polygonHierarchy = options.polygonHierarchy;
+  var ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
+  var granularity = defaultValue(
     options.granularity,
     CesiumMath.RADIANS_PER_DEGREE
   );
-  const perPositionHeight = defaultValue(options.perPositionHeight, false);
-  const perPositionHeightExtrude =
+  var perPositionHeight = defaultValue(options.perPositionHeight, false);
+  var perPositionHeightExtrude =
     perPositionHeight && defined(options.extrudedHeight);
-  const arcType = defaultValue(options.arcType, ArcType.GEODESIC);
+  var arcType = defaultValue(options.arcType, ArcType.GEODESIC);
 
-  let height = defaultValue(options.height, 0.0);
-  let extrudedHeight = defaultValue(options.extrudedHeight, height);
+  var height = defaultValue(options.height, 0.0);
+  var extrudedHeight = defaultValue(options.extrudedHeight, height);
 
   if (!perPositionHeightExtrude) {
-    const h = Math.max(height, extrudedHeight);
+    var h = Math.max(height, extrudedHeight);
     extrudedHeight = Math.min(height, extrudedHeight);
     height = h;
   }
@@ -406,10 +401,7 @@ function PolygonOutlineGeometry(options) {
    * @type {Number}
    */
   this.packedLength =
-    PolygonGeometryLibrary.computeHierarchyPackedLength(
-      polygonHierarchy,
-      Cartesian3
-    ) +
+    PolygonGeometryLibrary.computeHierarchyPackedLength(polygonHierarchy) +
     Ellipsoid.packedLength +
     8;
 }
@@ -434,8 +426,7 @@ PolygonOutlineGeometry.pack = function (value, array, startingIndex) {
   startingIndex = PolygonGeometryLibrary.packPolygonHierarchy(
     value._polygonHierarchy,
     array,
-    startingIndex,
-    Cartesian3
+    startingIndex
   );
 
   Ellipsoid.pack(value._ellipsoid, array, startingIndex);
@@ -453,8 +444,8 @@ PolygonOutlineGeometry.pack = function (value, array, startingIndex) {
   return array;
 };
 
-const scratchEllipsoid = Ellipsoid.clone(Ellipsoid.UNIT_SPHERE);
-const dummyOptions = {
+var scratchEllipsoid = Ellipsoid.clone(Ellipsoid.UNIT_SPHERE);
+var dummyOptions = {
   polygonHierarchy: {},
 };
 
@@ -473,25 +464,24 @@ PolygonOutlineGeometry.unpack = function (array, startingIndex, result) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  const polygonHierarchy = PolygonGeometryLibrary.unpackPolygonHierarchy(
+  var polygonHierarchy = PolygonGeometryLibrary.unpackPolygonHierarchy(
     array,
-    startingIndex,
-    Cartesian3
+    startingIndex
   );
   startingIndex = polygonHierarchy.startingIndex;
   delete polygonHierarchy.startingIndex;
 
-  const ellipsoid = Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
+  var ellipsoid = Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
   startingIndex += Ellipsoid.packedLength;
 
-  const height = array[startingIndex++];
-  const extrudedHeight = array[startingIndex++];
-  const granularity = array[startingIndex++];
-  const perPositionHeightExtrude = array[startingIndex++] === 1.0;
-  const perPositionHeight = array[startingIndex++] === 1.0;
-  const arcType = array[startingIndex++];
-  const offsetAttribute = array[startingIndex++];
-  const packedLength = array[startingIndex];
+  var height = array[startingIndex++];
+  var extrudedHeight = array[startingIndex++];
+  var granularity = array[startingIndex++];
+  var perPositionHeightExtrude = array[startingIndex++] === 1.0;
+  var perPositionHeight = array[startingIndex++] === 1.0;
+  var arcType = array[startingIndex++];
+  var offsetAttribute = array[startingIndex++];
+  var packedLength = array[startingIndex];
 
   if (!defined(result)) {
     result = new PolygonOutlineGeometry(dummyOptions);
@@ -528,7 +518,7 @@ PolygonOutlineGeometry.unpack = function (array, startingIndex, result) {
  *
  * @example
  * // create a polygon from points
- * const polygon = Cesium.PolygonOutlineGeometry.fromPositions({
+ * var polygon = Cesium.PolygonOutlineGeometry.fromPositions({
  *   positions : Cesium.Cartesian3.fromDegreesArray([
  *     -72.0, 40.0,
  *     -70.0, 35.0,
@@ -537,7 +527,7 @@ PolygonOutlineGeometry.unpack = function (array, startingIndex, result) {
  *     -68.0, 40.0
  *   ])
  * });
- * const geometry = Cesium.PolygonOutlineGeometry.createGeometry(polygon);
+ * var geometry = Cesium.PolygonOutlineGeometry.createGeometry(polygon);
  *
  * @see PolygonOutlineGeometry#createGeometry
  */
@@ -548,7 +538,7 @@ PolygonOutlineGeometry.fromPositions = function (options) {
   Check.defined("options.positions", options.positions);
   //>>includeEnd('debug');
 
-  const newOptions = {
+  var newOptions = {
     polygonHierarchy: {
       positions: options.positions,
     },
@@ -570,13 +560,13 @@ PolygonOutlineGeometry.fromPositions = function (options) {
  * @returns {Geometry|undefined} The computed vertices and indices.
  */
 PolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
-  const ellipsoid = polygonGeometry._ellipsoid;
-  const granularity = polygonGeometry._granularity;
-  const polygonHierarchy = polygonGeometry._polygonHierarchy;
-  const perPositionHeight = polygonGeometry._perPositionHeight;
-  const arcType = polygonGeometry._arcType;
+  var ellipsoid = polygonGeometry._ellipsoid;
+  var granularity = polygonGeometry._granularity;
+  var polygonHierarchy = polygonGeometry._polygonHierarchy;
+  var perPositionHeight = polygonGeometry._perPositionHeight;
+  var arcType = polygonGeometry._arcType;
 
-  const polygons = PolygonGeometryLibrary.polygonOutlinesFromHierarchy(
+  var polygons = PolygonGeometryLibrary.polygonOutlinesFromHierarchy(
     polygonHierarchy,
     !perPositionHeight,
     ellipsoid
@@ -586,20 +576,20 @@ PolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
     return undefined;
   }
 
-  let geometryInstance;
-  const geometries = [];
-  const minDistance = CesiumMath.chordLength(
+  var geometryInstance;
+  var geometries = [];
+  var minDistance = CesiumMath.chordLength(
     granularity,
     ellipsoid.maximumRadius
   );
 
-  const height = polygonGeometry._height;
-  const extrudedHeight = polygonGeometry._extrudedHeight;
-  const extrude =
+  var height = polygonGeometry._height;
+  var extrudedHeight = polygonGeometry._extrudedHeight;
+  var extrude =
     polygonGeometry._perPositionHeightExtrude ||
     !CesiumMath.equalsEpsilon(height, extrudedHeight, 0, CesiumMath.EPSILON2);
-  let offsetValue;
-  let i;
+  var offsetValue;
+  var i;
   if (extrude) {
     for (i = 0; i < polygons.length; i++) {
       geometryInstance = createGeometryFromPositionsExtruded(
@@ -617,9 +607,9 @@ PolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
         perPositionHeight
       );
       if (defined(polygonGeometry._offsetAttribute)) {
-        const size =
+        var size =
           geometryInstance.geometry.attributes.position.values.length / 3;
-        let offsetAttribute = new Uint8Array(size);
+        var offsetAttribute = new Uint8Array(size);
         if (polygonGeometry._offsetAttribute === GeometryOffsetAttribute.TOP) {
           offsetAttribute = arrayFill(offsetAttribute, 1, 0, size / 2);
         } else {
@@ -657,9 +647,9 @@ PolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
       );
 
       if (defined(polygonGeometry._offsetAttribute)) {
-        const length =
+        var length =
           geometryInstance.geometry.attributes.position.values.length;
-        const applyOffset = new Uint8Array(length / 3);
+        var applyOffset = new Uint8Array(length / 3);
         offsetValue =
           polygonGeometry._offsetAttribute === GeometryOffsetAttribute.NONE
             ? 0
@@ -678,8 +668,8 @@ PolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
     }
   }
 
-  const geometry = GeometryPipeline.combineInstances(geometries)[0];
-  const boundingSphere = BoundingSphere.fromVertices(
+  var geometry = GeometryPipeline.combineInstances(geometries)[0];
+  var boundingSphere = BoundingSphere.fromVertices(
     geometry.attributes.position.values
   );
 

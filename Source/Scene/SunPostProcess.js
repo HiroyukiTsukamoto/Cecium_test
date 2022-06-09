@@ -19,8 +19,8 @@ import SceneFramebuffer from "./SceneFramebuffer.js";
 function SunPostProcess() {
   this._sceneFramebuffer = new SceneFramebuffer();
 
-  const scale = 0.125;
-  const stages = new Array(6);
+  var scale = 0.125;
+  var stages = new Array(6);
 
   stages[0] = new PostProcessStage({
     fragmentShader: PassThrough,
@@ -29,7 +29,7 @@ function SunPostProcess() {
     sampleMode: PostProcessStageSampleMode.LINEAR,
   });
 
-  const brightPass = (stages[1] = new PostProcessStage({
+  var brightPass = (stages[1] = new PostProcessStage({
     fragmentShader: BrightPass,
     uniforms: {
       avgLuminance: 0.5, // A guess at the average luminance across the entire scene
@@ -40,7 +40,7 @@ function SunPostProcess() {
     forcePowerOfTwo: true,
   }));
 
-  const that = this;
+  var that = this;
   this._delta = 1.0;
   this._sigma = 2.0;
   this._blurStep = new Cartesian2();
@@ -103,7 +103,7 @@ function SunPostProcess() {
         return that._uRadius;
       },
       colorTexture2: function () {
-        return that._sceneFramebuffer.framebuffer.getColorTexture(0);
+        return that._sceneFramebuffer.getFramebuffer().getColorTexture(0);
       },
     },
   });
@@ -112,9 +112,9 @@ function SunPostProcess() {
     stages: stages,
   });
 
-  const textureCache = new PostProcessStageTextureCache(this);
-  const length = stages.length;
-  for (let i = 0; i < length; ++i) {
+  var textureCache = new PostProcessStageTextureCache(this);
+  var length = stages.length;
+  for (var i = 0; i < length; ++i) {
     stages[i]._textureCache = textureCache;
   }
 
@@ -127,9 +127,9 @@ SunPostProcess.prototype.get = function (index) {
 };
 
 SunPostProcess.prototype.getStageByName = function (name) {
-  const length = this._stages.length;
-  for (let i = 0; i < length; ++i) {
-    const stage = this._stages.get(i);
+  var length = this._stages.length;
+  for (var i = 0; i < length; ++i) {
+    var stage = this._stages.get(i);
     if (stage.name === name) {
       return stage;
     }
@@ -137,31 +137,31 @@ SunPostProcess.prototype.getStageByName = function (name) {
   return undefined;
 };
 
-const sunPositionECScratch = new Cartesian4();
-const sunPositionWCScratch = new Cartesian2();
-const sizeScratch = new Cartesian2();
-const postProcessMatrix4Scratch = new Matrix4();
+var sunPositionECScratch = new Cartesian4();
+var sunPositionWCScratch = new Cartesian2();
+var sizeScratch = new Cartesian2();
+var postProcessMatrix4Scratch = new Matrix4();
 
 function updateSunPosition(postProcess, context, viewport) {
-  const us = context.uniformState;
-  const sunPosition = us.sunPositionWC;
-  const viewMatrix = us.view;
-  const viewProjectionMatrix = us.viewProjection;
-  const projectionMatrix = us.projection;
+  var us = context.uniformState;
+  var sunPosition = us.sunPositionWC;
+  var viewMatrix = us.view;
+  var viewProjectionMatrix = us.viewProjection;
+  var projectionMatrix = us.projection;
 
   // create up sampled render state
-  let viewportTransformation = Matrix4.computeViewportTransformation(
+  var viewportTransformation = Matrix4.computeViewportTransformation(
     viewport,
     0.0,
     1.0,
     postProcessMatrix4Scratch
   );
-  const sunPositionEC = Matrix4.multiplyByPoint(
+  var sunPositionEC = Matrix4.multiplyByPoint(
     viewMatrix,
     sunPosition,
     sunPositionECScratch
   );
-  let sunPositionWC = Transforms.pointToGLWindowCoordinates(
+  var sunPositionWC = Transforms.pointToGLWindowCoordinates(
     viewProjectionMatrix,
     viewportTransformation,
     sunPosition,
@@ -169,34 +169,34 @@ function updateSunPosition(postProcess, context, viewport) {
   );
 
   sunPositionEC.x += CesiumMath.SOLAR_RADIUS;
-  const limbWC = Transforms.pointToGLWindowCoordinates(
+  var limbWC = Transforms.pointToGLWindowCoordinates(
     projectionMatrix,
     viewportTransformation,
     sunPositionEC,
     sunPositionEC
   );
-  const sunSize =
+  var sunSize =
     Cartesian2.magnitude(Cartesian2.subtract(limbWC, sunPositionWC, limbWC)) *
     30.0 *
     2.0;
 
-  const size = sizeScratch;
+  var size = sizeScratch;
   size.x = sunSize;
   size.y = sunSize;
 
   postProcess._uCenter = Cartesian2.clone(sunPositionWC, postProcess._uCenter);
   postProcess._uRadius = Math.max(size.x, size.y) * 0.15;
 
-  const width = context.drawingBufferWidth;
-  const height = context.drawingBufferHeight;
+  var width = context.drawingBufferWidth;
+  var height = context.drawingBufferHeight;
 
-  const stages = postProcess._stages;
-  const firstStage = stages.get(0);
+  var stages = postProcess._stages;
+  var firstStage = stages.get(0);
 
-  const downSampleWidth = firstStage.outputTexture.width;
-  const downSampleHeight = firstStage.outputTexture.height;
+  var downSampleWidth = firstStage.outputTexture.width;
+  var downSampleHeight = firstStage.outputTexture.height;
 
-  const downSampleViewport = new BoundingRectangle();
+  var downSampleViewport = new BoundingRectangle();
   downSampleViewport.width = downSampleWidth;
   downSampleViewport.height = downSampleHeight;
 
@@ -217,13 +217,13 @@ function updateSunPosition(postProcess, context, viewport) {
   size.x *= downSampleWidth / width;
   size.y *= downSampleHeight / height;
 
-  const scissorRectangle = firstStage.scissorRectangle;
+  var scissorRectangle = firstStage.scissorRectangle;
   scissorRectangle.x = Math.max(sunPositionWC.x - size.x * 0.5, 0.0);
   scissorRectangle.y = Math.max(sunPositionWC.y - size.y * 0.5, 0.0);
   scissorRectangle.width = Math.min(size.x, width);
   scissorRectangle.height = Math.min(size.y, height);
 
-  for (let i = 1; i < 4; ++i) {
+  for (var i = 1; i < 4; ++i) {
     BoundingRectangle.clone(scissorRectangle, stages.get(i).scissorRectangle);
   }
 }
@@ -234,12 +234,12 @@ SunPostProcess.prototype.clear = function (context, passState, clearColor) {
 };
 
 SunPostProcess.prototype.update = function (passState) {
-  const context = passState.context;
-  const viewport = passState.viewport;
+  var context = passState.context;
+  var viewport = passState.viewport;
 
-  const sceneFramebuffer = this._sceneFramebuffer;
+  var sceneFramebuffer = this._sceneFramebuffer;
   sceneFramebuffer.update(context, viewport);
-  const framebuffer = sceneFramebuffer.framebuffer;
+  var framebuffer = sceneFramebuffer.getFramebuffer();
 
   this._textureCache.update(context);
   this._stages.update(context, false);
@@ -250,18 +250,18 @@ SunPostProcess.prototype.update = function (passState) {
 };
 
 SunPostProcess.prototype.execute = function (context) {
-  const colorTexture = this._sceneFramebuffer.framebuffer.getColorTexture(0);
-  const stages = this._stages;
-  const length = stages.length;
+  var colorTexture = this._sceneFramebuffer.getFramebuffer().getColorTexture(0);
+  var stages = this._stages;
+  var length = stages.length;
   stages.get(0).execute(context, colorTexture);
-  for (let i = 1; i < length; ++i) {
+  for (var i = 1; i < length; ++i) {
     stages.get(i).execute(context, stages.get(i - 1).outputTexture);
   }
 };
 
 SunPostProcess.prototype.copy = function (context, framebuffer) {
   if (!defined(this._copyColorCommand)) {
-    const that = this;
+    var that = this;
     this._copyColorCommand = context.createViewportQuadCommand(PassThrough, {
       uniformMap: {
         colorTexture: function () {

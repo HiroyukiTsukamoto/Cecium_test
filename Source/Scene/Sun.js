@@ -71,7 +71,7 @@ function Sun() {
 
   this._useHdr = undefined;
 
-  const that = this;
+  var that = this;
   this._uniformMap = {
     u_texture: function () {
       return that._texture;
@@ -104,10 +104,10 @@ Object.defineProperties(Sun.prototype, {
   },
 });
 
-const scratchPositionWC = new Cartesian2();
-const scratchLimbWC = new Cartesian2();
-const scratchPositionEC = new Cartesian4();
-const scratchCartesian4 = new Cartesian4();
+var scratchPositionWC = new Cartesian2();
+var scratchLimbWC = new Cartesian2();
+var scratchPositionEC = new Cartesian4();
+var scratchCartesian4 = new Cartesian4();
 
 /**
  * @private
@@ -117,7 +117,7 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     return undefined;
   }
 
-  const mode = frameState.mode;
+  var mode = frameState.mode;
   if (mode === SceneMode.SCENE2D || mode === SceneMode.MORPHING) {
     return undefined;
   }
@@ -126,9 +126,9 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     return undefined;
   }
 
-  const context = frameState.context;
-  const drawingBufferWidth = passState.viewport.width;
-  const drawingBufferHeight = passState.viewport.height;
+  var context = frameState.context;
+  var drawingBufferWidth = passState.viewport.width;
+  var drawingBufferHeight = passState.viewport.height;
 
   if (
     !defined(this._texture) ||
@@ -143,7 +143,7 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     this._glowFactorDirty = false;
     this._useHdr = useHdr;
 
-    let size = Math.max(drawingBufferWidth, drawingBufferHeight);
+    var size = Math.max(drawingBufferWidth, drawingBufferHeight);
     size = Math.pow(2.0, Math.ceil(Math.log(size) / Math.log(2.0)) - 2.0);
 
     // The size computed above can be less than 1.0 if size < 4.0. This will probably
@@ -151,7 +151,7 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     // errors in the tests.
     size = Math.max(1.0, size);
 
-    const pixelDatatype = useHdr
+    var pixelDatatype = useHdr
       ? context.halfFloatingPointTexture
         ? PixelDatatype.HALF_FLOAT
         : PixelDatatype.FLOAT
@@ -167,8 +167,8 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     this._glowLengthTS = this._glowFactor * 5.0;
     this._radiusTS = (1.0 / (1.0 + 2.0 * this._glowLengthTS)) * 0.5;
 
-    const that = this;
-    const uniformMap = {
+    var that = this;
+    var uniformMap = {
       u_radiusTS: function () {
         return that._radiusTS;
       },
@@ -186,14 +186,14 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     });
   }
 
-  const drawCommand = this._drawCommand;
+  var drawCommand = this._drawCommand;
 
   if (!defined(drawCommand.vertexArray)) {
-    const attributeLocations = {
+    var attributeLocations = {
       direction: 0,
     };
 
-    const directions = new Uint8Array(4 * 2);
+    var directions = new Uint8Array(4 * 2);
     directions[0] = 0;
     directions[1] = 0;
 
@@ -206,12 +206,12 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     directions[6] = 0.0;
     directions[7] = 255;
 
-    const vertexBuffer = Buffer.createVertexBuffer({
+    var vertexBuffer = Buffer.createVertexBuffer({
       context: context,
       typedArray: directions,
       usage: BufferUsage.STATIC_DRAW,
     });
-    const attributes = [
+    var attributes = [
       {
         index: attributeLocations.direction,
         vertexBuffer: vertexBuffer,
@@ -221,7 +221,7 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
       },
     ];
     // Workaround Internet Explorer 11.0.8 lack of TRIANGLE_FAN
-    const indexBuffer = Buffer.createIndexBuffer({
+    var indexBuffer = Buffer.createIndexBuffer({
       context: context,
       typedArray: new Uint16Array([0, 1, 2, 0, 2, 3]),
       usage: BufferUsage.STATIC_DRAW,
@@ -246,11 +246,11 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     drawCommand.uniformMap = this._uniformMap;
   }
 
-  const sunPosition = context.uniformState.sunPositionWC;
-  const sunPositionCV = context.uniformState.sunPositionColumbusView;
+  var sunPosition = context.uniformState.sunPositionWC;
+  var sunPositionCV = context.uniformState.sunPositionColumbusView;
 
-  const boundingVolume = this._boundingVolume;
-  const boundingVolume2D = this._boundingVolume2D;
+  var boundingVolume = this._boundingVolume;
+  var boundingVolume2D = this._boundingVolume2D;
 
   Cartesian3.clone(sunPosition, boundingVolume.center);
   boundingVolume2D.center.x = sunPositionCV.z;
@@ -267,41 +267,41 @@ Sun.prototype.update = function (frameState, passState, useHdr) {
     BoundingSphere.clone(boundingVolume2D, drawCommand.boundingVolume);
   }
 
-  const position = SceneTransforms.computeActualWgs84Position(
+  var position = SceneTransforms.computeActualWgs84Position(
     frameState,
     sunPosition,
     scratchCartesian4
   );
 
-  const dist = Cartesian3.magnitude(
+  var dist = Cartesian3.magnitude(
     Cartesian3.subtract(position, frameState.camera.position, scratchCartesian4)
   );
-  const projMatrix = context.uniformState.projection;
+  var projMatrix = context.uniformState.projection;
 
-  const positionEC = scratchPositionEC;
+  var positionEC = scratchPositionEC;
   positionEC.x = 0;
   positionEC.y = 0;
   positionEC.z = -dist;
   positionEC.w = 1;
 
-  const positionCC = Matrix4.multiplyByVector(
+  var positionCC = Matrix4.multiplyByVector(
     projMatrix,
     positionEC,
     scratchCartesian4
   );
-  const positionWC = SceneTransforms.clipToGLWindowCoordinates(
+  var positionWC = SceneTransforms.clipToGLWindowCoordinates(
     passState.viewport,
     positionCC,
     scratchPositionWC
   );
 
   positionEC.x = CesiumMath.SOLAR_RADIUS;
-  const limbCC = Matrix4.multiplyByVector(
+  var limbCC = Matrix4.multiplyByVector(
     projMatrix,
     positionEC,
     scratchCartesian4
   );
-  const limbWC = SceneTransforms.clipToGLWindowCoordinates(
+  var limbWC = SceneTransforms.clipToGLWindowCoordinates(
     passState.viewport,
     limbCC,
     scratchLimbWC
@@ -347,7 +347,7 @@ Sun.prototype.isDestroyed = function () {
  *  @see Sun#isDestroyed
  */
 Sun.prototype.destroy = function () {
-  const command = this._drawCommand;
+  var command = this._drawCommand;
   command.vertexArray = command.vertexArray && command.vertexArray.destroy();
   command.shaderProgram =
     command.shaderProgram && command.shaderProgram.destroy();

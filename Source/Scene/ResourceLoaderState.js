@@ -3,7 +3,7 @@
  *
  * @private
  */
-const ResourceLoaderState = {
+var ResourceLoaderState = {
   /**
    * The resource has not yet been loaded.
    *

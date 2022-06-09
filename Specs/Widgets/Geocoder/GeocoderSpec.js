@@ -4,7 +4,7 @@ import { Geocoder } from "../../../Source/Cesium.js";
 describe(
   "Widgets/Geocoder/Geocoder",
   function () {
-    let scene;
+    var scene;
 
     beforeEach(function () {
       scene = createScene();
@@ -15,17 +15,17 @@ describe(
     });
 
     it("constructor sets expected properties", function () {
-      const flightDuration = 1234;
-      const destinationFound = jasmine.createSpy();
+      var flightDuration = 1234;
+      var destinationFound = jasmine.createSpy();
 
-      const geocoder = new Geocoder({
+      var geocoder = new Geocoder({
         container: document.body,
         scene: scene,
         flightDuration: flightDuration,
         destinationFound: destinationFound,
       });
 
-      const viewModel = geocoder.viewModel;
+      var viewModel = geocoder.viewModel;
       expect(viewModel.scene).toBe(scene);
       expect(viewModel.flightDuration).toBe(flightDuration);
       expect(viewModel.destinationFound).toBe(destinationFound);
@@ -33,11 +33,11 @@ describe(
     });
 
     it("can create and destroy", function () {
-      const container = document.createElement("div");
+      var container = document.createElement("div");
       container.id = "testContainer";
       document.body.appendChild(container);
 
-      const widget = new Geocoder({
+      var widget = new Geocoder({
         container: "testContainer",
         scene: scene,
       });

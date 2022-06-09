@@ -3,11 +3,11 @@ import { TileImagery } from "../../Source/Cesium.js";
 
 describe("Scene/TileImagery", function () {
   it("does not use ancestor ready imagery that needs to be reprojected", function () {
-    const imageryLayer = {
+    var imageryLayer = {
       _calculateTextureTranslationAndScale: function () {},
     };
 
-    const grandparentImagery = {
+    var grandparentImagery = {
       imageryLayer: imageryLayer,
       level: 0,
       x: 0,
@@ -18,7 +18,7 @@ describe("Scene/TileImagery", function () {
       addReference: function () {},
     };
 
-    const parentImagery = {
+    var parentImagery = {
       imageryLayer: imageryLayer,
       parent: grandparentImagery,
       level: 1,
@@ -34,7 +34,7 @@ describe("Scene/TileImagery", function () {
       addReference: function () {},
     };
 
-    const thisImagery = {
+    var thisImagery = {
       imageryLayer: imageryLayer,
       parent: parentImagery,
       level: 2,
@@ -51,7 +51,7 @@ describe("Scene/TileImagery", function () {
     // * grandparentImagery is good to go
     // When we process the state machine, it should selected grandparentImagery for rendering
     // and process the state machine of parentImagery.
-    const tileImagery = new TileImagery(thisImagery, undefined, false);
+    var tileImagery = new TileImagery(thisImagery, undefined, false);
 
     tileImagery.processStateMachine({}, {});
 

@@ -9,7 +9,7 @@ import createScene from "../createScene.js";
 describe(
   "Scene/BatchTable",
   function () {
-    const unsignedByteAttributes = [
+    var unsignedByteAttributes = [
       {
         functionName: "batchTable_getShow",
         componentDatatype: ComponentDatatype.UNSIGNED_BYTE,
@@ -23,7 +23,7 @@ describe(
       },
     ];
 
-    const floatAttributes = [
+    var floatAttributes = [
       {
         functionName: "batchTable_getShow",
         componentDatatype: ComponentDatatype.UNSIGNED_BYTE,
@@ -36,9 +36,9 @@ describe(
       },
     ];
 
-    let batchTable;
-    let scene;
-    let context;
+    var batchTable;
+    var scene;
+    var context;
 
     beforeAll(function () {
       scene = createScene();
@@ -81,8 +81,8 @@ describe(
     it("sets and gets entries in the table", function () {
       batchTable = new BatchTable(context, unsignedByteAttributes, 5);
 
-      let i;
-      let color = new Cartesian4(0, 1, 2, 3);
+      var i;
+      var color = new Cartesian4(0, 1, 2, 3);
 
       for (i = 0; i < batchTable.numberOfInstances; ++i) {
         batchTable.setBatchedAttribute(i, 0, 1);
@@ -102,13 +102,13 @@ describe(
     });
 
     it("sets and gets entries in the table with float attributes", function () {
-      const context = {
+      var context = {
         floatingPointTexture: true,
       };
       batchTable = new BatchTable(context, floatAttributes, 5);
 
-      let i;
-      let color = new Cartesian4(0, 1, 2, 3);
+      var i;
+      var color = new Cartesian4(0, 1, 2, 3);
 
       for (i = 0; i < batchTable.numberOfInstances; ++i) {
         batchTable.setBatchedAttribute(i, 0, 1);
@@ -128,13 +128,13 @@ describe(
     });
 
     it("sets and gets entries in the table with float attributes and forced packing", function () {
-      const context = {
+      var context = {
         floatingPointTexture: false,
       };
       batchTable = new BatchTable(context, floatAttributes, 5);
 
-      let i;
-      let color = new Cartesian4(
+      var i;
+      var color = new Cartesian4(
         1.23456e12,
         -2.34567e30,
         3.45678e-6,
@@ -146,7 +146,7 @@ describe(
         batchTable.setBatchedAttribute(i, 1, color);
       }
 
-      let value;
+      var value;
       for (i = 0; i < batchTable.numberOfInstances; ++i) {
         value = batchTable.getBatchedAttribute(3, 0);
         expect(value).toEqual(1);
@@ -174,11 +174,11 @@ describe(
 
     it("gets with result parameter", function () {
       batchTable = new BatchTable(context, unsignedByteAttributes, 5);
-      const color = new Cartesian4(0, 1, 2, 3);
+      var color = new Cartesian4(0, 1, 2, 3);
       batchTable.setBatchedAttribute(0, 1, color);
 
-      const result = new Cartesian4();
-      const returndValue = batchTable.getBatchedAttribute(0, 1, result);
+      var result = new Cartesian4();
+      var returndValue = batchTable.getBatchedAttribute(0, 1, result);
       expect(returndValue).toBe(result);
       expect(result).toEqual(color);
     });
@@ -234,7 +234,7 @@ describe(
       batchTable = new BatchTable(context, unsignedByteAttributes, 5);
       batchTable.update(scene.frameState);
 
-      const uniforms = batchTable.getUniformMapCallback()({});
+      var uniforms = batchTable.getUniformMapCallback()({});
       expect(uniforms.batchTexture).toBeDefined();
       expect(uniforms.batchTexture()).toBeInstanceOf(Texture);
       expect(uniforms.batchTexture().pixelDatatype).toEqual(
@@ -258,7 +258,7 @@ describe(
       batchTable = new BatchTable(context, floatAttributes, 5);
       batchTable.update(scene.frameState);
 
-      const uniforms = batchTable.getUniformMapCallback()({});
+      var uniforms = batchTable.getUniformMapCallback()({});
       expect(uniforms.batchTexture).toBeDefined();
       expect(uniforms.batchTexture()).toBeInstanceOf(Texture);
       expect(uniforms.batchTexture().pixelDatatype).toEqual(
@@ -287,8 +287,8 @@ describe(
     it("create shader functions", function () {
       batchTable = new BatchTable(context, unsignedByteAttributes, 5);
 
-      const shader = "void main() { gl_Position = vec4(0.0); }";
-      const modifiedShader = batchTable.getVertexShaderCallback()(shader);
+      var shader = "void main() { gl_Position = vec4(0.0); }";
+      var modifiedShader = batchTable.getVertexShaderCallback()(shader);
       expect(
         modifiedShader.indexOf(batchTable.attributes[0].functionName)
       ).not.toEqual(-1);

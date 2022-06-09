@@ -5,7 +5,7 @@
  *
  * @see ModelAnimationCollection#add
  */
-const ModelAnimationLoop = {
+var ModelAnimationLoop = {
   /**
    * Play the animation once; do not loop it.
    *

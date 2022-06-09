@@ -6,7 +6,7 @@ import Check from "../Core/Check.js";
  *
  * @private
  */
-const ShaderDestination = {
+var ShaderDestination = {
   VERTEX: 0,
   FRAGMENT: 1,
   BOTH: 2,

@@ -4,7 +4,6 @@ import TerrainTileProcessor from "../TerrainTileProcessor.js";
 import { Cartesian3 } from "../../Source/Cesium.js";
 import { Cartesian4 } from "../../Source/Cesium.js";
 import { createWorldTerrain } from "../../Source/Cesium.js";
-import { defer } from "../../Source/Cesium.js";
 import { Ellipsoid } from "../../Source/Cesium.js";
 import { EllipsoidTerrainProvider } from "../../Source/Cesium.js";
 import { GeographicTilingScheme } from "../../Source/Cesium.js";
@@ -16,15 +15,16 @@ import { QuadtreeTileLoadState } from "../../Source/Cesium.js";
 import { TerrainState } from "../../Source/Cesium.js";
 import { TileProviderError } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Scene/GlobeSurfaceTile", function () {
-  let frameState;
-  let tilingScheme;
-  let rootTiles;
-  let rootTile;
-  let imageryLayerCollection;
-  let mockTerrain;
-  let processor;
+  var frameState;
+  var tilingScheme;
+  var rootTiles;
+  var rootTile;
+  var imageryLayerCollection;
+  var mockTerrain;
+  var processor;
 
   beforeEach(function () {
     frameState = {
@@ -48,7 +48,7 @@ describe("Scene/GlobeSurfaceTile", function () {
   });
 
   afterEach(function () {
-    for (let i = 0; i < rootTiles.length; ++i) {
+    for (var i = 0; i < rootTiles.length; ++i) {
       rootTiles[i].freeResources();
     }
   });
@@ -59,8 +59,8 @@ describe("Scene/GlobeSurfaceTile", function () {
     });
 
     it("starts in the START state", function () {
-      for (let i = 0; i < rootTiles.length; ++i) {
-        const tile = rootTiles[i];
+      for (var i = 0; i < rootTiles.length; ++i) {
+        var tile = rootTiles[i];
         expect(tile.state).toBe(QuadtreeTileLoadState.START);
       }
     });
@@ -181,7 +181,7 @@ describe("Scene/GlobeSurfaceTile", function () {
         .upsampleWillSucceed(rootTile.southwestChild)
         .createMeshWillSucceed(rootTile.southwestChild);
 
-      const mockImagery = new MockImageryProvider();
+      var mockImagery = new MockImageryProvider();
       imageryLayerCollection.addImageryProvider(mockImagery);
 
       mockImagery
@@ -209,7 +209,7 @@ describe("Scene/GlobeSurfaceTile", function () {
         .upsampleWillSucceed(rootTile.southwestChild)
         .createMeshWillSucceed(rootTile.southwestChild);
 
-      const mockImagery = new MockImageryProvider();
+      var mockImagery = new MockImageryProvider();
       imageryLayerCollection.addImageryProvider(mockImagery);
 
       mockImagery
@@ -237,7 +237,7 @@ describe("Scene/GlobeSurfaceTile", function () {
         .requestTileGeometryWillSucceed(rootTile.southwestChild)
         .createMeshWillSucceed(rootTile.southwestChild);
 
-      const mockImagery = new MockImageryProvider();
+      var mockImagery = new MockImageryProvider();
       imageryLayerCollection.addImageryProvider(mockImagery);
 
       mockImagery
@@ -323,7 +323,7 @@ describe("Scene/GlobeSurfaceTile", function () {
   describe(
     "pick",
     function () {
-      let scene;
+      var scene;
 
       beforeAll(function () {
         scene = createScene();
@@ -334,12 +334,12 @@ describe("Scene/GlobeSurfaceTile", function () {
       });
 
       it("gets correct results even when the mesh includes normals", function () {
-        const terrainProvider = createWorldTerrain({
+        var terrainProvider = createWorldTerrain({
           requestVertexNormals: true,
           requestWaterMask: false,
         });
 
-        const tile = new QuadtreeTile({
+        var tile = new QuadtreeTile({
           tilingScheme: new GeographicTilingScheme(),
           level: 11,
           x: 3788,
@@ -350,7 +350,7 @@ describe("Scene/GlobeSurfaceTile", function () {
         processor.terrainProvider = terrainProvider;
 
         return processor.process([tile]).then(function () {
-          const ray = new Ray(
+          var ray = new Ray(
             new Cartesian3(
               -5052039.459789615,
               2561172.040315167,
@@ -362,8 +362,8 @@ describe("Scene/GlobeSurfaceTile", function () {
               0.5517155343926082
             )
           );
-          const pickResult = tile.data.pick(ray, undefined, undefined, true);
-          const cartographic = Ellipsoid.WGS84.cartesianToCartographic(
+          var pickResult = tile.data.pick(ray, undefined, undefined, true);
+          var cartographic = Ellipsoid.WGS84.cartesianToCartographic(
             pickResult
           );
           expect(cartographic.height).toBeGreaterThan(-500.0);
@@ -374,9 +374,9 @@ describe("Scene/GlobeSurfaceTile", function () {
         // Pick root tile (level=0, x=0, y=0) from the east side towards the west.
         // Based on heightmap triangle processing order the west triangle will be tested first, followed
         // by the east triangle. But since the east triangle is closer we expect it to be the pick result.
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var terrainProvider = new EllipsoidTerrainProvider();
 
-        const tile = new QuadtreeTile({
+        var tile = new QuadtreeTile({
           tilingScheme: new GeographicTilingScheme(),
           level: 0,
           x: 0,
@@ -387,11 +387,11 @@ describe("Scene/GlobeSurfaceTile", function () {
         processor.terrainProvider = terrainProvider;
 
         return processor.process([tile]).then(function () {
-          const origin = new Cartesian3(50000000.0, -1.0, 0.0);
-          const direction = new Cartesian3(-1.0, 0.0, 0.0);
-          const ray = new Ray(origin, direction);
-          const cullBackFaces = false;
-          const pickResult = tile.data.pick(
+          var origin = new Cartesian3(50000000.0, -1.0, 0.0);
+          var direction = new Cartesian3(-1.0, 0.0, 0.0);
+          var ray = new Ray(origin, direction);
+          var cullBackFaces = false;
+          var pickResult = tile.data.pick(
             ray,
             undefined,
             undefined,
@@ -403,9 +403,9 @@ describe("Scene/GlobeSurfaceTile", function () {
 
       it("ignores triangles that are behind the ray", function () {
         // Pick root tile (level=0, x=0, y=0) from the center towards the east side (+X).
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var terrainProvider = new EllipsoidTerrainProvider();
 
-        const tile = new QuadtreeTile({
+        var tile = new QuadtreeTile({
           tilingScheme: new GeographicTilingScheme(),
           level: 0,
           x: 0,
@@ -416,11 +416,11 @@ describe("Scene/GlobeSurfaceTile", function () {
         processor.terrainProvider = terrainProvider;
 
         return processor.process([tile]).then(function () {
-          const origin = new Cartesian3(0.0, -1.0, 0.0);
-          const direction = new Cartesian3(1.0, 0.0, 0.0);
-          const ray = new Ray(origin, direction);
-          const cullBackFaces = false;
-          const pickResult = tile.data.pick(
+          var origin = new Cartesian3(0.0, -1.0, 0.0);
+          var direction = new Cartesian3(1.0, 0.0, 0.0);
+          var ray = new Ray(origin, direction);
+          var cullBackFaces = false;
+          var pickResult = tile.data.pick(
             ray,
             undefined,
             undefined,
@@ -459,7 +459,7 @@ describe("Scene/GlobeSurfaceTile", function () {
     });
 
     it("returns false when RECEIVING", function () {
-      const deferred = defer();
+      var deferred = when.defer();
 
       mockTerrain
         .requestTileGeometryWillSucceed(rootTile)
@@ -472,7 +472,7 @@ describe("Scene/GlobeSurfaceTile", function () {
     });
 
     it("returns false when TRANSFORMING", function () {
-      const deferred = defer();
+      var deferred = when.defer();
 
       mockTerrain
         .requestTileGeometryWillSucceed(rootTile)
@@ -486,9 +486,9 @@ describe("Scene/GlobeSurfaceTile", function () {
     });
 
     it("returns false when imagery is TRANSITIONING", function () {
-      const deferred = defer();
+      var deferred = when.defer();
 
-      const mockImagery = new MockImageryProvider();
+      var mockImagery = new MockImageryProvider();
       imageryLayerCollection.addImageryProvider(mockImagery);
 
       mockImagery.requestImageWillWaitOn(deferred.promise, rootTile);

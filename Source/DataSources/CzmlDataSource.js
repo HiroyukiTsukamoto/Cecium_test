@@ -41,6 +41,7 @@ import LabelStyle from "../Scene/LabelStyle.js";
 import ShadowMode from "../Scene/ShadowMode.js";
 import VerticalOrigin from "../Scene/VerticalOrigin.js";
 import Uri from "../ThirdParty/Uri.js";
+import when from "../ThirdParty/when.js";
 import BillboardGraphics from "./BillboardGraphics.js";
 import BoxGraphics from "./BoxGraphics.js";
 import CallbackProperty from "./CallbackProperty.js";
@@ -100,7 +101,7 @@ UnitCartesian3.pack = Cartesian3.pack;
 
 // As a side note, for the purposes of CZML, Quaternion always indicates a unit quaternion.
 
-let currentId;
+var currentId;
 
 function createReferenceProperty(entityCollection, referenceString) {
   if (referenceString[0] === "#") {
@@ -115,7 +116,7 @@ function createSpecializedProperty(type, entityCollection, packetData) {
   }
 
   if (defined(packetData.velocityReference)) {
-    const referenceProperty = createReferenceProperty(
+    var referenceProperty = createReferenceProperty(
       entityCollection,
       packetData.velocityReference
     );
@@ -131,7 +132,7 @@ function createSpecializedProperty(type, entityCollection, packetData) {
     }
   }
 
-  throw new RuntimeError(`${JSON.stringify(packetData)} is not valid CZML.`);
+  throw new RuntimeError(JSON.stringify(packetData) + " is not valid CZML.");
 }
 
 function createAdapterProperty(property, adapterFunction) {
@@ -140,24 +141,24 @@ function createAdapterProperty(property, adapterFunction) {
   }, property.isConstant);
 }
 
-const scratchCartesian = new Cartesian3();
-const scratchSpherical = new Spherical();
-const scratchCartographic = new Cartographic();
-const scratchTimeInterval = new TimeInterval();
-const scratchQuaternion = new Quaternion();
+var scratchCartesian = new Cartesian3();
+var scratchSpherical = new Spherical();
+var scratchCartographic = new Cartographic();
+var scratchTimeInterval = new TimeInterval();
+var scratchQuaternion = new Quaternion();
 
 function unwrapColorInterval(czmlInterval) {
-  let rgbaf = czmlInterval.rgbaf;
+  var rgbaf = czmlInterval.rgbaf;
   if (defined(rgbaf)) {
     return rgbaf;
   }
 
-  const rgba = czmlInterval.rgba;
+  var rgba = czmlInterval.rgba;
   if (!defined(rgba)) {
     return undefined;
   }
 
-  const length = rgba.length;
+  var length = rgba.length;
   if (length === Color.packedLength) {
     return [
       Color.byteToFloat(rgba[0]),
@@ -168,7 +169,7 @@ function unwrapColorInterval(czmlInterval) {
   }
 
   rgbaf = new Array(length);
-  for (let i = 0; i < length; i += 5) {
+  for (var i = 0; i < length; i += 5) {
     rgbaf[i] = rgba[i];
     rgbaf[i + 1] = Color.byteToFloat(rgba[i + 1]);
     rgbaf[i + 2] = Color.byteToFloat(rgba[i + 2]);
@@ -179,7 +180,7 @@ function unwrapColorInterval(czmlInterval) {
 }
 
 function unwrapUriInterval(czmlInterval, sourceUri) {
-  const uri = defaultValue(czmlInterval.uri, czmlInterval);
+  var uri = defaultValue(czmlInterval.uri, czmlInterval);
   if (defined(sourceUri)) {
     return sourceUri.getDerivedResource({
       url: uri,
@@ -190,17 +191,17 @@ function unwrapUriInterval(czmlInterval, sourceUri) {
 }
 
 function unwrapRectangleInterval(czmlInterval) {
-  let wsen = czmlInterval.wsen;
+  var wsen = czmlInterval.wsen;
   if (defined(wsen)) {
     return wsen;
   }
 
-  const wsenDegrees = czmlInterval.wsenDegrees;
+  var wsenDegrees = czmlInterval.wsenDegrees;
   if (!defined(wsenDegrees)) {
     return undefined;
   }
 
-  const length = wsenDegrees.length;
+  var length = wsenDegrees.length;
   if (length === Rectangle.packedLength) {
     return [
       CesiumMath.toRadians(wsenDegrees[0]),
@@ -211,7 +212,7 @@ function unwrapRectangleInterval(czmlInterval) {
   }
 
   wsen = new Array(length);
-  for (let i = 0; i < length; i += 5) {
+  for (var i = 0; i < length; i += 5) {
     wsen[i] = wsenDegrees[i];
     wsen[i + 1] = CesiumMath.toRadians(wsenDegrees[i + 1]);
     wsen[i + 2] = CesiumMath.toRadians(wsenDegrees[i + 2]);
@@ -222,7 +223,7 @@ function unwrapRectangleInterval(czmlInterval) {
 }
 
 function convertUnitSphericalToCartesian(unitSpherical) {
-  const length = unitSpherical.length;
+  var length = unitSpherical.length;
   scratchSpherical.magnitude = 1.0;
   if (length === 2) {
     scratchSpherical.clock = unitSpherical[0];
@@ -231,8 +232,8 @@ function convertUnitSphericalToCartesian(unitSpherical) {
     return [scratchCartesian.x, scratchCartesian.y, scratchCartesian.z];
   }
 
-  const result = new Array((length / 3) * 4);
-  for (let i = 0, j = 0; i < length; i += 3, j += 4) {
+  var result = new Array((length / 3) * 4);
+  for (var i = 0, j = 0; i < length; i += 3, j += 4) {
     result[j] = unitSpherical[i];
 
     scratchSpherical.clock = unitSpherical[i + 1];
@@ -247,7 +248,7 @@ function convertUnitSphericalToCartesian(unitSpherical) {
 }
 
 function convertSphericalToCartesian(spherical) {
-  const length = spherical.length;
+  var length = spherical.length;
   if (length === 3) {
     scratchSpherical.clock = spherical[0];
     scratchSpherical.cone = spherical[1];
@@ -256,8 +257,8 @@ function convertSphericalToCartesian(spherical) {
     return [scratchCartesian.x, scratchCartesian.y, scratchCartesian.z];
   }
 
-  const result = new Array(length);
-  for (let i = 0; i < length; i += 4) {
+  var result = new Array(length);
+  for (var i = 0; i < length; i += 4) {
     result[i] = spherical[i];
 
     scratchSpherical.clock = spherical[i + 1];
@@ -273,7 +274,7 @@ function convertSphericalToCartesian(spherical) {
 }
 
 function convertCartographicRadiansToCartesian(cartographicRadians) {
-  const length = cartographicRadians.length;
+  var length = cartographicRadians.length;
   if (length === 3) {
     scratchCartographic.longitude = cartographicRadians[0];
     scratchCartographic.latitude = cartographicRadians[1];
@@ -285,8 +286,8 @@ function convertCartographicRadiansToCartesian(cartographicRadians) {
     return [scratchCartesian.x, scratchCartesian.y, scratchCartesian.z];
   }
 
-  const result = new Array(length);
-  for (let i = 0; i < length; i += 4) {
+  var result = new Array(length);
+  for (var i = 0; i < length; i += 4) {
     result[i] = cartographicRadians[i];
 
     scratchCartographic.longitude = cartographicRadians[i + 1];
@@ -305,7 +306,7 @@ function convertCartographicRadiansToCartesian(cartographicRadians) {
 }
 
 function convertCartographicDegreesToCartesian(cartographicDegrees) {
-  const length = cartographicDegrees.length;
+  var length = cartographicDegrees.length;
   if (length === 3) {
     scratchCartographic.longitude = CesiumMath.toRadians(
       cartographicDegrees[0]
@@ -319,8 +320,8 @@ function convertCartographicDegreesToCartesian(cartographicDegrees) {
     return [scratchCartesian.x, scratchCartesian.y, scratchCartesian.z];
   }
 
-  const result = new Array(length);
-  for (let i = 0; i < length; i += 4) {
+  var result = new Array(length);
+  for (var i = 0; i < length; i += 4) {
     result[i] = cartographicDegrees[i];
 
     scratchCartographic.longitude = CesiumMath.toRadians(
@@ -343,43 +344,43 @@ function convertCartographicDegreesToCartesian(cartographicDegrees) {
 }
 
 function unwrapCartesianInterval(czmlInterval) {
-  const cartesian = czmlInterval.cartesian;
+  var cartesian = czmlInterval.cartesian;
   if (defined(cartesian)) {
     return cartesian;
   }
 
-  const cartesianVelocity = czmlInterval.cartesianVelocity;
+  var cartesianVelocity = czmlInterval.cartesianVelocity;
   if (defined(cartesianVelocity)) {
     return cartesianVelocity;
   }
 
-  const unitCartesian = czmlInterval.unitCartesian;
+  var unitCartesian = czmlInterval.unitCartesian;
   if (defined(unitCartesian)) {
     return unitCartesian;
   }
 
-  const unitSpherical = czmlInterval.unitSpherical;
+  var unitSpherical = czmlInterval.unitSpherical;
   if (defined(unitSpherical)) {
     return convertUnitSphericalToCartesian(unitSpherical);
   }
 
-  const spherical = czmlInterval.spherical;
+  var spherical = czmlInterval.spherical;
   if (defined(spherical)) {
     return convertSphericalToCartesian(spherical);
   }
 
-  const cartographicRadians = czmlInterval.cartographicRadians;
+  var cartographicRadians = czmlInterval.cartographicRadians;
   if (defined(cartographicRadians)) {
     return convertCartographicRadiansToCartesian(cartographicRadians);
   }
 
-  const cartographicDegrees = czmlInterval.cartographicDegrees;
+  var cartographicDegrees = czmlInterval.cartographicDegrees;
   if (defined(cartographicDegrees)) {
     return convertCartographicDegreesToCartesian(cartographicDegrees);
   }
 
   throw new RuntimeError(
-    `${JSON.stringify(czmlInterval)} is not a valid CZML interval.`
+    JSON.stringify(czmlInterval) + " is not a valid CZML interval."
   );
 }
 
@@ -390,13 +391,13 @@ function normalizePackedCartesianArray(array, startingIndex) {
 }
 
 function unwrapUnitCartesianInterval(czmlInterval) {
-  const cartesian = unwrapCartesianInterval(czmlInterval);
+  var cartesian = unwrapCartesianInterval(czmlInterval);
   if (cartesian.length === 3) {
     normalizePackedCartesianArray(cartesian, 0);
     return cartesian;
   }
 
-  for (let i = 1; i < cartesian.length; i += 4) {
+  for (var i = 1; i < cartesian.length; i += 4) {
     normalizePackedCartesianArray(cartesian, i);
   }
 
@@ -410,14 +411,14 @@ function normalizePackedQuaternionArray(array, startingIndex) {
 }
 
 function unwrapQuaternionInterval(czmlInterval) {
-  const unitQuaternion = czmlInterval.unitQuaternion;
+  var unitQuaternion = czmlInterval.unitQuaternion;
   if (defined(unitQuaternion)) {
     if (unitQuaternion.length === 4) {
       normalizePackedQuaternionArray(unitQuaternion, 0);
       return unitQuaternion;
     }
 
-    for (let i = 1; i < unitQuaternion.length; i += 5) {
+    for (var i = 1; i < unitQuaternion.length; i += 5) {
       normalizePackedQuaternionArray(unitQuaternion, i);
     }
   }
@@ -602,15 +603,15 @@ function unwrapInterval(type, czmlInterval, sourceUri) {
   }
 }
 
-const interpolators = {
+var interpolators = {
   HERMITE: HermitePolynomialApproximation,
   LAGRANGE: LagrangePolynomialApproximation,
   LINEAR: LinearApproximation,
 };
 
 function updateInterpolationSettings(packetData, property) {
-  const interpolationAlgorithm = packetData.interpolationAlgorithm;
-  const interpolationDegree = packetData.interpolationDegree;
+  var interpolationAlgorithm = packetData.interpolationAlgorithm;
+  var interpolationDegree = packetData.interpolationDegree;
   if (defined(interpolationAlgorithm) || defined(interpolationDegree)) {
     property.setInterpolationOptions({
       interpolationAlgorithm: interpolators[interpolationAlgorithm],
@@ -618,31 +619,30 @@ function updateInterpolationSettings(packetData, property) {
     });
   }
 
-  const forwardExtrapolationType = packetData.forwardExtrapolationType;
+  var forwardExtrapolationType = packetData.forwardExtrapolationType;
   if (defined(forwardExtrapolationType)) {
     property.forwardExtrapolationType =
       ExtrapolationType[forwardExtrapolationType];
   }
 
-  const forwardExtrapolationDuration = packetData.forwardExtrapolationDuration;
+  var forwardExtrapolationDuration = packetData.forwardExtrapolationDuration;
   if (defined(forwardExtrapolationDuration)) {
     property.forwardExtrapolationDuration = forwardExtrapolationDuration;
   }
 
-  const backwardExtrapolationType = packetData.backwardExtrapolationType;
+  var backwardExtrapolationType = packetData.backwardExtrapolationType;
   if (defined(backwardExtrapolationType)) {
     property.backwardExtrapolationType =
       ExtrapolationType[backwardExtrapolationType];
   }
 
-  const backwardExtrapolationDuration =
-    packetData.backwardExtrapolationDuration;
+  var backwardExtrapolationDuration = packetData.backwardExtrapolationDuration;
   if (defined(backwardExtrapolationDuration)) {
     property.backwardExtrapolationDuration = backwardExtrapolationDuration;
   }
 }
 
-const iso8601Scratch = {
+var iso8601Scratch = {
   iso8601: undefined,
 };
 
@@ -655,21 +655,21 @@ function intervalFromString(intervalString) {
 }
 
 function wrapPropertyInInfiniteInterval(property) {
-  const interval = Iso8601.MAXIMUM_INTERVAL.clone();
+  var interval = Iso8601.MAXIMUM_INTERVAL.clone();
   interval.data = property;
   return interval;
 }
 
 function convertPropertyToComposite(property) {
   // Create the composite and add the old property, wrapped in an infinite interval.
-  const composite = new CompositeProperty();
+  var composite = new CompositeProperty();
   composite.intervals.addInterval(wrapPropertyInInfiniteInterval(property));
   return composite;
 }
 
 function convertPositionPropertyToComposite(property) {
   // Create the composite and add the old property, wrapped in an infinite interval.
-  const composite = new CompositePositionProperty(property.referenceFrame);
+  var composite = new CompositePositionProperty(property.referenceFrame);
   composite.intervals.addInterval(wrapPropertyInInfiniteInterval(property));
   return composite;
 }
@@ -683,7 +683,7 @@ function processProperty(
   sourceUri,
   entityCollection
 ) {
-  let combinedInterval = intervalFromString(packetData.interval);
+  var combinedInterval = intervalFromString(packetData.interval);
   if (defined(constrainedInterval)) {
     if (defined(combinedInterval)) {
       combinedInterval = TimeInterval.intersect(
@@ -696,9 +696,9 @@ function processProperty(
     }
   }
 
-  let packedLength;
-  let unwrappedInterval;
-  let unwrappedIntervalLength;
+  var packedLength;
+  var unwrappedInterval;
+  var unwrappedIntervalLength;
 
   // CZML properties can be defined in many ways.  Most ways represent a structure for
   // encoding a single value (number, string, cartesian, etc.)  Regardless of the value type,
@@ -706,9 +706,9 @@ function processProperty(
   // Alternatively, there are ways of defining a property that require specialized
   // client-side representation. Currently, these are ReferenceProperty,
   // and client-side velocity computation properties such as VelocityVectorProperty.
-  const isValue =
+  var isValue =
     !defined(packetData.reference) && !defined(packetData.velocityReference);
-  const hasInterval =
+  var hasInterval =
     defined(combinedInterval) &&
     !combinedInterval.equals(Iso8601.MAXIMUM_INTERVAL);
 
@@ -723,7 +723,7 @@ function processProperty(
     return removePropertyData(object[propertyName], combinedInterval);
   }
 
-  let isSampled = false;
+  var isSampled = false;
 
   if (isValue) {
     unwrappedInterval = unwrapInterval(type, packetData, sourceUri);
@@ -742,7 +742,7 @@ function processProperty(
 
   // Rotation is a special case because it represents a native type (Number)
   // and therefore does not need to be unpacked when loaded as a constant value.
-  const needsUnpacking = typeof type.unpack === "function" && type !== Rotation;
+  var needsUnpacking = typeof type.unpack === "function" && type !== Rotation;
 
   // Any time a constant value is assigned, it completely blows away anything else.
   if (!isSampled && !hasInterval) {
@@ -760,10 +760,10 @@ function processProperty(
     return;
   }
 
-  let property = object[propertyName];
+  var property = object[propertyName];
 
-  let epoch;
-  const packetEpoch = packetData.epoch;
+  var epoch;
+  var packetEpoch = packetData.epoch;
   if (defined(packetEpoch)) {
     epoch = JulianDate.fromIso8601(packetEpoch);
   }
@@ -779,7 +779,7 @@ function processProperty(
     return;
   }
 
-  let interval;
+  var interval;
 
   // A constant value with an interval is normally part of a TimeIntervalCollection,
   // However, if the current property is not a time-interval collection, we need
@@ -840,7 +840,7 @@ function processProperty(
   }
 
   // Check if the interval already exists in the composite.
-  const intervals = property.intervals;
+  var intervals = property.intervals;
   interval = intervals.findInterval(combinedInterval);
   if (!defined(interval) || !(interval.data instanceof SampledProperty)) {
     // If not, create a SampledProperty for it.
@@ -860,9 +860,9 @@ function removePropertyData(property, interval) {
     property.intervals.removeInterval(interval);
     return;
   } else if (property instanceof CompositeProperty) {
-    const intervals = property.intervals;
-    for (let i = 0; i < intervals.length; ++i) {
-      const intersection = TimeInterval.intersect(
+    var intervals = property.intervals;
+    for (var i = 0; i < intervals.length; ++i) {
+      var intersection = TimeInterval.intersect(
         intervals.get(i),
         interval,
         scratchTimeInterval
@@ -892,7 +892,7 @@ function processPacketData(
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, len = packetData.length; i < len; ++i) {
+    for (var i = 0, len = packetData.length; i < len; ++i) {
       processProperty(
         type,
         object,
@@ -924,7 +924,7 @@ function processPositionProperty(
   sourceUri,
   entityCollection
 ) {
-  let combinedInterval = intervalFromString(packetData.interval);
+  var combinedInterval = intervalFromString(packetData.interval);
   if (defined(constrainedInterval)) {
     if (defined(combinedInterval)) {
       combinedInterval = TimeInterval.intersect(
@@ -937,12 +937,12 @@ function processPositionProperty(
     }
   }
 
-  const numberOfDerivatives = defined(packetData.cartesianVelocity) ? 1 : 0;
-  const packedLength = Cartesian3.packedLength * (numberOfDerivatives + 1);
-  let unwrappedInterval;
-  let unwrappedIntervalLength;
-  const isValue = !defined(packetData.reference);
-  const hasInterval =
+  var numberOfDerivatives = defined(packetData.cartesianVelocity) ? 1 : 0;
+  var packedLength = Cartesian3.packedLength * (numberOfDerivatives + 1);
+  var unwrappedInterval;
+  var unwrappedIntervalLength;
+  var isValue = !defined(packetData.reference);
+  var hasInterval =
     defined(combinedInterval) &&
     !combinedInterval.equals(Iso8601.MAXIMUM_INTERVAL);
 
@@ -957,8 +957,8 @@ function processPositionProperty(
     return removePositionPropertyData(object[propertyName], combinedInterval);
   }
 
-  let referenceFrame;
-  let isSampled = false;
+  var referenceFrame;
+  var isSampled = false;
 
   if (isValue) {
     if (defined(packetData.referenceFrame)) {
@@ -986,10 +986,10 @@ function processPositionProperty(
     return;
   }
 
-  let property = object[propertyName];
+  var property = object[propertyName];
 
-  let epoch;
-  const packetEpoch = packetData.epoch;
+  var epoch;
+  var packetEpoch = packetData.epoch;
   if (defined(packetEpoch)) {
     epoch = JulianDate.fromIso8601(packetEpoch);
   }
@@ -1011,7 +1011,7 @@ function processPositionProperty(
     return;
   }
 
-  let interval;
+  var interval;
 
   // A constant value with an interval is normally part of a TimeIntervalCollection,
   // However, if the current property is not a time-interval collection, we need
@@ -1087,7 +1087,7 @@ function processPositionProperty(
   }
 
   // Check if the interval already exists in the composite.
-  const intervals = property.intervals;
+  var intervals = property.intervals;
   interval = intervals.findInterval(combinedInterval);
   if (
     !defined(interval) ||
@@ -1114,9 +1114,9 @@ function removePositionPropertyData(property, interval) {
     property.intervals.removeInterval(interval);
     return;
   } else if (property instanceof CompositePositionProperty) {
-    const intervals = property.intervals;
-    for (let i = 0; i < intervals.length; ++i) {
-      const intersection = TimeInterval.intersect(
+    var intervals = property.intervals;
+    for (var i = 0; i < intervals.length; ++i) {
+      var intersection = TimeInterval.intersect(
         intervals.get(i),
         interval,
         scratchTimeInterval
@@ -1145,7 +1145,7 @@ function processPositionPacketData(
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, len = packetData.length; i < len; ++i) {
+    for (var i = 0, len = packetData.length; i < len; ++i) {
       processPositionProperty(
         object,
         propertyName,
@@ -1213,7 +1213,7 @@ function processMaterialProperty(
   sourceUri,
   entityCollection
 ) {
-  let combinedInterval = intervalFromString(packetData.interval);
+  var combinedInterval = intervalFromString(packetData.interval);
   if (defined(constrainedInterval)) {
     if (defined(combinedInterval)) {
       combinedInterval = TimeInterval.intersect(
@@ -1226,9 +1226,9 @@ function processMaterialProperty(
     }
   }
 
-  let property = object[propertyName];
-  let existingMaterial;
-  let existingInterval;
+  var property = object[propertyName];
+  var existingMaterial;
+  var existingInterval;
 
   if (defined(combinedInterval)) {
     if (!(property instanceof CompositeMaterialProperty)) {
@@ -1236,7 +1236,7 @@ function processMaterialProperty(
       object[propertyName] = property;
     }
     //See if we already have data at that interval.
-    const thisIntervals = property.intervals;
+    var thisIntervals = property.intervals;
     existingInterval = thisIntervals.findInterval({
       start: combinedInterval.start,
       stop: combinedInterval.stop,
@@ -1254,7 +1254,7 @@ function processMaterialProperty(
     existingMaterial = property;
   }
 
-  let materialData;
+  var materialData;
   if (defined(packetData.solidColor)) {
     if (!(existingMaterial instanceof ColorMaterialProperty)) {
       existingMaterial = new ColorMaterialProperty();
@@ -1583,7 +1583,7 @@ function processMaterialPacketData(
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, len = packetData.length; i < len; ++i) {
+    for (var i = 0, len = packetData.length; i < len; ++i) {
       processMaterialProperty(
         object,
         propertyName,
@@ -1606,14 +1606,14 @@ function processMaterialPacketData(
 }
 
 function processName(entity, packet, entityCollection, sourceUri) {
-  const nameData = packet.name;
+  var nameData = packet.name;
   if (defined(nameData)) {
     entity.name = packet.name;
   }
 }
 
 function processDescription(entity, packet, entityCollection, sourceUri) {
-  const descriptionData = packet.description;
+  var descriptionData = packet.description;
   if (defined(descriptionData)) {
     processPacketData(
       String,
@@ -1628,7 +1628,7 @@ function processDescription(entity, packet, entityCollection, sourceUri) {
 }
 
 function processPosition(entity, packet, entityCollection, sourceUri) {
-  const positionData = packet.position;
+  var positionData = packet.position;
   if (defined(positionData)) {
     processPositionPacketData(
       entity,
@@ -1642,7 +1642,7 @@ function processPosition(entity, packet, entityCollection, sourceUri) {
 }
 
 function processViewFrom(entity, packet, entityCollection, sourceUri) {
-  const viewFromData = packet.viewFrom;
+  var viewFromData = packet.viewFrom;
   if (defined(viewFromData)) {
     processPacketData(
       Cartesian3,
@@ -1657,7 +1657,7 @@ function processViewFrom(entity, packet, entityCollection, sourceUri) {
 }
 
 function processOrientation(entity, packet, entityCollection, sourceUri) {
-  const orientationData = packet.orientation;
+  var orientationData = packet.orientation;
   if (defined(orientationData)) {
     processPacketData(
       Quaternion,
@@ -1672,7 +1672,7 @@ function processOrientation(entity, packet, entityCollection, sourceUri) {
 }
 
 function processProperties(entity, packet, entityCollection, sourceUri) {
-  const propertiesData = packet.properties;
+  var propertiesData = packet.properties;
   if (defined(propertiesData)) {
     if (!defined(entity.properties)) {
       entity.properties = new PropertyBag();
@@ -1682,15 +1682,15 @@ function processProperties(entity, packet, entityCollection, sourceUri) {
     // because each property of "properties" may vary separately.
     // The properties will be accessible as entity.properties.myprop.getValue(time).
 
-    for (const key in propertiesData) {
+    for (var key in propertiesData) {
       if (propertiesData.hasOwnProperty(key)) {
         if (!entity.properties.hasProperty(key)) {
           entity.properties.addProperty(key);
         }
 
-        const propertyData = propertiesData[key];
+        var propertyData = propertiesData[key];
         if (Array.isArray(propertyData)) {
-          for (let i = 0, len = propertyData.length; i < len; ++i) {
+          for (var i = 0, len = propertyData.length; i < len; ++i) {
             processProperty(
               getPropertyType(propertyData[i]),
               entity.properties,
@@ -1726,19 +1726,19 @@ function processReferencesArrayPacketData(
   PropertyArrayType,
   CompositePropertyArrayType
 ) {
-  const properties = references.map(function (reference) {
+  var properties = references.map(function (reference) {
     return createReferenceProperty(entityCollection, reference);
   });
 
   if (defined(interval)) {
     interval = intervalFromString(interval);
-    let property = object[propertyName];
+    var property = object[propertyName];
     if (!(property instanceof CompositePropertyArrayType)) {
       // If the property was not already a CompositeProperty,
       // create a CompositeProperty but preserve the existing data.
 
       // Create the composite and add the old property, wrapped in an infinite interval.
-      const composite = new CompositePropertyArrayType();
+      var composite = new CompositePropertyArrayType();
       composite.intervals.addInterval(wrapPropertyInInfiniteInterval(property));
 
       object[propertyName] = property = composite;
@@ -1757,7 +1757,7 @@ function processArrayPacketData(
   packetData,
   entityCollection
 ) {
-  const references = packetData.references;
+  var references = packetData.references;
   if (defined(references)) {
     processReferencesArrayPacketData(
       object,
@@ -1787,7 +1787,7 @@ function processArray(object, propertyName, packetData, entityCollection) {
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, length = packetData.length; i < length; ++i) {
+    for (var i = 0, length = packetData.length; i < length; ++i) {
       processArrayPacketData(
         object,
         propertyName,
@@ -1806,7 +1806,7 @@ function processPositionArrayPacketData(
   packetData,
   entityCollection
 ) {
-  const references = packetData.references;
+  var references = packetData.references;
   if (defined(references)) {
     processReferencesArrayPacketData(
       object,
@@ -1855,7 +1855,7 @@ function processPositionArray(
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, length = packetData.length; i < length; ++i) {
+    for (var i = 0, length = packetData.length; i < length; ++i) {
       processPositionArrayPacketData(
         object,
         propertyName,
@@ -1891,10 +1891,10 @@ function processPositionArrayOfArraysPacketData(
   packetData,
   entityCollection
 ) {
-  const references = packetData.references;
+  var references = packetData.references;
   if (defined(references)) {
-    const properties = references.map(function (referenceArray) {
-      const tempObj = {};
+    var properties = references.map(function (referenceArray) {
+      var tempObj = {};
       processReferencesArrayPacketData(
         tempObj,
         "positions",
@@ -1945,7 +1945,7 @@ function processPositionArrayOfArrays(
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, length = packetData.length; i < length; ++i) {
+    for (var i = 0, length = packetData.length; i < length; ++i) {
       processPositionArrayOfArraysPacketData(
         object,
         propertyName,
@@ -1969,7 +1969,7 @@ function processShape(object, propertyName, packetData, entityCollection) {
   }
 
   if (Array.isArray(packetData)) {
-    for (let i = 0, length = packetData.length; i < length; i++) {
+    for (var i = 0, length = packetData.length; i < length; i++) {
       processShapePacketData(
         object,
         propertyName,
@@ -1983,14 +1983,14 @@ function processShape(object, propertyName, packetData, entityCollection) {
 }
 
 function processAvailability(entity, packet, entityCollection, sourceUri) {
-  const packetData = packet.availability;
+  var packetData = packet.availability;
   if (!defined(packetData)) {
     return;
   }
 
-  let intervals;
+  var intervals;
   if (Array.isArray(packetData)) {
-    for (let i = 0, len = packetData.length; i < len; ++i) {
+    for (var i = 0, len = packetData.length; i < len; ++i) {
       if (!defined(intervals)) {
         intervals = new TimeIntervalCollection();
       }
@@ -2026,13 +2026,13 @@ function processAlignedAxis(
 }
 
 function processBillboard(entity, packet, entityCollection, sourceUri) {
-  const billboardData = packet.billboard;
+  var billboardData = packet.billboard;
   if (!defined(billboardData)) {
     return;
   }
 
-  const interval = intervalFromString(billboardData.interval);
-  let billboard = entity.billboard;
+  var interval = intervalFromString(billboardData.interval);
+  var billboard = entity.billboard;
   if (!defined(billboard)) {
     entity.billboard = billboard = new BillboardGraphics();
   }
@@ -2218,13 +2218,13 @@ function processBillboard(entity, packet, entityCollection, sourceUri) {
 }
 
 function processBox(entity, packet, entityCollection, sourceUri) {
-  const boxData = packet.box;
+  var boxData = packet.box;
   if (!defined(boxData)) {
     return;
   }
 
-  const interval = intervalFromString(boxData.interval);
-  let box = entity.box;
+  var interval = intervalFromString(boxData.interval);
+  var box = entity.box;
   if (!defined(box)) {
     entity.box = box = new BoxGraphics();
   }
@@ -2321,13 +2321,13 @@ function processBox(entity, packet, entityCollection, sourceUri) {
 }
 
 function processCorridor(entity, packet, entityCollection, sourceUri) {
-  const corridorData = packet.corridor;
+  var corridorData = packet.corridor;
   if (!defined(corridorData)) {
     return;
   }
 
-  const interval = intervalFromString(corridorData.interval);
-  let corridor = entity.corridor;
+  var interval = intervalFromString(corridorData.interval);
+  var corridor = entity.corridor;
   if (!defined(corridor)) {
     entity.corridor = corridor = new CorridorGraphics();
   }
@@ -2493,13 +2493,13 @@ function processCorridor(entity, packet, entityCollection, sourceUri) {
 }
 
 function processCylinder(entity, packet, entityCollection, sourceUri) {
-  const cylinderData = packet.cylinder;
+  var cylinderData = packet.cylinder;
   if (!defined(cylinderData)) {
     return;
   }
 
-  const interval = intervalFromString(cylinderData.interval);
-  let cylinder = entity.cylinder;
+  var interval = intervalFromString(cylinderData.interval);
+  var cylinder = entity.cylinder;
   if (!defined(cylinder)) {
     entity.cylinder = cylinder = new CylinderGraphics();
   }
@@ -2632,10 +2632,10 @@ function processCylinder(entity, packet, entityCollection, sourceUri) {
 }
 
 function processDocument(packet, dataSource) {
-  const version = packet.version;
+  var version = packet.version;
   if (defined(version)) {
     if (typeof version === "string") {
-      const tokens = version.split(".");
+      var tokens = version.split(".");
       if (tokens.length === 2) {
         if (tokens[0] !== "1") {
           throw new RuntimeError("Cesium only supports CZML version 1.");
@@ -2651,15 +2651,15 @@ function processDocument(packet, dataSource) {
     );
   }
 
-  const documentPacket = dataSource._documentPacket;
+  var documentPacket = dataSource._documentPacket;
 
   if (defined(packet.name)) {
     documentPacket.name = packet.name;
   }
 
-  const clockPacket = packet.clock;
+  var clockPacket = packet.clock;
   if (defined(clockPacket)) {
-    const clock = documentPacket.clock;
+    var clock = documentPacket.clock;
     if (!defined(clock)) {
       documentPacket.clock = {
         interval: clockPacket.interval,
@@ -2682,13 +2682,13 @@ function processDocument(packet, dataSource) {
 }
 
 function processEllipse(entity, packet, entityCollection, sourceUri) {
-  const ellipseData = packet.ellipse;
+  var ellipseData = packet.ellipse;
   if (!defined(ellipseData)) {
     return;
   }
 
-  const interval = intervalFromString(ellipseData.interval);
-  let ellipse = entity.ellipse;
+  var interval = intervalFromString(ellipseData.interval);
+  var ellipse = entity.ellipse;
   if (!defined(ellipse)) {
     entity.ellipse = ellipse = new EllipseGraphics();
   }
@@ -2875,13 +2875,13 @@ function processEllipse(entity, packet, entityCollection, sourceUri) {
 }
 
 function processEllipsoid(entity, packet, entityCollection, sourceUri) {
-  const ellipsoidData = packet.ellipsoid;
+  var ellipsoidData = packet.ellipsoid;
   if (!defined(ellipsoidData)) {
     return;
   }
 
-  const interval = intervalFromString(ellipsoidData.interval);
-  let ellipsoid = entity.ellipsoid;
+  var interval = intervalFromString(ellipsoidData.interval);
+  var ellipsoid = entity.ellipsoid;
   if (!defined(ellipsoid)) {
     entity.ellipsoid = ellipsoid = new EllipsoidGraphics();
   }
@@ -3050,13 +3050,13 @@ function processEllipsoid(entity, packet, entityCollection, sourceUri) {
 }
 
 function processLabel(entity, packet, entityCollection, sourceUri) {
-  const labelData = packet.label;
+  var labelData = packet.label;
   if (!defined(labelData)) {
     return;
   }
 
-  const interval = intervalFromString(labelData.interval);
-  let label = entity.label;
+  var interval = intervalFromString(labelData.interval);
+  var label = entity.label;
   if (!defined(label)) {
     entity.label = label = new LabelGraphics();
   }
@@ -3253,13 +3253,13 @@ function processLabel(entity, packet, entityCollection, sourceUri) {
 }
 
 function processModel(entity, packet, entityCollection, sourceUri) {
-  const modelData = packet.model;
+  var modelData = packet.model;
   if (!defined(modelData)) {
     return;
   }
 
-  const interval = intervalFromString(modelData.interval);
-  let model = entity.model;
+  var interval = intervalFromString(modelData.interval);
+  var model = entity.model;
   if (!defined(model)) {
     entity.model = model = new ModelGraphics();
   }
@@ -3409,8 +3409,8 @@ function processModel(entity, packet, entityCollection, sourceUri) {
     entityCollection
   );
 
-  let i, len;
-  const nodeTransformationsData = modelData.nodeTransformations;
+  var i, len;
+  var nodeTransformationsData = modelData.nodeTransformations;
   if (defined(nodeTransformationsData)) {
     if (Array.isArray(nodeTransformationsData)) {
       for (i = 0, len = nodeTransformationsData.length; i < len; ++i) {
@@ -3433,7 +3433,7 @@ function processModel(entity, packet, entityCollection, sourceUri) {
     }
   }
 
-  const articulationsData = modelData.articulations;
+  var articulationsData = modelData.articulations;
   if (defined(articulationsData)) {
     if (Array.isArray(articulationsData)) {
       for (i = 0, len = articulationsData.length; i < len; ++i) {
@@ -3464,7 +3464,7 @@ function processNodeTransformations(
   sourceUri,
   entityCollection
 ) {
-  let combinedInterval = intervalFromString(nodeTransformationsData.interval);
+  var combinedInterval = intervalFromString(nodeTransformationsData.interval);
   if (defined(constrainedInterval)) {
     if (defined(combinedInterval)) {
       combinedInterval = TimeInterval.intersect(
@@ -3477,15 +3477,15 @@ function processNodeTransformations(
     }
   }
 
-  let nodeTransformations = model.nodeTransformations;
-  const nodeNames = Object.keys(nodeTransformationsData);
-  for (let i = 0, len = nodeNames.length; i < len; ++i) {
-    const nodeName = nodeNames[i];
+  var nodeTransformations = model.nodeTransformations;
+  var nodeNames = Object.keys(nodeTransformationsData);
+  for (var i = 0, len = nodeNames.length; i < len; ++i) {
+    var nodeName = nodeNames[i];
     if (nodeName === "interval") {
       continue;
     }
 
-    const nodeTransformationData = nodeTransformationsData[nodeName];
+    var nodeTransformationData = nodeTransformationsData[nodeName];
     if (!defined(nodeTransformationData)) {
       continue;
     }
@@ -3498,7 +3498,7 @@ function processNodeTransformations(
       nodeTransformations.addProperty(nodeName);
     }
 
-    let nodeTransformation = nodeTransformations[nodeName];
+    var nodeTransformation = nodeTransformations[nodeName];
     if (!defined(nodeTransformation)) {
       nodeTransformations[
         nodeName
@@ -3542,7 +3542,7 @@ function processArticulations(
   sourceUri,
   entityCollection
 ) {
-  let combinedInterval = intervalFromString(articulationsData.interval);
+  var combinedInterval = intervalFromString(articulationsData.interval);
   if (defined(constrainedInterval)) {
     if (defined(combinedInterval)) {
       combinedInterval = TimeInterval.intersect(
@@ -3555,15 +3555,15 @@ function processArticulations(
     }
   }
 
-  let articulations = model.articulations;
-  const keys = Object.keys(articulationsData);
-  for (let i = 0, len = keys.length; i < len; ++i) {
-    const key = keys[i];
+  var articulations = model.articulations;
+  var keys = Object.keys(articulationsData);
+  for (var i = 0, len = keys.length; i < len; ++i) {
+    var key = keys[i];
     if (key === "interval") {
       continue;
     }
 
-    const articulationStageData = articulationsData[key];
+    var articulationStageData = articulationsData[key];
     if (!defined(articulationStageData)) {
       continue;
     }
@@ -3589,13 +3589,13 @@ function processArticulations(
 }
 
 function processPath(entity, packet, entityCollection, sourceUri) {
-  const pathData = packet.path;
+  var pathData = packet.path;
   if (!defined(pathData)) {
     return;
   }
 
-  const interval = intervalFromString(pathData.interval);
-  let path = entity.path;
+  var interval = intervalFromString(pathData.interval);
+  var path = entity.path;
   if (!defined(path)) {
     entity.path = path = new PathGraphics();
   }
@@ -3665,13 +3665,13 @@ function processPath(entity, packet, entityCollection, sourceUri) {
 }
 
 function processPoint(entity, packet, entityCollection, sourceUri) {
-  const pointData = packet.point;
+  var pointData = packet.point;
   if (!defined(pointData)) {
     return;
   }
 
-  const interval = intervalFromString(pointData.interval);
-  let point = entity.point;
+  var interval = intervalFromString(pointData.interval);
+  var point = entity.point;
   if (!defined(point)) {
     entity.point = point = new PointGraphics();
   }
@@ -3776,8 +3776,8 @@ function PolygonHierarchyProperty(polygon) {
 Object.defineProperties(PolygonHierarchyProperty.prototype, {
   isConstant: {
     get: function () {
-      const positions = this.polygon._positions;
-      const holes = this.polygon._holes;
+      var positions = this.polygon._positions;
+      var holes = this.polygon._holes;
       return (
         (!defined(positions) || positions.isConstant) &&
         (!defined(holes) || holes.isConstant)
@@ -3792,12 +3792,12 @@ Object.defineProperties(PolygonHierarchyProperty.prototype, {
 });
 
 PolygonHierarchyProperty.prototype.getValue = function (time, result) {
-  let positions;
+  var positions;
   if (defined(this.polygon._positions)) {
     positions = this.polygon._positions.getValue(time);
   }
 
-  let holes;
+  var holes;
   if (defined(this.polygon._holes)) {
     holes = this.polygon._holes.getValue(time);
     if (defined(holes)) {
@@ -3826,13 +3826,13 @@ PolygonHierarchyProperty.prototype.equals = function (other) {
 };
 
 function processPolygon(entity, packet, entityCollection, sourceUri) {
-  const polygonData = packet.polygon;
+  var polygonData = packet.polygon;
   if (!defined(polygonData)) {
     return;
   }
 
-  const interval = intervalFromString(polygonData.interval);
-  let polygon = entity.polygon;
+  var interval = intervalFromString(polygonData.interval);
+  var polygon = entity.polygon;
   if (!defined(polygon)) {
     entity.polygon = polygon = new PolygonGraphics();
   }
@@ -4043,13 +4043,13 @@ function adaptFollowSurfaceToArcType(followSurface) {
 }
 
 function processPolyline(entity, packet, entityCollection, sourceUri) {
-  const polylineData = packet.polyline;
+  var polylineData = packet.polyline;
   if (!defined(polylineData)) {
     return;
   }
 
-  const interval = intervalFromString(polylineData.interval);
-  let polyline = entity.polyline;
+  var interval = intervalFromString(polylineData.interval);
+  var polyline = entity.polyline;
   if (!defined(polyline)) {
     entity.polyline = polyline = new PolylineGraphics();
   }
@@ -4160,7 +4160,7 @@ function processPolyline(entity, packet, entityCollection, sourceUri) {
 
   // for backwards compatibility, adapt CZML followSurface to arcType.
   if (defined(polylineData.followSurface) && !defined(polylineData.arcType)) {
-    const tempObj = {};
+    var tempObj = {};
     processPacketData(
       Boolean,
       tempObj,
@@ -4178,13 +4178,13 @@ function processPolyline(entity, packet, entityCollection, sourceUri) {
 }
 
 function processPolylineVolume(entity, packet, entityCollection, sourceUri) {
-  const polylineVolumeData = packet.polylineVolume;
+  var polylineVolumeData = packet.polylineVolume;
   if (!defined(polylineVolumeData)) {
     return;
   }
 
-  const interval = intervalFromString(polylineVolumeData.interval);
-  let polylineVolume = entity.polylineVolume;
+  var interval = intervalFromString(polylineVolumeData.interval);
+  var polylineVolume = entity.polylineVolume;
   if (!defined(polylineVolume)) {
     entity.polylineVolume = polylineVolume = new PolylineVolumeGraphics();
   }
@@ -4293,13 +4293,13 @@ function processPolylineVolume(entity, packet, entityCollection, sourceUri) {
 }
 
 function processRectangle(entity, packet, entityCollection, sourceUri) {
-  const rectangleData = packet.rectangle;
+  var rectangleData = packet.rectangle;
   if (!defined(rectangleData)) {
     return;
   }
 
-  const interval = intervalFromString(rectangleData.interval);
-  let rectangle = entity.rectangle;
+  var interval = intervalFromString(rectangleData.interval);
+  var rectangle = entity.rectangle;
   if (!defined(rectangle)) {
     entity.rectangle = rectangle = new RectangleGraphics();
   }
@@ -4468,13 +4468,13 @@ function processRectangle(entity, packet, entityCollection, sourceUri) {
 }
 
 function processTileset(entity, packet, entityCollection, sourceUri) {
-  const tilesetData = packet.tileset;
+  var tilesetData = packet.tileset;
   if (!defined(tilesetData)) {
     return;
   }
 
-  const interval = intervalFromString(tilesetData.interval);
-  let tileset = entity.tileset;
+  var interval = intervalFromString(tilesetData.interval);
+  var tileset = entity.tileset;
   if (!defined(tileset)) {
     entity.tileset = tileset = new Cesium3DTilesetGraphics();
   }
@@ -4509,13 +4509,13 @@ function processTileset(entity, packet, entityCollection, sourceUri) {
 }
 
 function processWall(entity, packet, entityCollection, sourceUri) {
-  const wallData = packet.wall;
+  var wallData = packet.wall;
   if (!defined(wallData)) {
     return;
   }
 
-  const interval = intervalFromString(wallData.interval);
-  let wall = entity.wall;
+  var interval = intervalFromString(wallData.interval);
+  var wall = entity.wall;
   if (!defined(wall)) {
     entity.wall = wall = new WallGraphics();
   }
@@ -4622,7 +4622,7 @@ function processCzmlPacket(
   sourceUri,
   dataSource
 ) {
-  let objectId = packet.id;
+  var objectId = packet.id;
   if (!defined(objectId)) {
     objectId = createGuid();
   }
@@ -4640,14 +4640,14 @@ function processCzmlPacket(
   } else if (objectId === "document") {
     processDocument(packet, dataSource);
   } else {
-    const entity = entityCollection.getOrCreateEntity(objectId);
+    var entity = entityCollection.getOrCreateEntity(objectId);
 
-    const parentId = packet.parent;
+    var parentId = packet.parent;
     if (defined(parentId)) {
       entity.parent = entityCollection.getOrCreateEntity(parentId);
     }
 
-    for (let i = updaterFunctions.length - 1; i > -1; i--) {
+    for (var i = updaterFunctions.length - 1; i > -1; i--) {
       updaterFunctions[i](entity, packet, entityCollection, sourceUri);
     }
   }
@@ -4656,16 +4656,16 @@ function processCzmlPacket(
 }
 
 function updateClock(dataSource) {
-  let clock;
-  const clockPacket = dataSource._documentPacket.clock;
+  var clock;
+  var clockPacket = dataSource._documentPacket.clock;
   if (!defined(clockPacket)) {
     if (!defined(dataSource._clock)) {
-      const availability = dataSource._entityCollection.computeAvailability();
+      var availability = dataSource._entityCollection.computeAvailability();
       if (!availability.start.equals(Iso8601.MINIMUM_VALUE)) {
-        const startTime = availability.start;
-        const stopTime = availability.stop;
-        const totalSeconds = JulianDate.secondsDifference(stopTime, startTime);
-        const multiplier = Math.round(totalSeconds / 120.0);
+        var startTime = availability.start;
+        var stopTime = availability.stop;
+        var totalSeconds = JulianDate.secondsDifference(stopTime, startTime);
+        var multiplier = Math.round(totalSeconds / 120.0);
 
         clock = new DataSourceClock();
         clock.startTime = JulianDate.clone(startTime);
@@ -4693,7 +4693,7 @@ function updateClock(dataSource) {
     clock.multiplier = 1.0;
   }
 
-  const interval = intervalFromString(clockPacket.interval);
+  var interval = intervalFromString(clockPacket.interval);
   if (defined(interval)) {
     clock.startTime = interval.start;
     clock.stopTime = interval.stop;
@@ -4735,11 +4735,11 @@ function load(dataSource, czml, options, clear) {
 
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  let promise = czml;
-  let sourceUri = options.sourceUri;
+  var promise = czml;
+  var sourceUri = options.sourceUri;
 
   // User specified credit
-  let credit = options.credit;
+  var credit = options.credit;
   if (typeof credit === "string") {
     credit = new Credit(credit);
   }
@@ -4752,11 +4752,11 @@ function load(dataSource, czml, options, clear) {
     sourceUri = defaultValue(sourceUri, czml.clone());
 
     // Add resource credits to our list of credits to display
-    const resourceCredits = dataSource._resourceCredits;
-    const credits = czml.credits;
+    var resourceCredits = dataSource._resourceCredits;
+    var credits = czml.credits;
     if (defined(credits)) {
-      const length = credits.length;
-      for (let i = 0; i < length; i++) {
+      var length = credits.length;
+      for (var i = 0; i < length; i++) {
         resourceCredits.push(credits[i]);
       }
     }
@@ -4766,21 +4766,19 @@ function load(dataSource, czml, options, clear) {
 
   DataSource.setLoading(dataSource, true);
 
-  return Promise.resolve(promise)
-    .then(function (czml) {
-      return loadCzml(dataSource, czml, sourceUri, clear);
-    })
-    .catch(function (error) {
-      DataSource.setLoading(dataSource, false);
-      dataSource._error.raiseEvent(dataSource, error);
-      console.log(error);
-      return Promise.reject(error);
-    });
+  return when(promise, function (czml) {
+    return loadCzml(dataSource, czml, sourceUri, clear);
+  }).otherwise(function (error) {
+    DataSource.setLoading(dataSource, false);
+    dataSource._error.raiseEvent(dataSource, error);
+    console.log(error);
+    return when.reject(error);
+  });
 }
 
 function loadCzml(dataSource, czml, sourceUri, clear) {
   DataSource.setLoading(dataSource, true);
-  const entityCollection = dataSource._entityCollection;
+  var entityCollection = dataSource._entityCollection;
 
   if (clear) {
     dataSource._version = undefined;
@@ -4796,9 +4794,9 @@ function loadCzml(dataSource, czml, sourceUri, clear) {
     dataSource
   );
 
-  let raiseChangedEvent = updateClock(dataSource);
+  var raiseChangedEvent = updateClock(dataSource);
 
-  const documentPacket = dataSource._documentPacket;
+  var documentPacket = dataSource._documentPacket;
   if (
     defined(documentPacket.name) &&
     dataSource._name !== documentPacket.name
@@ -4826,7 +4824,7 @@ function DocumentPacket() {
 /**
  * @typedef {Object} CzmlDataSource.LoadOptions
  *
- * Initialization options for the <code>load</code> method.
+ * Initialization options for the `load` method.
  *
  * @property {Resource|string} [sourceUri] Overrides the url to use for resolving relative links.
  * @property {Credit|string} [credit] A credit for the data source, which is displayed on the canvas.
@@ -4987,21 +4985,9 @@ Object.defineProperties(CzmlDataSource.prototype, {
 });
 
 /**
- * @callback CzmlDataSource.UpdaterFunction
- *
- * A CZML processing function that adds or updates entities in the provided
- * collection based on the provided CZML packet.
- *
- * @param {Entity} entity
- * @param {Object} packet
- * @param {EntityCollection} entityCollection
- * @param {string} sourceUri
- */
-
-/**
  * Gets the array of CZML processing functions.
  * @memberof CzmlDataSource
- * @type {Array.<CzmlDataSource.UpdaterFunction>}
+ * @type Array
  */
 CzmlDataSource.updaters = [
   processBillboard, //
@@ -5033,8 +5019,8 @@ CzmlDataSource.updaters = [
  * Processes the provided url or CZML object without clearing any existing data.
  *
  * @param {Resource|String|Object} czml A url or CZML object to be processed.
- * @param {CzmlDataSource.LoadOptions} [options] An object specifying configuration options
- *
+ * @param {Object} [options] An object with the following properties:
+ * @param {String} [options.sourceUri] Overrides the url to use for resolving relative links.
  * @returns {Promise.<CzmlDataSource>} A promise that resolves to this instances once the data is processed.
  */
 CzmlDataSource.prototype.process = function (czml, options) {
@@ -5046,7 +5032,7 @@ CzmlDataSource.prototype.process = function (czml, options) {
  *
  * @param {Resource|String|Object} czml A url or CZML object to be processed.
  * @param {CzmlDataSource.LoadOptions} [options] An object specifying configuration options
- *
+
  * @returns {Promise.<CzmlDataSource>} A promise that resolves to this instances once the data is processed.
  */
 CzmlDataSource.prototype.load = function (czml, options) {
@@ -5119,7 +5105,7 @@ CzmlDataSource._processCzml = function (
   updaterFunctions = defaultValue(updaterFunctions, CzmlDataSource.updaters);
 
   if (Array.isArray(czml)) {
-    for (let i = 0, len = czml.length; i < len; ++i) {
+    for (var i = 0, len = czml.length; i < len; ++i) {
       processCzmlPacket(
         czml[i],
         entityCollection,

@@ -13,11 +13,11 @@ import CesiumMath from "../Core/Math.js";
  *
  *
  * @example
- * const time1 = Cesium.JulianDate.fromIso8601('2010-05-07T00:00:00');
- * const time2 = Cesium.JulianDate.fromIso8601('2010-05-07T00:01:00');
- * const time3 = Cesium.JulianDate.fromIso8601('2010-05-07T00:02:00');
+ * var time1 = Cesium.JulianDate.fromIso8601('2010-05-07T00:00:00');
+ * var time2 = Cesium.JulianDate.fromIso8601('2010-05-07T00:01:00');
+ * var time3 = Cesium.JulianDate.fromIso8601('2010-05-07T00:02:00');
  *
- * const property = new Cesium.SampledProperty(Cesium.Rotation);
+ * var property = new Cesium.SampledProperty(Cesium.Rotation);
  * property.addSample(time1, 0);
  * property.addSample(time3, Cesium.Math.toRadians(350));
  *
@@ -29,7 +29,7 @@ import CesiumMath from "../Core/Math.js";
  *
  * @see PackableForInterpolation
  */
-const Rotation = {
+var Rotation = {
   /**
    * The number of elements used to pack the object into an array.
    * @type {Number}
@@ -108,9 +108,9 @@ const Rotation = {
     startingIndex = defaultValue(startingIndex, 0);
     lastIndex = defaultValue(lastIndex, packedArray.length);
 
-    let previousValue;
-    for (let i = 0, len = lastIndex - startingIndex + 1; i < len; i++) {
-      const value = packedArray[startingIndex + i];
+    var previousValue;
+    for (var i = 0, len = lastIndex - startingIndex + 1; i < len; i++) {
+      var value = packedArray[startingIndex + i];
       if (i === 0 || Math.abs(previousValue - value) < Math.PI) {
         result[i] = value;
       } else {

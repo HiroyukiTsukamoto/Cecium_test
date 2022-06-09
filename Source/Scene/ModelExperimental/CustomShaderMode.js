@@ -4,9 +4,9 @@
  *
  * @enum {String}
  *
- * @experimental This feature is using part of the 3D Tiles spec that is not final and is subject to change without Cesium's standard deprecation policy.
+ * @private
  */
-const CustomShaderMode = {
+var CustomShaderMode = {
   /**
    * The custom shader will be used to modify the results of the material stage
    * before lighting is applied.
@@ -30,11 +30,9 @@ const CustomShaderMode = {
  * directives. For example:  <code>#define CUSTOM_SHADER_MODIFY_MATERIAL</code>
  * @param {CustomShaderMode} customShaderMode The shader mode
  * @return {String} The name of the GLSL macro to use
- *
- * @private
  */
 CustomShaderMode.getDefineName = function (customShaderMode) {
-  return `CUSTOM_SHADER_${customShaderMode}`;
+  return "CUSTOM_SHADER_" + customShaderMode;
 };
 
 export default Object.freeze(CustomShaderMode);

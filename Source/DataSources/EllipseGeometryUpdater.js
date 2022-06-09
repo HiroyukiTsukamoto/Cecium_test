@@ -22,10 +22,10 @@ import GeometryUpdater from "./GeometryUpdater.js";
 import GroundGeometryUpdater from "./GroundGeometryUpdater.js";
 import Property from "./Property.js";
 
-const scratchColor = new Color();
-const defaultOffset = Cartesian3.ZERO;
-const offsetScratch = new Cartesian3();
-const scratchRectangle = new Rectangle();
+var scratchColor = new Color();
+var defaultOffset = Cartesian3.ZERO;
+var offsetScratch = new Cartesian3();
+var scratchRectangle = new Rectangle();
 
 function EllipseGeometryOptions(entity) {
   this.id = entity;
@@ -89,10 +89,10 @@ EllipseGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
 
-  const attributes = {
+  var attributes = {
     show: new ShowGeometryInstanceAttribute(
       isAvailable &&
         entity.isShowing &&
@@ -107,7 +107,7 @@ EllipseGeometryUpdater.prototype.createFillGeometryInstance = function (time) {
   };
 
   if (this._materialProperty instanceof ColorMaterialProperty) {
-    let currentColor;
+    var currentColor;
     if (
       defined(this._materialProperty.color) &&
       (this._materialProperty.color.isConstant || isAvailable)
@@ -159,19 +159,19 @@ EllipseGeometryUpdater.prototype.createOutlineGeometryInstance = function (
   }
   //>>includeEnd('debug');
 
-  const entity = this._entity;
-  const isAvailable = entity.isAvailable(time);
-  const outlineColor = Property.getValueOrDefault(
+  var entity = this._entity;
+  var isAvailable = entity.isAvailable(time);
+  var outlineColor = Property.getValueOrDefault(
     this._outlineColorProperty,
     time,
     Color.BLACK,
     scratchColor
   );
-  const distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
+  var distanceDisplayCondition = this._distanceDisplayConditionProperty.getValue(
     time
   );
 
-  const attributes = {
+  var attributes = {
     show: new ShowGeometryInstanceAttribute(
       isAvailable &&
         entity.isShowing &&
@@ -208,7 +208,7 @@ EllipseGeometryUpdater.prototype._computeCenter = function (time, result) {
 };
 
 EllipseGeometryUpdater.prototype._isHidden = function (entity, ellipse) {
-  const position = entity.position;
+  var position = entity.position;
 
   return (
     !defined(position) ||
@@ -241,20 +241,20 @@ EllipseGeometryUpdater.prototype._setStaticOptions = function (
   entity,
   ellipse
 ) {
-  let heightValue = Property.getValueOrUndefined(
+  var heightValue = Property.getValueOrUndefined(
     ellipse.height,
     Iso8601.MINIMUM_VALUE
   );
-  const heightReferenceValue = Property.getValueOrDefault(
+  var heightReferenceValue = Property.getValueOrDefault(
     ellipse.heightReference,
     Iso8601.MINIMUM_VALUE,
     HeightReference.NONE
   );
-  let extrudedHeightValue = Property.getValueOrUndefined(
+  var extrudedHeightValue = Property.getValueOrUndefined(
     ellipse.extrudedHeight,
     Iso8601.MINIMUM_VALUE
   );
-  const extrudedHeightReferenceValue = Property.getValueOrDefault(
+  var extrudedHeightReferenceValue = Property.getValueOrDefault(
     ellipse.extrudedHeightReference,
     Iso8601.MINIMUM_VALUE,
     HeightReference.NONE
@@ -263,7 +263,7 @@ EllipseGeometryUpdater.prototype._setStaticOptions = function (
     heightValue = 0;
   }
 
-  const options = this._options;
+  var options = this._options;
   options.vertexFormat =
     this._materialProperty instanceof ColorMaterialProperty
       ? PerInstanceColorAppearance.VERTEX_FORMAT
@@ -350,7 +350,7 @@ DynamicEllipseGeometryUpdater.prototype._isHidden = function (
   ellipse,
   time
 ) {
-  const options = this._options;
+  var options = this._options;
   return (
     !defined(options.center) ||
     !defined(options.semiMajorAxis) ||
@@ -364,18 +364,18 @@ DynamicEllipseGeometryUpdater.prototype._setOptions = function (
   ellipse,
   time
 ) {
-  const options = this._options;
-  let heightValue = Property.getValueOrUndefined(ellipse.height, time);
-  const heightReferenceValue = Property.getValueOrDefault(
+  var options = this._options;
+  var heightValue = Property.getValueOrUndefined(ellipse.height, time);
+  var heightReferenceValue = Property.getValueOrDefault(
     ellipse.heightReference,
     time,
     HeightReference.NONE
   );
-  let extrudedHeightValue = Property.getValueOrUndefined(
+  var extrudedHeightValue = Property.getValueOrUndefined(
     ellipse.extrudedHeight,
     time
   );
-  const extrudedHeightReferenceValue = Property.getValueOrDefault(
+  var extrudedHeightReferenceValue = Property.getValueOrDefault(
     ellipse.extrudedHeightReference,
     time,
     HeightReference.NONE

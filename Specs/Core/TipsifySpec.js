@@ -92,7 +92,7 @@ describe("Core/Tipsify", function () {
   });
 
   it("can lower ACMR using the Tipsify algorithm", function () {
-    const indices = [
+    var indices = [
       0,
       1,
       7,
@@ -205,17 +205,17 @@ describe("Core/Tipsify", function () {
       20,
       28,
     ];
-    const acmrBefore = Tipsify.calculateACMR({
+    var acmrBefore = Tipsify.calculateACMR({
       indices: indices,
       maximumIndex: 28,
       cacheSize: 6,
     });
-    const result = Tipsify.tipsify({
+    var result = Tipsify.tipsify({
       indices: indices,
       maximumIndex: 28,
       cacheSize: 6,
     });
-    const acmrAfter = Tipsify.calculateACMR({
+    var acmrAfter = Tipsify.calculateACMR({
       indices: result,
       maximumIndex: 28,
       cacheSize: 6,
@@ -224,7 +224,7 @@ describe("Core/Tipsify", function () {
   });
 
   it("can Tipsify without knowing the maximum index", function () {
-    const indices = [
+    var indices = [
       0,
       1,
       7,

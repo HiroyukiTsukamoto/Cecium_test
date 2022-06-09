@@ -9,7 +9,7 @@ import DeveloperError from "./DeveloperError.js";
  * @namespace MortonOrder
  * @private
  */
-const MortonOrder = {};
+var MortonOrder = {};
 
 /**
  * Inserts one 0 bit of spacing between a number's bits. This is the opposite of removeOneSpacing.

@@ -6,12 +6,12 @@ import { ClockViewModel } from "../../Source/Cesium.js";
 
 describe("Widgets/ClockViewModel", function () {
   it("default constructor creates a clock", function () {
-    const clockViewModel = new ClockViewModel();
+    var clockViewModel = new ClockViewModel();
     expect(clockViewModel.clock).toBeDefined();
   });
 
   it("constructor sets expected properties", function () {
-    const clock = new Clock();
+    var clock = new Clock();
     clock.startTime = JulianDate.fromIso8601("2012-01-01T00:00:00");
     clock.stopTime = JulianDate.fromIso8601("2012-01-02T00:00:00");
     clock.currentTime = JulianDate.fromIso8601("2012-01-01T12:00:00");
@@ -20,7 +20,7 @@ describe("Widgets/ClockViewModel", function () {
     clock.clockRange = ClockRange.UNBOUNDED;
     clock.shouldAnimate = false;
 
-    const clockViewModel = new ClockViewModel(clock);
+    var clockViewModel = new ClockViewModel(clock);
     expect(clockViewModel.clock).toBe(clock);
     expect(clockViewModel.startTime).toEqual(clock.startTime);
     expect(clockViewModel.stopTime).toEqual(clock.stopTime);
@@ -33,7 +33,7 @@ describe("Widgets/ClockViewModel", function () {
   });
 
   it("observables are updated from the clock", function () {
-    const clock = new Clock();
+    var clock = new Clock();
     clock.startTime = JulianDate.fromIso8601("2012-01-01T00:00:00");
     clock.stopTime = JulianDate.fromIso8601("2012-01-02T00:00:00");
     clock.currentTime = JulianDate.fromIso8601("2012-01-01T12:00:00");
@@ -42,7 +42,7 @@ describe("Widgets/ClockViewModel", function () {
     clock.clockRange = ClockRange.UNBOUNDED;
     clock.shouldAnimate = false;
 
-    const clockViewModel = new ClockViewModel(clock);
+    var clockViewModel = new ClockViewModel(clock);
     expect(clockViewModel.clock).toBe(clock);
     expect(clockViewModel.startTime).toEqual(clock.startTime);
     expect(clockViewModel.stopTime).toEqual(clock.stopTime);

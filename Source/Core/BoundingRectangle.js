@@ -127,18 +127,18 @@ BoundingRectangle.fromPoints = function (positions, result) {
     return result;
   }
 
-  const length = positions.length;
+  var length = positions.length;
 
-  let minimumX = positions[0].x;
-  let minimumY = positions[0].y;
+  var minimumX = positions[0].x;
+  var minimumY = positions[0].y;
 
-  let maximumX = positions[0].x;
-  let maximumY = positions[0].y;
+  var maximumX = positions[0].x;
+  var maximumY = positions[0].y;
 
-  for (let i = 1; i < length; i++) {
-    const p = positions[i];
-    const x = p.x;
-    const y = p.y;
+  for (var i = 1; i < length; i++) {
+    var p = positions[i];
+    var x = p.x;
+    var y = p.y;
 
     minimumX = Math.min(x, minimumX);
     maximumX = Math.max(x, maximumX);
@@ -153,9 +153,9 @@ BoundingRectangle.fromPoints = function (positions, result) {
   return result;
 };
 
-const defaultProjection = new GeographicProjection();
-const fromRectangleLowerLeft = new Cartographic();
-const fromRectangleUpperRight = new Cartographic();
+var defaultProjection = new GeographicProjection();
+var fromRectangleLowerLeft = new Cartographic();
+var fromRectangleUpperRight = new Cartographic();
 /**
  * Computes a bounding rectangle from a rectangle.
  *
@@ -179,10 +179,10 @@ BoundingRectangle.fromRectangle = function (rectangle, projection, result) {
 
   projection = defaultValue(projection, defaultProjection);
 
-  const lowerLeft = projection.project(
+  var lowerLeft = projection.project(
     Rectangle.southwest(rectangle, fromRectangleLowerLeft)
   );
-  const upperRight = projection.project(
+  var upperRight = projection.project(
     Rectangle.northeast(rectangle, fromRectangleUpperRight)
   );
 
@@ -241,10 +241,10 @@ BoundingRectangle.union = function (left, right, result) {
     result = new BoundingRectangle();
   }
 
-  const lowerLeftX = Math.min(left.x, right.x);
-  const lowerLeftY = Math.min(left.y, right.y);
-  const upperRightX = Math.max(left.x + left.width, right.x + right.width);
-  const upperRightY = Math.max(left.y + left.height, right.y + right.height);
+  var lowerLeftX = Math.min(left.x, right.x);
+  var lowerLeftY = Math.min(left.y, right.y);
+  var upperRightX = Math.max(left.x + left.width, right.x + right.width);
+  var upperRightY = Math.max(left.y + left.height, right.y + right.height);
 
   result.x = lowerLeftX;
   result.y = lowerLeftY;
@@ -269,8 +269,8 @@ BoundingRectangle.expand = function (rectangle, point, result) {
 
   result = BoundingRectangle.clone(rectangle, result);
 
-  const width = point.x - result.x;
-  const height = point.y - result.y;
+  var width = point.x - result.x;
+  var height = point.y - result.y;
 
   if (width > result.width) {
     result.width = width;
@@ -302,10 +302,10 @@ BoundingRectangle.intersect = function (left, right) {
   Check.typeOf.object("right", right);
   //>>includeEnd('debug');
 
-  const leftX = left.x;
-  const leftY = left.y;
-  const rightX = right.x;
-  const rightY = right.y;
+  var leftX = left.x;
+  var leftY = left.y;
+  var rightX = right.x;
+  var rightY = right.y;
   if (
     !(
       leftX > rightX + right.width ||

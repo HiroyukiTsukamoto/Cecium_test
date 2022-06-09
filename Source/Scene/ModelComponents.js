@@ -1,8 +1,7 @@
-import AlphaMode from "./AlphaMode.js";
 import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
 import Matrix3 from "../Core/Matrix3.js";
-import Matrix4 from "../Core/Matrix4.js";
+import AlphaMode from "./AlphaMode.js";
 
 /**
  * Components for building models.
@@ -11,7 +10,7 @@ import Matrix4 from "../Core/Matrix4.js";
  *
  * @private
  */
-const ModelComponents = {};
+var ModelComponents = {};
 
 /**
  * Information about the quantized attribute.
@@ -69,7 +68,7 @@ function Quantization() {
 
   /**
    * The step size of the quantization volume, equal to
-   * quantizedVolumeDimensions / normalizationRange (component-wise).
+   * quantizedVolumeDimensions / quantizedVolumeOffset (component-wise).
    * Not applicable for oct encoded attributes.
    * The type should match the attribute type - e.g. if the attribute type
    * is AttributeType.VEC4 the dimensions should be a Cartesian4.
@@ -247,23 +246,15 @@ function Attribute() {
    * @type {Uint8Array|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array}
    * @private
    */
-  this.packedTypedArray = undefined;
+  this.typedArray = undefined;
 
   /**
-   * A vertex buffer. Attribute values are accessed using byteOffset and byteStride.
+   * A vertex buffer containing attribute values. Attribute values are accessed using byteOffset and byteStride.
    *
    * @type {Buffer}
    * @private
    */
   this.buffer = undefined;
-
-  /**
-   * A typed array containing vertex buffer data. Attribute values are accessed using byteOffset and byteStride.
-   *
-   * @type {Uint8Array}
-   * @private
-   */
-  this.typedArray = undefined;
 
   /**
    * The byte offset of elements in the buffer.
@@ -315,19 +306,11 @@ function Indices() {
    * @private
    */
   this.buffer = undefined;
-
-  /**
-   * A typed array containing indices.
-   *
-   * @type {Uint8Array|Uint16Array|Uint32Array}
-   * @private
-   */
-  this.typedArray = undefined;
 }
 
 /**
- * Maps per-vertex or per-instance feature IDs to a property table. Feature
- * IDs are stored in an accessor.
+ * Maps per-vertex or per-instance feature IDs to a feature table. Feature IDs
+ * may be stored in an attribute or implicitly defined by a constant and stride.
  *
  * @alias ModelComponents.FeatureIdAttribute
  * @constructor
@@ -336,30 +319,12 @@ function Indices() {
  */
 function FeatureIdAttribute() {
   /**
-   * How many unique features are defined in this set of feature IDs
+   * The ID of the feature table that feature IDs index into.
    *
-   * @type {Number}
+   * @type {String}
    * @private
    */
-  this.featureCount = undefined;
-
-  /**
-   * This value indicates that no feature is indicated with this vertex
-   *
-   * @type {Number}
-   * @private
-   */
-  this.nullFeatureId = undefined;
-
-  /**
-   * The ID of the property table that feature IDs index into. If undefined,
-   * feature IDs are used for classification, but no metadata is associated.
-   *
-   *
-   * @type {Number}
-   * @private
-   */
-  this.propertyTableId = undefined;
+  this.featureTableId = undefined;
 
   /**
    * The set index of feature ID attribute containing feature IDs.
@@ -370,100 +335,26 @@ function FeatureIdAttribute() {
   this.setIndex = undefined;
 
   /**
-   * The label to identify this set of feature IDs. This is used in picking,
-   * styling and shaders.
-   *
-   * @type {String}
-   * @private
-   */
-  this.label = undefined;
-
-  /**
-   * Label to identify this set of feature IDs by its position in the array.
-   * This will always be either "featureId_N" for primitives or
-   * "instanceFeatureId_N" for instances.
-   *
-   * @type {String}
-   * @private
-   */
-  this.positionalLabel = undefined;
-}
-
-/**
- * Defines a range of implicitly-defined feature IDs, one for each vertex or
- * instance. Such feature IDs may optionally be associated with a property table
- * storing metadata
- *
- * @alias ModelComponents.FeatureIdImplicitRange
- * @constructor
- *
- * @private
- */
-function FeatureIdImplicitRange() {
-  /**
-   * How many unique features are defined in this set of feature IDs
-   *
-   * @type {Number}
-   * @private
-   */
-  this.featureCount = undefined;
-
-  /**
-   * This value indicates that no feature is indicated with this vertex
-   *
-   * @type {Number}
-   * @private
-   */
-  this.nullFeatureId = undefined;
-
-  /**
-   * The ID of the property table that feature IDs index into. If undefined,
-   * feature IDs are used for classification, but no metadata is associated.
-   *
-   * @type {Number}
-   * @private
-   */
-  this.propertyTableId = undefined;
-
-  /**
-   * The first feature ID to use when setIndex is undefined
+   * A constant feature ID to use when setIndex is undefined.
    *
    * @type {Number}
    * @default 0
    * @private
    */
-  this.offset = 0;
+  this.constant = 0;
 
   /**
-   * Number of times each feature ID is repeated before being incremented.
+   * The rate at which feature IDs increment when setIndex is undefined.
    *
    * @type {Number}
+   * @default 0
    * @private
    */
-  this.repeat = undefined;
-
-  /**
-   * The label to identify this set of feature IDs. This is used in picking,
-   * styling and shaders.
-   *
-   * @type {String}
-   * @private
-   */
-  this.label = undefined;
-
-  /**
-   * Label to identify this set of feature IDs by its position in the array.
-   * This will always be either "featureId_N" for primitives or
-   * "instanceFeatureId_N" for instances.
-   *
-   * @type {String}
-   * @private
-   */
-  this.positionalLabel = undefined;
+  this.divisor = 0;
 }
 
 /**
- * A texture that contains per-texel feature IDs that index into a property table.
+ * A texture that contains per-texel feature IDs that index into a feature table.
  *
  * @alias ModelComponents.FeatureIdTexture
  * @constructor
@@ -472,29 +363,12 @@ function FeatureIdImplicitRange() {
  */
 function FeatureIdTexture() {
   /**
-   * How many unique features are defined in this set of feature IDs
-   *
-   * @type {Number}
-   * @private
-   */
-  this.featureCount = undefined;
-
-  /**
-   * This value indicates that no feature is indicated with this texel
-   *
-   * @type {Number}
-   * @private
-   */
-  this.nullFeatureId = undefined;
-
-  /**
-   * The ID of the property table that feature IDs index into. If undefined,
-   * feature IDs are used for classification, but no metadata is associated.
+   * The ID of the feature table that feature IDs index into.
    *
    * @type {String}
    * @private
    */
-  this.propertyTableId = undefined;
+  this.featureTableId = undefined;
 
   /**
    * The texture reader containing feature IDs.
@@ -503,25 +377,6 @@ function FeatureIdTexture() {
    * @private
    */
   this.textureReader = undefined;
-
-  /**
-   * The label to identify this set of feature IDs. This is used in picking,
-   * styling and shaders.
-   *
-   * @type {String}
-   * @private
-   */
-  this.label = undefined;
-
-  /**
-   * Label to identify this set of feature IDs by its position in the array.
-   * This will always be either "featureId_N" for primitives or
-   * "instanceFeatureId_N" for instances.
-   *
-   * @type {String}
-   * @private
-   */
-  this.positionalLabel = undefined;
 }
 
 /**
@@ -568,6 +423,14 @@ function Primitive() {
   this.morphTargets = [];
 
   /**
+   * An array of weights to be applied to morph targets.
+   *
+   * @type {Number[]}
+   * @private
+   */
+  this.morphWeights = [];
+
+  /**
    * The indices.
    *
    * @type {ModelComponents.Indices}
@@ -592,31 +455,28 @@ function Primitive() {
   this.primitiveType = undefined;
 
   /**
-   * The feature IDs associated with this primitive. Feature ID types may
-   * be interleaved
+   * The feature ID attributes.
    *
-   * @type {Array.<ModelComponents.FeatureIdAttribute|ModelComponents.FeatureIdImplicitRange|ModelComponents.FeatureIdTexture>}
+   * @type {ModelComponents.FeatureIdAttribute[]}
    * @private
    */
-  this.featureIds = [];
+  this.featureIdAttributes = [];
 
   /**
-   * The property texture IDs. These indices correspond to the array of
-   * property textures.
+   * The feature ID textures.
    *
-   * @type {Number[]}
+   * @type {ModelComponents.FeatureIdTexture[]}
    * @private
    */
-  this.propertyTextureIds = [];
+  this.featureIdTextures = [];
 
   /**
-   * The property attribute IDs. These indices correspond to the array of
-   * property attributes in the EXT_structural_metadata extension.
+   * The feature texture IDs.
    *
-   * @type {Number[]}
+   * @type {String[]}
    * @private
    */
-  this.propertyAttributeIds = [];
+  this.featureTextureIds = [];
 }
 
 /**
@@ -637,23 +497,12 @@ function Instances() {
   this.attributes = [];
 
   /**
-   * The feature ID attributes associated with this set of instances.
-   * Feature ID attribute types may be interleaved.
+   * The feature ID attributes.
    *
-   * @type {Array.<ModelComponents.FeatureIdAttribute|ModelComponents.FeatureIdImplicitRange>}
+   * @type {ModelComponents.FeatureIdAttribute[]}
    * @private
    */
-  this.featureIds = [];
-
-  /**
-   * Whether the instancing transforms are applied in world space. For glTF models that
-   * use EXT_mesh_gpu_instancing, the transform is applied in object space. For i3dm files,
-   * the instance transform is in world space.
-   *
-   * @type {Boolean}
-   * @private
-   */
-  this.transformInWorldSpace = false;
+  this.featureIdAttributes = [];
 }
 
 /**
@@ -666,21 +515,12 @@ function Instances() {
  */
 function Skin() {
   /**
-   * The index of the skin in the glTF. This is useful for finding the skin
-   * that applies to a node after the skin is instantiated at runtime.
-   *
-   * @type {Number}
-   * @private
-   */
-  this.index = undefined;
-
-  /**
    * The joints.
    *
    * @type {ModelComponents.Node[]}
    * @private
    */
-  this.joints = [];
+  this.joints = undefined;
 
   /**
    * The inverse bind matrices of the joints.
@@ -688,7 +528,7 @@ function Skin() {
    * @type {Matrix4[]}
    * @private
    */
-  this.inverseBindMatrices = [];
+  this.inverseBindMatrices = undefined;
 }
 
 /**
@@ -700,23 +540,6 @@ function Skin() {
  * @private
  */
 function Node() {
-  /**
-   * The name of the node.
-   *
-   * @type {String}
-   * @private
-   */
-  this.name = undefined;
-
-  /**
-   * The index of the node in the glTF. This is useful for finding the nodes
-   * that belong to a skin after they have been instantiated at runtime.
-   *
-   * @type {Number}
-   * @private
-   */
-  this.index = undefined;
-
   /**
    * The children nodes.
    *
@@ -782,15 +605,6 @@ function Node() {
    * @private
    */
   this.scale = undefined;
-
-  /**
-   * An array of weights to be applied to the primitives' morph targets.
-   * These are supplied by either the node or its mesh.
-   *
-   * @type {Number[]}
-   * @private
-   */
-  this.morphWeights = [];
 }
 
 /**
@@ -809,161 +623,22 @@ function Scene() {
    * @private
    */
   this.nodes = [];
-}
-
-/**
- * The property of the node that is targeted by an animation. The values of
- * this enum are used to look up the appropriate property on the runtime node.
- *
- * @alias {ModelComponents.AnimatedPropertyType}
- * @enum {String}
- *
- * @private
- */
-const AnimatedPropertyType = {
-  TRANSLATION: "translation",
-  ROTATION: "rotation",
-  SCALE: "scale",
-  WEIGHTS: "weights",
-};
-
-/**
- * An animation sampler that describes the sources of animated keyframe data
- * and their interpolation.
- *
- * @alias {ModelComponents.AnimationSampler}
- * @constructor
- *
- * @private
- */
-function AnimationSampler() {
-  /**
-   * The timesteps of the animation.
-   *
-   * @type {Number[]}
-   * @private
-   */
-  this.input = [];
 
   /**
-   * The method used to interpolate between the animation's keyframe data.
+   * The scene's up axis.
    *
-   * @type {InterpolationType}
+   * @type {Axis}
    * @private
    */
-  this.interpolation = undefined;
+  this.upAxis = undefined;
 
   /**
-   * The keyframe data of the animation.
+   * The scene's forward axis.
    *
-   * @type {Number[]|Cartesian3[]|Quaternion[]}
+   * @type {Axis}
    * @private
    */
-  this.output = [];
-}
-
-/**
- * An animation target, which specifies the node and property to animate.
- *
- * @alias {ModelComponents.AnimationTarget}
- * @constructor
- *
- * @private
- */
-function AnimationTarget() {
-  /**
-   * The node that will be affected by the animation.
-   *
-   * @type {ModelComponents.Node}
-   * @private
-   */
-  this.node = undefined;
-
-  /**
-   * The property of the node to be animated.
-   *
-   * @type {ModelComponents.AnimatedPropertyType}
-   * @private
-   */
-  this.path = undefined;
-}
-
-/**
- * An animation channel linking an animation sampler and the target it animates.
- *
- * @alias {ModelComponents.AnimationChannel}
- * @constructor
- *
- * @private
- */
-function AnimationChannel() {
-  /**
-   * The sampler used as the source of the animation data.
-   *
-   * @type {ModelComponents.AnimationSampler}
-   * @private
-   */
-  this.sampler = undefined;
-
-  /**
-   * The target of the animation.
-   *
-   * @type {ModelComponents.AnimationTarget}
-   * @private
-   */
-  this.target = undefined;
-}
-
-/**
- * An animation in the model.
- *
- * @alias {ModelComponents.Animation}
- * @constructor
- *
- * @private
- */
-function Animation() {
-  /**
-   * The name of the animation.
-   *
-   * @type {String}
-   * @private
-   */
-  this.name = undefined;
-
-  /**
-   * The samplers used in this animation.
-   *
-   * @type {ModelComponents.AnimationSampler[]}
-   * @private
-   */
-  this.samplers = [];
-
-  /**
-   * The channels used in this animation.
-   *
-   * @type {ModelComponents.AnimationChannel[]}
-   * @private
-   */
-  this.channels = [];
-}
-
-/**
- * The asset of the model.
- *
- * @alias {ModelComponents.Asset}
- * @constructor
- *
- * @private
- */
-function Asset() {
-  /**
-   * The credits of the model.
-   *
-   * @type {Credit[]}
-   * @private
-   */
-  this.credits = [];
+  this.forwardAxis = undefined;
 }
 
 /**
@@ -975,14 +650,6 @@ function Asset() {
  * @private
  */
 function Components() {
-  /**
-   * The asset of the model.
-   *
-   * @type {ModelComponents.Asset}
-   * @private
-   */
-  this.asset = new Asset();
-
   /**
    * The default scene.
    *
@@ -996,54 +663,15 @@ function Components() {
    *
    * @type {ModelComponents.Node[]}
    */
-  this.nodes = [];
+  this.nodes = undefined;
 
   /**
-   * All skins in the model.
+   * Feature metadata containing the schema, feature tables, and feature textures.
    *
-   * @type {ModelComponents.Skin[]}
-   */
-  this.skins = [];
-
-  /**
-   * All animations in the model.
-   *
-   * @type {ModelComponents.Animation[]}
-   */
-  this.animations = [];
-
-  /**
-   * Structural metadata containing the schema, property tables, property
-   * textures and property mappings
-   *
-   * @type {StructuralMetadata}
+   * @type {FeatureMetadata}
    * @private
    */
-  this.structuralMetadata = undefined;
-
-  /**
-   * The model's up axis.
-   *
-   * @type {Axis}
-   * @private
-   */
-  this.upAxis = undefined;
-
-  /**
-   * The model's forward axis.
-   *
-   * @type {Axis}
-   * @private
-   */
-  this.forwardAxis = undefined;
-
-  /**
-   * A world-space transform to apply to the primitives.
-   *
-   * @type {Matrix4}
-   * @private
-   */
-  this.transform = Matrix4.clone(Matrix4.IDENTITY);
+  this.featureMetadata = undefined;
 }
 
 /**
@@ -1062,16 +690,6 @@ function TextureReader() {
    * @private
    */
   this.texture = undefined;
-
-  /**
-   * The index of the texture in the glTF. This is useful for determining
-   * when textures are shared to avoid attaching a texture in multiple uniform
-   * slots in the shader.
-   *
-   * @type {Number}
-   * @private
-   */
-  this.index = undefined;
 
   /**
    * The texture coordinate set.
@@ -1345,19 +963,12 @@ ModelComponents.Attribute = Attribute;
 ModelComponents.Indices = Indices;
 ModelComponents.FeatureIdAttribute = FeatureIdAttribute;
 ModelComponents.FeatureIdTexture = FeatureIdTexture;
-ModelComponents.FeatureIdImplicitRange = FeatureIdImplicitRange;
 ModelComponents.MorphTarget = MorphTarget;
 ModelComponents.Primitive = Primitive;
 ModelComponents.Instances = Instances;
 ModelComponents.Skin = Skin;
 ModelComponents.Node = Node;
 ModelComponents.Scene = Scene;
-ModelComponents.AnimatedPropertyType = Object.freeze(AnimatedPropertyType);
-ModelComponents.AnimationSampler = AnimationSampler;
-ModelComponents.AnimationTarget = AnimationTarget;
-ModelComponents.AnimationChannel = AnimationChannel;
-ModelComponents.Animation = Animation;
-ModelComponents.Asset = Asset;
 ModelComponents.Components = Components;
 ModelComponents.TextureReader = TextureReader;
 ModelComponents.MetallicRoughness = MetallicRoughness;

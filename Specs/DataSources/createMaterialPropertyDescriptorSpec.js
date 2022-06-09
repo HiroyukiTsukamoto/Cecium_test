@@ -13,32 +13,32 @@ describe("DataSources/createMaterialPropertyDescriptor", function () {
   });
 
   it("defaults to undefined", function () {
-    const instance = new MockGraphics();
+    var instance = new MockGraphics();
     expect(instance.materialProperty).toBeUndefined();
   });
 
   it("creates ImageMaterialProperty from string ", function () {
-    const instance = new MockGraphics();
+    var instance = new MockGraphics();
     expect(instance.materialProperty).toBeUndefined();
 
-    const value = "test.invalid";
+    var value = "test.invalid";
     instance.materialProperty = value;
     expect(instance.materialProperty).toBeInstanceOf(ImageMaterialProperty);
     expect(instance.materialProperty.image.getValue()).toEqual(value);
   });
 
   it("creates ColorMaterialProperty from Color", function () {
-    const instance = new MockGraphics();
+    var instance = new MockGraphics();
     expect(instance.materialProperty).toBeUndefined();
 
-    const value = Color.RED;
+    var value = Color.RED;
     instance.materialProperty = value;
     expect(instance.materialProperty).toBeInstanceOf(ColorMaterialProperty);
     expect(instance.materialProperty.color.getValue()).toEqual(value);
   });
 
   it("throws if type can not be infered", function () {
-    const instance = new MockGraphics();
+    var instance = new MockGraphics();
     expect(function () {
       instance.materialProperty = {};
     }).toThrowDeveloperError();

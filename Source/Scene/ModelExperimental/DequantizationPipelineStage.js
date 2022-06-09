@@ -1,5 +1,4 @@
 import defined from "../../Core/defined.js";
-import Cartesian4 from "../../Core/Cartesian4.js";
 import ShaderDestination from "../../Renderer/ShaderDestination.js";
 import ModelExperimentalUtility from "./ModelExperimentalUtility.js";
 
@@ -11,7 +10,7 @@ import ModelExperimentalUtility from "./ModelExperimentalUtility.js";
  *
  * @private
  */
-const DequantizationPipelineStage = {};
+var DequantizationPipelineStage = {};
 DequantizationPipelineStage.name = "DequantizationPipelineStage"; // Helps with debugging
 
 DequantizationPipelineStage.FUNCTION_ID_DEQUANTIZATION_STAGE_VS =
@@ -29,16 +28,11 @@ DequantizationPipelineStage.FUNCTION_SIGNATURE_DEQUANTIZATION_STAGE_VS =
  *
  * @param {PrimitiveRenderResources} renderResources The render resources for this primitive.
  * @param {ModelComponents.Primitive} primitive The primitive
- * @param {FrameState} frameState The frame state.
  *
  * @private
  */
-DequantizationPipelineStage.process = function (
-  renderResources,
-  primitive,
-  frameState
-) {
-  const shaderBuilder = renderResources.shaderBuilder;
+DequantizationPipelineStage.process = function (renderResources, primitive) {
+  var shaderBuilder = renderResources.shaderBuilder;
   shaderBuilder.addFunction(
     DequantizationPipelineStage.FUNCTION_ID_DEQUANTIZATION_STAGE_VS,
     DequantizationPipelineStage.FUNCTION_SIGNATURE_DEQUANTIZATION_STAGE_VS,
@@ -51,29 +45,28 @@ DequantizationPipelineStage.process = function (
     ShaderDestination.VERTEX
   );
 
-  const attributes = primitive.attributes;
-  for (let i = 0; i < attributes.length; i++) {
-    const attribute = attributes[i];
-    const quantization = attribute.quantization;
+  var attributes = primitive.attributes;
+  for (var i = 0; i < attributes.length; i++) {
+    var attribute = attributes[i];
+    var quantization = attribute.quantization;
     if (!defined(quantization)) {
-      // Non-quantized attributes were already handled in GeometryPipelineStage
+      // non-quantized attributes were already handled in GeometryPipelineStage
       continue;
     }
-
-    const attributeInfo = ModelExperimentalUtility.getAttributeInfo(attribute);
+    var attributeInfo = ModelExperimentalUtility.getAttributeInfo(attribute);
     updateDequantizationFunction(shaderBuilder, attributeInfo);
     addDequantizationUniforms(renderResources, attributeInfo);
   }
 };
 
 function addDequantizationUniforms(renderResources, attributeInfo) {
-  const shaderBuilder = renderResources.shaderBuilder;
-  const uniformMap = renderResources.uniformMap;
-  const variableName = attributeInfo.variableName;
-  const quantization = attributeInfo.attribute.quantization;
+  var shaderBuilder = renderResources.shaderBuilder;
+  var uniformMap = renderResources.uniformMap;
+  var variableName = attributeInfo.variableName;
+  var quantization = attributeInfo.attribute.quantization;
 
   if (quantization.octEncoded) {
-    const normalizationRange = `model_normalizationRange_${variableName}`;
+    var normalizationRange = "model_normalizationRange_" + variableName;
     shaderBuilder.addUniform(
       "float",
       normalizationRange,
@@ -83,47 +76,27 @@ function addDequantizationUniforms(renderResources, attributeInfo) {
       return quantization.normalizationRange;
     };
   } else {
-    const offset = `model_quantizedVolumeOffset_${variableName}`;
-    const stepSize = `model_quantizedVolumeStepSize_${variableName}`;
-    const glslType = attributeInfo.glslType;
+    var offset = "model_quantizedVolumeOffset_" + variableName;
+    var stepSize = "model_quantizedVolumeStepSize_" + variableName;
+    var glslType = attributeInfo.glslType;
     shaderBuilder.addUniform(glslType, offset, ShaderDestination.VERTEX);
     shaderBuilder.addUniform(glslType, stepSize, ShaderDestination.VERTEX);
 
-    let quantizedVolumeOffset = quantization.quantizedVolumeOffset;
-    let quantizedVolumeStepSize = quantization.quantizedVolumeStepSize;
-
-    // COLOR_n is promoted to a vec4 in the shader, so the alpha value
-    // defaults to 1. For correctness, the quantization uniforms must be
-    // promoted to vec4s. The alpha values are chosen so the alpha
-    // dequantization is the identity, i.e. 0.0 + 1.0 * color.a
-    if (/^color_\d+$/.test(variableName)) {
-      quantizedVolumeOffset = promoteToVec4(quantizedVolumeOffset, 0);
-      quantizedVolumeStepSize = promoteToVec4(quantizedVolumeStepSize, 1);
-    }
-
     uniformMap[offset] = function () {
-      return quantizedVolumeOffset;
+      return quantization.quantizedVolumeOffset;
     };
 
     uniformMap[stepSize] = function () {
-      return quantizedVolumeStepSize;
+      return quantization.quantizedVolumeStepSize;
     };
   }
 }
 
-function promoteToVec4(value, defaultAlpha) {
-  if (value instanceof Cartesian4) {
-    return value;
-  }
-
-  return new Cartesian4(value.x, value.y, value.z, defaultAlpha);
-}
-
 function updateDequantizationFunction(shaderBuilder, attributeInfo) {
-  const variableName = attributeInfo.variableName;
-  const quantization = attributeInfo.attribute.quantization;
+  var variableName = attributeInfo.variableName;
+  var quantization = attributeInfo.attribute.quantization;
 
-  let line;
+  var line;
   if (quantization.octEncoded) {
     line = generateOctDecodeLine(variableName, quantization);
   } else {
@@ -137,29 +110,47 @@ function updateDequantizationFunction(shaderBuilder, attributeInfo) {
 }
 
 function generateOctDecodeLine(variableName, quantization) {
-  const structField = `attributes.${variableName}`;
+  var structField = "attributes." + variableName;
 
-  const quantizedAttribute = `a_quantized_${variableName}`;
-  const normalizationRange = `model_normalizationRange_${variableName}`;
+  var quantizedAttribute = "a_quantized_" + variableName;
+  var normalizationRange = "model_normalizationRange_" + variableName;
 
   // Draco stores things as .zxy instead of xyz, so be explicit about the
   // swizzle to avoid confusion
-  const swizzle = quantization.octEncodedZXY ? ".zxy" : ".xyz";
+  var swizzle = quantization.octEncodedZXY ? ".zxy" : ".xyz";
 
   // This generates lines such as:
   // attributes.normal = czm_octDecode(a_quantized_normal, model_normalizationRange_normal).zxy;
-  return `${structField} = czm_octDecode(${quantizedAttribute}, ${normalizationRange})${swizzle};`;
+  return (
+    structField +
+    " = czm_octDecode(" +
+    quantizedAttribute +
+    ", " +
+    normalizationRange +
+    ")" +
+    swizzle +
+    ";"
+  );
 }
 
 function generateDequantizeLine(variableName) {
-  const structField = `attributes.${variableName}`;
-  const quantizedAttribute = `a_quantized_${variableName}`;
-  const offset = `model_quantizedVolumeOffset_${variableName}`;
-  const stepSize = `model_quantizedVolumeStepSize_${variableName}`;
+  var structField = "attributes." + variableName;
+  var quantizedAttribute = "a_quantized_" + variableName;
+  var offset = "model_quantizedVolumeOffset_" + variableName;
+  var stepSize = "model_quantizedVolumeStepSize_" + variableName;
 
   // This generates lines such as:
   // attributes.texCoord_0 = model_quantizedVolumeOffset_texCoord_0 + a_quantized_texCoord_0 * model_quantizedVolumeStepSize;
-  return `${structField} = ${offset} + ${quantizedAttribute} * ${stepSize};`;
+  return (
+    structField +
+    " = " +
+    offset +
+    " + " +
+    quantizedAttribute +
+    " * " +
+    stepSize +
+    ";"
+  );
 }
 
 export default DequantizationPipelineStage;

@@ -18,8 +18,8 @@ import createScene from "../createScene.js";
 describe(
   "DataSources/BoxGeometryUpdater",
   function () {
-    let scene;
-    let time;
+    var scene;
+    var time;
 
     beforeAll(function () {
       scene = createScene();
@@ -31,9 +31,9 @@ describe(
     });
 
     function createBasicBox() {
-      const box = new BoxGraphics();
+      var box = new BoxGraphics();
       box.dimensions = new ConstantProperty(new Cartesian3(1, 2, 3));
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         Cartesian3.fromDegrees(0, 0, 0)
       );
@@ -42,14 +42,14 @@ describe(
     }
 
     function createDynamicBox() {
-      const entity = createBasicBox();
+      var entity = createBasicBox();
       entity.box.dimensions = createDynamicProperty(new Cartesian3(1, 2, 3));
       return entity;
     }
 
     it("A time-varying dimensions causes geometry to be dynamic", function () {
-      const entity = createBasicBox();
-      const updater = new BoxGeometryUpdater(entity, scene);
+      var entity = createBasicBox();
+      var updater = new BoxGeometryUpdater(entity, scene);
       entity.box.dimensions = createDynamicProperty();
       updater._onEntityPropertyChanged(entity, "box");
 
@@ -57,17 +57,17 @@ describe(
     });
 
     it("Creates geometry with expected properties", function () {
-      const entity = createBasicBox();
+      var entity = createBasicBox();
 
-      const dimensions = new Cartesian3(1, 2, 3);
-      const box = entity.box;
+      var dimensions = new Cartesian3(1, 2, 3);
+      var box = entity.box;
       box.outline = true;
       box.dimensions = dimensions;
 
-      const updater = new BoxGeometryUpdater(entity, scene);
+      var updater = new BoxGeometryUpdater(entity, scene);
 
-      let instance;
-      let geometry;
+      var instance;
+      var geometry;
       instance = updater.createFillGeometryInstance(time);
       geometry = instance.geometry;
       expect(geometry._maximum).toEqual(
@@ -84,15 +84,15 @@ describe(
     });
 
     it("Creates geometry with expected offsetAttribute", function () {
-      const entity = createBasicBox();
-      const graphics = entity.box;
+      var entity = createBasicBox();
+      var graphics = entity.box;
       graphics.outline = true;
       graphics.outlineColor = Color.BLACK;
       graphics.height = new ConstantProperty(20.0);
       graphics.extrudedHeight = new ConstantProperty(0.0);
-      const updater = new BoxGeometryUpdater(entity, getScene());
+      var updater = new BoxGeometryUpdater(entity, getScene());
 
-      let instance;
+      var instance;
 
       updater._onEntityPropertyChanged(entity, "box");
       instance = updater.createFillGeometryInstance(time);
@@ -135,10 +135,10 @@ describe(
     });
 
     it("dynamic updater sets properties", function () {
-      const entity = createDynamicBox();
+      var entity = createDynamicBox();
 
-      const updater = new BoxGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new BoxGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         new PrimitiveCollection(),
         new PrimitiveCollection()
       );
@@ -151,9 +151,9 @@ describe(
     });
 
     it("geometryChanged event is raised when expected", function () {
-      const entity = createBasicBox();
-      const updater = new BoxGeometryUpdater(entity, scene);
-      const listener = jasmine.createSpy("listener");
+      var entity = createBasicBox();
+      var updater = new BoxGeometryUpdater(entity, scene);
+      var listener = jasmine.createSpy("listener");
       updater.geometryChanged.addEventListener(listener);
 
       entity.box.dimensions = new ConstantProperty();
@@ -179,8 +179,8 @@ describe(
     });
 
     it("computes center", function () {
-      const entity = createBasicBox();
-      const updater = new BoxGeometryUpdater(entity, scene);
+      var entity = createBasicBox();
+      var updater = new BoxGeometryUpdater(entity, scene);
 
       expect(updater._computeCenter(time)).toEqual(
         entity.position.getValue(time)

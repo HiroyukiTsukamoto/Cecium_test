@@ -6,7 +6,7 @@ import CesiumMath from "./Math.js";
  *
  * @namespace QuadraticRealPolynomial
  */
-const QuadraticRealPolynomial = {};
+var QuadraticRealPolynomial = {};
 
 /**
  * Provides the discriminant of the quadratic equation from the supplied coefficients.
@@ -29,12 +29,12 @@ QuadraticRealPolynomial.computeDiscriminant = function (a, b, c) {
   }
   //>>includeEnd('debug');
 
-  const discriminant = b * b - 4.0 * a * c;
+  var discriminant = b * b - 4.0 * a * c;
   return discriminant;
 };
 
 function addWithCancellationCheck(left, right, tolerance) {
-  const difference = left + right;
+  var difference = left + right;
   if (
     CesiumMath.sign(left) !== CesiumMath.sign(right) &&
     Math.abs(difference / Math.max(Math.abs(left), Math.abs(right))) < tolerance
@@ -66,7 +66,7 @@ QuadraticRealPolynomial.computeRealRoots = function (a, b, c) {
   }
   //>>includeEnd('debug');
 
-  let ratio;
+  var ratio;
   if (a === 0.0) {
     if (b === 0.0) {
       // Constant function: c = 0.
@@ -81,8 +81,8 @@ QuadraticRealPolynomial.computeRealRoots = function (a, b, c) {
       return [0.0, 0.0];
     }
 
-    const cMagnitude = Math.abs(c);
-    const aMagnitude = Math.abs(a);
+    var cMagnitude = Math.abs(c);
+    var aMagnitude = Math.abs(a);
 
     if (
       cMagnitude < aMagnitude &&
@@ -109,7 +109,7 @@ QuadraticRealPolynomial.computeRealRoots = function (a, b, c) {
     }
 
     // Both roots are real.
-    const root = Math.sqrt(ratio);
+    var root = Math.sqrt(ratio);
     return [-root, root];
   } else if (c === 0.0) {
     // a * x^2 + b * x = 0
@@ -122,16 +122,16 @@ QuadraticRealPolynomial.computeRealRoots = function (a, b, c) {
   }
 
   // a * x^2 + b * x + c = 0
-  const b2 = b * b;
-  const four_ac = 4.0 * a * c;
-  const radicand = addWithCancellationCheck(b2, -four_ac, CesiumMath.EPSILON14);
+  var b2 = b * b;
+  var four_ac = 4.0 * a * c;
+  var radicand = addWithCancellationCheck(b2, -four_ac, CesiumMath.EPSILON14);
 
   if (radicand < 0.0) {
     // Both roots are complex.
     return [];
   }
 
-  const q =
+  var q =
     -0.5 *
     addWithCancellationCheck(
       b,

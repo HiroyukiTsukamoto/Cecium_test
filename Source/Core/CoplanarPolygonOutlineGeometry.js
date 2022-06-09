@@ -16,15 +16,15 @@ import PolygonGeometryLibrary from "./PolygonGeometryLibrary.js";
 import PrimitiveType from "./PrimitiveType.js";
 
 function createGeometryFromPositions(positions) {
-  const length = positions.length;
-  const flatPositions = new Float64Array(length * 3);
-  const indices = IndexDatatype.createTypedArray(length, length * 2);
+  var length = positions.length;
+  var flatPositions = new Float64Array(length * 3);
+  var indices = IndexDatatype.createTypedArray(length, length * 2);
 
-  let positionIndex = 0;
-  let index = 0;
+  var positionIndex = 0;
+  var index = 0;
 
-  for (let i = 0; i < length; i++) {
-    const position = positions[i];
+  for (var i = 0; i < length; i++) {
+    var position = positions[i];
     flatPositions[positionIndex++] = position.x;
     flatPositions[positionIndex++] = position.y;
     flatPositions[positionIndex++] = position.z;
@@ -33,7 +33,7 @@ function createGeometryFromPositions(positions) {
     indices[index++] = (i + 1) % length;
   }
 
-  const attributes = new GeometryAttributes({
+  var attributes = new GeometryAttributes({
     position: new GeometryAttribute({
       componentDatatype: ComponentDatatype.DOUBLE,
       componentsPerAttribute: 3,
@@ -60,7 +60,7 @@ function createGeometryFromPositions(positions) {
  * @see CoplanarPolygonOutlineGeometry.createGeometry
  *
  * @example
- * const polygonOutline = new Cesium.CoplanarPolygonOutlineGeometry({
+ * var polygonOutline = new Cesium.CoplanarPolygonOutlineGeometry({
  *   positions : Cesium.Cartesian3.fromDegreesArrayHeights([
  *      -90.0, 30.0, 0.0,
  *      -90.0, 30.0, 1000.0,
@@ -68,11 +68,11 @@ function createGeometryFromPositions(positions) {
  *      -80.0, 30.0, 0.0
  *   ])
  * });
- * const geometry = Cesium.CoplanarPolygonOutlineGeometry.createGeometry(polygonOutline);
+ * var geometry = Cesium.CoplanarPolygonOutlineGeometry.createGeometry(polygonOutline);
  */
 function CoplanarPolygonOutlineGeometry(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const polygonHierarchy = options.polygonHierarchy;
+  var polygonHierarchy = options.polygonHierarchy;
   //>>includeStart('debug', pragmas.debug);
   Check.defined("options.polygonHierarchy", polygonHierarchy);
   //>>includeEnd('debug');
@@ -85,10 +85,7 @@ function CoplanarPolygonOutlineGeometry(options) {
    * @type {Number}
    */
   this.packedLength =
-    PolygonGeometryLibrary.computeHierarchyPackedLength(
-      polygonHierarchy,
-      Cartesian3
-    ) + 1;
+    PolygonGeometryLibrary.computeHierarchyPackedLength(polygonHierarchy) + 1;
 }
 
 /**
@@ -105,7 +102,7 @@ CoplanarPolygonOutlineGeometry.fromPositions = function (options) {
   Check.defined("options.positions", options.positions);
   //>>includeEnd('debug');
 
-  const newOptions = {
+  var newOptions = {
     polygonHierarchy: {
       positions: options.positions,
     },
@@ -133,8 +130,7 @@ CoplanarPolygonOutlineGeometry.pack = function (value, array, startingIndex) {
   startingIndex = PolygonGeometryLibrary.packPolygonHierarchy(
     value._polygonHierarchy,
     array,
-    startingIndex,
-    Cartesian3
+    startingIndex
   );
 
   array[startingIndex] = value.packedLength;
@@ -142,7 +138,7 @@ CoplanarPolygonOutlineGeometry.pack = function (value, array, startingIndex) {
   return array;
 };
 
-const scratchOptions = {
+var scratchOptions = {
   polygonHierarchy: {},
 };
 /**
@@ -164,14 +160,13 @@ CoplanarPolygonOutlineGeometry.unpack = function (
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  const polygonHierarchy = PolygonGeometryLibrary.unpackPolygonHierarchy(
+  var polygonHierarchy = PolygonGeometryLibrary.unpackPolygonHierarchy(
     array,
-    startingIndex,
-    Cartesian3
+    startingIndex
   );
   startingIndex = polygonHierarchy.startingIndex;
   delete polygonHierarchy.startingIndex;
-  const packedLength = array[startingIndex];
+  var packedLength = array[startingIndex];
 
   if (!defined(result)) {
     result = new CoplanarPolygonOutlineGeometry(scratchOptions);
@@ -190,9 +185,9 @@ CoplanarPolygonOutlineGeometry.unpack = function (
  * @returns {Geometry|undefined} The computed vertices and indices.
  */
 CoplanarPolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
-  const polygonHierarchy = polygonGeometry._polygonHierarchy;
+  var polygonHierarchy = polygonGeometry._polygonHierarchy;
 
-  let outerPositions = polygonHierarchy.positions;
+  var outerPositions = polygonHierarchy.positions;
   outerPositions = arrayRemoveDuplicates(
     outerPositions,
     Cartesian3.equalsEpsilon,
@@ -201,12 +196,12 @@ CoplanarPolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
   if (outerPositions.length < 3) {
     return;
   }
-  const isValid = CoplanarPolygonGeometryLibrary.validOutline(outerPositions);
+  var isValid = CoplanarPolygonGeometryLibrary.validOutline(outerPositions);
   if (!isValid) {
     return undefined;
   }
 
-  const polygons = PolygonGeometryLibrary.polygonOutlinesFromHierarchy(
+  var polygons = PolygonGeometryLibrary.polygonOutlinesFromHierarchy(
     polygonHierarchy,
     false
   );
@@ -215,17 +210,17 @@ CoplanarPolygonOutlineGeometry.createGeometry = function (polygonGeometry) {
     return undefined;
   }
 
-  const geometries = [];
+  var geometries = [];
 
-  for (let i = 0; i < polygons.length; i++) {
-    const geometryInstance = new GeometryInstance({
+  for (var i = 0; i < polygons.length; i++) {
+    var geometryInstance = new GeometryInstance({
       geometry: createGeometryFromPositions(polygons[i]),
     });
     geometries.push(geometryInstance);
   }
 
-  const geometry = GeometryPipeline.combineInstances(geometries)[0];
-  const boundingSphere = BoundingSphere.fromPoints(polygonHierarchy.positions);
+  var geometry = GeometryPipeline.combineInstances(geometries)[0];
+  var boundingSphere = BoundingSphere.fromPoints(polygonHierarchy.positions);
 
   return new Geometry({
     attributes: geometry.attributes,

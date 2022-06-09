@@ -15,9 +15,9 @@ import createScene from "../createScene.js";
 describe(
   "Scene/PointPrimitiveCollection",
   function () {
-    let scene;
-    let camera;
-    let pointPrimitives;
+    var scene;
+    var camera;
+    var pointPrimitives;
 
     beforeAll(function () {
       scene = createScene();
@@ -43,7 +43,7 @@ describe(
     });
 
     it("constructs a default pointPrimitive", function () {
-      const p = pointPrimitives.add();
+      var p = pointPrimitives.add();
       expect(p.show).toEqual(true);
       expect(p.position).toEqual(Cartesian3.ZERO);
       expect(p.pixelSize).toEqual(10.0);
@@ -64,13 +64,13 @@ describe(
     });
 
     it("can add and remove before first render.", function () {
-      const p = pointPrimitives.add();
+      var p = pointPrimitives.add();
       pointPrimitives.remove(p);
       scene.renderForSpecs();
     });
 
     it("explicitly constructs a pointPrimitive", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         show: false,
         position: new Cartesian3(1.0, 2.0, 3.0),
         pixelSize: 2.0,
@@ -120,7 +120,7 @@ describe(
     });
 
     it("sets pointPrimitive properties", function () {
-      const p = pointPrimitives.add();
+      var p = pointPrimitives.add();
       p.show = false;
       p.position = new Cartesian3(1.0, 2.0, 3.0);
       p.pixelSize = 2.0;
@@ -167,7 +167,7 @@ describe(
       });
       camera.position = new Cartesian3(2.0, 0.0, 0.0);
 
-      const frameState = scene.frameState;
+      var frameState = scene.frameState;
       frameState.commandList.length = 0;
       pointPrimitives.blendOption = BlendOption.OPAQUE_AND_TRANSLUCENT;
       pointPrimitives.update(frameState);
@@ -185,7 +185,7 @@ describe(
     });
 
     it("disables pointPrimitive scaleByDistance", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         scaleByDistance: new NearFarScalar(1.0, 3.0, 1.0e6, 0.0),
       });
       p.scaleByDistance = undefined;
@@ -193,7 +193,7 @@ describe(
     });
 
     it("disables pointPrimitive translucencyByDistance", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         translucencyByDistance: new NearFarScalar(1.0, 1.0, 1.0e6, 0.0),
       });
       p.translucencyByDistance = undefined;
@@ -243,15 +243,15 @@ describe(
     });
 
     it("throws scaleByDistance with nearDistance === farDistance", function () {
-      const p = pointPrimitives.add();
-      const scale = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
+      var p = pointPrimitives.add();
+      var scale = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
       expect(function () {
         p.scaleByDistance = scale;
       }).toThrowDeveloperError();
     });
 
     it("throws new pointPrimitive with invalid scaleByDistance (nearDistance === farDistance)", function () {
-      const scale = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
+      var scale = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
       expect(function () {
         pointPrimitives.add({
           scaleByDistance: scale,
@@ -260,23 +260,23 @@ describe(
     });
 
     it("throws scaleByDistance with nearDistance > farDistance", function () {
-      const p = pointPrimitives.add();
-      const scale = new NearFarScalar(1.0e9, 1.0, 1.0e5, 1.0);
+      var p = pointPrimitives.add();
+      var scale = new NearFarScalar(1.0e9, 1.0, 1.0e5, 1.0);
       expect(function () {
         p.scaleByDistance = scale;
       }).toThrowDeveloperError();
     });
 
     it("throws translucencyByDistance with nearDistance === farDistance", function () {
-      const p = pointPrimitives.add();
-      const translucency = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
+      var p = pointPrimitives.add();
+      var translucency = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
       expect(function () {
         p.translucencyByDistance = translucency;
       }).toThrowDeveloperError();
     });
 
     it("throws new pointPrimitive with invalid translucencyByDistance (nearDistance === farDistance)", function () {
-      const translucency = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
+      var translucency = new NearFarScalar(2.0e5, 1.0, 2.0e5, 0.0);
       expect(function () {
         pointPrimitives.add({
           translucencyByDistance: translucency,
@@ -285,8 +285,8 @@ describe(
     });
 
     it("throws translucencyByDistance with nearDistance > farDistance", function () {
-      const p = pointPrimitives.add();
-      const translucency = new NearFarScalar(1.0e9, 1.0, 1.0e5, 1.0);
+      var p = pointPrimitives.add();
+      var translucency = new NearFarScalar(1.0e9, 1.0, 1.0e5, 1.0);
       expect(function () {
         p.translucencyByDistance = translucency;
       }).toThrowDeveloperError();
@@ -310,7 +310,7 @@ describe(
     });
 
     it("throws new pointPrimitive with invalid distanceDisplayCondition (near >= far)", function () {
-      const dc = new DistanceDisplayCondition(100.0, 10.0);
+      var dc = new DistanceDisplayCondition(100.0, 10.0);
       expect(function () {
         pointPrimitives.add({
           distanceDisplayCondition: dc,
@@ -319,15 +319,15 @@ describe(
     });
 
     it("throws distanceDisplayCondition with near >= far", function () {
-      const p = pointPrimitives.add();
-      const dc = new DistanceDisplayCondition(100.0, 10.0);
+      var p = pointPrimitives.add();
+      var dc = new DistanceDisplayCondition(100.0, 10.0);
       expect(function () {
         p.distanceDisplayCondition = dc;
       }).toThrowDeveloperError();
     });
 
     it("renders with disableDepthTestDistance", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: new Cartesian3(-1.0, 0.0, 0.0),
         pixelSize: 10.0,
         color: Color.LIME,
@@ -353,14 +353,14 @@ describe(
     });
 
     it("throws with disableDepthTestDistance set less than 0.0", function () {
-      const p = pointPrimitives.add();
+      var p = pointPrimitives.add();
       expect(function () {
         p.disableDepthTestDistance = -1.0;
       }).toThrowDeveloperError();
     });
 
     it("set a removed pointPrimitive property", function () {
-      const p = pointPrimitives.add();
+      var p = pointPrimitives.add();
       pointPrimitives.remove(p);
       p.show = false;
       expect(p.show).toEqual(false);
@@ -371,7 +371,7 @@ describe(
     });
 
     it("adds a pointPrimitive", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
       });
 
@@ -380,10 +380,10 @@ describe(
     });
 
     it("removes the first pointPrimitive", function () {
-      const one = pointPrimitives.add({
+      var one = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
       });
-      const two = pointPrimitives.add({
+      var two = pointPrimitives.add({
         position: new Cartesian3(4.0, 5.0, 6.0),
       });
 
@@ -396,10 +396,10 @@ describe(
     });
 
     it("removes the last pointPrimitive", function () {
-      const one = pointPrimitives.add({
+      var one = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
       });
-      const two = pointPrimitives.add({
+      var two = pointPrimitives.add({
         position: new Cartesian3(4.0, 5.0, 6.0),
       });
 
@@ -412,7 +412,7 @@ describe(
     });
 
     it("removes the same pointPrimitive twice", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
       });
       expect(pointPrimitives.length).toEqual(1);
@@ -435,10 +435,10 @@ describe(
     });
 
     it("adds and removes pointPrimitives", function () {
-      const one = pointPrimitives.add({
+      var one = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
       });
-      const two = pointPrimitives.add({
+      var two = pointPrimitives.add({
         position: new Cartesian3(4.0, 5.0, 6.0),
       });
       expect(pointPrimitives.length).toEqual(2);
@@ -446,7 +446,7 @@ describe(
       expect(pointPrimitives.get(1)).toEqual(two);
 
       expect(pointPrimitives.remove(two)).toEqual(true);
-      const three = pointPrimitives.add({
+      var three = pointPrimitives.add({
         position: new Cartesian3(7.0, 8.0, 9.0),
       });
       expect(pointPrimitives.length).toEqual(2);
@@ -468,13 +468,13 @@ describe(
     });
 
     it("can check if it contains a pointPrimitive", function () {
-      const pointPrimitive = pointPrimitives.add();
+      var pointPrimitive = pointPrimitives.add();
 
       expect(pointPrimitives.contains(pointPrimitive)).toEqual(true);
     });
 
     it("returns false when checking if it contains a pointPrimitive it does not contain", function () {
-      const pointPrimitive = pointPrimitives.add();
+      var pointPrimitive = pointPrimitives.add();
       pointPrimitives.remove(pointPrimitive);
 
       expect(pointPrimitives.contains(pointPrimitive)).toEqual(false);
@@ -494,7 +494,7 @@ describe(
     });
 
     it("modifies and removes a pointPrimitive, then renders", function () {
-      const p1 = pointPrimitives.add({
+      var p1 = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.LIME,
       });
@@ -540,7 +540,7 @@ describe(
         position: Cartesian3.ZERO,
         color: Color.LIME,
       });
-      const bluePointPrimitive = pointPrimitives.add({
+      var bluePointPrimitive = pointPrimitives.add({
         position: new Cartesian3(1.0, 0.0, 0.0), // Closer to camera
         color: Color.BLUE,
       });
@@ -581,11 +581,11 @@ describe(
     });
 
     it("renders using pointPrimitive show property", function () {
-      const greenPointPrimitive = pointPrimitives.add({
+      var greenPointPrimitive = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.LIME,
       });
-      const bluePointPrimitive = pointPrimitives.add({
+      var bluePointPrimitive = pointPrimitives.add({
         show: false,
         position: Cartesian3.ZERO,
         color: Color.BLUE,
@@ -600,7 +600,7 @@ describe(
     });
 
     it("renders using pointPrimitive position property", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.LIME,
       });
@@ -615,7 +615,7 @@ describe(
     });
 
     it("renders using pointPrimitive color property", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.WHITE,
       });
@@ -642,7 +642,7 @@ describe(
     });
 
     it("updates 10% of pointPrimitives", function () {
-      for (let i = 0; i < 10; ++i) {
+      for (var i = 0; i < 10; ++i) {
         pointPrimitives.add({
           position: Cartesian3.ZERO,
           color: Color.WHITE,
@@ -665,7 +665,7 @@ describe(
     });
 
     it("renders more than 64K pointPrimitives", function () {
-      for (let i = 0; i < 64 * 1024; ++i) {
+      for (var i = 0; i < 64 * 1024; ++i) {
         pointPrimitives.add({
           position: Cartesian3.ZERO,
           color: Color.TRANSPARENT,
@@ -681,7 +681,7 @@ describe(
     });
 
     it("is picked", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.WHITE,
         id: "id",
@@ -694,7 +694,7 @@ describe(
     });
 
     it("can change pick id", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.WHITE,
         id: "id",
@@ -724,12 +724,12 @@ describe(
     });
 
     it("picks a pointPrimitive using scaleByDistance", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.WHITE,
       });
 
-      const scaleByDistance = new NearFarScalar(1.0, 4.0, 3.0e9, 2.0);
+      var scaleByDistance = new NearFarScalar(1.0, 4.0, 3.0e9, 2.0);
       p.scaleByDistance = scaleByDistance;
 
       expect(scene).toPickPrimitive(p);
@@ -742,12 +742,12 @@ describe(
     });
 
     it("picks a pointPrimitive using translucencyByDistance", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
         color: Color.WHITE,
       });
 
-      const translucency = new NearFarScalar(1.0, 0.9, 3.0e9, 0.8);
+      var translucency = new NearFarScalar(1.0, 0.9, 3.0e9, 0.8);
       p.translucencyByDistance = translucency;
 
       expect(scene).toPickPrimitive(p);
@@ -760,7 +760,7 @@ describe(
     });
 
     it("computes screen space position", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
       });
       scene.renderForSpecs();
@@ -771,12 +771,12 @@ describe(
     });
 
     it("stores screen space position in a result", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
       });
-      const result = new Cartesian2();
+      var result = new Cartesian2();
       scene.renderForSpecs();
-      const actual = p.computeScreenSpacePosition(scene, result);
+      var actual = p.computeScreenSpacePosition(scene, result);
       expect(actual).toEqual(result);
       expect(result).toEqualEpsilon(
         new Cartesian2(0.5, 0.5),
@@ -785,7 +785,7 @@ describe(
     });
 
     it("throws when computing screen space position when not in a collection", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: Cartesian3.ZERO,
       });
       pointPrimitives.remove(p);
@@ -795,7 +795,7 @@ describe(
     });
 
     it("throws when computing screen space position without scene", function () {
-      const p = pointPrimitives.add();
+      var p = pointPrimitives.add();
 
       expect(function () {
         p.computeScreenSpacePosition();
@@ -803,16 +803,16 @@ describe(
     });
 
     it("computes screen space bounding box", function () {
-      const size = 10;
+      var size = 10;
 
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         size: size,
       });
 
-      const halfWidth = size * 0.5;
-      const halfHeight = halfWidth;
+      var halfWidth = size * 0.5;
+      var halfHeight = halfWidth;
 
-      const bbox = PointPrimitive.getScreenSpaceBoundingBox(p, Cartesian2.ZERO);
+      var bbox = PointPrimitive.getScreenSpaceBoundingBox(p, Cartesian2.ZERO);
       expect(bbox.x).toEqual(-halfWidth);
       expect(bbox.y).toEqual(-halfHeight);
       expect(bbox.width).toEqual(size);
@@ -820,17 +820,17 @@ describe(
     });
 
     it("computes screen space bounding box with result", function () {
-      const size = 10;
+      var size = 10;
 
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         size: size,
       });
 
-      const halfWidth = size * 0.5;
-      const halfHeight = halfWidth;
+      var halfWidth = size * 0.5;
+      var halfHeight = halfWidth;
 
-      const result = new BoundingRectangle();
-      const bbox = PointPrimitive.getScreenSpaceBoundingBox(
+      var result = new BoundingRectangle();
+      var bbox = PointPrimitive.getScreenSpaceBoundingBox(
         p,
         Cartesian2.ZERO,
         result
@@ -843,7 +843,7 @@ describe(
     });
 
     it("equals another pointPrimitive", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
         color: {
           red: 1.0,
@@ -852,7 +852,7 @@ describe(
           alpha: 1.0,
         },
       });
-      const p2 = pointPrimitives.add({
+      var p2 = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
         color: {
           red: 1.0,
@@ -867,10 +867,10 @@ describe(
     });
 
     it("does not equal another pointPrimitive", function () {
-      const p = pointPrimitives.add({
+      var p = pointPrimitives.add({
         position: new Cartesian3(1.0, 2.0, 3.0),
       });
-      const p2 = pointPrimitives.add({
+      var p2 = pointPrimitives.add({
         position: new Cartesian3(4.0, 5.0, 6.0),
       });
 
@@ -880,7 +880,7 @@ describe(
 
     it("does not equal undefined", function () {
       // This tests the `PointPrimitiveCollection.equals` function itself, not simple equality.
-      const pointPrimitive = pointPrimitives.add();
+      var pointPrimitive = pointPrimitives.add();
       expect(pointPrimitive.equals(undefined)).toEqual(false);
     });
 
@@ -891,43 +891,43 @@ describe(
     });
 
     it("computes bounding sphere in 3D", function () {
-      const one = pointPrimitives.add({
+      var one = pointPrimitives.add({
         position: Cartesian3.fromDegrees(-50.0, -50.0),
       });
-      const two = pointPrimitives.add({
+      var two = pointPrimitives.add({
         position: Cartesian3.fromDegrees(-50.0, 50.0),
       });
 
       scene.renderForSpecs();
-      const actual = scene.frameState.commandList[0].boundingVolume;
+      var actual = scene.frameState.commandList[0].boundingVolume;
 
-      const positions = [one.position, two.position];
-      const expected = BoundingSphere.fromPoints(positions);
+      var positions = [one.position, two.position];
+      var expected = BoundingSphere.fromPoints(positions);
       expect(actual.center).toEqual(expected.center);
       expect(actual.radius).toEqual(expected.radius);
     });
 
     it("computes bounding sphere in Columbus view", function () {
-      const projection = scene.mapProjection;
-      const ellipsoid = projection.ellipsoid;
+      var projection = scene.mapProjection;
+      var ellipsoid = projection.ellipsoid;
 
-      const one = pointPrimitives.add({
+      var one = pointPrimitives.add({
         position: Cartesian3.fromDegrees(-50.0, -50.0),
       });
-      const two = pointPrimitives.add({
+      var two = pointPrimitives.add({
         position: Cartesian3.fromDegrees(-50.0, 50.0),
       });
 
       // Update scene state
       scene.morphToColumbusView(0);
       scene.renderForSpecs();
-      const actual = scene.frameState.commandList[0].boundingVolume;
+      var actual = scene.frameState.commandList[0].boundingVolume;
 
-      const projectedPositions = [
+      var projectedPositions = [
         projection.project(ellipsoid.cartesianToCartographic(one.position)),
         projection.project(ellipsoid.cartesianToCartographic(two.position)),
       ];
-      const expected = BoundingSphere.fromPoints(projectedPositions);
+      var expected = BoundingSphere.fromPoints(projectedPositions);
       expected.center = new Cartesian3(
         0.0,
         expected.center.x,
@@ -937,18 +937,18 @@ describe(
         expected.center,
         CesiumMath.EPSILON8
       );
-      expect(actual.radius).toBeGreaterThanOrEqual(expected.radius);
+      expect(actual.radius).toBeGreaterThanOrEqualTo(expected.radius);
     });
 
     it("computes bounding sphere in 2D", function () {
-      const projection = scene.mapProjection;
-      const ellipsoid = projection.ellipsoid;
+      var projection = scene.mapProjection;
+      var ellipsoid = projection.ellipsoid;
 
-      const one = pointPrimitives.add({
+      var one = pointPrimitives.add({
         color: Color.LIME,
         position: Cartesian3.fromDegrees(-50.0, -50.0),
       });
-      const two = pointPrimitives.add({
+      var two = pointPrimitives.add({
         color: Color.LIME,
         position: Cartesian3.fromDegrees(-50.0, 50.0),
       });
@@ -961,13 +961,13 @@ describe(
       scene.renderForSpecs();
 
       scene.renderForSpecs();
-      const actual = scene.frameState.commandList[0].boundingVolume;
+      var actual = scene.frameState.commandList[0].boundingVolume;
 
-      const projectedPositions = [
+      var projectedPositions = [
         projection.project(ellipsoid.cartesianToCartographic(one.position)),
         projection.project(ellipsoid.cartesianToCartographic(two.position)),
       ];
-      const expected = BoundingSphere.fromPoints(projectedPositions);
+      var expected = BoundingSphere.fromPoints(projectedPositions);
       expected.center = new Cartesian3(
         0.0,
         expected.center.x,

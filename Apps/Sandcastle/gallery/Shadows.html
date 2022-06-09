@@ -32,10 +32,10 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           infoBox: false,
           selectionIndicator: false,
           shadows: true,
@@ -44,10 +44,10 @@
           terrainProvider: Cesium.createWorldTerrain(),
         });
 
-        const shadowMap = viewer.shadowMap;
+        var shadowMap = viewer.shadowMap;
         shadowMap.maximumDistance = 10000.0;
 
-        const cesiumAir = viewer.entities.add({
+        var cesiumAir = viewer.entities.add({
           name: "Cesium Air",
           height: 20.0,
           model: {
@@ -55,7 +55,7 @@
           },
         });
 
-        const groundVehicle = viewer.entities.add({
+        var groundVehicle = viewer.entities.add({
           name: "Ground Vehicle",
           height: 0.0,
           model: {
@@ -64,7 +64,7 @@
           },
         });
 
-        const cesiumMan = viewer.entities.add({
+        var cesiumMan = viewer.entities.add({
           name: "Cesium Man",
           height: 0.0,
           model: {
@@ -73,7 +73,7 @@
           },
         });
 
-        const woodTower = viewer.entities.add({
+        var woodTower = viewer.entities.add({
           name: "Wood Tower",
           height: 0.0,
           model: {
@@ -81,7 +81,7 @@
           },
         });
 
-        const simpleCity = viewer.entities.add({
+        var simpleCity = viewer.entities.add({
           name: "Simple City",
           height: 0.0,
           model: {
@@ -89,7 +89,7 @@
           },
         });
 
-        const boxEntity = viewer.entities.add({
+        var boxEntity = viewer.entities.add({
           name: "Box",
           height: 10.0,
           box: {
@@ -99,13 +99,13 @@
           },
         });
 
-        const checkerMaterial = new Cesium.CheckerboardMaterialProperty({
+        var checkerMaterial = new Cesium.CheckerboardMaterialProperty({
           evenColor: Cesium.Color.RED.withAlpha(0.5),
           oddColor: Cesium.Color.RED.withAlpha(0.0),
           repeat: new Cesium.Cartesian2(5.0, 10.0),
         });
 
-        const checkerEntity = viewer.entities.add({
+        var checkerEntity = viewer.entities.add({
           name: "Checkered Box",
           height: 10.0,
           box: {
@@ -117,7 +117,7 @@
           },
         });
 
-        const sphereEntity = viewer.entities.add({
+        var sphereEntity = viewer.entities.add({
           name: "Sphere",
           height: 20.0,
           ellipsoid: {
@@ -129,7 +129,7 @@
           },
         });
 
-        const locations = {
+        var locations = {
           Exton: {
             longitude: -1.31968,
             latitude: 0.698874,
@@ -168,17 +168,17 @@
           },
         };
 
-        let i;
-        const entities = viewer.entities.values;
-        const entitiesLength = entities.length;
+        var i;
+        var entities = viewer.entities.values;
+        var entitiesLength = entities.length;
 
         function setLocation(location) {
-          const longitude = location.longitude;
-          const latitude = location.latitude;
-          const height = location.height;
+          var longitude = location.longitude;
+          var latitude = location.latitude;
+          var height = location.height;
 
           for (i = 0; i < entitiesLength; ++i) {
-            const entity = entities[i];
+            var entity = entities[i];
             entity.position = Cesium.Cartesian3.fromRadians(
               longitude,
               latitude,
@@ -196,10 +196,10 @@
           };
         }
 
-        const locationToolbarOptions = [];
-        for (const locationName in locations) {
+        var locationToolbarOptions = [];
+        for (var locationName in locations) {
           if (locations.hasOwnProperty(locationName)) {
-            const location = locations[locationName];
+            var location = locations[locationName];
             locationToolbarOptions.push({
               text: locationName,
               onselect: setLocationFunction(location),
@@ -223,9 +223,9 @@
           };
         }
 
-        const entityToolbarOptions = [];
+        var entityToolbarOptions = [];
         for (i = 0; i < entitiesLength; ++i) {
-          const entity = entities[i];
+          var entity = entities[i];
           entityToolbarOptions.push({
             text: entity.name,
             onselect: setEntityFunction(entity),
@@ -241,12 +241,12 @@
         });
 
         Sandcastle.addToggleButton("Entity Shadows", true, function (checked) {
-          const entityShadows = checked
+          var entityShadows = checked
             ? Cesium.ShadowMode.ENABLED
             : Cesium.ShadowMode.DISABLED;
           for (i = 0; i < entitiesLength; ++i) {
-            const entity = entities[i];
-            const visual = entity.model || entity.box || entity.ellipsoid;
+            var entity = entities[i];
+            var visual = entity.model || entity.box || entity.ellipsoid;
             visual.shadows = entityShadows;
           }
         });
@@ -301,10 +301,10 @@
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

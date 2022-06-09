@@ -14,8 +14,8 @@ function createContext(options, canvasWidth, canvasHeight) {
     options.getWebGLStub = getWebGLStub;
   }
 
-  const canvas = createCanvas(canvasWidth, canvasHeight);
-  const context = new Context(canvas, options);
+  var canvas = createCanvas(canvasWidth, canvasHeight);
+  var context = new Context(canvas, options);
 
   if (!!window.webglValidation) {
     context.validateShaderProgram = true;
@@ -24,7 +24,7 @@ function createContext(options, canvasWidth, canvasHeight) {
     context.throwOnWebGLError = true;
   }
 
-  const us = context.uniformState;
+  var us = context.uniformState;
   us.update(createFrameState(context));
 
   // Add function for test

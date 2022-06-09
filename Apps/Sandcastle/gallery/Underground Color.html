@@ -108,27 +108,27 @@
       </table>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
+        var viewer = new Cesium.Viewer("cesiumContainer");
 
-        const scene = viewer.scene;
-        const globe = scene.globe;
+        var scene = viewer.scene;
+        var globe = scene.globe;
 
         scene.screenSpaceCameraController.enableCollisionDetection = false;
 
-        const longitude = -3.82518;
-        const latitude = 53.11728;
-        const height = -500.0;
-        const position = Cesium.Cartesian3.fromDegrees(
+        var longitude = -3.82518;
+        var latitude = 53.11728;
+        var height = -500.0;
+        var position = Cesium.Cartesian3.fromDegrees(
           longitude,
           latitude,
           height
         );
-        const url = "../../SampleData/models/ParcLeadMine/ParcLeadMine.glb";
+        var url = "../../SampleData/models/ParcLeadMine/ParcLeadMine.glb";
 
-        const entity = viewer.entities.add({
+        var entity = viewer.entities.add({
           name: url,
           position: position,
           model: {
@@ -150,15 +150,15 @@
           endTransform: Cesium.Matrix4.IDENTITY,
         });
 
-        const originalColor = Cesium.Color.BLACK;
-        const originalNearDistance = 1000.0;
-        const originalFarDistance = 1000000.0;
-        const originalNearAlpha = 0.0;
-        const originalFarAlpha = 1.0;
+        var originalColor = Cesium.Color.BLACK;
+        var originalNearDistance = 1000.0;
+        var originalFarDistance = 1000000.0;
+        var originalNearAlpha = 0.0;
+        var originalFarAlpha = 1.0;
 
-        let color = originalColor;
+        var color = originalColor;
 
-        const viewModel = {
+        var viewModel = {
           enabled: true,
           nearDistance: originalNearDistance,
           farDistance: originalFarDistance,
@@ -167,9 +167,9 @@
         };
 
         Cesium.knockout.track(viewModel);
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
-        for (const name in viewModel) {
+        for (var name in viewModel) {
           if (viewModel.hasOwnProperty(name)) {
             Cesium.knockout.getObservable(viewModel, name).subscribe(update);
           }
@@ -195,22 +195,22 @@
         function update() {
           globe.undergroundColor = viewModel.enabled ? color : undefined;
 
-          let nearDistance = Number(viewModel.nearDistance);
+          var nearDistance = Number(viewModel.nearDistance);
           nearDistance = isNaN(nearDistance)
             ? originalNearDistance
             : nearDistance;
 
-          let farDistance = Number(viewModel.farDistance);
+          var farDistance = Number(viewModel.farDistance);
           farDistance = isNaN(farDistance) ? originalFarDistance : farDistance;
 
           if (nearDistance > farDistance) {
             nearDistance = farDistance;
           }
 
-          let nearAlpha = Number(viewModel.nearAlpha);
+          var nearAlpha = Number(viewModel.nearAlpha);
           nearAlpha = isNaN(nearAlpha) ? 0.0 : nearAlpha;
 
-          let farAlpha = Number(viewModel.farAlpha);
+          var farAlpha = Number(viewModel.farAlpha);
           farAlpha = isNaN(farAlpha) ? 1.0 : farAlpha;
 
           globe.undergroundColorAlphaByDistance.near = nearDistance;
@@ -220,10 +220,10 @@
         }
         update(); //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

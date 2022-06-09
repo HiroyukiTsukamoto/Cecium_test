@@ -55,7 +55,7 @@ describe("Core/EllipseOutlineGeometry", function () {
   });
 
   it("computes positions", function () {
-    const m = EllipseOutlineGeometry.createGeometry(
+    var m = EllipseOutlineGeometry.createGeometry(
       new EllipseOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -71,7 +71,7 @@ describe("Core/EllipseOutlineGeometry", function () {
   });
 
   it("computes positions extruded", function () {
-    const m = EllipseOutlineGeometry.createGeometry(
+    var m = EllipseOutlineGeometry.createGeometry(
       new EllipseOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -87,7 +87,7 @@ describe("Core/EllipseOutlineGeometry", function () {
   });
 
   it("computes offset attribute", function () {
-    const m = EllipseOutlineGeometry.createGeometry(
+    var m = EllipseOutlineGeometry.createGeometry(
       new EllipseOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -98,18 +98,18 @@ describe("Core/EllipseOutlineGeometry", function () {
       })
     );
 
-    const numVertices = 8;
+    var numVertices = 8;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
   it("computes offset attribute extruded for top vertices", function () {
-    const m = EllipseOutlineGeometry.createGeometry(
+    var m = EllipseOutlineGeometry.createGeometry(
       new EllipseOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -121,19 +121,19 @@ describe("Core/EllipseOutlineGeometry", function () {
       })
     );
 
-    const numVertices = 16;
+    var numVertices = 16;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 0);
     expected = arrayFill(expected, 1, 0, 8);
     expect(offset).toEqual(expected);
   });
 
   it("computes offset attribute extruded for all vertices", function () {
-    const m = EllipseOutlineGeometry.createGeometry(
+    var m = EllipseOutlineGeometry.createGeometry(
       new EllipseOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -145,18 +145,18 @@ describe("Core/EllipseOutlineGeometry", function () {
       })
     );
 
-    const numVertices = 16;
+    var numVertices = 16;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
 
   it("computes positions extruded, no lines drawn between top and bottom", function () {
-    const m = EllipseOutlineGeometry.createGeometry(
+    var m = EllipseOutlineGeometry.createGeometry(
       new EllipseOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -173,31 +173,31 @@ describe("Core/EllipseOutlineGeometry", function () {
   });
 
   it("undefined is returned if the minor axis is equal to or less than zero", function () {
-    const ellipseOutline0 = new EllipseOutlineGeometry({
+    var ellipseOutline0 = new EllipseOutlineGeometry({
       center: Cartesian3.fromDegrees(-75.59777, 40.03883),
       semiMajorAxis: 300000.0,
       semiMinorAxis: 0.0,
     });
-    const ellipseOutline1 = new EllipseOutlineGeometry({
+    var ellipseOutline1 = new EllipseOutlineGeometry({
       center: Cartesian3.fromDegrees(-75.59777, 40.03883),
       semiMajorAxis: 0.0,
       semiMinorAxis: -1.0,
     });
-    const ellipseOutline2 = new EllipseOutlineGeometry({
+    var ellipseOutline2 = new EllipseOutlineGeometry({
       center: Cartesian3.fromDegrees(-75.59777, 40.03883),
       semiMajorAxis: 300000.0,
       semiMinorAxis: -10.0,
     });
-    const ellipseOutline3 = new EllipseOutlineGeometry({
+    var ellipseOutline3 = new EllipseOutlineGeometry({
       center: Cartesian3.fromDegrees(-75.59777, 40.03883),
       semiMajorAxis: -1.0,
       semiMinorAxis: -2.0,
     });
 
-    const geometry0 = EllipseOutlineGeometry.createGeometry(ellipseOutline0);
-    const geometry1 = EllipseOutlineGeometry.createGeometry(ellipseOutline1);
-    const geometry2 = EllipseOutlineGeometry.createGeometry(ellipseOutline2);
-    const geometry3 = EllipseOutlineGeometry.createGeometry(ellipseOutline3);
+    var geometry0 = EllipseOutlineGeometry.createGeometry(ellipseOutline0);
+    var geometry1 = EllipseOutlineGeometry.createGeometry(ellipseOutline1);
+    var geometry2 = EllipseOutlineGeometry.createGeometry(ellipseOutline2);
+    var geometry3 = EllipseOutlineGeometry.createGeometry(ellipseOutline3);
 
     expect(geometry0).toBeUndefined();
     expect(geometry1).toBeUndefined();
@@ -205,9 +205,9 @@ describe("Core/EllipseOutlineGeometry", function () {
     expect(geometry3).toBeUndefined();
   });
 
-  const center = new Cartesian3(8, 9, 10);
-  const ellipsoid = new Ellipsoid(11, 12, 13);
-  let packableInstance = new EllipseOutlineGeometry({
+  var center = new Cartesian3(8, 9, 10);
+  var ellipsoid = new Ellipsoid(11, 12, 13);
+  var packableInstance = new EllipseOutlineGeometry({
     ellipsoid: ellipsoid,
     center: center,
     granularity: 1,
@@ -218,7 +218,7 @@ describe("Core/EllipseOutlineGeometry", function () {
     rotation: 6,
     extrudedHeight: 7,
   });
-  let packedInstance = [
+  var packedInstance = [
     center.x,
     center.y,
     center.z,

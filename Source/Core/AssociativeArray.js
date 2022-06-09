@@ -68,7 +68,7 @@ AssociativeArray.prototype.set = function (key, value) {
   }
   //>>includeEnd('debug');
 
-  const oldValue = this._hash[key];
+  var oldValue = this._hash[key];
   if (value !== oldValue) {
     this.remove(key);
     this._hash[key] = value;
@@ -104,10 +104,10 @@ AssociativeArray.prototype.remove = function (key) {
   }
   //>>includeEnd('debug');
 
-  const value = this._hash[key];
-  const hasValue = defined(value);
+  var value = this._hash[key];
+  var hasValue = defined(value);
   if (hasValue) {
-    const array = this._array;
+    var array = this._array;
     array.splice(array.indexOf(value), 1);
     delete this._hash[key];
   }
@@ -118,7 +118,7 @@ AssociativeArray.prototype.remove = function (key) {
  * Clears the collection.
  */
 AssociativeArray.prototype.removeAll = function () {
-  const array = this._array;
+  var array = this._array;
   if (array.length > 0) {
     this._hash = {};
     array.length = 0;

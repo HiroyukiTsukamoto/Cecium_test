@@ -68,7 +68,7 @@
   "buffers": [
     {
       "name": "buffer",
-      "byteLength": 7560,
+      "byteLength": 7520,
       "uri": "buffer.bin"
     }
   ],
@@ -109,16 +109,6 @@
       "buffer": 0,
       "byteLength": 40,
       "byteOffset": 7480
-    },
-    {
-      "buffer": 0,
-      "byteOffset": 7520,
-      "byteLength": 20
-    },
-    {
-      "buffer": 0,
-      "byteOffset": 7544,
-      "byteLength": 10
     }
   ],
   "materials": [
@@ -155,18 +145,20 @@
           "material": 0,
           "mode": 4,
           "extensions": {
-            "EXT_mesh_features": {
-              "featureIds": [
+            "EXT_feature_metadata": {
+              "featureIdAttributes": [
                 {
-                  "label": "buildings",
-                  "propertyTable": 0,
-                  "attribute": 0,
-                  "featureCount": 10
+                  "featureTable": "buildings",
+                  "featureIds": {
+                    "attribute": "_FEATURE_ID_0"
+                  }
                 },
                 {
-                  "label": "defaultIdsTest",
-                  "propertyTable": 0,
-                  "featureCount": 5
+                  "featureTable": "buildings",
+                  "featureIds": {
+                    "constant": 0,
+                    "divisor": 24
+                  }
                 }
               ]
             }
@@ -230,68 +222,41 @@
     }
   ],
   "extensionsUsed": [
-    "EXT_mesh_features",
-    "EXT_structural_metadata"
+    "EXT_feature_metadata"
+  ],
+  "extensionsRequired": [
+    "EXT_feature_metadata"
   ],
   "extensions": {
-    "EXT_structural_metadata": {
+    "EXT_feature_metadata": {
       "schema": {
         "classes": {
           "building": {
             "properties": {
               "height": {
-                "type": "SCALAR",
-                "componentType": "FLOAT32",
-                "required": true
+                "type": "FLOAT32"
               },
               "id": {
-                "type": "SCALAR",
-                "componentType": "INT32",
-                "required": true
-              },
-              "year": {
-                "type": "STRING",
-                "required": false,
-                "default": "2022"
-              },
-              "employeeCount": {
-                "type": "SCALAR",
-                "componentType": "INT16",
-                "noData": -1,
-                "required": false
-              },
-              "temperatureCelsius": {
-                "type": "UINT8",
-                "normalized": true,
-                "scale": 100
+                "type": "INT32"
               }
             }
           }
         }
       },
-      "propertyTables": [
-        {
-          "name": "Buildings",
+      "featureTables": {
+        "buildings": {
           "class": "building",
           "count": 10,
           "properties": {
             "height": {
-              "values": 4
+              "bufferView": 4
             },
             "id": {
-              "values": 5
-            },
-            "employeeCount": {
-              "values": 6
-            },
-            "temperatureCelsius": {
-              "values": 7,
-              "offset": 18,
-              "scale": 6
+              "bufferView": 5
             }
           }
         }
-      ]
+      }
     }
   }
 }

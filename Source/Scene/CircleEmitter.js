@@ -49,12 +49,12 @@ Object.defineProperties(CircleEmitter.prototype, {
  * @param {Particle} particle The particle to initialize.
  */
 CircleEmitter.prototype.emit = function (particle) {
-  const theta = CesiumMath.randomBetween(0.0, CesiumMath.TWO_PI);
-  const rad = CesiumMath.randomBetween(0.0, this._radius);
+  var theta = CesiumMath.randomBetween(0.0, CesiumMath.TWO_PI);
+  var rad = CesiumMath.randomBetween(0.0, this._radius);
 
-  const x = rad * Math.cos(theta);
-  const y = rad * Math.sin(theta);
-  const z = 0.0;
+  var x = rad * Math.cos(theta);
+  var y = rad * Math.sin(theta);
+  var z = 0.0;
 
   particle.position = Cartesian3.fromElements(x, y, z, particle.position);
   particle.velocity = Cartesian3.clone(Cartesian3.UNIT_Z, particle.velocity);

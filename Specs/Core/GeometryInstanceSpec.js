@@ -10,7 +10,7 @@ import { PrimitiveType } from "../../Source/Cesium.js";
 
 describe("Core/GeometryInstance", function () {
   it("constructor", function () {
-    const geometry = new Geometry({
+    var geometry = new Geometry({
       attributes: {
         position: new GeometryAttribute({
           componentDatatype: ComponentDatatype.DOUBLE,
@@ -32,12 +32,12 @@ describe("Core/GeometryInstance", function () {
       primitiveType: PrimitiveType.TRIANGLES,
       boundingSphere: new BoundingSphere(new Cartesian3(0.5, 0.5, 0.0), 1.0),
     });
-    const modelMatrix = Matrix4.multiplyByTranslation(
+    var modelMatrix = Matrix4.multiplyByTranslation(
       Matrix4.IDENTITY,
       new Cartesian3(0.0, 0.0, 9000000.0),
       new Matrix4()
     );
-    const attributes = {
+    var attributes = {
       color: new GeometryInstanceAttribute({
         componentDatatype: ComponentDatatype.UNSIGNED_BYTE,
         componentsPerAttribute: 4,
@@ -45,7 +45,7 @@ describe("Core/GeometryInstance", function () {
         value: new Uint8Array([255, 255, 0, 255]),
       }),
     };
-    const instance = new GeometryInstance({
+    var instance = new GeometryInstance({
       geometry: geometry,
       modelMatrix: modelMatrix,
       id: "geometry",

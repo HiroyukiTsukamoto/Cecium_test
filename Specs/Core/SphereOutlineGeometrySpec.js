@@ -28,7 +28,7 @@ describe("Core/SphereOutlineGeometry", function () {
   });
 
   it("computes positions", function () {
-    const m = SphereOutlineGeometry.createGeometry(
+    var m = SphereOutlineGeometry.createGeometry(
       new SphereOutlineGeometry({
         stackPartitions: 2,
         slicePartitions: 2,
@@ -42,22 +42,22 @@ describe("Core/SphereOutlineGeometry", function () {
   });
 
   it("undefined is returned if radius is equals to zero", function () {
-    const sphereOutline = new SphereOutlineGeometry({
+    var sphereOutline = new SphereOutlineGeometry({
       radius: 0.0,
     });
 
-    const geometry = SphereOutlineGeometry.createGeometry(sphereOutline);
+    var geometry = SphereOutlineGeometry.createGeometry(sphereOutline);
 
     expect(geometry).toBeUndefined();
   });
 
-  const sphere = new SphereOutlineGeometry({
+  var sphere = new SphereOutlineGeometry({
     radius: 1,
     stackPartitions: 3,
     slicePartitions: 3,
     subdivisions: 2,
   });
-  const packedInstance = [
+  var packedInstance = [
     1.0,
     1.0,
     1.0,

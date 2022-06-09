@@ -1,7 +1,7 @@
 /**
  * @private
  */
-const JobType = {
+var JobType = {
   TEXTURE: 0,
   PROGRAM: 1,
   BUFFER: 2,

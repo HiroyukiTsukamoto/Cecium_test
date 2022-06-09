@@ -5,7 +5,7 @@ import WebGLConstants from "../Core/WebGLConstants.js";
  *
  * @enum {Number}
  */
-const StencilFunction = {
+var StencilFunction = {
   /**
    * The stencil test never passes.
    *

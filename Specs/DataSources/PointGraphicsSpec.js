@@ -7,7 +7,7 @@ import { HeightReference } from "../../Source/Cesium.js";
 
 describe("DataSources/PointGraphics", function () {
   it("creates expected instance from raw assignment and construction", function () {
-    const options = {
+    var options = {
       color: Color.RED,
       pixelSize: 1,
       outlineColor: Color.BLUE,
@@ -19,7 +19,7 @@ describe("DataSources/PointGraphics", function () {
       disableDepthTestDistance: 10.0,
     };
 
-    const point = new PointGraphics(options);
+    var point = new PointGraphics(options);
     expect(point.color).toBeInstanceOf(ConstantProperty);
     expect(point.pixelSize).toBeInstanceOf(ConstantProperty);
     expect(point.outlineColor).toBeInstanceOf(ConstantProperty);
@@ -46,7 +46,7 @@ describe("DataSources/PointGraphics", function () {
   });
 
   it("merge assigns unassigned properties", function () {
-    const source = new PointGraphics();
+    var source = new PointGraphics();
     source.color = new ConstantProperty(Color.WHITE);
     source.pixelSize = new ConstantProperty(1);
     source.outlineColor = new ConstantProperty(Color.WHITE);
@@ -61,7 +61,7 @@ describe("DataSources/PointGraphics", function () {
     );
     source.disableDepthTestDistance = new ConstantProperty(10.0);
 
-    const target = new PointGraphics();
+    var target = new PointGraphics();
     target.merge(source);
     expect(target.color).toBe(source.color);
     expect(target.pixelSize).toBe(source.pixelSize);
@@ -79,7 +79,7 @@ describe("DataSources/PointGraphics", function () {
   });
 
   it("merge does not assign assigned properties", function () {
-    const source = new PointGraphics();
+    var source = new PointGraphics();
     source.color = new ConstantProperty(Color.WHITE);
     source.pixelSize = new ConstantProperty(1);
     source.outlineColor = new ConstantProperty(Color.WHITE);
@@ -94,20 +94,18 @@ describe("DataSources/PointGraphics", function () {
     );
     source.disableDepthTestDistance = new ConstantProperty(10.0);
 
-    const color = new ConstantProperty(Color.WHITE);
-    const pixelSize = new ConstantProperty(1);
-    const outlineColor = new ConstantProperty(Color.WHITE);
-    const outlineWidth = new ConstantProperty(1);
-    const show = new ConstantProperty(true);
-    const heightReference = new ConstantProperty(
-      HeightReference.CLAMP_TO_GROUND
-    );
-    const distanDisplayCondition = new ConstantProperty(
+    var color = new ConstantProperty(Color.WHITE);
+    var pixelSize = new ConstantProperty(1);
+    var outlineColor = new ConstantProperty(Color.WHITE);
+    var outlineWidth = new ConstantProperty(1);
+    var show = new ConstantProperty(true);
+    var heightReference = new ConstantProperty(HeightReference.CLAMP_TO_GROUND);
+    var distanDisplayCondition = new ConstantProperty(
       new DistanceDisplayCondition(10.0, 100.0)
     );
-    const disableDepthTestDistance = new ConstantProperty(20.0);
+    var disableDepthTestDistance = new ConstantProperty(20.0);
 
-    const target = new PointGraphics();
+    var target = new PointGraphics();
     target.color = color;
     target.pixelSize = pixelSize;
     target.outlineColor = outlineColor;
@@ -131,7 +129,7 @@ describe("DataSources/PointGraphics", function () {
   });
 
   it("clone works", function () {
-    const source = new PointGraphics();
+    var source = new PointGraphics();
     source.color = new ConstantProperty(Color.WHITE);
     source.pixelSize = new ConstantProperty(1);
     source.outlineColor = new ConstantProperty(Color.WHITE);
@@ -146,7 +144,7 @@ describe("DataSources/PointGraphics", function () {
     );
     source.disableDepthTestDistance = new ConstantProperty(10.0);
 
-    const result = source.clone();
+    var result = source.clone();
     expect(result.color).toBe(source.color);
     expect(result.pixelSize).toBe(source.pixelSize);
     expect(result.outlineColor).toBe(source.outlineColor);
@@ -163,7 +161,7 @@ describe("DataSources/PointGraphics", function () {
   });
 
   it("merge throws if source undefined", function () {
-    const target = new PointGraphics();
+    var target = new PointGraphics();
     expect(function () {
       target.merge(undefined);
     }).toThrowDeveloperError();

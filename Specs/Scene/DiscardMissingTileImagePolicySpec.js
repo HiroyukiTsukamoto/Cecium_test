@@ -2,9 +2,10 @@ import { Cartesian2 } from "../../Source/Cesium.js";
 import { Resource } from "../../Source/Cesium.js";
 import { DiscardMissingTileImagePolicy } from "../../Source/Cesium.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Scene/DiscardMissingTileImagePolicy", function () {
-  let supportsImageBitmapOptions;
+  var supportsImageBitmapOptions;
   beforeAll(function () {
     // This suite spies on requests. Resource.supportsImageBitmapOptions needs to make a request to a data URI.
     // We run it here to avoid interfering with the tests.
@@ -40,7 +41,7 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
     });
 
     it("requests the missing image url", function () {
-      const missingImageUrl = "http://some.host.invalid/missingImage.png";
+      var missingImageUrl = "http://some.host.invalid/missingImage.png";
 
       spyOn(Resource, "createImageBitmapFromBlob").and.callThrough();
       spyOn(Resource._Implementations, "createImage").and.callFake(function (
@@ -48,7 +49,7 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
         crossOrigin,
         deferred
       ) {
-        const url = request.url;
+        var url = request.url;
         if (/^blob:/.test(url)) {
           Resource._DefaultImplementations.createImage(
             request,
@@ -85,7 +86,7 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
         );
       };
 
-      const policy = new DiscardMissingTileImagePolicy({
+      var policy = new DiscardMissingTileImagePolicy({
         missingImageUrl: missingImageUrl,
         pixelsToCheck: [new Cartesian2(0, 0)],
       });
@@ -104,13 +105,13 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
 
   describe("shouldDiscardImage", function () {
     it("discards an image that is identical to the missing image", function () {
-      const promises = [];
+      var promises = [];
 
       promises.push(Resource.fetchImage("Data/Images/Red16x16.png"));
       promises.push(Resource.fetchImage("Data/Images/Green4x4.png"));
 
-      const missingImageUrl = "Data/Images/Red16x16.png";
-      const policy = new DiscardMissingTileImagePolicy({
+      var missingImageUrl = "Data/Images/Red16x16.png";
+      var policy = new DiscardMissingTileImagePolicy({
         missingImageUrl: missingImageUrl,
         pixelsToCheck: [new Cartesian2(0, 0)],
       });
@@ -121,9 +122,9 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
         })
       );
 
-      return Promise.all(promises, function (results) {
-        const redImage = results[0];
-        const greenImage = results[1];
+      return when.all(promises, function (results) {
+        var redImage = results[0];
+        var greenImage = results[1];
 
         expect(policy.shouldDiscardImage(redImage)).toEqual(true);
         expect(policy.shouldDiscardImage(greenImage)).toEqual(false);
@@ -131,12 +132,12 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
     });
 
     it("discards an image that is identical to the missing image even if the missing image is transparent", function () {
-      const promises = [];
+      var promises = [];
 
       promises.push(Resource.fetchImage("Data/Images/Transparent.png"));
 
-      const missingImageUrl = "Data/Images/Transparent.png";
-      const policy = new DiscardMissingTileImagePolicy({
+      var missingImageUrl = "Data/Images/Transparent.png";
+      var policy = new DiscardMissingTileImagePolicy({
         missingImageUrl: missingImageUrl,
         pixelsToCheck: [new Cartesian2(0, 0)],
       });
@@ -147,19 +148,19 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
         })
       );
 
-      return Promise.all(promises, function (results) {
-        const transparentImage = results[0];
+      return when.all(promises, function (results) {
+        var transparentImage = results[0];
         expect(policy.shouldDiscardImage(transparentImage)).toEqual(true);
       });
     });
 
     it("does not discard at all when the missing image is transparent and disableCheckIfAllPixelsAreTransparent is set", function () {
-      const promises = [];
+      var promises = [];
 
       promises.push(Resource.fetchImage("Data/Images/Transparent.png"));
 
-      const missingImageUrl = "Data/Images/Transparent.png";
-      const policy = new DiscardMissingTileImagePolicy({
+      var missingImageUrl = "Data/Images/Transparent.png";
+      var policy = new DiscardMissingTileImagePolicy({
         missingImageUrl: missingImageUrl,
         pixelsToCheck: [new Cartesian2(0, 0)],
         disableCheckIfAllPixelsAreTransparent: true,
@@ -171,14 +172,14 @@ describe("Scene/DiscardMissingTileImagePolicy", function () {
         })
       );
 
-      return Promise.all(promises, function (results) {
-        const transparentImage = results[0];
+      return when.all(promises, function (results) {
+        var transparentImage = results[0];
         expect(policy.shouldDiscardImage(transparentImage)).toEqual(false);
       });
     });
 
     it("throws if called before the policy is ready", function () {
-      const policy = new DiscardMissingTileImagePolicy({
+      var policy = new DiscardMissingTileImagePolicy({
         missingImageUrl: "Data/Images/Transparent.png",
         pixelsToCheck: [new Cartesian2(0, 0)],
         disableCheckIfAllPixelsAreTransparent: true,

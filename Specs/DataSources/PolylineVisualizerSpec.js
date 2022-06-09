@@ -26,9 +26,9 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "DataSources/PolylineVisualizer",
   function () {
-    const time = JulianDate.now();
+    var time = JulianDate.now();
 
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
 
@@ -45,7 +45,7 @@ describe(
     function visualizerUpdated(visualizer) {
       return pollToPromise(function () {
         scene.initializeFrame();
-        const isUpdated = visualizer.update(time);
+        var isUpdated = visualizer.update(time);
         scene.render(time);
         return isUpdated;
       });
@@ -63,8 +63,8 @@ describe(
     }
 
     it("Can create and destroy", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
       expect(visualizer.update(time)).toBe(true);
       expect(scene.primitives.length).toBe(0);
       expect(visualizer.isDestroyed()).toBe(false);
@@ -73,23 +73,23 @@ describe(
     });
 
     it("Creates and removes static color polyline", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
       ]);
       polyline.material = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -109,23 +109,23 @@ describe(
     });
 
     it("Creates and removes static material polyline", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
       ]);
       polyline.material = new PolylineArrowMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -147,10 +147,10 @@ describe(
         return;
       }
 
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -158,13 +158,13 @@ describe(
       polyline.material = new ColorMaterialProperty();
       polyline.clampToGround = new ConstantProperty(true);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.groundPrimitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.groundPrimitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -184,10 +184,10 @@ describe(
     });
 
     function createAndRemoveGeometryWithShadows(shadows) {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -195,12 +195,12 @@ describe(
       polyline.material = new ColorMaterialProperty();
       polyline.shadows = new ConstantProperty(shadows);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
+        var primitive = scene.primitives.get(0);
         expect(primitive.shadows).toBe(shadows);
 
         objects.remove(entity);
@@ -228,10 +228,10 @@ describe(
     });
 
     it("Creates and removes static color material and static color depth fail material", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -239,7 +239,7 @@ describe(
       polyline.material = new ColorMaterialProperty();
       polyline.depthFailMaterial = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -247,8 +247,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -273,10 +273,10 @@ describe(
     });
 
     it("Creates and removes static color material and static depth fail material", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -284,7 +284,7 @@ describe(
       polyline.material = new ColorMaterialProperty();
       polyline.depthFailMaterial = new PolylineArrowMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -292,8 +292,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -316,10 +316,10 @@ describe(
     });
 
     it("Creates and removes static material and static depth fail material", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -327,7 +327,7 @@ describe(
       polyline.material = new PolylineArrowMaterialProperty();
       polyline.depthFailMaterial = new PolylineArrowMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -335,8 +335,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -357,10 +357,10 @@ describe(
     });
 
     it("Creates and removes static material and static color depth fail material", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -368,7 +368,7 @@ describe(
       polyline.material = new PolylineArrowMaterialProperty();
       polyline.depthFailMaterial = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -376,8 +376,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -404,10 +404,10 @@ describe(
         return;
       }
 
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -416,12 +416,12 @@ describe(
       polyline.classificationType = new ConstantProperty(classificationType);
       polyline.clampToGround = true;
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.groundPrimitives.get(0);
+        var primitive = scene.groundPrimitives.get(0);
         expect(primitive.classificationType).toBe(classificationType);
 
         objects.remove(entity);
@@ -451,23 +451,23 @@ describe(
     });
 
     it("Correctly handles geometry changing batches", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
       ]);
       polyline.material = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        let primitive = scene.primitives.get(0);
-        let attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -504,10 +504,10 @@ describe(
     });
 
     it("Creates and removes dynamic polyline", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new CallbackProperty(function () {
         return [
           Cartesian3.fromDegrees(0.0, 0.0),
@@ -516,7 +516,7 @@ describe(
       }, false);
       polyline.material = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
@@ -532,22 +532,22 @@ describe(
     });
 
     it("Constructor throws without scene", function () {
-      const objects = new EntityCollection();
+      var objects = new EntityCollection();
       expect(function () {
         return new PolylineVisualizer(undefined, objects);
       }).toThrowDeveloperError();
     });
 
     it("Update throws without time parameter", function () {
-      const visualizer = new PolylineVisualizer(scene, new EntityCollection());
+      var visualizer = new PolylineVisualizer(scene, new EntityCollection());
       expect(function () {
         visualizer.update(undefined);
       }).toThrowDeveloperError();
     });
 
     it("removes the listener from the entity collection when destroyed", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, entityCollection);
+      var entityCollection = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, entityCollection);
 
       expect(entityCollection.collectionChanged.numberOfListeners).toEqual(1);
       visualizer.destroy();
@@ -555,22 +555,22 @@ describe(
     });
 
     it("Computes dynamic geometry bounding sphere.", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, entityCollection);
+      var entityCollection = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, entityCollection);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
       ]);
       polyline.material = new PolylineArrowMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       entityCollection.add(entity);
 
-      let state;
-      const result = new BoundingSphere();
+      var state;
+      var result = new BoundingSphere();
 
       return pollToPromise(function () {
         scene.initializeFrame();
@@ -579,9 +579,9 @@ describe(
         state = visualizer.getBoundingSphere(entity, result);
         return state !== BoundingSphereState.PENDING;
       }).then(function () {
-        const primitive = scene.primitives.get(0);
+        var primitive = scene.primitives.get(0);
         expect(state).toBe(BoundingSphereState.DONE);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(result).toEqual(
           BoundingSphere.transform(
             attributes.boundingSphere,
@@ -595,10 +595,10 @@ describe(
     });
 
     it("Compute dynamic geometry bounding sphere throws without entity.", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, entityCollection);
+      var entityCollection = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, entityCollection);
 
-      const result = new BoundingSphere();
+      var result = new BoundingSphere();
       expect(function () {
         visualizer.getBoundingSphere(undefined, result);
       }).toThrowDeveloperError();
@@ -607,10 +607,10 @@ describe(
     });
 
     it("Compute dynamic geometry bounding sphere throws without result.", function () {
-      const entityCollection = new EntityCollection();
-      const entity = new Entity();
+      var entityCollection = new EntityCollection();
+      var entity = new Entity();
       entityCollection.add(entity);
-      const visualizer = new PolylineVisualizer(scene, entityCollection);
+      var visualizer = new PolylineVisualizer(scene, entityCollection);
 
       expect(function () {
         visualizer.getBoundingSphere(entity, undefined);
@@ -620,10 +620,10 @@ describe(
     });
 
     it("Can remove an entity and then add a new instance with the same id.", function () {
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const entity = new Entity({
+      var entity = new Entity({
         id: "test",
         polyline: {
           positions: [
@@ -638,7 +638,7 @@ describe(
       return visualizerUpdated(visualizer).then(function () {
         objects.remove(entity);
 
-        const entity2 = new Entity({
+        var entity2 = new Entity({
           id: "test",
           position: Cartesian3.fromDegrees(0, 0, 0),
           polyline: {
@@ -652,8 +652,8 @@ describe(
         objects.add(entity2);
 
         return visualizerUpdated(visualizer).then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity2);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity2);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -673,10 +673,10 @@ describe(
     });
 
     it("Sets static geometry primitive show attribute when using dynamic fill color", function () {
-      const entities = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, entities);
+      var entities = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, entities);
 
-      const entity = entities.add({
+      var entity = entities.add({
         polyline: {
           positions: [
             Cartesian3.fromDegrees(0.0, 0.0),
@@ -690,8 +690,8 @@ describe(
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -702,8 +702,8 @@ describe(
           return visualizerUpdated(visualizer);
         })
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(false)
@@ -715,10 +715,10 @@ describe(
     });
 
     it("Sets static geometry primitive show attribute when using dynamic fill material", function () {
-      const entities = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, entities);
+      var entities = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, entities);
 
-      const entity = entities.add({
+      var entity = entities.add({
         position: new Cartesian3(1234, 5678, 9101112),
         polyline: {
           positions: [
@@ -733,8 +733,8 @@ describe(
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -745,8 +745,8 @@ describe(
           return visualizerUpdated(visualizer);
         })
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(false)
@@ -762,10 +762,10 @@ describe(
         return;
       }
 
-      const objects = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, objects);
+      var objects = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, objects);
 
-      const polyline = new PolylineGraphics();
+      var polyline = new PolylineGraphics();
       polyline.positions = new ConstantProperty([
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
@@ -773,14 +773,14 @@ describe(
       polyline.material = new ColorMaterialProperty();
       polyline.clampToGround = new ConstantProperty(true);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.polyline = polyline;
       objects.add(entity);
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.groundPrimitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.groundPrimitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -808,12 +808,12 @@ describe(
         return;
       }
 
-      const entities = new EntityCollection();
-      const visualizer = new PolylineVisualizer(scene, entities);
+      var entities = new EntityCollection();
+      var visualizer = new PolylineVisualizer(scene, entities);
 
-      const blueColor = Color.BLUE.withAlpha(0.5);
-      const redColor = Color.RED.withAlpha(0.5);
-      const positions = [
+      var blueColor = Color.BLUE.withAlpha(0.5);
+      var redColor = Color.RED.withAlpha(0.5);
+      var positions = [
         Cartesian3.fromDegrees(0.0, 0.0),
         Cartesian3.fromDegrees(0.0, 0.000001),
       ];

@@ -47,6 +47,7 @@ require({
   "dojo/parser",
   "dojo/promise/all",
   "dojo/query",
+  "dojo/when",
   "dojo/request/script",
   "Sandcastle/LinkButton",
   "ThirdParty/clipboard.min",
@@ -91,6 +92,7 @@ require({
   parser,
   all,
   query,
+  when,
   dojoscript,
   LinkButton,
   ClipboardJS,
@@ -98,7 +100,7 @@ require({
 ) {
   "use strict";
   // attach clipboard handling to our Copy button
-  const clipboardjs = new ClipboardJS(".copyButton");
+  var clipboardjs = new ClipboardJS(".copyButton");
 
   function defined(value) {
     return value !== undefined && value !== null;
@@ -113,13 +115,13 @@ require({
     },
   }).play();
 
-  let numberOfNewConsoleMessages = 0;
+  var numberOfNewConsoleMessages = 0;
 
-  const logOutput = document.getElementById("logOutput");
+  var logOutput = document.getElementById("logOutput");
   function appendConsole(className, message, showConsole) {
-    const ele = document.createElement("span");
+    var ele = document.createElement("span");
     ele.className = className;
-    ele.textContent = `${message}\n`;
+    ele.textContent = message + "\n";
     logOutput.appendChild(ele);
     logOutput.parentNode.scrollTop =
       logOutput.clientHeight + 8 - logOutput.parentNode.clientHeight;
@@ -129,21 +131,21 @@ require({
       ++numberOfNewConsoleMessages;
       registry
         .byId("logContainer")
-        .set("title", `Console (${numberOfNewConsoleMessages})`);
+        .set("title", "Console (" + numberOfNewConsoleMessages + ")");
     }
   }
 
-  const URL = window.URL || window.webkitURL;
+  var URL = window.URL || window.webkitURL;
 
   function findCssStyle(selectorText) {
     for (
-      let iSheets = 0, lenSheets = document.styleSheets.length;
+      var iSheets = 0, lenSheets = document.styleSheets.length;
       iSheets < lenSheets;
       ++iSheets
     ) {
-      const rules = document.styleSheets[iSheets].cssRules;
+      var rules = document.styleSheets[iSheets].cssRules;
       for (
-        let iRules = 0, lenRules = rules.length;
+        var iRules = 0, lenRules = rules.length;
         iRules < lenRules;
         ++iRules
       ) {
@@ -154,52 +156,52 @@ require({
     }
   }
 
-  /* eslint-disable-next-line prefer-const */
-  let jsEditor;
-  const suggestButton = registry.byId("buttonSuggest");
-  let docTimer;
-  const docTabs = {};
-  const subtabs = {};
-  let docError = false;
-  const galleryError = false;
-  let deferredLoadError = false;
-  let galleryTooltipTimer;
-  let activeGalleryTooltipDemo;
-  const demoTileHeightRule = findCssStyle(".demoTileThumbnail");
-  const cesiumContainer = registry.byId("cesiumContainer");
-  const docNode = dom.byId("docPopup");
-  const docMessage = dom.byId("docPopupMessage");
-  const local = {
+  var jsEditor;
+  var htmlEditor;
+  var suggestButton = registry.byId("buttonSuggest");
+  var docTimer;
+  var docTabs = {};
+  var subtabs = {};
+  var docError = false;
+  var galleryError = false;
+  var deferredLoadError = false;
+  var galleryTooltipTimer;
+  var activeGalleryTooltipDemo;
+  var demoTileHeightRule = findCssStyle(".demoTileThumbnail");
+  var cesiumContainer = registry.byId("cesiumContainer");
+  var docNode = dom.byId("docPopup");
+  var docMessage = dom.byId("docPopupMessage");
+  var local = {
     docTypes: [],
     headers: "<html><head></head><body>",
     bucketName: "",
     emptyBucket: "",
   };
-  const bucketTypes = {};
-  const demoTooltips = {};
-  const errorLines = [];
-  const highlightLines = [];
-  let searchTerm = "";
-  let searchRegExp;
-  let hintTimer;
-  const defaultDemo = "Hello World";
-  const defaultLabel = "Showcases";
-  let currentTab = defaultLabel;
-  let newDemo;
-  let demoHtml = "";
-  let demoCode = "";
+  var bucketTypes = {};
+  var demoTooltips = {};
+  var errorLines = [];
+  var highlightLines = [];
+  var searchTerm = "";
+  var searchRegExp;
+  var hintTimer;
+  var defaultDemo = "Hello World";
+  var defaultLabel = "Showcases";
+  var currentTab = defaultLabel;
+  var newDemo;
+  var demoHtml = "";
+  var demoCode = "";
 
-  const defaultHtml =
+  var defaultHtml =
     '<style>\n@import url(../templates/bucket.css);\n</style>\n<div id="cesiumContainer" class="fullSize"></div>\n<div id="loadingOverlay"><h1>Loading...</h1></div>\n<div id="toolbar"></div>';
 
-  const galleryErrorMsg = document.createElement("span");
+  var galleryErrorMsg = document.createElement("span");
   galleryErrorMsg.className = "galleryError";
   galleryErrorMsg.style.display = "none";
   galleryErrorMsg.textContent = "No demos match your search terms.";
 
-  const bucketFrame = document.getElementById("bucketFrame");
-  const bucketPane = registry.byId("bucketPane");
-  let bucketWaiting = false;
+  var bucketFrame = document.getElementById("bucketFrame");
+  var bucketPane = registry.byId("bucketPane");
+  var bucketWaiting = false;
 
   xhr
     .get({
@@ -213,7 +215,7 @@ require({
       local.docTypes = value;
     });
 
-  const decoderSpan = document.createElement("span");
+  var decoderSpan = document.createElement("span");
   function encodeHTML(text) {
     decoderSpan.textContent = text;
     text = decoderSpan.innerHTML;
@@ -243,7 +245,7 @@ require({
       docTabs[title] = new ContentPane({
         title: title,
         focused: true,
-        content: `<iframe class="fullFrame" src="${link}"></iframe>`,
+        content: '<iframe class="fullFrame" src="' + link + '"></iframe>',
         closable: true,
         onClose: function () {
           docTabs[this.title] = undefined;
@@ -266,10 +268,10 @@ require({
   }
 
   function showDocPopup() {
-    const selectedText = jsEditor.getSelection();
-    const lowerText = selectedText.toLowerCase();
+    var selectedText = jsEditor.getSelection();
+    var lowerText = selectedText.toLowerCase();
 
-    const onDocClick = function () {
+    var onDocClick = function () {
       openDocTab(this.textContent, this.href);
       return false;
     };
@@ -283,21 +285,21 @@ require({
       typeof local.docTypes[lowerText].push === "function"
     ) {
       docMessage.innerHTML = "";
-      for (let i = 0, len = local.docTypes[lowerText].length; i < len; ++i) {
-        const member = local.docTypes[lowerText][i];
-        const ele = document.createElement("a");
+      for (var i = 0, len = local.docTypes[lowerText].length; i < len; ++i) {
+        var member = local.docTypes[lowerText][i];
+        var ele = document.createElement("a");
         ele.target = "_blank";
         ele.textContent = member
           .replace(".html", "")
           .replace("module-", "")
           .replace("#.", ".")
           .replace("#", ".");
-        ele.href = `../../Build/Documentation/${member}`;
+        ele.href = "../../Build/Documentation/" + member;
         ele.onclick = onDocClick;
         docMessage.appendChild(ele);
       }
       jsEditor.addWidget(jsEditor.getCursor(true), docNode);
-      docNode.style.top = `${parseInt(docNode.style.top, 10) - 5}px`;
+      docNode.style.top = parseInt(docNode.style.top, 10) - 5 + "px";
     }
   }
 
@@ -310,7 +312,7 @@ require({
   }
 
   function makeLineLabel(msg, className) {
-    const element = document.createElement("abbr");
+    var element = document.createElement("abbr");
     element.className = className;
     switch (className) {
       case "hintMarker":
@@ -336,9 +338,8 @@ require({
   function openGalleryTooltip() {
     galleryTooltipTimer = undefined;
 
-    const selectedTabName = registry.byId("innerPanel").selectedChildWidget
-      .title;
-    let suffix = `${selectedTabName}Demos`;
+    var selectedTabName = registry.byId("innerPanel").selectedChildWidget.title;
+    var suffix = selectedTabName + "Demos";
     if (selectedTabName === "All") {
       suffix = "all";
     } else if (selectedTabName === "Search Results") {
@@ -370,9 +371,9 @@ require({
   }
 
   function clearErrorsAddHints() {
-    let line;
-    let i;
-    let len;
+    var line;
+    var i;
+    var len;
     hintTimer = undefined;
     closeGalleryTooltip();
     jsEditor.clearGutter("hintGutter");
@@ -387,15 +388,15 @@ require({
       line = highlightLines.pop();
       jsEditor.removeLineClass(line, "text");
     }
-    const code = jsEditor.getValue();
+    var code = jsEditor.getValue();
     if (searchTerm !== "") {
-      const codeLines = code.split("\n");
+      var codeLines = code.split("\n");
       for (i = 0, len = codeLines.length; i < len; ++i) {
         if (searchRegExp.test(codeLines[i])) {
           line = jsEditor.setGutterMarker(
             i,
             "searchGutter",
-            makeLineLabel(`Search: ${searchTerm}`, "searchMarker")
+            makeLineLabel("Search: " + searchTerm, "searchMarker")
           );
           jsEditor.addLineClass(line, "text", "searchLine");
           errorLines.push(line);
@@ -403,14 +404,14 @@ require({
       }
     }
     // make a copy of the options, JSHint modifies the object it's given
-    const options = JSON.parse(JSON.stringify(sandcastleJsHintOptions));
+    var options = JSON.parse(JSON.stringify(sandcastleJsHintOptions));
     /*eslint-disable new-cap*/
     if (
       !JSHINT(embedInSandcastleTemplate(jsEditor.getValue(), false), options)
     ) {
-      const hints = JSHINT.errors;
+      var hints = JSHINT.errors;
       for (i = 0, len = hints.length; i < len; ++i) {
-        const hint = hints[i];
+        var hint = hints[i];
         if (hint !== null && defined(hint.reason) && hint.line > 0) {
           line = jsEditor.setGutterMarker(
             scriptLineToEditorLine(hint.line),
@@ -470,7 +471,7 @@ require({
   }
 
   function highlightLine(lineNum) {
-    let line;
+    var line;
     jsEditor.clearGutter("highlightGutter");
     while (highlightLines.length > 0) {
       line = highlightLines.pop();
@@ -489,7 +490,7 @@ require({
     }
   }
 
-  const tabs = registry.byId("bottomPanel");
+  var tabs = registry.byId("bottomPanel");
 
   function showGallery() {
     tabs.selectChild(registry.byId("innerPanel"));
@@ -559,25 +560,22 @@ require({
   jsEditor.on("cursorActivity", onCursorActivity);
   jsEditor.on("change", scheduleHint);
 
-  const htmlEditor = CodeMirror.fromTextArea(
-    document.getElementById("htmlBody"),
-    {
-      mode: "text/html",
-      lineNumbers: true,
-      matchBrackets: true,
-      indentUnit: 2,
-      viewportMargin: 1300,
-      extraKeys: {
-        F8: "runCesium",
-        Tab: "indentMore",
-        "Shift-Tab": "indentLess",
-      },
-    }
-  );
+  htmlEditor = CodeMirror.fromTextArea(document.getElementById("htmlBody"), {
+    mode: "text/html",
+    lineNumbers: true,
+    matchBrackets: true,
+    indentUnit: 2,
+    viewportMargin: 1300,
+    extraKeys: {
+      F8: "runCesium",
+      Tab: "indentMore",
+      "Shift-Tab": "indentLess",
+    },
+  });
 
   window.onbeforeunload = function (e) {
-    const htmlText = htmlEditor.getValue().replace(/\s/g, "");
-    const jsText = jsEditor.getValue().replace(/\s/g, "");
+    var htmlText = htmlEditor.getValue().replace(/\s/g, "");
+    var jsText = jsEditor.getValue().replace(/\s/g, "");
     if (demoHtml !== htmlText || demoCode !== jsText) {
       return "Be sure to save a copy of any important edits before leaving this page.";
     }
@@ -593,13 +591,13 @@ require({
       }
     });
 
-  const scriptCodeRegex = /\/\/Sandcastle_Begin\s*([\s\S]*)\/\/Sandcastle_End/;
+  var scriptCodeRegex = /\/\/Sandcastle_Begin\s*([\s\S]*)\/\/Sandcastle_End/;
 
   function activateBucketScripts(bucketDoc) {
-    const headNodes = bucketDoc.head.childNodes;
-    let node;
-    const nodes = [];
-    let i, len;
+    var headNodes = bucketDoc.head.childNodes;
+    var node;
+    var nodes = [];
+    var i, len;
     for (i = 0, len = headNodes.length; i < len; ++i) {
       node = headNodes[i];
       // header is included in blank frame.
@@ -616,13 +614,13 @@ require({
     }
 
     // Apply user HTML to bucket.
-    const htmlElement = bucketDoc.createElement("div");
+    var htmlElement = bucketDoc.createElement("div");
     htmlElement.innerHTML = htmlEditor.getValue();
     bucketDoc.body.appendChild(htmlElement);
 
-    const onScriptTagError = function () {
+    var onScriptTagError = function () {
       if (bucketFrame.contentDocument === bucketDoc) {
-        appendConsole("consoleError", `Error loading ${this.src}`, true);
+        appendConsole("consoleError", "Error loading " + this.src, true);
         appendConsole(
           "consoleError",
           "Make sure Cesium is built, see the Contributor's Guide for details.",
@@ -632,7 +630,7 @@ require({
     };
 
     // Load each script after the previous one has loaded.
-    const loadScript = function () {
+    var loadScript = function () {
       if (bucketFrame.contentDocument !== bucketDoc) {
         // A newer reload has happened, abort this.
         return;
@@ -640,15 +638,15 @@ require({
       if (nodes.length > 0) {
         while (nodes.length > 0) {
           node = nodes.shift();
-          const scriptElement = bucketDoc.createElement("script");
-          let hasSrc = false;
+          var scriptElement = bucketDoc.createElement("script");
+          var hasSrc = false;
           for (
-            let j = 0, numAttrs = node.attributes.length;
+            var j = 0, numAttrs = node.attributes.length;
             j < numAttrs;
             ++j
           ) {
-            const name = node.attributes[j].name;
-            const val = node.attributes[j].value;
+            var name = node.attributes[j].name;
+            var val = node.attributes[j].value;
             scriptElement.setAttribute(name, val);
             if (name === "src" && val) {
               hasSrc = true;
@@ -666,10 +664,10 @@ require({
         }
       } else {
         // Apply user JS to bucket
-        const element = bucketDoc.createElement("script");
+        var element = bucketDoc.createElement("script");
 
         // Firefox line numbers are zero-based, not one-based.
-        const isFirefox = navigator.userAgent.indexOf("Firefox/") >= 0;
+        var isFirefox = navigator.userAgent.indexOf("Firefox/") >= 0;
 
         element.textContent = embedInSandcastleTemplate(
           jsEditor.getValue(),
@@ -689,26 +687,28 @@ require({
       typeof bucketTypes[local.bucketName] === "string"
     ) {
       bucketWaiting = false;
-      const bucketDoc = bucketFrame.contentDocument;
+      var bucketDoc = bucketFrame.contentDocument;
       if (
         local.headers.substring(0, local.emptyBucket.length) !==
         local.emptyBucket
       ) {
         appendConsole(
           "consoleError",
-          `Error, first part of ${local.bucketName} must match first part of bucket.html exactly.`,
+          "Error, first part of " +
+            local.bucketName +
+            " must match first part of bucket.html exactly.",
           true
         );
       } else {
-        const bodyAttributes = local.headers.match(/<body([^>]*?)>/)[1];
-        const attributeRegex = /([-a-z_]+)\s*="([^"]*?)"/gi;
+        var bodyAttributes = local.headers.match(/<body([^>]*?)>/)[1];
+        var attributeRegex = /([-a-z_]+)\s*="([^"]*?)"/gi;
         //group 1 attribute name, group 2 attribute value.  Assumes double-quoted attributes.
-        let attributeMatch;
+        var attributeMatch;
         while (
           (attributeMatch = attributeRegex.exec(bodyAttributes)) !== null
         ) {
-          const attributeName = attributeMatch[1];
-          const attributeValue = attributeMatch[2];
+          var attributeName = attributeMatch[1];
+          var attributeValue = attributeMatch[2];
           if (attributeName === "class") {
             bucketDoc.body.className = attributeValue;
           } else {
@@ -716,8 +716,8 @@ require({
           }
         }
 
-        const pos = local.headers.indexOf("</head>");
-        const extraHeaders = local.headers.substring(
+        var pos = local.headers.indexOf("</head>");
+        var extraHeaders = local.headers.substring(
           local.emptyBucket.length,
           pos
         );
@@ -741,7 +741,7 @@ require({
       handleAs: "text",
     })
     .then(function (value) {
-      const pos = value.indexOf("</head>");
+      var pos = value.indexOf("</head>");
       local.emptyBucket = value.substring(0, pos);
       applyBucketIfWaiting();
     });
@@ -756,11 +756,11 @@ require({
           '<html><head></head><body data-sandcastle-bucket-loaded="no">';
         xhr
           .get({
-            url: `templates/${bucketName}`,
+            url: "templates/" + bucketName,
             handleAs: "text",
           })
           .then(function (value) {
-            let pos = value.indexOf("<body");
+            var pos = value.indexOf("<body");
             pos = value.indexOf(">", pos);
             bucketTypes[bucketName] = value.substring(0, pos + 1);
             if (local.bucketName === bucketName) {
@@ -772,12 +772,12 @@ require({
     }
   }
 
-  let queryObject = {};
+  var queryObject = {};
   if (window.location.search) {
     queryObject = ioQuery.queryToObject(window.location.search.substring(1));
   }
   if (!defined(queryObject.src)) {
-    queryObject.src = `${defaultDemo}.html`;
+    queryObject.src = defaultDemo + ".html";
   }
   if (!defined(queryObject.label)) {
     queryObject.label = defaultLabel;
@@ -785,7 +785,7 @@ require({
 
   function loadFromGallery(demo) {
     deferredLoadError = false;
-    document.getElementById("saveAsFile").download = `${demo.name}.html`;
+    document.getElementById("saveAsFile").download = demo.name + ".html";
     registry
       .byId("description")
       .set("value", decodeHTML(demo.description).replace(/\\n/g, "\n"));
@@ -811,23 +811,24 @@ require({
         clearRun();
       }
 
-      let json, code, html;
+      var json, code, html;
       if (defined(queryObject.gist)) {
         dojoscript
-          .get(`https://api.github.com/gists/${queryObject.gist}`, {
+          .get("https://api.github.com/gists/" + queryObject.gist, {
             jsonp: "callback",
           })
           .then(function (data) {
-            const files = data.data.files;
-            const code = files["Cesium-Sandcastle.js"].content;
-            const htmlFile = files["Cesium-Sandcastle.html"];
-            const html = defined(htmlFile) ? htmlFile.content : defaultHtml; // Use the default html for old gists
+            var files = data.data.files;
+            var code = files["Cesium-Sandcastle.js"].content;
+            var htmlFile = files["Cesium-Sandcastle.html"];
+            var html = defined(htmlFile) ? htmlFile.content : defaultHtml; // Use the default html for old gists
             applyLoadedDemo(code, html);
           })
           .otherwise(function (error) {
             appendConsole(
               "consoleError",
-              `Unable to GET gist from GitHub API. This could be due to too many requests from your IP. Try again in an hour or copy and paste the code from the gist: https://gist.github.com/${queryObject.gist}`,
+              "Unable to GET gist from GitHub API. This could be due to too many requests from your IP. Try again in an hour or copy and paste the code from the gist: https://gist.github.com/" +
+                queryObject.gist,
               true
             );
             console.log(error);
@@ -840,44 +841,42 @@ require({
 
         applyLoadedDemo(code, html);
       } else if (window.location.hash.indexOf("#c=") === 0) {
-        const base64String = window.location.hash.substr(3);
-        const data = decodeBase64Data(base64String, pako);
+        var base64String = window.location.hash.substr(3);
+        var data = decodeBase64Data(base64String, pako);
         code = data.code;
         html = data.html;
 
         applyLoadedDemo(code, html);
       } else {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(demo.code, "text/html");
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(demo.code, "text/html");
 
-        const script = doc.querySelector(
-          'script[id="cesium_sandcastle_script"]'
-        );
+        var script = doc.querySelector('script[id="cesium_sandcastle_script"]');
         if (!script) {
           appendConsole(
             "consoleError",
-            `Error reading source file: ${demo.name}`,
+            "Error reading source file: " + demo.name,
             true
           );
           return;
         }
 
-        const scriptMatch = scriptCodeRegex.exec(script.textContent);
+        var scriptMatch = scriptCodeRegex.exec(script.textContent);
         if (!scriptMatch) {
           appendConsole(
             "consoleError",
-            `Error reading source file: ${demo.name}`,
+            "Error reading source file: " + demo.name,
             true
           );
           return;
         }
 
-        let scriptCode = scriptMatch[1];
+        var scriptCode = scriptMatch[1];
         scriptCode = scriptCode.replace(/^ {8}/gm, ""); //Account for Prettier spacing
 
-        let htmlText = "";
-        let childIndex = 0;
-        let childNode = doc.body.childNodes[childIndex];
+        var htmlText = "";
+        var childIndex = 0;
+        var childNode = doc.body.childNodes[childIndex];
         while (
           childIndex < doc.body.childNodes.length &&
           childNode !== script
@@ -900,7 +899,7 @@ require({
     function (e) {
       if (e.state && e.state.name && e.state.code) {
         loadFromGallery(e.state);
-        document.title = `${e.state.name} - Cesium Sandcastle`;
+        document.title = e.state.name + " - Cesium Sandcastle";
       }
     },
     false
@@ -909,11 +908,11 @@ require({
   window.addEventListener(
     "message",
     function (e) {
-      let line;
+      var line;
       // The iframe (bucket.html) sends this message on load.
       // This triggers the code to be injected into the iframe.
       if (e.data === "reload") {
-        const bucketDoc = bucketFrame.contentDocument;
+        var bucketDoc = bucketFrame.contentDocument;
         if (!local.bucketName) {
           // Reload fired, bucket not specified yet.
           return;
@@ -944,10 +943,9 @@ require({
           if (deferredLoadError) {
             appendConsole(
               "consoleLog",
-              `Unable to load demo named ${queryObject.src.replace(
-                ".html",
-                ""
-              )}. Redirecting to HelloWorld.\n`,
+              "Unable to load demo named " +
+                queryObject.src.replace(".html", "") +
+                ". Redirecting to HelloWorld.\n",
               true
             );
           }
@@ -957,16 +955,16 @@ require({
         appendConsole("consoleLog", e.data.log, false);
       } else if (defined(e.data.error)) {
         // Console error messages from the iframe display in Sandcastle
-        let errorMsg = e.data.error;
-        let lineNumber = e.data.lineNumber;
+        var errorMsg = e.data.error;
+        var lineNumber = e.data.lineNumber;
         if (defined(lineNumber)) {
           errorMsg += " (on line ";
 
           if (e.data.url) {
-            errorMsg += `${lineNumber} of ${e.data.url})`;
+            errorMsg += lineNumber + " of " + e.data.url + ")";
           } else {
             lineNumber = scriptLineToEditorLine(lineNumber);
-            errorMsg += `${lineNumber + 1})`;
+            errorMsg += lineNumber + 1 + ")";
             line = jsEditor.setGutterMarker(
               lineNumber,
               "errorGutter",
@@ -1002,20 +1000,20 @@ require({
   registry.byId("search").on("change", function () {
     searchTerm = this.get("value");
     searchRegExp = new RegExp(searchTerm, "i");
-    let numDemosShown = 0;
+    var numDemosShown = 0;
     if (searchTerm !== "") {
       showSearchContainer();
-      const innerPanel = registry.byId("innerPanel");
+      var innerPanel = registry.byId("innerPanel");
       innerPanel.selectChild(registry.byId("searchContainer"));
-      for (let i = 0; i < gallery_demos.length; i++) {
-        const demo = gallery_demos[i];
-        const demoName = demo.name;
+      for (var i = 0; i < gallery_demos.length; i++) {
+        var demo = gallery_demos[i];
+        var demoName = demo.name;
         if (searchRegExp.test(demoName) || searchRegExp.test(demo.code)) {
-          document.getElementById(`${demoName}searchDemo`).style.display =
+          document.getElementById(demoName + "searchDemo").style.display =
             "inline-block";
           ++numDemosShown;
         } else {
-          document.getElementById(`${demoName}searchDemo`).style.display =
+          document.getElementById(demoName + "searchDemo").style.display =
             "none";
         }
       }
@@ -1033,34 +1031,34 @@ require({
     scheduleHintNoChange();
   });
 
-  let searchContainer;
+  var searchContainer;
 
   function hideSearchContainer() {
     if (dom.byId("searchContainer")) {
-      const innerPanel = registry.byId("innerPanel");
+      var innerPanel = registry.byId("innerPanel");
       innerPanel.removeChild(searchContainer);
     }
   }
 
   function showSearchContainer() {
     if (!dom.byId("searchContainer")) {
-      const innerPanel = registry.byId("innerPanel");
+      var innerPanel = registry.byId("innerPanel");
       innerPanel.addChild(searchContainer);
     }
   }
 
   function getBaseUrl() {
     // omits query string and hash
-    return `${location.protocol}//${location.host}${location.pathname}`;
+    return location.protocol + "//" + location.host + location.pathname;
   }
 
   function makeCompressedBase64String(data) {
     // data stored in the hash as:
     // Base64 encoded, raw DEFLATE compressed JSON array where index 0 is code, index 1 is html
-    let jsonString = JSON.stringify(data);
+    var jsonString = JSON.stringify(data);
     // we save a few bytes by omitting the leading [" and trailing "] since they are always the same
     jsonString = jsonString.substr(2, jsonString.length - 4);
-    let base64String = btoa(
+    var base64String = btoa(
       pako.deflate(jsonString, { raw: true, to: "string", level: 9 })
     );
     base64String = base64String.replace(/\=+$/, ""); // remove padding
@@ -1069,42 +1067,42 @@ require({
   }
 
   registry.byId("buttonShareDrop").on("click", function () {
-    const code = jsEditor.getValue();
-    const html = htmlEditor.getValue();
+    var code = jsEditor.getValue();
+    var html = htmlEditor.getValue();
 
-    const base64String = makeCompressedBase64String([code, html]);
+    var base64String = makeCompressedBase64String([code, html]);
 
-    const shareUrlBox = document.getElementById("shareUrl");
-    shareUrlBox.value = `${getBaseUrl()}#c=${base64String}`;
+    var shareUrlBox = document.getElementById("shareUrl");
+    shareUrlBox.value = getBaseUrl() + "#c=" + base64String;
     shareUrlBox.select();
   });
 
   registry.byId("buttonImport").on("click", function () {
-    let gistId = document.getElementById("gistId").value;
-    const gistParameter = "&gist=";
-    const gistIndex = gistId.indexOf(gistParameter);
+    var gistId = document.getElementById("gistId").value;
+    var gistParameter = "&gist=";
+    var gistIndex = gistId.indexOf(gistParameter);
     if (gistIndex !== -1) {
       gistId = gistId.substring(gistIndex + gistParameter.length);
     }
-    window.location.href = `${getBaseUrl()}?gist=${gistId}`;
+    window.location.href = getBaseUrl() + "?gist=" + gistId;
   });
 
   function getPushStateUrl(demo) {
-    const obj = {};
+    var obj = {};
     if (demo.name !== defaultDemo) {
-      obj.src = `${demo.name}.html`;
+      obj.src = demo.name + ".html";
     }
     if (currentTab !== defaultLabel) {
       obj.label = currentTab;
     }
-    const query = ioQuery.objectToQuery(obj);
-    return query === "" ? query : `?${query}`;
+    var query = ioQuery.objectToQuery(obj);
+    return query === "" ? query : "?" + query;
   }
 
   registry.byId("buttonNew").on("click", function () {
-    const htmlText = htmlEditor.getValue().replace(/\s/g, "");
-    const jsText = jsEditor.getValue().replace(/\s/g, "");
-    let confirmChange = true;
+    var htmlText = htmlEditor.getValue().replace(/\s/g, "");
+    var jsText = jsEditor.getValue().replace(/\s/g, "");
+    var confirmChange = true;
     if (demoHtml !== htmlText || demoCode !== jsText) {
       confirmChange = window.confirm(
         "You have unsaved changes. Are you sure you want to navigate away from this demo?"
@@ -1113,7 +1111,7 @@ require({
     if (confirmChange) {
       window.history.pushState(newDemo, newDemo.name, getPushStateUrl(newDemo));
       loadFromGallery(newDemo).then(function () {
-        document.title = `${newDemo.name} - Cesium Sandcastle`;
+        document.title = newDemo.name + " - Cesium Sandcastle";
       });
     }
   });
@@ -1128,58 +1126,60 @@ require({
 
   function getDemoHtml() {
     return (
-      `${
-        local.headers
-      }\n${htmlEditor.getValue()}<script id="cesium_sandcastle_script">\n${embedInSandcastleTemplate(
-        jsEditor.getValue(),
-        false
-      )}</script>\n` +
-      `</body>\n` +
-      `</html>\n`
+      local.headers +
+      "\n" +
+      htmlEditor.getValue() +
+      '<script id="cesium_sandcastle_script">\n' +
+      embedInSandcastleTemplate(jsEditor.getValue(), false) +
+      "</script>\n" +
+      "</body>\n" +
+      "</html>\n"
     );
   }
 
   registry.byId("dropDownSaveAs").on("show", function () {
-    let currentDemoName = queryObject.src;
+    var currentDemoName = queryObject.src;
     currentDemoName = currentDemoName.replace(".html", "");
-    const description = encodeHTML(
+    var description = encodeHTML(
       registry.byId("description").get("value").replace(/\n/g, "\\n")
     ).replace(/\"/g, "&quot;");
-    const label = encodeHTML(
+    var label = encodeHTML(
       registry.byId("label").get("value").replace(/\n/g, "\\n")
     ).replace(/\"/g, "&quot;");
 
-    let html = getDemoHtml();
+    var html = getDemoHtml();
     html = html.replace(
       "<title>",
-      `<meta name="description" content="${description}">\n    <title>`
+      '<meta name="description" content="' + description + '">\n    <title>'
     );
     html = html.replace(
       "<title>",
-      `<meta name="cesium-sandcastle-labels" content="${label}">\n    <title>`
+      '<meta name="cesium-sandcastle-labels" content="' +
+        label +
+        '">\n    <title>'
     );
 
-    const octetBlob = new Blob([html], {
+    var octetBlob = new Blob([html], {
       type: "application/octet-stream",
       endings: "native",
     });
-    const octetBlobURL = URL.createObjectURL(octetBlob);
+    var octetBlobURL = URL.createObjectURL(octetBlob);
     dom.byId("saveAsFile").href = octetBlobURL;
   });
 
   registry.byId("buttonNewWindow").on("click", function () {
     //Handle case where demo is in a sub-directory by modifying
     //the demo's HTML to add a base href.
-    let baseHref = getBaseUrl();
-    const pos = baseHref.lastIndexOf("/");
-    baseHref = `${baseHref.substring(0, pos)}/gallery/`;
+    var baseHref = getBaseUrl();
+    var pos = baseHref.lastIndexOf("/");
+    baseHref = baseHref.substring(0, pos) + "/gallery/";
 
-    const code = jsEditor.getValue();
-    const html = htmlEditor.getValue();
-    const data = makeCompressedBase64String([code, html, baseHref]);
+    var code = jsEditor.getValue();
+    var html = htmlEditor.getValue();
+    var data = makeCompressedBase64String([code, html, baseHref]);
 
-    let url = getBaseUrl();
-    url = `${url.replace("index.html", "")}standalone.html` + `#c=${data}`;
+    var url = getBaseUrl();
+    url = url.replace("index.html", "") + "standalone.html" + "#c=" + data;
 
     window.open(url, "_blank");
     window.focus();
@@ -1193,28 +1193,28 @@ require({
     }
   });
 
-  const demoContainers = query(".demosContainer");
+  var demoContainers = query(".demosContainer");
   demoContainers.forEach(function (demoContainer) {
     registerScroll(demoContainer);
   });
 
-  const galleryContainer = registry.byId("innerPanel");
+  var galleryContainer = registry.byId("innerPanel");
   galleryContainer.demoTileHeightRule = demoTileHeightRule;
   galleryContainer.originalResize = galleryContainer.resize;
   galleryContainer.resize = function (changeSize, resultSize) {
-    const newSize = changeSize.h - 88;
+    var newSize = changeSize.h - 88;
     if (newSize < 20) {
       demoTileHeightRule.style.display = "none";
     } else {
       demoTileHeightRule.style.display = "inline";
-      demoTileHeightRule.style.height = `${Math.min(newSize, 150)}px`;
+      demoTileHeightRule.style.height = Math.min(newSize, 150) + "px";
     }
     this.originalResize(changeSize, resultSize);
   };
 
   function requestDemo(name) {
     return xhr.get({
-      url: `gallery/${name}.html`,
+      url: "gallery/" + name + ".html",
       handleAs: "text",
       error: function (error) {
         loadFromGallery(gallery_demos[hello_world_index]).then(function () {
@@ -1224,29 +1224,29 @@ require({
     });
   }
 
-  const newInLabel = `New in ${VERSION}`;
+  var newInLabel = "New in " + VERSION;
   function loadDemoFromFile(demo) {
     return requestDemo(demo.name).then(function (value) {
       // Store the file contents for later searching.
       demo.code = value;
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(value, "text/html");
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(value, "text/html");
 
-      const bucket = doc.body.getAttribute("data-sandcastle-bucket");
+      var bucket = doc.body.getAttribute("data-sandcastle-bucket");
       demo.bucket = bucket ? bucket : "bucket-requirejs.html";
 
-      const descriptionMeta = doc.querySelector('meta[name="description"]');
-      const description =
+      var descriptionMeta = doc.querySelector('meta[name="description"]');
+      var description =
         descriptionMeta && descriptionMeta.getAttribute("content");
       demo.description = description ? description : "";
 
-      const labelsMeta = doc.querySelector(
+      var labelsMeta = doc.querySelector(
         'meta[name="cesium-sandcastle-labels"]'
       );
-      const labels = labelsMeta && labelsMeta.getAttribute("content");
+      var labels = labelsMeta && labelsMeta.getAttribute("content");
       if (demo.isNew) {
-        demo.label = labels ? `${labels},${newInLabel}` : newInLabel;
+        demo.label = labels ? labels + "," + newInLabel : newInLabel;
       } else {
         demo.label = labels ? labels : "";
       }
@@ -1259,7 +1259,7 @@ require({
             if (defined(queryObject.gist)) {
               document.title = "Gist Import - Cesium Sandcastle";
             } else {
-              document.title = `${demo.name} - Cesium Sandcastle`;
+              document.title = demo.name + " - Cesium Sandcastle";
             }
           });
         }
@@ -1267,7 +1267,7 @@ require({
 
       // Create a tooltip containing the demo's description.
       demoTooltips[demo.name] = new TooltipDialog({
-        id: `${demo.name}TooltipDialog`,
+        id: demo.name + "TooltipDialog",
         style: "width: 200px; font-size: 12px;",
         content: demo.description.replace(/\\n/g, "<br/>"),
       });
@@ -1277,7 +1277,7 @@ require({
     });
   }
 
-  let loading = true;
+  var loading = true;
   function setSubtab(tabName) {
     currentTab = defined(tabName) && !loading ? tabName : queryObject.label;
     queryObject.label = tabName;
@@ -1285,7 +1285,7 @@ require({
   }
 
   function insertSortedById(parentTab, galleryButton) {
-    let child;
+    var child;
     for (
       child = parentTab.lastChild;
       child !== null;
@@ -1300,7 +1300,7 @@ require({
   }
 
   function addFileToGallery(demo) {
-    const searchDemos = dom.byId("searchDemos");
+    var searchDemos = dom.byId("searchDemos");
     insertSortedById(searchDemos, createGalleryButton(demo, "searchDemo"));
     return loadDemoFromFile(demo);
   }
@@ -1313,47 +1313,52 @@ require({
 
   function addFileToTab(demo) {
     if (demo.label !== "") {
-      const labels = demo.label.split(",");
-      for (let j = 0; j < labels.length; j++) {
-        let label = labels[j];
+      var labels = demo.label.split(",");
+      for (var j = 0; j < labels.length; j++) {
+        var label = labels[j];
         label = label.trim();
-        if (!dom.byId(`${label}Demos`)) {
-          const cp = new ContentPane({
-            content: `<div id="${label}Container" class="demosContainer"><div class="demos" id="${label}Demos"></div></div>`,
+        if (!dom.byId(label + "Demos")) {
+          var cp = new ContentPane({
+            content:
+              '<div id="' +
+              label +
+              'Container" class="demosContainer"><div class="demos" id="' +
+              label +
+              'Demos"></div></div>',
             title: label,
             onShow: onShowCallback(),
           }).placeAt("innerPanel");
           subtabs[label] = cp;
-          registerScroll(dom.byId(`${label}Container`));
+          registerScroll(dom.byId(label + "Container"));
         }
-        const tabName = `${label}Demos`;
-        const tab = dom.byId(tabName);
+        var tabName = label + "Demos";
+        var tab = dom.byId(tabName);
         insertSortedById(tab, createGalleryButton(demo, tabName));
       }
     }
   }
 
   function createGalleryButton(demo, tabName) {
-    let imgSrc = "templates/Gallery_tile.jpg";
+    var imgSrc = "templates/Gallery_tile.jpg";
     if (defined(demo.img)) {
-      imgSrc = `gallery/${demo.img}`;
+      imgSrc = "gallery/" + demo.img;
     }
 
-    const demoLink = document.createElement("a");
+    var demoLink = document.createElement("a");
     demoLink.id = demo.name + tabName;
     demoLink.className = "linkButton";
-    demoLink.href = `gallery/${encodeURIComponent(demo.name)}.html`;
+    demoLink.href = "gallery/" + encodeURIComponent(demo.name) + ".html";
 
     if (demo.name === "Hello World") {
       newDemo = demo;
     }
     demoLink.onclick = function (e) {
       if (mouse.isMiddle(e)) {
-        window.open(`gallery/${demo.name}.html`);
+        window.open("gallery/" + demo.name + ".html");
       } else {
-        const htmlText = htmlEditor.getValue().replace(/\s/g, "");
-        const jsText = jsEditor.getValue().replace(/\s/g, "");
-        let confirmChange = true;
+        var htmlText = htmlEditor.getValue().replace(/\s/g, "");
+        var jsText = jsEditor.getValue().replace(/\s/g, "");
+        var confirmChange = true;
         if (demoHtml !== htmlText || demoCode !== jsText) {
           confirmChange = window.confirm(
             "You have unsaved changes. Are you sure you want to navigate away from this demo?"
@@ -1365,7 +1370,7 @@ require({
 
           window.history.pushState(demo, demo.name, getPushStateUrl(demo));
           loadFromGallery(demo).then(function () {
-            document.title = `${demo.name} - Cesium Sandcastle`;
+            document.title = demo.name + " - Cesium Sandcastle";
           });
         }
       }
@@ -1374,8 +1379,12 @@ require({
 
     new LinkButton({
       label:
-        `<div class="demoTileTitle">${demo.name}</div>` +
-        `<img src="${imgSrc}" class="demoTileThumbnail" alt="" onDragStart="return false;" />`,
+        '<div class="demoTileTitle">' +
+        demo.name +
+        "</div>" +
+        '<img src="' +
+        imgSrc +
+        '" class="demoTileThumbnail" alt="" onDragStart="return false;" />',
     }).placeAt(demoLink);
 
     on(demoLink, "mouseover", function () {
@@ -1389,14 +1398,14 @@ require({
     return demoLink;
   }
 
-  let promise;
+  var promise;
   if (!defined(gallery_demos)) {
     galleryErrorMsg.textContent =
       "No demos found, please run the build script.";
     galleryErrorMsg.style.display = "inline-block";
   } else {
-    let label = "Showcases";
-    let cp = new ContentPane({
+    var label = "Showcases";
+    var cp = new ContentPane({
       content:
         '<div id="showcasesContainer" class="demosContainer"><div class="demos" id="ShowcasesDemos"></div></div>',
       title: "Showcases",
@@ -1408,29 +1417,34 @@ require({
     registerScroll(dom.byId("showcasesContainer"));
 
     if (has_new_gallery_demos) {
-      const name = `New in ${VERSION}`;
+      var name = "New in " + VERSION;
       subtabs[name] = new ContentPane({
-        content: `<div id="${name}Container" class="demosContainer"><div class="demos" id="${name}Demos"></div></div>`,
+        content:
+          '<div id="' +
+          name +
+          'Container" class="demosContainer"><div class="demos" id="' +
+          name +
+          'Demos"></div></div>',
         title: name,
         onShow: function () {
           setSubtab(this.title);
         },
       }).placeAt("innerPanel");
-      registerScroll(dom.byId(`${name}Container`));
+      registerScroll(dom.byId(name + "Container"));
     }
 
-    let i;
-    const len = gallery_demos.length;
+    var i;
+    var len = gallery_demos.length;
 
-    let queryInGalleryIndex = false;
-    const queryName = queryObject.src.replace(".html", "");
-    const promises = [];
+    var queryInGalleryIndex = false;
+    var queryName = queryObject.src.replace(".html", "");
+    var promises = [];
     for (i = 0; i < len; ++i) {
       promises.push(addFileToGallery(gallery_demos[i]));
     }
 
     promise = all(promises).then(function (results) {
-      const resultsLength = results.length;
+      var resultsLength = results.length;
       for (i = 0; i < resultsLength; ++i) {
         if (results[i].name === queryName) {
           queryInGalleryIndex = true;
@@ -1449,16 +1463,16 @@ require({
       subtabs[label] = cp;
       registerScroll(dom.byId("allContainer"));
 
-      const demos = dom.byId("allDemos");
+      var demos = dom.byId("allDemos");
       for (i = 0; i < len; ++i) {
-        const demo = gallery_demos[i];
+        var demo = gallery_demos[i];
         if (!/Development/i.test(demo.label)) {
           insertSortedById(demos, createGalleryButton(demo, "all"));
         }
       }
 
       if (!queryInGalleryIndex) {
-        const emptyDemo = {
+        var emptyDemo = {
           name: queryName,
           description: "",
         };
@@ -1468,7 +1482,7 @@ require({
     });
   }
 
-  Promise.resolve(promise).then(function () {
+  when(promise).then(function () {
     dom.byId("searchDemos").appendChild(galleryErrorMsg);
     searchContainer = registry.byId("searchContainer");
 

@@ -5,13 +5,14 @@ import { Texture } from "../../Source/Cesium.js";
 import { Material } from "../../Source/Cesium.js";
 import { ViewportQuad } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
+import pollToPromise from "../pollToPromise.js";
 
 describe(
   "Scene/ViewportQuad",
   function () {
-    let scene;
-    let viewportQuad;
-    let testImage;
+    var scene;
+    var viewportQuad;
+    var testImage;
 
     beforeAll(function () {
       scene = createScene();
@@ -36,14 +37,14 @@ describe(
     });
 
     it("constructs with a rectangle", function () {
-      const rectangle = new BoundingRectangle(1.0, 2.0, 3.0, 4.0);
-      const quad = new ViewportQuad(rectangle);
+      var rectangle = new BoundingRectangle(1.0, 2.0, 3.0, 4.0);
+      var quad = new ViewportQuad(rectangle);
       expect(quad.rectangle).toEqual(rectangle);
     });
 
     it("constructs with a material", function () {
-      const material = Material.fromType(Material.StripeType);
-      const quad = new ViewportQuad(undefined, material);
+      var material = Material.fromType(Material.StripeType);
+      var quad = new ViewportQuad(undefined, material);
       expect(quad.material.type).toEqual(material.type);
     });
 
@@ -85,7 +86,7 @@ describe(
     });
 
     it("renders user created texture", function () {
-      const texture = new Texture({
+      var texture = new Texture({
         context: scene.context,
         source: testImage,
       });
@@ -93,13 +94,17 @@ describe(
       viewportQuad.material = Material.fromType(Material.ImageType);
       viewportQuad.material.uniforms.image = texture;
 
-      expect(scene).toRender([0, 0, 0, 255]);
-      scene.primitives.add(viewportQuad);
-      expect(scene).toRender([255, 0, 0, 255]);
+      pollToPromise(function () {
+        return viewportQuad.material._loadedImages.length !== 0;
+      }).then(function () {
+        expect(scene).toRender([0, 0, 0, 255]);
+        scene.primitives.add(viewportQuad);
+        expect(scene).toRender([255, 0, 0, 255]);
+      });
     });
 
     it("updates rectangle", function () {
-      const otherRectangle = new BoundingRectangle(0, 0, 4, 4);
+      var otherRectangle = new BoundingRectangle(0, 0, 4, 4);
 
       scene.primitives.add(viewportQuad);
       scene.renderForSpecs();
@@ -112,8 +117,8 @@ describe(
     });
 
     it("isDestroyed", function () {
-      const boundRectangle = new BoundingRectangle(0, 0, 10, 10);
-      const vq = new ViewportQuad(boundRectangle);
+      var boundRectangle = new BoundingRectangle(0, 0, 10, 10);
+      var vq = new ViewportQuad(boundRectangle);
 
       expect(vq.isDestroyed()).toEqual(false);
       vq.destroy();

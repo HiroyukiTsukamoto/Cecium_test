@@ -11,7 +11,7 @@ import CesiumMath from "../Core/Math.js";
  *
  * @see Model.colorBlendMode
  */
-const ColorBlendMode = {
+var ColorBlendMode = {
   HIGHLIGHT: 0,
   REPLACE: 1,
   MIX: 2,

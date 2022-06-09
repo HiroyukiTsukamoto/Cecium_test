@@ -5,22 +5,22 @@ import Quaternion from "./Quaternion.js";
 import Spline from "./Spline.js";
 
 function createEvaluateFunction(spline) {
-  const points = spline.points;
-  const times = spline.times;
+  var points = spline.points;
+  var times = spline.times;
 
   // use slerp interpolation
   return function (time, result) {
     if (!defined(result)) {
       result = new Quaternion();
     }
-    const i = (spline._lastTimeIndex = spline.findTimeInterval(
+    var i = (spline._lastTimeIndex = spline.findTimeInterval(
       time,
       spline._lastTimeIndex
     ));
-    const u = (time - times[i]) / (times[i + 1] - times[i]);
+    var u = (time - times[i]) / (times[i + 1] - times[i]);
 
-    const q0 = points[i];
-    const q1 = points[i + 1];
+    var q0 = points[i];
+    var q1 = points[i + 1];
 
     return Quaternion.fastSlerp(q0, q1, u, result);
   };
@@ -38,22 +38,19 @@ function createEvaluateFunction(spline) {
  *                The values are in no way connected to the clock time. They are the parameterization for the curve.
  * @param {Quaternion[]} options.points The array of {@link Quaternion} control points.
  *
- * @exception {DeveloperError} points and times are required
  * @exception {DeveloperError} points.length must be greater than or equal to 2.
  * @exception {DeveloperError} times.length must be equal to points.length.
-
- * @see ConstantSpline
- * @see SteppedSpline
+ *
  * @see HermiteSpline
  * @see CatmullRomSpline
  * @see LinearSpline
- * @see MorphWeightSpline
+ * @see WeightSpline
  */
 function QuaternionSpline(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const points = options.points;
-  const times = options.times;
+  var points = options.points;
+  var times = options.times;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(points) || !defined(times)) {

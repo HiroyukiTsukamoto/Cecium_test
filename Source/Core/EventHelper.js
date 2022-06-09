@@ -11,7 +11,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  *
  * @example
- * const helper = new Cesium.EventHelper();
+ * var helper = new Cesium.EventHelper();
  *
  * helper.add(someObject.event, listener1, this);
  * helper.add(otherObject.event, listener2, this);
@@ -43,13 +43,13 @@ EventHelper.prototype.add = function (event, listener, scope) {
   }
   //>>includeEnd('debug');
 
-  const removalFunction = event.addEventListener(listener, scope);
+  var removalFunction = event.addEventListener(listener, scope);
   this._removalFunctions.push(removalFunction);
 
-  const that = this;
+  var that = this;
   return function () {
     removalFunction();
-    const removalFunctions = that._removalFunctions;
+    var removalFunctions = that._removalFunctions;
     removalFunctions.splice(removalFunctions.indexOf(removalFunction), 1);
   };
 };
@@ -60,8 +60,8 @@ EventHelper.prototype.add = function (event, listener, scope) {
  * @see Event#removeEventListener
  */
 EventHelper.prototype.removeAll = function () {
-  const removalFunctions = this._removalFunctions;
-  for (let i = 0, len = removalFunctions.length; i < len; ++i) {
+  var removalFunctions = this._removalFunctions;
+  for (var i = 0, len = removalFunctions.length; i < len; ++i) {
     removalFunctions[i]();
   }
   removalFunctions.length = 0;

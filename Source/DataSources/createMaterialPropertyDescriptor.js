@@ -16,13 +16,13 @@ function createMaterialProperty(value) {
     value instanceof HTMLCanvasElement ||
     value instanceof HTMLVideoElement
   ) {
-    const result = new ImageMaterialProperty();
+    var result = new ImageMaterialProperty();
     result.image = value;
     return result;
   }
 
   //>>includeStart('debug', pragmas.debug);
-  throw new DeveloperError(`Unable to infer material type: ${value}`);
+  throw new DeveloperError("Unable to infer material type: " + value);
   //>>includeEnd('debug');
 }
 

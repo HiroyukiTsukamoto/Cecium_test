@@ -88,33 +88,18 @@ Object.defineProperties(Empty3DTileContent.prototype, {
     },
   },
 
-  metadata: {
-    get: function () {
-      return undefined;
-    },
-    set: function (value) {
-      //>>includeStart('debug', pragmas.debug);
-      throw new DeveloperError(
-        "Empty3DTileContent cannot have content metadata"
-      );
-      //>>includeEnd('debug');
-    },
-  },
-
   batchTable: {
     get: function () {
       return undefined;
     },
   },
 
-  group: {
+  groupMetadata: {
     get: function () {
       return undefined;
     },
     set: function (value) {
-      //>>includeStart('debug', pragmas.debug);
       throw new DeveloperError("Empty3DTileContent cannot have group metadata");
-      //>>includeEnd('debug');
     },
   },
 });

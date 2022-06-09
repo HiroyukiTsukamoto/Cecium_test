@@ -99,7 +99,7 @@ function TileBoundingRegion(options) {
    */
   this.northNormal = new Cartesian3();
 
-  const ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
+  var ellipsoid = defaultValue(options.ellipsoid, Ellipsoid.WGS84);
   computeBox(this, options.rectangle, ellipsoid);
 
   this._orientedBoundingBox = undefined;
@@ -153,16 +153,15 @@ TileBoundingRegion.prototype.computeBoundingVolumes = function (ellipsoid) {
   );
 };
 
-const cartesian3Scratch = new Cartesian3();
-const cartesian3Scratch2 = new Cartesian3();
-const cartesian3Scratch3 = new Cartesian3();
-const westNormalScratch = new Cartesian3();
-const eastWestNormalScratch = new Cartesian3();
-const westernMidpointScratch = new Cartesian3();
-const easternMidpointScratch = new Cartesian3();
-const cartographicScratch = new Cartographic();
-const planeScratch = new Plane(Cartesian3.UNIT_X, 0.0);
-const rayScratch = new Ray();
+var cartesian3Scratch = new Cartesian3();
+var cartesian3Scratch2 = new Cartesian3();
+var cartesian3Scratch3 = new Cartesian3();
+var eastWestNormalScratch = new Cartesian3();
+var westernMidpointScratch = new Cartesian3();
+var easternMidpointScratch = new Cartesian3();
+var cartographicScratch = new Cartographic();
+var planeScratch = new Plane(Cartesian3.UNIT_X, 0.0);
+var rayScratch = new Ray();
 
 function computeBox(tileBB, rectangle, ellipsoid) {
   ellipsoid.cartographicToCartesian(
@@ -178,63 +177,55 @@ function computeBox(tileBB, rectangle, ellipsoid) {
   cartographicScratch.longitude = rectangle.west;
   cartographicScratch.latitude = (rectangle.south + rectangle.north) * 0.5;
   cartographicScratch.height = 0.0;
-  const westernMidpointCartesian = ellipsoid.cartographicToCartesian(
+  var westernMidpointCartesian = ellipsoid.cartographicToCartesian(
     cartographicScratch,
     westernMidpointScratch
   );
 
   // Compute the normal of the plane on the western edge of the tile.
-  const westNormal = Cartesian3.cross(
+  var westNormal = Cartesian3.cross(
     westernMidpointCartesian,
     Cartesian3.UNIT_Z,
-    westNormalScratch
+    cartesian3Scratch
   );
   Cartesian3.normalize(westNormal, tileBB.westNormal);
 
   // The middle latitude on the eastern edge.
   cartographicScratch.longitude = rectangle.east;
-  const easternMidpointCartesian = ellipsoid.cartographicToCartesian(
+  var easternMidpointCartesian = ellipsoid.cartographicToCartesian(
     cartographicScratch,
     easternMidpointScratch
   );
 
   // Compute the normal of the plane on the eastern edge of the tile.
-  const eastNormal = Cartesian3.cross(
+  var eastNormal = Cartesian3.cross(
     Cartesian3.UNIT_Z,
     easternMidpointCartesian,
     cartesian3Scratch
   );
   Cartesian3.normalize(eastNormal, tileBB.eastNormal);
 
-  let westVector = Cartesian3.subtract(
+  // Compute the normal of the plane bounding the southern edge of the tile.
+  var westVector = Cartesian3.subtract(
     westernMidpointCartesian,
     easternMidpointCartesian,
     cartesian3Scratch
   );
+  var eastWestNormal = Cartesian3.normalize(westVector, eastWestNormalScratch);
 
-  if (Cartesian3.magnitude(westVector) === 0.0) {
-    westVector = Cartesian3.clone(westNormal, westVector);
-  }
-
-  const eastWestNormal = Cartesian3.normalize(
-    westVector,
-    eastWestNormalScratch
-  );
-
-  // Compute the normal of the plane bounding the southern edge of the tile.
-  const south = rectangle.south;
-  let southSurfaceNormal;
+  var south = rectangle.south;
+  var southSurfaceNormal;
 
   if (south > 0.0) {
     // Compute a plane that doesn't cut through the tile.
     cartographicScratch.longitude = (rectangle.west + rectangle.east) * 0.5;
     cartographicScratch.latitude = south;
-    const southCenterCartesian = ellipsoid.cartographicToCartesian(
+    var southCenterCartesian = ellipsoid.cartographicToCartesian(
       cartographicScratch,
       rayScratch.origin
     );
     Cartesian3.clone(eastWestNormal, rayScratch.direction);
-    const westPlane = Plane.fromPointNormal(
+    var westPlane = Plane.fromPointNormal(
       tileBB.southwestCornerCartesian,
       tileBB.westNormal,
       planeScratch
@@ -255,7 +246,7 @@ function computeBox(tileBB, rectangle, ellipsoid) {
       cartesian3Scratch2
     );
   }
-  const southNormal = Cartesian3.cross(
+  var southNormal = Cartesian3.cross(
     southSurfaceNormal,
     westVector,
     cartesian3Scratch3
@@ -263,19 +254,18 @@ function computeBox(tileBB, rectangle, ellipsoid) {
   Cartesian3.normalize(southNormal, tileBB.southNormal);
 
   // Compute the normal of the plane bounding the northern edge of the tile.
-  const north = rectangle.north;
-  let northSurfaceNormal;
-
+  var north = rectangle.north;
+  var northSurfaceNormal;
   if (north < 0.0) {
     // Compute a plane that doesn't cut through the tile.
     cartographicScratch.longitude = (rectangle.west + rectangle.east) * 0.5;
     cartographicScratch.latitude = north;
-    const northCenterCartesian = ellipsoid.cartographicToCartesian(
+    var northCenterCartesian = ellipsoid.cartographicToCartesian(
       cartographicScratch,
       rayScratch.origin
     );
     Cartesian3.negate(eastWestNormal, rayScratch.direction);
-    const eastPlane = Plane.fromPointNormal(
+    var eastPlane = Plane.fromPointNormal(
       tileBB.northeastCornerCartesian,
       tileBB.eastNormal,
       planeScratch
@@ -296,7 +286,7 @@ function computeBox(tileBB, rectangle, ellipsoid) {
       cartesian3Scratch2
     );
   }
-  const northNormal = Cartesian3.cross(
+  var northNormal = Cartesian3.cross(
     westVector,
     northSurfaceNormal,
     cartesian3Scratch3
@@ -304,25 +294,25 @@ function computeBox(tileBB, rectangle, ellipsoid) {
   Cartesian3.normalize(northNormal, tileBB.northNormal);
 }
 
-const southwestCornerScratch = new Cartesian3();
-const northeastCornerScratch = new Cartesian3();
-const negativeUnitY = new Cartesian3(0.0, -1.0, 0.0);
-const negativeUnitZ = new Cartesian3(0.0, 0.0, -1.0);
-const vectorScratch = new Cartesian3();
+var southwestCornerScratch = new Cartesian3();
+var northeastCornerScratch = new Cartesian3();
+var negativeUnitY = new Cartesian3(0.0, -1.0, 0.0);
+var negativeUnitZ = new Cartesian3(0.0, 0.0, -1.0);
+var vectorScratch = new Cartesian3();
 
 function distanceToCameraRegion(tileBB, frameState) {
-  const camera = frameState.camera;
-  const cameraCartesianPosition = camera.positionWC;
-  const cameraCartographicPosition = camera.positionCartographic;
+  var camera = frameState.camera;
+  var cameraCartesianPosition = camera.positionWC;
+  var cameraCartographicPosition = camera.positionCartographic;
 
-  let result = 0.0;
+  var result = 0.0;
   if (!Rectangle.contains(tileBB.rectangle, cameraCartographicPosition)) {
-    let southwestCornerCartesian = tileBB.southwestCornerCartesian;
-    let northeastCornerCartesian = tileBB.northeastCornerCartesian;
-    let westNormal = tileBB.westNormal;
-    let southNormal = tileBB.southNormal;
-    let eastNormal = tileBB.eastNormal;
-    let northNormal = tileBB.northNormal;
+    var southwestCornerCartesian = tileBB.southwestCornerCartesian;
+    var northeastCornerCartesian = tileBB.northeastCornerCartesian;
+    var westNormal = tileBB.westNormal;
+    var southNormal = tileBB.southNormal;
+    var eastNormal = tileBB.eastNormal;
+    var northNormal = tileBB.northNormal;
 
     if (frameState.mode !== SceneMode.SCENE3D) {
       southwestCornerCartesian = frameState.mapProjection.project(
@@ -345,30 +335,30 @@ function distanceToCameraRegion(tileBB, frameState) {
       northNormal = Cartesian3.UNIT_Z;
     }
 
-    const vectorFromSouthwestCorner = Cartesian3.subtract(
+    var vectorFromSouthwestCorner = Cartesian3.subtract(
       cameraCartesianPosition,
       southwestCornerCartesian,
       vectorScratch
     );
-    const distanceToWestPlane = Cartesian3.dot(
+    var distanceToWestPlane = Cartesian3.dot(
       vectorFromSouthwestCorner,
       westNormal
     );
-    const distanceToSouthPlane = Cartesian3.dot(
+    var distanceToSouthPlane = Cartesian3.dot(
       vectorFromSouthwestCorner,
       southNormal
     );
 
-    const vectorFromNortheastCorner = Cartesian3.subtract(
+    var vectorFromNortheastCorner = Cartesian3.subtract(
       cameraCartesianPosition,
       northeastCornerCartesian,
       vectorScratch
     );
-    const distanceToEastPlane = Cartesian3.dot(
+    var distanceToEastPlane = Cartesian3.dot(
       vectorFromNortheastCorner,
       eastNormal
     );
-    const distanceToNorthPlane = Cartesian3.dot(
+    var distanceToNorthPlane = Cartesian3.dot(
       vectorFromNortheastCorner,
       northNormal
     );
@@ -386,9 +376,9 @@ function distanceToCameraRegion(tileBB, frameState) {
     }
   }
 
-  let cameraHeight;
-  let minimumHeight;
-  let maximumHeight;
+  var cameraHeight;
+  var minimumHeight;
+  var maximumHeight;
   if (frameState.mode === SceneMode.SCENE3D) {
     cameraHeight = cameraCartographicPosition.height;
     minimumHeight = tileBB.minimumHeight;
@@ -400,10 +390,10 @@ function distanceToCameraRegion(tileBB, frameState) {
   }
 
   if (cameraHeight > maximumHeight) {
-    const distanceAboveTop = cameraHeight - maximumHeight;
+    var distanceAboveTop = cameraHeight - maximumHeight;
     result += distanceAboveTop * distanceAboveTop;
   } else if (cameraHeight < minimumHeight) {
-    const distanceBelowBottom = minimumHeight - cameraHeight;
+    var distanceBelowBottom = minimumHeight - cameraHeight;
     result += distanceBelowBottom * distanceBelowBottom;
   }
 
@@ -421,12 +411,12 @@ TileBoundingRegion.prototype.distanceToCamera = function (frameState) {
   Check.defined("frameState", frameState);
   //>>includeEnd('debug');
 
-  const regionResult = distanceToCameraRegion(this, frameState);
+  var regionResult = distanceToCameraRegion(this, frameState);
   if (
     frameState.mode === SceneMode.SCENE3D &&
     defined(this._orientedBoundingBox)
   ) {
-    const obbResult = Math.sqrt(
+    var obbResult = Math.sqrt(
       this._orientedBoundingBox.distanceSquaredTo(frameState.camera.positionWC)
     );
     return Math.max(regionResult, obbResult);
@@ -463,13 +453,13 @@ TileBoundingRegion.prototype.createDebugVolume = function (color) {
   Check.defined("color", color);
   //>>includeEnd('debug');
 
-  const modelMatrix = new Matrix4.clone(Matrix4.IDENTITY);
-  const geometry = new RectangleOutlineGeometry({
+  var modelMatrix = new Matrix4.clone(Matrix4.IDENTITY);
+  var geometry = new RectangleOutlineGeometry({
     rectangle: this.rectangle,
     height: this.minimumHeight,
     extrudedHeight: this.maximumHeight,
   });
-  const instance = new GeometryInstance({
+  var instance = new GeometryInstance({
     geometry: geometry,
     id: "outline",
     modelMatrix: modelMatrix,

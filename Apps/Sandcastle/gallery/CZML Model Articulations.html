@@ -30,10 +30,10 @@
     <div id="toolbar"></div>
 
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const czml = [
+        var czml = [
           {
             id: "document",
             name: "CZML Model",
@@ -53,8 +53,7 @@
               cartographicDegrees: [-77, 37, 10000],
             },
             model: {
-              gltf:
-                "https://cesium.com/public/SandcastleSampleData/launchvehicle.glb",
+              gltf: "https://assets.agi.com/models/launchvehicle.glb",
               scale: 2.0,
               minimumPixelSize: 128,
               runAnimations: false,
@@ -78,11 +77,11 @@
           },
         ];
 
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           shouldAnimate: true,
         });
 
-        const dataSourcePromise = viewer.dataSources.add(
+        var dataSourcePromise = viewer.dataSources.add(
           Cesium.CzmlDataSource.load(czml)
         );
 
@@ -90,15 +89,15 @@
           .then(function (dataSource) {
             viewer.trackedEntity = dataSource.entities.getById("test model");
           })
-          .catch(function (error) {
+          .otherwise(function (error) {
             console.error(error);
           });
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

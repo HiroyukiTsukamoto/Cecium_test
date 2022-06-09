@@ -15,7 +15,7 @@ import PostProcessStageLibrary from "./PostProcessStageLibrary.js";
 import PostProcessStageTextureCache from "./PostProcessStageTextureCache.js";
 import Tonemapper from "./Tonemapper.js";
 
-const stackScratch = [];
+var stackScratch = [];
 
 /**
  * A collection of {@link PostProcessStage}s and/or {@link PostProcessStageComposite}s.
@@ -34,9 +34,9 @@ const stackScratch = [];
  * @constructor
  */
 function PostProcessStageCollection() {
-  const fxaa = PostProcessStageLibrary.createFXAAStage();
-  const ao = PostProcessStageLibrary.createAmbientOcclusionStage();
-  const bloom = PostProcessStageLibrary.createBloomStage();
+  var fxaa = PostProcessStageLibrary.createFXAAStage();
+  var ao = PostProcessStageLibrary.createAmbientOcclusionStage();
+  var bloom = PostProcessStageLibrary.createBloomStage();
 
   // Auto-exposure is currently disabled because most shaders output a value in [0.0, 1.0].
   // Some shaders, such as the atmosphere and ground atmosphere, output values slightly over 1.0.
@@ -48,26 +48,26 @@ function PostProcessStageCollection() {
   // set tonemapper and tonemapping
   this.tonemapper = Tonemapper.ACES;
 
-  const tonemapping = this._tonemapping;
+  var tonemapping = this._tonemapping;
 
   fxaa.enabled = false;
   ao.enabled = false;
   bloom.enabled = false;
   tonemapping.enabled = false; // will be enabled if necessary in update
 
-  const textureCache = new PostProcessStageTextureCache(this);
+  var textureCache = new PostProcessStageTextureCache(this);
 
-  const stageNames = {};
-  const stack = stackScratch;
+  var stageNames = {};
+  var stack = stackScratch;
   stack.push(fxaa, ao, bloom, tonemapping);
   while (stack.length > 0) {
-    const stage = stack.pop();
+    var stage = stack.pop();
     stageNames[stage.name] = stage;
     stage._textureCache = textureCache;
 
-    const length = stage.length;
+    var length = stage.length;
     if (defined(length)) {
-      for (let i = 0; i < length; ++i) {
+      for (var i = 0; i < length; ++i) {
         stack.push(stage.get(i));
       }
     }
@@ -79,7 +79,7 @@ function PostProcessStageCollection() {
 
   this._randomTexture = undefined; // For AO
 
-  const that = this;
+  var that = this;
   ao.uniforms.randomTexture = function () {
     return that._randomTexture;
   };
@@ -111,18 +111,18 @@ Object.defineProperties(PostProcessStageCollection.prototype, {
    */
   ready: {
     get: function () {
-      let readyAndEnabled = false;
-      const stages = this._stages;
-      const length = stages.length;
-      for (let i = length - 1; i >= 0; --i) {
-        const stage = stages[i];
+      var readyAndEnabled = false;
+      var stages = this._stages;
+      var length = stages.length;
+      for (var i = length - 1; i >= 0; --i) {
+        var stage = stages[i];
         readyAndEnabled = readyAndEnabled || (stage.ready && stage.enabled);
       }
 
-      const fxaa = this._fxaa;
-      const ao = this._ao;
-      const bloom = this._bloom;
-      const tonemapping = this._tonemapping;
+      var fxaa = this._fxaa;
+      var ao = this._ao;
+      var bloom = this._bloom;
+      var tonemapping = this._tonemapping;
 
       readyAndEnabled = readyAndEnabled || (fxaa.ready && fxaa.enabled);
       readyAndEnabled = readyAndEnabled || (ao.ready && ao.enabled);
@@ -251,31 +251,31 @@ Object.defineProperties(PostProcessStageCollection.prototype, {
    */
   outputTexture: {
     get: function () {
-      const fxaa = this._fxaa;
+      var fxaa = this._fxaa;
       if (fxaa.enabled && fxaa.ready) {
         return this.getOutputTexture(fxaa.name);
       }
 
-      const stages = this._stages;
-      const length = stages.length;
-      for (let i = length - 1; i >= 0; --i) {
-        const stage = stages[i];
+      var stages = this._stages;
+      var length = stages.length;
+      for (var i = length - 1; i >= 0; --i) {
+        var stage = stages[i];
         if (defined(stage) && stage.ready && stage.enabled) {
           return this.getOutputTexture(stage.name);
         }
       }
 
-      const tonemapping = this._tonemapping;
+      var tonemapping = this._tonemapping;
       if (tonemapping.enabled && tonemapping.ready) {
         return this.getOutputTexture(tonemapping.name);
       }
 
-      const bloom = this._bloom;
+      var bloom = this._bloom;
       if (bloom.enabled && bloom.ready) {
         return this.getOutputTexture(bloom.name);
       }
 
-      const ao = this._ao;
+      var ao = this._ao;
       if (ao.enabled && ao.ready) {
         return this.getOutputTexture(ao.name);
       }
@@ -293,18 +293,18 @@ Object.defineProperties(PostProcessStageCollection.prototype, {
    */
   hasSelected: {
     get: function () {
-      const stages = arraySlice(this._stages);
+      var stages = arraySlice(this._stages);
       while (stages.length > 0) {
-        const stage = stages.pop();
+        var stage = stages.pop();
         if (!defined(stage)) {
           continue;
         }
         if (defined(stage.selected)) {
           return true;
         }
-        const length = stage.length;
+        var length = stage.length;
         if (defined(length)) {
-          for (let i = 0; i < length; ++i) {
+          for (var i = 0; i < length; ++i) {
             stages.push(stage.get(i));
           }
         }
@@ -339,8 +339,8 @@ Object.defineProperties(PostProcessStageCollection.prototype, {
         this._tonemapping.destroy();
       }
 
-      const useAutoExposure = this._autoExposureEnabled;
-      let tonemapper;
+      var useAutoExposure = this._autoExposureEnabled;
+      var tonemapper;
 
       switch (value) {
         case Tonemapper.REINHARD:
@@ -366,7 +366,7 @@ Object.defineProperties(PostProcessStageCollection.prototype, {
       }
 
       if (useAutoExposure) {
-        const autoexposure = this._autoExposure;
+        var autoexposure = this._autoExposure;
         tonemapper.uniforms.autoExposure = function () {
           return autoexposure.outputTexture;
         };
@@ -392,11 +392,11 @@ function removeStages(collection) {
 
   collection._stagesRemoved = false;
 
-  const newStages = [];
-  const stages = collection._stages;
-  const length = stages.length;
-  for (let i = 0, j = 0; i < length; ++i) {
-    const stage = stages[i];
+  var newStages = [];
+  var stages = collection._stages;
+  var length = stages.length;
+  for (var i = 0, j = 0; i < length; ++i) {
+    var stage = stages[i];
     if (stage) {
       stage._index = j++;
       newStages.push(stage);
@@ -419,31 +419,32 @@ PostProcessStageCollection.prototype.add = function (stage) {
   Check.typeOf.object("stage", stage);
   //>>includeEnd('debug');
 
-  const stageNames = this._stageNames;
+  var stageNames = this._stageNames;
 
-  const stack = stackScratch;
+  var stack = stackScratch;
   stack.push(stage);
   while (stack.length > 0) {
-    const currentStage = stack.pop();
+    var currentStage = stack.pop();
     //>>includeStart('debug', pragmas.debug);
     if (defined(stageNames[currentStage.name])) {
       throw new DeveloperError(
-        `${currentStage.name} has already been added to the collection or does not have a unique name.`
+        currentStage.name +
+          " has already been added to the collection or does not have a unique name."
       );
     }
     //>>includeEnd('debug');
     stageNames[currentStage.name] = currentStage;
     currentStage._textureCache = this._textureCache;
 
-    const length = currentStage.length;
+    var length = currentStage.length;
     if (defined(length)) {
-      for (let i = 0; i < length; ++i) {
+      for (var i = 0; i < length; ++i) {
         stack.push(currentStage.get(i));
       }
     }
   }
 
-  const stages = this._stages;
+  var stages = this._stages;
   stage._index = stages.length;
   stages.push(stage);
   this._textureCacheDirty = true;
@@ -461,17 +462,17 @@ PostProcessStageCollection.prototype.remove = function (stage) {
     return false;
   }
 
-  const stageNames = this._stageNames;
+  var stageNames = this._stageNames;
 
-  const stack = stackScratch;
+  var stack = stackScratch;
   stack.push(stage);
   while (stack.length > 0) {
-    const currentStage = stack.pop();
+    var currentStage = stack.pop();
     delete stageNames[currentStage.name];
 
-    const length = currentStage.length;
+    var length = currentStage.length;
     if (defined(length)) {
-      for (let i = 0; i < length; ++i) {
+      for (var i = 0; i < length; ++i) {
         stack.push(currentStage.get(i));
       }
     }
@@ -508,9 +509,9 @@ PostProcessStageCollection.prototype.contains = function (stage) {
  */
 PostProcessStageCollection.prototype.get = function (index) {
   removeStages(this);
-  const stages = this._stages;
+  var stages = this._stages;
   //>>includeStart('debug', pragmas.debug);
-  const length = stages.length;
+  var length = stages.length;
   Check.typeOf.number.greaterThanOrEquals("stages length", length, 0);
   Check.typeOf.number.greaterThanOrEquals("index", index, 0);
   Check.typeOf.number.lessThan("index", index, length);
@@ -522,9 +523,9 @@ PostProcessStageCollection.prototype.get = function (index) {
  * Removes all post-process stages from the collection and destroys them.
  */
 PostProcessStageCollection.prototype.removeAll = function () {
-  const stages = this._stages;
-  const length = stages.length;
-  for (let i = 0; i < length; ++i) {
+  var stages = this._stages;
+  var length = stages.length;
+  for (var i = 0; i < length; ++i) {
     this.remove(stages[i]);
   }
   stages.length = 0;
@@ -557,16 +558,16 @@ PostProcessStageCollection.prototype.update = function (
 ) {
   removeStages(this);
 
-  const previousActiveStages = this._activeStages;
-  const activeStages = (this._activeStages = this._previousActiveStages);
+  var previousActiveStages = this._activeStages;
+  var activeStages = (this._activeStages = this._previousActiveStages);
   this._previousActiveStages = previousActiveStages;
 
-  const stages = this._stages;
-  let length = (activeStages.length = stages.length);
+  var stages = this._stages;
+  var length = (activeStages.length = stages.length);
 
-  let i;
-  let stage;
-  let count = 0;
+  var i;
+  var stage;
+  var count = 0;
   for (i = 0; i < length; ++i) {
     stage = stages[i];
     if (stage.ready && stage.enabled && stage._isSupported(context)) {
@@ -576,7 +577,7 @@ PostProcessStageCollection.prototype.update = function (
 
   activeStages.length = count;
 
-  let activeStagesChanged = count !== previousActiveStages.length;
+  var activeStagesChanged = count !== previousActiveStages.length;
   if (!activeStagesChanged) {
     for (i = 0; i < count; ++i) {
       if (activeStages[i] !== previousActiveStages[i]) {
@@ -586,19 +587,19 @@ PostProcessStageCollection.prototype.update = function (
     }
   }
 
-  const ao = this._ao;
-  const bloom = this._bloom;
-  const autoexposure = this._autoExposure;
-  const tonemapping = this._tonemapping;
-  const fxaa = this._fxaa;
+  var ao = this._ao;
+  var bloom = this._bloom;
+  var autoexposure = this._autoExposure;
+  var tonemapping = this._tonemapping;
+  var fxaa = this._fxaa;
 
   tonemapping.enabled = useHdr;
 
-  const aoEnabled = ao.enabled && ao._isSupported(context);
-  const bloomEnabled = bloom.enabled && bloom._isSupported(context);
-  const tonemappingEnabled =
+  var aoEnabled = ao.enabled && ao._isSupported(context);
+  var bloomEnabled = bloom.enabled && bloom._isSupported(context);
+  var tonemappingEnabled =
     tonemapping.enabled && tonemapping._isSupported(context);
-  const fxaaEnabled = fxaa.enabled && fxaa._isSupported(context);
+  var fxaaEnabled = fxaa.enabled && fxaa._isSupported(context);
 
   if (
     activeStagesChanged ||
@@ -626,7 +627,7 @@ PostProcessStageCollection.prototype.update = function (
 
   if (!defined(this._randomTexture) && aoEnabled) {
     length = 256 * 256 * 3;
-    const random = new Uint8Array(length);
+    var random = new Uint8Array(length);
     for (i = 0; i < length; i += 3) {
       random[i] = Math.floor(Math.random() * 255.0);
     }
@@ -710,7 +711,7 @@ function getOutputTexture(stage) {
  * @private
  */
 PostProcessStageCollection.prototype.getOutputTexture = function (stageName) {
-  const stage = this.getStageByName(stageName);
+  var stage = this.getStageByName(stageName);
   if (!defined(stage)) {
     return undefined;
   }
@@ -723,8 +724,8 @@ function execute(stage, context, colorTexture, depthTexture, idTexture) {
     return;
   }
 
-  const length = stage.length;
-  let i;
+  var length = stage.length;
+  var i;
 
   if (stage.inputPreviousStageTexture) {
     execute(stage.get(0), context, colorTexture, depthTexture, idTexture);
@@ -760,20 +761,20 @@ PostProcessStageCollection.prototype.execute = function (
   depthTexture,
   idTexture
 ) {
-  const activeStages = this._activeStages;
-  const length = activeStages.length;
-  const fxaa = this._fxaa;
-  const ao = this._ao;
-  const bloom = this._bloom;
-  const autoexposure = this._autoExposure;
-  const tonemapping = this._tonemapping;
+  var activeStages = this._activeStages;
+  var length = activeStages.length;
+  var fxaa = this._fxaa;
+  var ao = this._ao;
+  var bloom = this._bloom;
+  var autoexposure = this._autoExposure;
+  var tonemapping = this._tonemapping;
 
-  const aoEnabled = ao.enabled && ao._isSupported(context);
-  const bloomEnabled = bloom.enabled && bloom._isSupported(context);
-  const autoExposureEnabled = this._autoExposureEnabled;
-  const tonemappingEnabled =
+  var aoEnabled = ao.enabled && ao._isSupported(context);
+  var bloomEnabled = bloom.enabled && bloom._isSupported(context);
+  var autoExposureEnabled = this._autoExposureEnabled;
+  var tonemappingEnabled =
     tonemapping.enabled && tonemapping._isSupported(context);
-  const fxaaEnabled = fxaa.enabled && fxaa._isSupported(context);
+  var fxaaEnabled = fxaa.enabled && fxaa._isSupported(context);
 
   if (
     !fxaaEnabled &&
@@ -785,7 +786,7 @@ PostProcessStageCollection.prototype.execute = function (
     return;
   }
 
-  let initialTexture = colorTexture;
+  var initialTexture = colorTexture;
   if (aoEnabled && ao.ready) {
     execute(ao, context, initialTexture, depthTexture, idTexture);
     initialTexture = getOutputTexture(ao);
@@ -802,11 +803,11 @@ PostProcessStageCollection.prototype.execute = function (
     initialTexture = getOutputTexture(tonemapping);
   }
 
-  let lastTexture = initialTexture;
+  var lastTexture = initialTexture;
 
   if (length > 0) {
     execute(activeStages[0], context, initialTexture, depthTexture, idTexture);
-    for (let i = 1; i < length; ++i) {
+    for (var i = 1; i < length; ++i) {
       execute(
         activeStages[i],
         context,
@@ -833,7 +834,7 @@ PostProcessStageCollection.prototype.execute = function (
  */
 PostProcessStageCollection.prototype.copy = function (context, framebuffer) {
   if (!defined(this._copyColorCommand)) {
-    const that = this;
+    var that = this;
     this._copyColorCommand = context.createViewportQuadCommand(PassThrough, {
       uniformMap: {
         colorTexture: function () {

@@ -54,20 +54,20 @@
       </table>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
+        var viewer = new Cesium.Viewer("cesiumContainer");
 
-        const layers = viewer.scene.imageryLayers;
+        var layers = viewer.scene.imageryLayers;
 
         // Set oceans on Bing base layer to transparent
-        const baseLayer = layers.get(0);
+        var baseLayer = layers.get(0);
         baseLayer.colorToAlpha = new Cesium.Color(0.0, 0.016, 0.059);
         baseLayer.colorToAlphaThreshold = 0.2;
 
         // Add a bump layer with adjustable threshold
-        const singleTileLayer = layers.addImageryProvider(
+        var singleTileLayer = layers.addImageryProvider(
           new Cesium.SingleTileImageryProvider({
             url: "../images/earthbump1k.jpg",
             rectangle: Cesium.Rectangle.fromDegrees(-180.0, -90.0, 180.0, 90.0),
@@ -77,13 +77,13 @@
         singleTileLayer.colorToAlpha = new Cesium.Color(0.0, 0.0, 0.0, 1.0);
         singleTileLayer.colorToAlphaThreshold = 0.1;
 
-        const viewModel = {
+        var viewModel = {
           threshold: singleTileLayer.colorToAlphaThreshold,
         };
 
         Cesium.knockout.track(viewModel);
 
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
 
         Cesium.knockout
@@ -94,10 +94,10 @@
             );
           }); //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

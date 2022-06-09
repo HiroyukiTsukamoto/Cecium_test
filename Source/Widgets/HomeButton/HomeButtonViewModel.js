@@ -21,7 +21,7 @@ function HomeButtonViewModel(scene, duration) {
   this._scene = scene;
   this._duration = duration;
 
-  const that = this;
+  var that = this;
   this._command = createCommand(function () {
     that._scene.camera.flyHome(that._duration);
   });

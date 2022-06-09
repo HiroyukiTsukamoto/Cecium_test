@@ -4,7 +4,7 @@
  *
  * @enum {Number}
  */
-const KeyboardEventModifier = {
+var KeyboardEventModifier = {
   /**
    * Represents the shift key being held down.
    *

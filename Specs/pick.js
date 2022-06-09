@@ -9,8 +9,8 @@ import { JobScheduler } from "../Source/Cesium.js";
 import { PickFramebuffer } from "../Source/Cesium.js";
 
 function executeCommands(context, passState, commands) {
-  const length = commands.length;
-  for (let i = 0; i < length; ++i) {
+  var length = commands.length;
+  for (var i = 0; i < length; ++i) {
     commands[i].execute(context, passState);
   }
 }
@@ -18,13 +18,13 @@ function executeCommands(context, passState, commands) {
 function pick(frameState, primitives, x, y) {
   frameState.commandList.length = 0;
 
-  const context = frameState.context;
+  var context = frameState.context;
 
-  const rectangle = new BoundingRectangle(x, y, 1, 1);
-  const pickFramebuffer = new PickFramebuffer(context);
-  const passState = pickFramebuffer.begin(rectangle);
+  var rectangle = new BoundingRectangle(x, y, 1, 1);
+  var pickFramebuffer = new PickFramebuffer(context);
+  var passState = pickFramebuffer.begin(rectangle);
 
-  const oldPasses = frameState.passes;
+  var oldPasses = frameState.passes;
   frameState.passes = new FrameState(
     new CreditDisplay(
       document.createElement("div"),
@@ -37,24 +37,24 @@ function pick(frameState, primitives, x, y) {
 
   primitives.update(frameState);
 
-  const clear = new ClearCommand({
+  var clear = new ClearCommand({
     color: new Color(0.0, 0.0, 0.0, 0.0),
     depth: 1.0,
     stencil: 1.0,
   });
   clear.execute(context, passState);
 
-  let i;
-  const renderCommands = new Array(Pass.NUMBER_OF_PASSES);
+  var i;
+  var renderCommands = new Array(Pass.NUMBER_OF_PASSES);
   for (i = 0; i < Pass.NUMBER_OF_PASSES; ++i) {
     renderCommands[i] = [];
   }
 
-  const commands = frameState.commandList;
-  const length = commands.length;
+  var commands = frameState.commandList;
+  var length = commands.length;
   for (i = 0; i < length; i++) {
-    const command = commands[i];
-    const pass = defined(command.pass) ? command.pass : Pass.OPAQUE;
+    var command = commands[i];
+    var pass = defined(command.pass) ? command.pass : Pass.OPAQUE;
     renderCommands[pass].push(command);
   }
 
@@ -64,7 +64,7 @@ function pick(frameState, primitives, x, y) {
 
   frameState.passes = oldPasses;
 
-  const p = pickFramebuffer.end(rectangle);
+  var p = pickFramebuffer.end(rectangle);
   pickFramebuffer.destroy();
 
   return p;

@@ -20,12 +20,12 @@ import SampledPositionProperty from "./SampledPositionProperty.js";
 import ScaledPositionProperty from "./ScaledPositionProperty.js";
 import TimeIntervalCollectionPositionProperty from "./TimeIntervalCollectionPositionProperty.js";
 
-const defaultResolution = 60.0;
-const defaultWidth = 1.0;
+var defaultResolution = 60.0;
+var defaultWidth = 1.0;
 
-const scratchTimeInterval = new TimeInterval();
-const subSampleCompositePropertyScratch = new TimeInterval();
-const subSampleIntervalPropertyScratch = new TimeInterval();
+var scratchTimeInterval = new TimeInterval();
+var subSampleCompositePropertyScratch = new TimeInterval();
+var subSampleIntervalPropertyScratch = new TimeInterval();
 
 function EntityData(entity) {
   this.entity = entity;
@@ -45,15 +45,15 @@ function subSampleSampledProperty(
   startingIndex,
   result
 ) {
-  let r = startingIndex;
+  var r = startingIndex;
   //Always step exactly on start (but only use it if it exists.)
-  let tmp;
+  var tmp;
   tmp = property.getValueInReferenceFrame(start, referenceFrame, result[r]);
   if (defined(tmp)) {
     result[r++] = tmp;
   }
 
-  let steppedOnNow =
+  var steppedOnNow =
     !defined(updateTime) ||
     JulianDate.lessThanOrEquals(updateTime, start) ||
     JulianDate.greaterThanOrEquals(updateTime, stop);
@@ -61,14 +61,14 @@ function subSampleSampledProperty(
   //Iterate over all interval times and add the ones that fall in our
   //time range.  Note that times can contain data outside of
   //the intervals range.  This is by design for use with interpolation.
-  let t = 0;
-  const len = times.length;
-  let current = times[t];
-  const loopStop = stop;
-  let sampling = false;
-  let sampleStepsToTake;
-  let sampleStepsTaken;
-  let sampleStepSize;
+  var t = 0;
+  var len = times.length;
+  var current = times[t];
+  var loopStop = stop;
+  var sampling = false;
+  var sampleStepsToTake;
+  var sampleStepsTaken;
+  var sampleStepSize;
 
   while (t < len) {
     if (!steppedOnNow && JulianDate.greaterThanOrEquals(current, updateTime)) {
@@ -99,8 +99,8 @@ function subSampleSampledProperty(
 
     if (t < len - 1) {
       if (maximumStep > 0 && !sampling) {
-        const next = times[t + 1];
-        const secondsUntilNext = JulianDate.secondsDifference(next, current);
+        var next = times[t + 1];
+        var secondsUntilNext = JulianDate.secondsDifference(next, current);
         sampling = secondsUntilNext > maximumStep;
 
         if (sampling) {
@@ -145,12 +145,12 @@ function subSampleGenericProperty(
   startingIndex,
   result
 ) {
-  let tmp;
-  let i = 0;
-  let index = startingIndex;
-  let time = start;
-  const stepSize = Math.max(maximumStep, 60);
-  let steppedOnNow =
+  var tmp;
+  var i = 0;
+  var index = startingIndex;
+  var time = start;
+  var stepSize = Math.max(maximumStep, 60);
+  var steppedOnNow =
     !defined(updateTime) ||
     JulianDate.lessThanOrEquals(updateTime, start) ||
     JulianDate.greaterThanOrEquals(updateTime, stop);
@@ -201,10 +201,10 @@ function subSampleIntervalProperty(
   subSampleIntervalPropertyScratch.start = start;
   subSampleIntervalPropertyScratch.stop = stop;
 
-  let index = startingIndex;
-  const intervals = property.intervals;
-  for (let i = 0; i < intervals.length; i++) {
-    const interval = intervals.get(i);
+  var index = startingIndex;
+  var intervals = property.intervals;
+  for (var i = 0; i < intervals.length; i++) {
+    var interval = intervals.get(i);
     if (
       !TimeInterval.intersect(
         interval,
@@ -212,7 +212,7 @@ function subSampleIntervalProperty(
         scratchTimeInterval
       ).isEmpty
     ) {
-      let time = interval.start;
+      var time = interval.start;
       if (!interval.isStartIncluded) {
         if (interval.isStopIncluded) {
           time = interval.stop;
@@ -224,7 +224,7 @@ function subSampleIntervalProperty(
           );
         }
       }
-      const tmp = property.getValueInReferenceFrame(
+      var tmp = property.getValueInReferenceFrame(
         time,
         referenceFrame,
         result[index]
@@ -248,7 +248,7 @@ function subSampleConstantProperty(
   startingIndex,
   result
 ) {
-  const tmp = property.getValueInReferenceFrame(
+  var tmp = property.getValueInReferenceFrame(
     start,
     referenceFrame,
     result[startingIndex]
@@ -272,10 +272,10 @@ function subSampleCompositeProperty(
   subSampleCompositePropertyScratch.start = start;
   subSampleCompositePropertyScratch.stop = stop;
 
-  let index = startingIndex;
-  const intervals = property.intervals;
-  for (let i = 0; i < intervals.length; i++) {
-    const interval = intervals.get(i);
+  var index = startingIndex;
+  var intervals = property.intervals;
+  for (var i = 0; i < intervals.length; i++) {
+    var interval = intervals.get(i);
     if (
       !TimeInterval.intersect(
         interval,
@@ -283,15 +283,15 @@ function subSampleCompositeProperty(
         scratchTimeInterval
       ).isEmpty
     ) {
-      const intervalStart = interval.start;
-      const intervalStop = interval.stop;
+      var intervalStart = interval.start;
+      var intervalStop = interval.stop;
 
-      let sampleStart = start;
+      var sampleStart = start;
       if (JulianDate.greaterThan(intervalStart, sampleStart)) {
         sampleStart = intervalStart;
       }
 
-      let sampleStop = stop;
+      var sampleStop = stop;
       if (JulianDate.lessThan(intervalStop, sampleStop)) {
         sampleStop = intervalStop;
       }
@@ -327,7 +327,7 @@ function reallySubSample(
   }
 
   if (property instanceof SampledPositionProperty) {
-    const times = property._property._times;
+    var times = property._property._times;
     index = subSampleSampledProperty(
       property,
       start,
@@ -405,7 +405,7 @@ function subSample(
     result = [];
   }
 
-  const length = reallySubSample(
+  var length = reallySubSample(
     property,
     start,
     stop,
@@ -419,7 +419,7 @@ function subSample(
   return result;
 }
 
-const toFixedScratch = new Matrix3();
+var toFixedScratch = new Matrix3();
 function PolylineUpdater(scene, referenceFrame) {
   this._unusedIndexes = [];
   this._polylineCollection = new PolylineCollection();
@@ -430,7 +430,7 @@ function PolylineUpdater(scene, referenceFrame) {
 
 PolylineUpdater.prototype.update = function (time) {
   if (this._referenceFrame === ReferenceFrame.INERTIAL) {
-    let toFixed = Transforms.computeIcrfToFixedMatrix(time, toFixedScratch);
+    var toFixed = Transforms.computeIcrfToFixedMatrix(time, toFixedScratch);
     if (!defined(toFixed)) {
       toFixed = Transforms.computeTemeToPseudoFixedMatrix(time, toFixedScratch);
     }
@@ -443,32 +443,27 @@ PolylineUpdater.prototype.update = function (time) {
 };
 
 PolylineUpdater.prototype.updateObject = function (time, item) {
-  const entity = item.entity;
-  const pathGraphics = entity._path;
-  const positionProperty = entity._position;
+  var entity = item.entity;
+  var pathGraphics = entity._path;
+  var positionProperty = entity._position;
 
-  let sampleStart;
-  let sampleStop;
-  const showProperty = pathGraphics._show;
-  let polyline = item.polyline;
-  let show =
-    entity.isShowing &&
-    entity.isAvailable(time) &&
-    (!defined(showProperty) || showProperty.getValue(time));
+  var sampleStart;
+  var sampleStop;
+  var showProperty = pathGraphics._show;
+  var polyline = item.polyline;
+  var show =
+    entity.isShowing && (!defined(showProperty) || showProperty.getValue(time));
 
   //While we want to show the path, there may not actually be anything to show
   //depending on lead/trail settings.  Compute the interval of the path to
   //show and check against actual availability.
   if (show) {
-    const leadTime = Property.getValueOrUndefined(pathGraphics._leadTime, time);
-    const trailTime = Property.getValueOrUndefined(
-      pathGraphics._trailTime,
-      time
-    );
-    const availability = entity._availability;
-    const hasAvailability = defined(availability);
-    const hasLeadTime = defined(leadTime);
-    const hasTrailTime = defined(trailTime);
+    var leadTime = Property.getValueOrUndefined(pathGraphics._leadTime, time);
+    var trailTime = Property.getValueOrUndefined(pathGraphics._trailTime, time);
+    var availability = entity._availability;
+    var hasAvailability = defined(availability);
+    var hasLeadTime = defined(leadTime);
+    var hasTrailTime = defined(trailTime);
 
     //Objects need to have either defined availability or both a lead and trail time in order to
     //draw a path (since we can't draw "infinite" paths.
@@ -486,8 +481,8 @@ PolylineUpdater.prototype.updateObject = function (time, item) {
       }
 
       if (hasAvailability) {
-        const start = availability.start;
-        const stop = availability.stop;
+        var start = availability.start;
+        var stop = availability.stop;
 
         if (!hasTrailTime || JulianDate.greaterThan(start, sampleStart)) {
           sampleStart = start;
@@ -513,10 +508,10 @@ PolylineUpdater.prototype.updateObject = function (time, item) {
   }
 
   if (!defined(polyline)) {
-    const unusedIndexes = this._unusedIndexes;
-    const length = unusedIndexes.length;
+    var unusedIndexes = this._unusedIndexes;
+    var length = unusedIndexes.length;
     if (length > 0) {
-      const index = unusedIndexes.pop();
+      var index = unusedIndexes.pop();
       polyline = this._polylineCollection.get(index);
       item.index = index;
     } else {
@@ -527,7 +522,7 @@ PolylineUpdater.prototype.updateObject = function (time, item) {
     item.polyline = polyline;
   }
 
-  const resolution = Property.getValueOrDefault(
+  var resolution = Property.getValueOrDefault(
     pathGraphics._resolution,
     time,
     defaultResolution
@@ -561,7 +556,7 @@ PolylineUpdater.prototype.updateObject = function (time, item) {
 };
 
 PolylineUpdater.prototype.removeObject = function (item) {
-  const polyline = item.polyline;
+  var polyline = item.polyline;
   if (defined(polyline)) {
     this._unusedIndexes.push(item.index);
     item.polyline = undefined;
@@ -621,20 +616,20 @@ PathVisualizer.prototype.update = function (time) {
   }
   //>>includeEnd('debug');
 
-  const updaters = this._updaters;
-  for (const key in updaters) {
+  var updaters = this._updaters;
+  for (var key in updaters) {
     if (updaters.hasOwnProperty(key)) {
       updaters[key].update(time);
     }
   }
 
-  const items = this._items.values;
+  var items = this._items.values;
   if (
     items.length === 0 &&
     defined(this._updaters) &&
     Object.keys(this._updaters).length > 0
   ) {
-    for (const u in updaters) {
+    for (var u in updaters) {
       if (updaters.hasOwnProperty(u)) {
         updaters[u].destroy();
       }
@@ -642,19 +637,19 @@ PathVisualizer.prototype.update = function (time) {
     this._updaters = {};
   }
 
-  for (let i = 0, len = items.length; i < len; i++) {
-    const item = items[i];
-    const entity = item.entity;
-    const positionProperty = entity._position;
+  for (var i = 0, len = items.length; i < len; i++) {
+    var item = items[i];
+    var entity = item.entity;
+    var positionProperty = entity._position;
 
-    const lastUpdater = item.updater;
+    var lastUpdater = item.updater;
 
-    let frameToVisualize = ReferenceFrame.FIXED;
+    var frameToVisualize = ReferenceFrame.FIXED;
     if (this._scene.mode === SceneMode.SCENE3D) {
       frameToVisualize = positionProperty.referenceFrame;
     }
 
-    let currentUpdater = this._updaters[frameToVisualize];
+    var currentUpdater = this._updaters[frameToVisualize];
 
     if (lastUpdater === currentUpdater && defined(currentUpdater)) {
       currentUpdater.updateObject(time, item);
@@ -697,8 +692,8 @@ PathVisualizer.prototype.destroy = function () {
     this
   );
 
-  const updaters = this._updaters;
-  for (const key in updaters) {
+  var updaters = this._updaters;
+  for (var key in updaters) {
     if (updaters.hasOwnProperty(key)) {
       updaters[key].destroy();
     }
@@ -713,10 +708,10 @@ PathVisualizer.prototype._onCollectionChanged = function (
   removed,
   changed
 ) {
-  let i;
-  let entity;
-  let item;
-  const items = this._items;
+  var i;
+  var entity;
+  var item;
+  var items = this._items;
 
   for (i = added.length - 1; i > -1; i--) {
     entity = added[i];

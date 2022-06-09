@@ -29,10 +29,10 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           terrainProvider: Cesium.createWorldTerrain(),
           shadows: true,
         });
@@ -61,24 +61,24 @@
           viewer.scene.highDynamicRange = checked;
         });
 
-        const url =
+        var url =
           "../../SampleData/models/DracoCompressed/CesiumMilkTruck.gltf";
-        const position = Cesium.Cartesian3.fromRadians(
+        var position = Cesium.Cartesian3.fromRadians(
           -1.9516424279517286,
           0.6322397098422969,
           1239.0006814631095
         );
-        const heading = Cesium.Math.toRadians(-15.0);
-        const pitch = 0;
-        const roll = 0;
-        const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-        const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+        var heading = Cesium.Math.toRadians(-15.0);
+        var pitch = 0;
+        var roll = 0;
+        var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+        var orientation = Cesium.Transforms.headingPitchRollQuaternion(
           position,
           hpr
         );
-        const scale = 10.0;
+        var scale = 10.0;
 
-        const entity = viewer.entities.add({
+        var entity = viewer.entities.add({
           name: url,
           position: position,
           orientation: orientation,
@@ -89,10 +89,10 @@
         });
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

@@ -2,16 +2,16 @@ import { Empty3DTileContent } from "../../Source/Cesium.js";
 
 describe("Scene/Empty3DTileContent", function () {
   it("destroys", function () {
-    const content = new Empty3DTileContent();
+    var content = new Empty3DTileContent();
     expect(content.isDestroyed()).toEqual(false);
     content.destroy();
     expect(content.isDestroyed()).toEqual(true);
   });
 
   it("gets properties", function () {
-    const mockTileset = {};
-    const mockTile = {};
-    const content = new Empty3DTileContent(mockTileset, mockTile);
+    var mockTileset = {};
+    var mockTile = {};
+    var content = new Empty3DTileContent(mockTileset, mockTile);
     expect(content.featuresLength).toBe(0);
     expect(content.pointsLength).toBe(0);
     expect(content.trianglesLength).toBe(0);
@@ -26,36 +26,20 @@ describe("Scene/Empty3DTileContent", function () {
     expect(content.batchTable).toBeUndefined();
   });
 
-  describe("metadata", function () {
-    it("contentMetadata returns undefined", function () {
-      const mockTileset = {};
-      const mockTile = {};
-      const content = new Empty3DTileContent(mockTileset, mockTile);
-      expect(content.metadata).not.toBeDefined();
-    });
-
+  describe("3DTILES_metadata", function () {
     it("groupMetadata returns undefined", function () {
-      const mockTileset = {};
-      const mockTile = {};
-      const content = new Empty3DTileContent(mockTileset, mockTile);
-      expect(content.group).not.toBeDefined();
+      var mockTileset = {};
+      var mockTile = {};
+      var content = new Empty3DTileContent(mockTileset, mockTile);
+      expect(content.groupMetadata).not.toBeDefined();
     });
 
-    it("assigning group throws", function () {
+    it("assigning groupMetadata throws", function () {
       expect(function () {
-        const mockTileset = {};
-        const mockTile = {};
-        const content = new Empty3DTileContent(mockTileset, mockTile);
-        content.group = {};
-      }).toThrowDeveloperError();
-    });
-
-    it("assigning contentMetadata throws", function () {
-      expect(function () {
-        const mockTileset = {};
-        const mockTile = {};
-        const content = new Empty3DTileContent(mockTileset, mockTile);
-        content.metadata = {};
+        var mockTileset = {};
+        var mockTile = {};
+        var content = new Empty3DTileContent(mockTileset, mockTile);
+        content.groupMetadata = {};
       }).toThrowDeveloperError();
     });
   });

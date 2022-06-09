@@ -10,8 +10,8 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("constructor throws if callback is not provided", function () {
-    const width = 2;
-    const height = 2;
+    var width = 2;
+    var height = 2;
 
     expect(function () {
       return new CustomHeightmapTerrainProvider({
@@ -22,9 +22,9 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("constructor throws if width is not provided", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
@@ -37,9 +37,9 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("constructor throws if height is not provided", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
@@ -52,13 +52,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("constructs with a credit", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -69,13 +69,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("constructs with a tiling scheme", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -86,13 +86,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("resolves readyPromise", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -105,13 +105,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("has error event", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -122,19 +122,19 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("gets geometric error", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const geometricError = TerrainProvider.getEstimatedLevelZeroGeometricErrorForAHeightmap(
+    var geometricError = TerrainProvider.getEstimatedLevelZeroGeometricErrorForAHeightmap(
       provider.tilingScheme.ellipsoid,
       Math.max(provider.width, provider.height),
       provider.tilingScheme.getNumberOfXTilesAtLevel(0)
@@ -143,13 +143,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("water mask is disabled", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -159,13 +159,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("vertex normals are disabled", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -175,146 +175,146 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("requestTileGeometry receives heightmap data as Int8Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Int8Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Uint8Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Uint8Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Int16Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Int16Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Uint16Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Uint16Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Int32Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Int32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Uint32Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Uint32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Float32Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Float64Array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Float64Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry receives heightmap data as Number array", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
-      const buffer = new Array(4);
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
+      var buffer = new Array(4);
       buffer[0] = 0.0;
       buffer[1] = 0.0;
       buffer[2] = 0.0;
@@ -322,24 +322,24 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
       return buffer;
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
     });
 
-    const terrainData = provider.requestTileGeometry(0, 0, 0);
+    var terrainData = provider.requestTileGeometry(0, 0, 0);
     expect(terrainData).toBeDefined();
   });
 
   it("requestTileGeometry returns undefined when callback function returns undefined", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return undefined;
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -349,13 +349,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("gets width and height", function () {
-    const width = 2;
-    const height = 3;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 3;
+    var callback = function (x, y, level) {
       return new Float32Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -366,13 +366,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("returns undefined for getTileDataAvailable", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Int16Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,
@@ -382,13 +382,13 @@ describe("Core/CustomHeightmapTerrainProvider", function () {
   });
 
   it("returns undefined for loadTileDataAvailability", function () {
-    const width = 2;
-    const height = 2;
-    const callback = function (x, y, level) {
+    var width = 2;
+    var height = 2;
+    var callback = function (x, y, level) {
       return new Int16Array(width * height);
     };
 
-    const provider = new CustomHeightmapTerrainProvider({
+    var provider = new CustomHeightmapTerrainProvider({
       callback: callback,
       width: width,
       height: height,

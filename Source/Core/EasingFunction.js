@@ -7,7 +7,7 @@ import Tween from "../ThirdParty/Tween.js";
  *
  * @namespace
  */
-const EasingFunction = {
+var EasingFunction = {
   /**
    * Linear easing.
    *

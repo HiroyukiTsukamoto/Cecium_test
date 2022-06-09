@@ -4,7 +4,7 @@ import { HomeButton } from "../../../Source/Cesium.js";
 describe(
   "Widgets/HomeButton/HomeButton",
   function () {
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
     });
@@ -14,7 +14,7 @@ describe(
     });
 
     it("constructor sets default values", function () {
-      const homeButton = new HomeButton(document.body, scene);
+      var homeButton = new HomeButton(document.body, scene);
       expect(homeButton.container).toBe(document.body);
       expect(homeButton.viewModel.scene).toBe(scene);
       expect(homeButton.isDestroyed()).toEqual(false);
@@ -23,17 +23,17 @@ describe(
     });
 
     it("constructor sets expected values", function () {
-      const homeButton = new HomeButton(document.body, scene);
+      var homeButton = new HomeButton(document.body, scene);
       expect(homeButton.container).toBe(document.body);
       expect(homeButton.viewModel.scene).toBe(scene);
       homeButton.destroy();
     });
 
     it("constructor works with string id container", function () {
-      const testElement = document.createElement("span");
+      var testElement = document.createElement("span");
       testElement.id = "testElement";
       document.body.appendChild(testElement);
-      const homeButton = new HomeButton("testElement", scene);
+      var homeButton = new HomeButton("testElement", scene);
       expect(homeButton.container).toBe(testElement);
       document.body.removeChild(testElement);
       homeButton.destroy();

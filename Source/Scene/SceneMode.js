@@ -4,7 +4,7 @@
  * @enum {Number}
  * @see Scene#mode
  */
-const SceneMode = {
+var SceneMode = {
   /**
    * Morphing between mode, e.g., 3D to 2D.
    *

@@ -16,13 +16,13 @@ import IonResource from "./IonResource.js";
  *
  * @example
  * // Create Cesium World Terrain with default settings
- * const viewer = new Cesium.Viewer('cesiumContainer', {
+ * var viewer = new Cesium.Viewer('cesiumContainer', {
  *     terrainProvider : Cesium.createWorldTerrain();
  * });
  *
  * @example
  * // Create Cesium World Terrain with water and normals.
- * const viewer1 = new Cesium.Viewer('cesiumContainer', {
+ * var viewer = new Cesium.Viewer('cesiumContainer', {
  *     terrainProvider : Cesium.createWorldTerrain({
  *         requestWaterMask : true,
  *         requestVertexNormals : true

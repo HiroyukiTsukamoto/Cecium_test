@@ -5,7 +5,7 @@ import WebGLConstants from "../Core/WebGLConstants.js";
  *
  * @enum {Number}
  */
-const StencilOperation = {
+var StencilOperation = {
   /**
    * Sets the stencil buffer value to zero.
    *

@@ -1,3 +1,4 @@
+import when from "../ThirdParty/when.js";
 import defaultValue from "./defaultValue.js";
 import defined from "./defined.js";
 import Ellipsoid from "./Ellipsoid.js";
@@ -42,7 +43,7 @@ function EllipsoidTerrainProvider(options) {
   );
 
   this._errorEvent = new Event();
-  this._readyPromise = Promise.resolve(true);
+  this._readyPromise = when.resolve(true);
 }
 
 Object.defineProperties(EllipsoidTerrainProvider.prototype, {
@@ -173,9 +174,9 @@ EllipsoidTerrainProvider.prototype.requestTileGeometry = function (
   level,
   request
 ) {
-  const width = 16;
-  const height = 16;
-  return Promise.resolve(
+  var width = 16;
+  var height = 16;
+  return when.resolve(
     new HeightmapTerrainData({
       buffer: new Uint8Array(width * height),
       width: width,
@@ -218,7 +219,7 @@ EllipsoidTerrainProvider.prototype.getTileDataAvailable = function (
  * @param {Number} x The X coordinate of the tile for which to request geometry.
  * @param {Number} y The Y coordinate of the tile for which to request geometry.
  * @param {Number} level The level of the tile for which to request geometry.
- * @returns {undefined} This provider does not support loading availability.
+ * @returns {undefined|Promise<void>} Undefined if nothing need to be loaded or a Promise that resolves when all required tiles are loaded
  */
 EllipsoidTerrainProvider.prototype.loadTileDataAvailability = function (
   x,

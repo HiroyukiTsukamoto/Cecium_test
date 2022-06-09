@@ -8,25 +8,25 @@ import Matrix4 from "./Matrix4.js";
 import Spline from "./Spline.js";
 import TridiagonalSystemSolver from "./TridiagonalSystemSolver.js";
 
-const scratchLower = [];
-const scratchDiagonal = [];
-const scratchUpper = [];
-const scratchRight = [];
+var scratchLower = [];
+var scratchDiagonal = [];
+var scratchUpper = [];
+var scratchRight = [];
 
 function generateClamped(points, firstTangent, lastTangent) {
-  const l = scratchLower;
-  const u = scratchUpper;
-  const d = scratchDiagonal;
-  const r = scratchRight;
+  var l = scratchLower;
+  var u = scratchUpper;
+  var d = scratchDiagonal;
+  var r = scratchRight;
 
   l.length = u.length = points.length - 1;
   d.length = r.length = points.length;
 
-  let i;
+  var i;
   l[0] = d[0] = 1.0;
   u[0] = 0.0;
 
-  let right = r[0];
+  var right = r[0];
   if (!defined(right)) {
     right = r[0] = new Cartesian3();
   }
@@ -66,19 +66,19 @@ function generateClamped(points, firstTangent, lastTangent) {
 }
 
 function generateNatural(points) {
-  const l = scratchLower;
-  const u = scratchUpper;
-  const d = scratchDiagonal;
-  const r = scratchRight;
+  var l = scratchLower;
+  var u = scratchUpper;
+  var d = scratchDiagonal;
+  var r = scratchRight;
 
   l.length = u.length = points.length - 1;
   d.length = r.length = points.length;
 
-  let i;
+  var i;
   l[0] = u[0] = 1.0;
   d[0] = 2.0;
 
-  let right = r[0];
+  var right = r[0];
   if (!defined(right)) {
     right = r[0] = new Cartesian3();
   }
@@ -122,19 +122,19 @@ function generateNatural(points) {
  * @param {Object} options Object with the following properties:
  * @param {Number[]} options.times An array of strictly increasing, unit-less, floating-point times at each point.
  *                The values are in no way connected to the clock time. They are the parameterization for the curve.
- * @param {Cartesian3[]} options.points The array of control points.
- * @param {Cartesian3[]} options.inTangents The array of incoming tangents at each control point.
- * @param {Cartesian3[]} options.outTangents The array of outgoing tangents at each control point.
+ * @param {Cartesian3[]} options.points The array of {@link Cartesian3} control points.
+ * @param {Cartesian3[]} options.inTangents The array of {@link Cartesian3} incoming tangents at each control point.
+ * @param {Cartesian3[]} options.outTangents The array of {@link Cartesian3} outgoing tangents at each control point.
  *
  * @exception {DeveloperError} points.length must be greater than or equal to 2.
  * @exception {DeveloperError} times.length must be equal to points.length.
  * @exception {DeveloperError} inTangents and outTangents must have a length equal to points.length - 1.
- * @exception {DeveloperError} inTangents and outTangents must be of the same type as points.
+ *
  *
  * @example
  * // Create a G<sup>1</sup> continuous Hermite spline
- * const times = [ 0.0, 1.5, 3.0, 4.5, 6.0 ];
- * const spline = new Cesium.HermiteSpline({
+ * var times = [ 0.0, 1.5, 3.0, 4.5, 6.0 ];
+ * var spline = new Cesium.HermiteSpline({
  *     times : times,
  *     points : [
  *         new Cesium.Cartesian3(1235398.0, -4810983.0, 4146266.0),
@@ -157,22 +157,20 @@ function generateNatural(points) {
  *     ]
  * });
  *
- * const p0 = spline.evaluate(times[0]);
+ * var p0 = spline.evaluate(times[0]);
  *
- * @see ConstantSpline
- * @see SteppedSpline
- * @see LinearSpline
  * @see CatmullRomSpline
+ * @see LinearSpline
  * @see QuaternionSpline
- * @see MorphWeightSpline
+ * @see WeightSpline
  */
 function HermiteSpline(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const points = options.points;
-  const times = options.times;
-  const inTangents = options.inTangents;
-  const outTangents = options.outTangents;
+  var points = options.points;
+  var times = options.times;
+  var inTangents = options.inTangents;
+  var outTangents = options.outTangents;
 
   //>>includeStart('debug', pragmas.debug);
   if (
@@ -205,18 +203,6 @@ function HermiteSpline(options) {
 
   this._times = times;
   this._points = points;
-  this._pointType = Spline.getPointType(points[0]);
-  //>>includeStart('debug', pragmas.debug);
-  if (
-    this._pointType !== Spline.getPointType(inTangents[0]) ||
-    this._pointType !== Spline.getPointType(outTangents[0])
-  ) {
-    throw new DeveloperError(
-      "inTangents and outTangents must be of the same type as points."
-    );
-  }
-  //>>includeEnd('debug');
-
   this._inTangents = inTangents;
   this._outTangents = outTangents;
 
@@ -239,7 +225,7 @@ Object.defineProperties(HermiteSpline.prototype, {
   },
 
   /**
-   * An array of control points.
+   * An array of {@link Cartesian3} control points.
    *
    * @memberof HermiteSpline.prototype
    *
@@ -253,7 +239,7 @@ Object.defineProperties(HermiteSpline.prototype, {
   },
 
   /**
-   * An array of incoming tangents at each control point.
+   * An array of {@link Cartesian3} incoming tangents at each control point.
    *
    * @memberof HermiteSpline.prototype
    *
@@ -267,7 +253,7 @@ Object.defineProperties(HermiteSpline.prototype, {
   },
 
   /**
-   * An array of outgoing tangents at each control point.
+   * An array of {@link Cartesian3} outgoing tangents at each control point.
    *
    * @memberof HermiteSpline.prototype
    *
@@ -296,7 +282,7 @@ Object.defineProperties(HermiteSpline.prototype, {
  * @exception {DeveloperError} times, points and tangents must have the same length.
  *
  * @example
- * const points = [
+ * var points = [
  *     new Cesium.Cartesian3(1235398.0, -4810983.0, 4146266.0),
  *     new Cesium.Cartesian3(1372574.0, -5345182.0, 4606657.0),
  *     new Cesium.Cartesian3(-757983.0, -5542796.0, 4514323.0),
@@ -305,15 +291,15 @@ Object.defineProperties(HermiteSpline.prototype, {
  * ];
  *
  * // Add tangents
- * const tangents = new Array(points.length);
+ * var tangents = new Array(points.length);
  * tangents[0] = new Cesium.Cartesian3(1125196, -161816, 270551);
- * const temp = new Cesium.Cartesian3();
- * for (let i = 1; i < tangents.length - 1; ++i) {
+ * var temp = new Cesium.Cartesian3();
+ * for (var i = 1; i < tangents.length - 1; ++i) {
  *     tangents[i] = Cesium.Cartesian3.multiplyByScalar(Cesium.Cartesian3.subtract(points[i + 1], points[i - 1], temp), 0.5, new Cesium.Cartesian3());
  * }
  * tangents[tangents.length - 1] = new Cesium.Cartesian3(1165345, 112641, 47281);
  *
- * const spline = Cesium.HermiteSpline.createC1({
+ * var spline = Cesium.HermiteSpline.createC1({
  *     times : times,
  *     points : points,
  *     tangents : tangents
@@ -322,9 +308,9 @@ Object.defineProperties(HermiteSpline.prototype, {
 HermiteSpline.createC1 = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const times = options.times;
-  const points = options.points;
-  const tangents = options.tangents;
+  var times = options.times;
+  var points = options.points;
+  var tangents = options.tangents;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(points) || !defined(times) || !defined(tangents)) {
@@ -342,8 +328,8 @@ HermiteSpline.createC1 = function (options) {
   }
   //>>includeEnd('debug');
 
-  const outTangents = tangents.slice(0, tangents.length - 1);
-  const inTangents = tangents.slice(1, tangents.length);
+  var outTangents = tangents.slice(0, tangents.length - 1);
+  var inTangents = tangents.slice(1, tangents.length);
 
   return new HermiteSpline({
     times: times,
@@ -360,7 +346,7 @@ HermiteSpline.createC1 = function (options) {
  * @param {Object} options Object with the following properties:
  * @param {Number[]} options.times The array of control point times.
  * @param {Cartesian3[]} options.points The array of control points.
- * @returns {HermiteSpline|LinearSpline} A hermite spline, or a linear spline if less than 3 control points were given.
+ * @returns {HermiteSpline|LinearSpline} A hermite spline or a linear spline if less than 3 control points were given.
  *
  * @exception {DeveloperError} points and times are required.
  * @exception {DeveloperError} points.length must be greater than or equal to 2.
@@ -368,7 +354,7 @@ HermiteSpline.createC1 = function (options) {
  *
  * @example
  * // Create a natural cubic spline above the earth from Philadelphia to Los Angeles.
- * const spline = Cesium.HermiteSpline.createNaturalCubic({
+ * var spline = Cesium.HermiteSpline.createNaturalCubic({
  *     times : [ 0.0, 1.5, 3.0, 4.5, 6.0 ],
  *     points : [
  *         new Cesium.Cartesian3(1235398.0, -4810983.0, 4146266.0),
@@ -382,8 +368,8 @@ HermiteSpline.createC1 = function (options) {
 HermiteSpline.createNaturalCubic = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const times = options.times;
-  const points = options.points;
+  var times = options.times;
+  var points = options.points;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(points) || !defined(times)) {
@@ -406,9 +392,9 @@ HermiteSpline.createNaturalCubic = function (options) {
     });
   }
 
-  const tangents = generateNatural(points);
-  const outTangents = tangents.slice(0, tangents.length - 1);
-  const inTangents = tangents.slice(1, tangents.length);
+  var tangents = generateNatural(points);
+  var outTangents = tangents.slice(0, tangents.length - 1);
+  var inTangents = tangents.slice(1, tangents.length);
 
   return new HermiteSpline({
     times: times,
@@ -424,19 +410,18 @@ HermiteSpline.createNaturalCubic = function (options) {
  *
  * @param {Object} options Object with the following properties:
  * @param {Number[]} options.times The array of control point times.
- * @param {Number[]|Cartesian3[]} options.points The array of control points.
+ * @param {Cartesian3[]} options.points The array of control points.
  * @param {Cartesian3} options.firstTangent The outgoing tangent of the first control point.
  * @param {Cartesian3} options.lastTangent The incoming tangent of the last control point.
- * @returns {HermiteSpline|LinearSpline} A hermite spline, or a linear spline if less than 3 control points were given.
+ * @returns {HermiteSpline|LinearSpline} A hermite spline or a linear spline if less than 3 control points were given.
  *
  * @exception {DeveloperError} points, times, firstTangent and lastTangent are required.
  * @exception {DeveloperError} points.length must be greater than or equal to 2.
  * @exception {DeveloperError} times.length must be equal to points.length.
- * @exception {DeveloperError} firstTangent and lastTangent must be of the same type as points.
  *
  * @example
  * // Create a clamped cubic spline above the earth from Philadelphia to Los Angeles.
- * const spline = Cesium.HermiteSpline.createClampedCubic({
+ * var spline = Cesium.HermiteSpline.createClampedCubic({
  *     times : [ 0.0, 1.5, 3.0, 4.5, 6.0 ],
  *     points : [
  *         new Cesium.Cartesian3(1235398.0, -4810983.0, 4146266.0),
@@ -452,10 +437,10 @@ HermiteSpline.createNaturalCubic = function (options) {
 HermiteSpline.createClampedCubic = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const times = options.times;
-  const points = options.points;
-  const firstTangent = options.firstTangent;
-  const lastTangent = options.lastTangent;
+  var times = options.times;
+  var points = options.points;
+  var firstTangent = options.firstTangent;
+  var lastTangent = options.lastTangent;
 
   //>>includeStart('debug', pragmas.debug);
   if (
@@ -478,19 +463,6 @@ HermiteSpline.createClampedCubic = function (options) {
   }
   //>>includeEnd('debug');
 
-  const PointType = Spline.getPointType(points[0]);
-
-  //>>includeStart('debug', pragmas.debug);
-  if (
-    PointType !== Spline.getPointType(firstTangent) ||
-    PointType !== Spline.getPointType(lastTangent)
-  ) {
-    throw new DeveloperError(
-      "firstTangent and lastTangent must be of the same type as points."
-    );
-  }
-  //>>includeEnd('debug');
-
   if (points.length < 3) {
     return new LinearSpline({
       points: points,
@@ -498,9 +470,9 @@ HermiteSpline.createClampedCubic = function (options) {
     });
   }
 
-  const tangents = generateClamped(points, firstTangent, lastTangent);
-  const outTangents = tangents.slice(0, tangents.length - 1);
-  const inTangents = tangents.slice(1, tangents.length);
+  var tangents = generateClamped(points, firstTangent, lastTangent);
+  var outTangents = tangents.slice(0, tangents.length - 1);
+  var inTangents = tangents.slice(1, tangents.length);
 
   return new HermiteSpline({
     times: times,
@@ -510,12 +482,23 @@ HermiteSpline.createClampedCubic = function (options) {
   });
 };
 
-//prettier-ignore
 HermiteSpline.hermiteCoefficientMatrix = new Matrix4(
-  2.0, -3.0, 0.0, 1.0,
-  -2.0, 3.0, 0.0, 0.0,
-  1.0, -2.0, 1.0, 0.0,
-  1.0, -1.0, 0.0, 0.0
+  2.0,
+  -3.0,
+  0.0,
+  1.0,
+  -2.0,
+  3.0,
+  0.0,
+  0.0,
+  1.0,
+  -2.0,
+  1.0,
+  0.0,
+  1.0,
+  -1.0,
+  0.0,
+  0.0
 );
 
 /**
@@ -532,8 +515,8 @@ HermiteSpline.hermiteCoefficientMatrix = new Matrix4(
  */
 HermiteSpline.prototype.findTimeInterval = Spline.prototype.findTimeInterval;
 
-const scratchTimeVec = new Cartesian4();
-const scratchTemp = new Cartesian3();
+var scratchTimeVec = new Cartesian4();
+var scratchTemp = new Cartesian3();
 
 /**
  * Wraps the given time to the period covered by the spline.
@@ -565,56 +548,38 @@ HermiteSpline.prototype.clampTime = Spline.prototype.clampTime;
  *                             in the array <code>times</code>.
  */
 HermiteSpline.prototype.evaluate = function (time, result) {
-  const points = this.points;
-  const times = this.times;
-  const inTangents = this.inTangents;
-  const outTangents = this.outTangents;
+  if (!defined(result)) {
+    result = new Cartesian3();
+  }
+  var points = this.points;
+  var times = this.times;
+  var inTangents = this.inTangents;
+  var outTangents = this.outTangents;
 
-  this._lastTimeIndex = this.findTimeInterval(time, this._lastTimeIndex);
-  const i = this._lastTimeIndex;
+  var i = (this._lastTimeIndex = this.findTimeInterval(
+    time,
+    this._lastTimeIndex
+  ));
+  var u = (time - times[i]) / (times[i + 1] - times[i]);
 
-  const timesDelta = times[i + 1] - times[i];
-  const u = (time - times[i]) / timesDelta;
-
-  const timeVec = scratchTimeVec;
+  var timeVec = scratchTimeVec;
   timeVec.z = u;
   timeVec.y = u * u;
   timeVec.x = timeVec.y * u;
   timeVec.w = 1.0;
 
-  // Coefficients are returned in the following order:
-  // start, end, out-tangent, in-tangent
-  const coefs = Matrix4.multiplyByVector(
+  var coefs = Matrix4.multiplyByVector(
     HermiteSpline.hermiteCoefficientMatrix,
     timeVec,
     timeVec
   );
 
-  // Multiply the out-tangent and in-tangent values by the time delta.
-  coefs.z *= timesDelta;
-  coefs.w *= timesDelta;
-
-  const PointType = this._pointType;
-
-  if (PointType === Number) {
-    return (
-      points[i] * coefs.x +
-      points[i + 1] * coefs.y +
-      outTangents[i] * coefs.z +
-      inTangents[i] * coefs.w
-    );
-  }
-
-  if (!defined(result)) {
-    result = new PointType();
-  }
-
-  result = PointType.multiplyByScalar(points[i], coefs.x, result);
-  PointType.multiplyByScalar(points[i + 1], coefs.y, scratchTemp);
-  PointType.add(result, scratchTemp, result);
-  PointType.multiplyByScalar(outTangents[i], coefs.z, scratchTemp);
-  PointType.add(result, scratchTemp, result);
-  PointType.multiplyByScalar(inTangents[i], coefs.w, scratchTemp);
-  return PointType.add(result, scratchTemp, result);
+  result = Cartesian3.multiplyByScalar(points[i], coefs.x, result);
+  Cartesian3.multiplyByScalar(points[i + 1], coefs.y, scratchTemp);
+  Cartesian3.add(result, scratchTemp, result);
+  Cartesian3.multiplyByScalar(outTangents[i], coefs.z, scratchTemp);
+  Cartesian3.add(result, scratchTemp, result);
+  Cartesian3.multiplyByScalar(inTangents[i], coefs.w, scratchTemp);
+  return Cartesian3.add(result, scratchTemp, result);
 };
 export default HermiteSpline;

@@ -16,7 +16,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
   });
 
   it("returns undefined with less than 3 unique positions", function () {
-    const geometry = CoplanarPolygonOutlineGeometry.createGeometry(
+    var geometry = CoplanarPolygonOutlineGeometry.createGeometry(
       CoplanarPolygonOutlineGeometry.fromPositions({
         positions: Cartesian3.fromDegreesArrayHeights([
           49.0,
@@ -38,7 +38,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
   });
 
   it("returns undefined when positions are linear", function () {
-    const geometry = CoplanarPolygonOutlineGeometry.createGeometry(
+    var geometry = CoplanarPolygonOutlineGeometry.createGeometry(
       CoplanarPolygonOutlineGeometry.fromPositions({
         positions: Cartesian3.fromDegreesArrayHeights([
           0.0,
@@ -57,7 +57,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
   });
 
   it("createGeometry returns undefined due to duplicate hierarchy positions", function () {
-    const hierarchy = {
+    var hierarchy = {
       positions: Cartesian3.fromDegreesArray([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
       holes: [
         {
@@ -73,14 +73,14 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
       ],
     };
 
-    const geometry = CoplanarPolygonOutlineGeometry.createGeometry(
+    var geometry = CoplanarPolygonOutlineGeometry.createGeometry(
       new CoplanarPolygonOutlineGeometry({ polygonHierarchy: hierarchy })
     );
     expect(geometry).toBeUndefined();
   });
 
   it("creates positions", function () {
-    const geometry = CoplanarPolygonOutlineGeometry.createGeometry(
+    var geometry = CoplanarPolygonOutlineGeometry.createGeometry(
       CoplanarPolygonOutlineGeometry.fromPositions({
         positions: Cartesian3.fromDegreesArrayHeights([
           -1.0,
@@ -103,7 +103,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
     expect(geometry.indices.length).toEqual(4 * 2);
   });
 
-  const positions = Cartesian3.fromDegreesArray([
+  var positions = Cartesian3.fromDegreesArray([
     -124.0,
     35.0,
     -110.0,
@@ -111,7 +111,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
     -110.0,
     40.0,
   ]);
-  const holePositions0 = Cartesian3.fromDegreesArray([
+  var holePositions0 = Cartesian3.fromDegreesArray([
     -122.0,
     36.0,
     -122.0,
@@ -119,7 +119,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
     -112.0,
     39.0,
   ]);
-  const holePositions1 = Cartesian3.fromDegreesArray([
+  var holePositions1 = Cartesian3.fromDegreesArray([
     -120.0,
     36.5,
     -114.0,
@@ -127,7 +127,7 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
     -114.0,
     38.5,
   ]);
-  const hierarchy = {
+  var hierarchy = {
     positions: positions,
     holes: [
       {
@@ -141,15 +141,15 @@ describe("Core/CoplanarPolygonOutlineGeometry", function () {
       },
     ],
   };
-  const polygon = new CoplanarPolygonOutlineGeometry({
+  var polygon = new CoplanarPolygonOutlineGeometry({
     polygonHierarchy: hierarchy,
   });
   function addPositions(array, positions) {
-    for (let i = 0; i < positions.length; ++i) {
+    for (var i = 0; i < positions.length; ++i) {
       array.push(positions[i].x, positions[i].y, positions[i].z);
     }
   }
-  const packedInstance = [3.0, 1.0];
+  var packedInstance = [3.0, 1.0];
   addPositions(packedInstance, positions);
   packedInstance.push(3.0, 1.0);
   addPositions(packedInstance, holePositions0);

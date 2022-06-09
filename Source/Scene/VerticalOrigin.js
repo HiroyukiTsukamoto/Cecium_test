@@ -13,7 +13,7 @@
  * @see Billboard#verticalOrigin
  * @see Label#verticalOrigin
  */
-const VerticalOrigin = {
+var VerticalOrigin = {
   /**
    * The origin is at the vertical center between <code>BASELINE</code> and <code>TOP</code>.
    *

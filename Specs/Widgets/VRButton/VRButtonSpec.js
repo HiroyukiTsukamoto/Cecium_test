@@ -2,7 +2,7 @@ import createScene from "../../createScene.js";
 import { VRButton } from "../../../Source/Cesium.js";
 
 describe("Widgets/VRButton/VRButton", function () {
-  let scene;
+  var scene;
 
   beforeEach(function () {
     scene = createScene();
@@ -13,7 +13,7 @@ describe("Widgets/VRButton/VRButton", function () {
   });
 
   it("constructor sets default values", function () {
-    const vrButton = new VRButton(document.body, scene);
+    var vrButton = new VRButton(document.body, scene);
     expect(vrButton.container).toBe(document.body);
     expect(vrButton.viewModel.vrElement).toBe(document.body);
     expect(vrButton.isDestroyed()).toEqual(false);
@@ -22,18 +22,18 @@ describe("Widgets/VRButton/VRButton", function () {
   });
 
   it("constructor sets expected values", function () {
-    const testElement = document.createElement("span");
-    const vrButton = new VRButton(document.body, scene, testElement);
+    var testElement = document.createElement("span");
+    var vrButton = new VRButton(document.body, scene, testElement);
     expect(vrButton.container).toBe(document.body);
     expect(vrButton.viewModel.vrElement).toBe(testElement);
     vrButton.destroy();
   });
 
   it("constructor works with string id container", function () {
-    const testElement = document.createElement("span");
+    var testElement = document.createElement("span");
     testElement.id = "testElement";
     document.body.appendChild(testElement);
-    const vrButton = new VRButton("testElement", scene);
+    var vrButton = new VRButton("testElement", scene);
     expect(vrButton.container).toBe(testElement);
     document.body.removeChild(testElement);
     vrButton.destroy();

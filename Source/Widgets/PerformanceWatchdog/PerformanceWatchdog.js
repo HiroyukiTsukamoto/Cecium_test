@@ -28,22 +28,22 @@ function PerformanceWatchdog(options) {
   }
   //>>includeEnd('debug');
 
-  const container = getElement(options.container);
+  var container = getElement(options.container);
 
-  const viewModel = new PerformanceWatchdogViewModel(options);
+  var viewModel = new PerformanceWatchdogViewModel(options);
 
-  const element = document.createElement("div");
+  var element = document.createElement("div");
   element.className = "cesium-performance-watchdog-message-area";
   element.setAttribute("data-bind", "visible: showingLowFrameRateMessage");
 
-  const dismissButton = document.createElement("button");
+  var dismissButton = document.createElement("button");
   dismissButton.setAttribute("type", "button");
   dismissButton.className = "cesium-performance-watchdog-message-dismiss";
   dismissButton.innerHTML = "&times;";
   dismissButton.setAttribute("data-bind", "click: dismissMessage");
   element.appendChild(dismissButton);
 
-  const message = document.createElement("div");
+  var message = document.createElement("div");
   message.className = "cesium-performance-watchdog-message";
   message.setAttribute("data-bind", "html: lowFrameRateMessage");
   element.appendChild(message);

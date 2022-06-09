@@ -12,7 +12,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  *
  * @example
- * const str = Cesium.objectToQuery({
+ * var str = Cesium.objectToQuery({
  *     key1 : 'some value',
  *     key2 : 'a/b',
  *     key3 : ['x', 'y']
@@ -29,18 +29,18 @@ function objectToQuery(obj) {
   }
   //>>includeEnd('debug');
 
-  let result = "";
-  for (const propName in obj) {
+  var result = "";
+  for (var propName in obj) {
     if (obj.hasOwnProperty(propName)) {
-      const value = obj[propName];
+      var value = obj[propName];
 
-      const part = `${encodeURIComponent(propName)}=`;
+      var part = encodeURIComponent(propName) + "=";
       if (Array.isArray(value)) {
-        for (let i = 0, len = value.length; i < len; ++i) {
-          result += `${part + encodeURIComponent(value[i])}&`;
+        for (var i = 0, len = value.length; i < len; ++i) {
+          result += part + encodeURIComponent(value[i]) + "&";
         }
       } else {
-        result += `${part + encodeURIComponent(value)}&`;
+        result += part + encodeURIComponent(value) + "&";
       }
     }
   }

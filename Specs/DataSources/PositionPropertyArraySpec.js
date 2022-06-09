@@ -6,66 +6,66 @@ import { PositionPropertyArray } from "../../Source/Cesium.js";
 import { SampledPositionProperty } from "../../Source/Cesium.js";
 
 describe("DataSources/PositionPropertyArray", function () {
-  const time = JulianDate.now();
+  var time = JulianDate.now();
 
   it("default constructor sets expected values", function () {
-    const property = new PositionPropertyArray();
+    var property = new PositionPropertyArray();
     expect(property.isConstant).toBe(true);
     expect(property.getValue(time)).toBeUndefined();
   });
 
   it("constructor sets expected values", function () {
-    const expected = [Cartesian3.UNIT_X, Cartesian3.UNIT_Z];
-    const value = [
+    var expected = [Cartesian3.UNIT_X, Cartesian3.UNIT_Z];
+    var value = [
       new ConstantPositionProperty(Cartesian3.UNIT_X),
       new ConstantPositionProperty(Cartesian3.UNIT_Z),
     ];
-    const property = new PositionPropertyArray(value);
+    var property = new PositionPropertyArray(value);
     expect(property.getValue(time)).toEqual(expected);
   });
 
   it("setValue raises definitionChanged event", function () {
-    const property = new PositionPropertyArray();
-    const listener = jasmine.createSpy("listener");
+    var property = new PositionPropertyArray();
+    var listener = jasmine.createSpy("listener");
     property.definitionChanged.addEventListener(listener);
     property.setValue([]);
     expect(listener).toHaveBeenCalledWith(property);
   });
 
   it("changing array member raises definitionChanged event", function () {
-    const property = new PositionPropertyArray();
-    const item = new ConstantPositionProperty(Cartesian3.UNIT_X);
+    var property = new PositionPropertyArray();
+    var item = new ConstantPositionProperty(Cartesian3.UNIT_X);
     property.setValue([item]);
-    const listener = jasmine.createSpy("listener");
+    var listener = jasmine.createSpy("listener");
     property.definitionChanged.addEventListener(listener);
     item.setValue(Cartesian3.UNIT_Z);
     expect(listener).toHaveBeenCalledWith(property);
   });
 
   it("works with result parameter", function () {
-    const expected = [Cartesian3.UNIT_X, Cartesian3.UNIT_Z];
-    const expectedResult = [];
-    const value = [
+    var expected = [Cartesian3.UNIT_X, Cartesian3.UNIT_Z];
+    var expectedResult = [];
+    var value = [
       new ConstantPositionProperty(Cartesian3.UNIT_X),
       new ConstantPositionProperty(Cartesian3.UNIT_Z),
     ];
-    const property = new PositionPropertyArray(value);
-    const result = property.getValue(time, expectedResult);
+    var property = new PositionPropertyArray(value);
+    var result = property.getValue(time, expectedResult);
     expect(result).toEqual(expected);
     expect(result).toBe(expectedResult);
   });
 
   it("works with  reference frame parameter", function () {
-    const value = [
+    var value = [
       new ConstantPositionProperty(Cartesian3.UNIT_X, ReferenceFrame.INERTIAL),
       new ConstantPositionProperty(Cartesian3.UNIT_Z, ReferenceFrame.FIXED),
     ];
-    const expected = [
+    var expected = [
       value[0].getValueInReferenceFrame(time, ReferenceFrame.INERTIAL),
       value[1].getValueInReferenceFrame(time, ReferenceFrame.INERTIAL),
     ];
-    const property = new PositionPropertyArray(value);
-    const result = property.getValueInReferenceFrame(
+    var property = new PositionPropertyArray(value);
+    var result = property.getValueInReferenceFrame(
       time,
       ReferenceFrame.INERTIAL
     );
@@ -73,28 +73,28 @@ describe("DataSources/PositionPropertyArray", function () {
   });
 
   it("works with undefined value", function () {
-    const property = new PositionPropertyArray();
+    var property = new PositionPropertyArray();
     property.setValue(undefined);
     expect(property.getValue(time)).toBeUndefined();
   });
 
   it("works with undefined propertyvalue", function () {
-    const property = new PositionPropertyArray();
+    var property = new PositionPropertyArray();
     property.setValue([new ConstantPositionProperty()]);
     expect(property.getValue(time)).toEqual([]);
   });
 
   it("works with empty array", function () {
-    const property = new PositionPropertyArray();
+    var property = new PositionPropertyArray();
     property.setValue([]);
     expect(property.getValue(time)).toEqual([]);
   });
 
   it("equals works", function () {
-    let left = new PositionPropertyArray([
+    var left = new PositionPropertyArray([
       new ConstantPositionProperty(Cartesian3.UNIT_X),
     ]);
-    let right = new PositionPropertyArray([
+    var right = new PositionPropertyArray([
       new ConstantPositionProperty(Cartesian3.UNIT_X),
     ]);
 
@@ -111,12 +111,12 @@ describe("DataSources/PositionPropertyArray", function () {
   });
 
   it("isConstant is true only if all members are constant", function () {
-    const property = new PositionPropertyArray();
+    var property = new PositionPropertyArray();
 
     property.setValue([new ConstantPositionProperty(Cartesian3.UNIT_X)]);
     expect(property.isConstant).toBe(true);
 
-    const sampledProperty = new SampledPositionProperty();
+    var sampledProperty = new SampledPositionProperty();
     sampledProperty.addSample(time, Cartesian3.UNIT_X);
     property.setValue([
       new ConstantPositionProperty(Cartesian3.UNIT_Z),

@@ -16,7 +16,7 @@ import ModelComponents from "./ModelComponents.js";
  *
  * @private
  */
-const GltfLoaderUtil = {};
+var GltfLoaderUtil = {};
 
 /**
  * Get the image ID referenced by a texture.
@@ -35,9 +35,9 @@ const GltfLoaderUtil = {};
  */
 GltfLoaderUtil.getImageIdFromTexture = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const gltf = options.gltf;
-  const textureId = options.textureId;
-  const supportedImageFormats = options.supportedImageFormats;
+  var gltf = options.gltf;
+  var textureId = options.textureId;
+  var supportedImageFormats = options.supportedImageFormats;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.object("options.gltf", gltf);
@@ -45,8 +45,8 @@ GltfLoaderUtil.getImageIdFromTexture = function (options) {
   Check.typeOf.object("options.supportedImageFormats", supportedImageFormats);
   //>>includeEnd('debug');
 
-  const texture = gltf.textures[textureId];
-  const extensions = texture.extensions;
+  var texture = gltf.textures[textureId];
+  var extensions = texture.extensions;
   if (defined(extensions)) {
     if (supportedImageFormats.webp && defined(extensions.EXT_texture_webp)) {
       return extensions.EXT_texture_webp.source;
@@ -73,9 +73,9 @@ GltfLoaderUtil.getImageIdFromTexture = function (options) {
  */
 GltfLoaderUtil.createSampler = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const gltf = options.gltf;
-  const textureInfo = options.textureInfo;
-  const compressedTextureNoMipmap = defaultValue(
+  var gltf = options.gltf;
+  var textureInfo = options.textureInfo;
+  var compressedTextureNoMipmap = defaultValue(
     options.compressedTextureNoMipmap,
     false
   );
@@ -86,25 +86,25 @@ GltfLoaderUtil.createSampler = function (options) {
   //>>includeEnd('debug');
 
   // Default sampler properties
-  let wrapS = TextureWrap.REPEAT;
-  let wrapT = TextureWrap.REPEAT;
-  let minFilter = TextureMinificationFilter.LINEAR;
-  let magFilter = TextureMagnificationFilter.LINEAR;
+  var wrapS = TextureWrap.REPEAT;
+  var wrapT = TextureWrap.REPEAT;
+  var minFilter = TextureMinificationFilter.LINEAR;
+  var magFilter = TextureMagnificationFilter.LINEAR;
 
-  const textureId = textureInfo.index;
-  const texture = gltf.textures[textureId];
-  const samplerId = texture.sampler;
+  var textureId = textureInfo.index;
+  var texture = gltf.textures[textureId];
+  var samplerId = texture.sampler;
 
   if (defined(samplerId)) {
-    const sampler = gltf.samplers[samplerId];
+    var sampler = gltf.samplers[samplerId];
     wrapS = defaultValue(sampler.wrapS, wrapS);
     wrapT = defaultValue(sampler.wrapT, wrapT);
     minFilter = defaultValue(sampler.minFilter, minFilter);
     magFilter = defaultValue(sampler.magFilter, magFilter);
   }
 
-  let usesTextureTransform = false;
-  const extensions = textureInfo.extensions;
+  var usesTextureTransform = false;
+  var extensions = textureInfo.extensions;
   if (defined(extensions) && defined(extensions.KHR_texture_transform)) {
     usesTextureTransform = true;
   }
@@ -132,7 +132,7 @@ GltfLoaderUtil.createSampler = function (options) {
   });
 };
 
-const defaultScale = new Cartesian2(1.0, 1.0);
+var defaultScale = new Cartesian2(1.0, 1.0);
 
 /**
  * Create a model texture reader.
@@ -146,18 +146,18 @@ const defaultScale = new Cartesian2(1.0, 1.0);
  */
 GltfLoaderUtil.createModelTextureReader = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const textureInfo = options.textureInfo;
-  const channels = options.channels;
-  const texture = options.texture;
+  var textureInfo = options.textureInfo;
+  var channels = options.channels;
+  var texture = options.texture;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.object("options.textureInfo", textureInfo);
   //>>includeEnd('debug');
 
-  let texCoord = defaultValue(textureInfo.texCoord, 0);
-  let transform;
+  var texCoord = defaultValue(textureInfo.texCoord, 0);
+  var transform;
 
-  const textureTransform = defaultValue(
+  var textureTransform = defaultValue(
     textureInfo.extensions,
     defaultValue.EMPTY_OBJECT
   ).KHR_texture_transform;
@@ -165,11 +165,11 @@ GltfLoaderUtil.createModelTextureReader = function (options) {
   if (defined(textureTransform)) {
     texCoord = defaultValue(textureTransform.texCoord, texCoord);
 
-    const offset = defined(textureTransform.offset)
+    var offset = defined(textureTransform.offset)
       ? Cartesian2.unpack(textureTransform.offset)
       : Cartesian2.ZERO;
-    let rotation = defaultValue(textureTransform.rotation, 0.0);
-    const scale = defined(textureTransform.scale)
+    var rotation = defaultValue(textureTransform.rotation, 0.0);
+    var scale = defined(textureTransform.scale)
       ? Cartesian2.unpack(textureTransform.scale)
       : defaultScale;
 
@@ -188,8 +188,7 @@ GltfLoaderUtil.createModelTextureReader = function (options) {
       );
   }
 
-  const modelTextureReader = new ModelComponents.TextureReader();
-  modelTextureReader.index = textureInfo.index;
+  var modelTextureReader = new ModelComponents.TextureReader();
   modelTextureReader.texture = texture;
   modelTextureReader.texCoord = texCoord;
   modelTextureReader.transform = transform;

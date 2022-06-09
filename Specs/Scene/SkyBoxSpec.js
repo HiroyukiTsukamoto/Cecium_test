@@ -6,9 +6,9 @@ import createScene from "../createScene.js";
 describe(
   "Scene/SkyBox",
   function () {
-    let scene;
-    let skyBox;
-    let loadedImage;
+    var scene;
+    var skyBox;
+    var loadedImage;
 
     beforeAll(function () {
       scene = createScene();
@@ -105,7 +105,7 @@ describe(
 
       scene.skyBox = skyBox;
 
-      const command = skyBox.update(scene.frameState);
+      var command = skyBox.update(scene.frameState);
       expect(command).not.toBeDefined();
     });
 

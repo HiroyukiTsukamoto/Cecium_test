@@ -1,10 +1,10 @@
 import { RuntimeError } from "../../Source/Cesium.js";
 
 describe("Core/RuntimeError", function () {
-  const name = "RuntimeError";
-  const testMessage = "Testing";
+  var name = "RuntimeError";
+  var testMessage = "Testing";
 
-  let e;
+  var e;
   beforeEach(function () {
     e = new RuntimeError(testMessage);
   });
@@ -26,9 +26,9 @@ describe("Core/RuntimeError", function () {
   });
 
   it("has a working toString", function () {
-    const str = new RuntimeError(testMessage).toString();
+    var str = new RuntimeError(testMessage).toString();
 
-    expect(str).toContain(`${name}: ${testMessage}`);
+    expect(str).toContain(name + ": " + testMessage);
 
     if (window.specsUsingRelease) {
       expect(str).toContain("Specs.js");

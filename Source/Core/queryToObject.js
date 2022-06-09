@@ -12,7 +12,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  *
  * @example
- * const obj = Cesium.queryToObject('key1=some%20value&key2=a%2Fb&key3=x&key3=y');
+ * var obj = Cesium.queryToObject('key1=some%20value&key2=a%2Fb&key3=x&key3=y');
  * // obj will be:
  * // {
  * //   key1 : 'some value',
@@ -29,23 +29,23 @@ function queryToObject(queryString) {
   }
   //>>includeEnd('debug');
 
-  const result = {};
+  var result = {};
   if (queryString === "") {
     return result;
   }
-  const parts = queryString.replace(/\+/g, "%20").split(/[&;]/);
-  for (let i = 0, len = parts.length; i < len; ++i) {
-    const subparts = parts[i].split("=");
+  var parts = queryString.replace(/\+/g, "%20").split(/[&;]/);
+  for (var i = 0, len = parts.length; i < len; ++i) {
+    var subparts = parts[i].split("=");
 
-    const name = decodeURIComponent(subparts[0]);
-    let value = subparts[1];
+    var name = decodeURIComponent(subparts[0]);
+    var value = subparts[1];
     if (defined(value)) {
       value = decodeURIComponent(value);
     } else {
       value = "";
     }
 
-    const resultValue = result[name];
+    var resultValue = result[name];
     if (typeof resultValue === "string") {
       // expand the single value to an array
       result[name] = [resultValue, value];

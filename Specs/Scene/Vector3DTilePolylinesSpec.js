@@ -13,11 +13,11 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "Scene/Vector3DTilePolylines",
   function () {
-    let scene;
-    let rectangle;
-    let polylines;
+    var scene;
+    var rectangle;
+    var polylines;
 
-    const ellipsoid = Ellipsoid.WGS84;
+    var ellipsoid = Ellipsoid.WGS84;
 
     beforeAll(function () {
       scene = createScene();
@@ -27,7 +27,7 @@ describe(
       scene.destroyForSpecs();
     });
 
-    const mockTileset = {
+    var mockTileset = {
       _statistics: {
         texturesByteLength: 0,
       },
@@ -52,7 +52,7 @@ describe(
     });
 
     function loadPolylines(polylines) {
-      let ready = false;
+      var ready = false;
       polylines.readyPromise.then(function () {
         ready = true;
       });
@@ -67,7 +67,7 @@ describe(
       return ((value << 1) ^ (value >> 15)) & 0xffff;
     }
 
-    const maxShort = 32767;
+    var maxShort = 32767;
 
     function encodePositions(
       rectangle,
@@ -75,19 +75,19 @@ describe(
       maximumHeight,
       positions
     ) {
-      const length = positions.length;
-      const buffer = new Uint16Array(length * 3);
+      var length = positions.length;
+      var buffer = new Uint16Array(length * 3);
 
-      let lastU = 0;
-      let lastV = 0;
-      let lastH = 0;
+      var lastU = 0;
+      var lastV = 0;
+      var lastH = 0;
 
-      for (let i = 0; i < length; ++i) {
-        const position = positions[i];
+      for (var i = 0; i < length; ++i) {
+        var position = positions[i];
 
-        let u = (position.longitude - rectangle.west) / rectangle.width;
-        let v = (position.latitude - rectangle.south) / rectangle.height;
-        let h =
+        var u = (position.longitude - rectangle.west) / rectangle.width;
+        var v = (position.latitude - rectangle.south) / rectangle.height;
+        var h =
           (position.height - minimumHeight) / (maximumHeight - minimumHeight);
 
         u = CesiumMath.clamp(u, 0.0, 1.0);
@@ -111,23 +111,23 @@ describe(
     }
 
     it("renders a polyline", function () {
-      const minHeight = 0.0;
-      const maxHeight = 5.0;
-      const cartoPositions = [
+      var minHeight = 0.0;
+      var maxHeight = 5.0;
+      var cartoPositions = [
         Cartographic.fromDegrees(0.0, 0.0, 1.0),
         Cartographic.fromDegrees(1.0, 0.0, 2.0),
       ];
-      const positions = encodePositions(
+      var positions = encodePositions(
         rectangle,
         minHeight,
         maxHeight,
         cartoPositions
       );
 
-      const batchTable = new Cesium3DTileBatchTable(mockTileset, 1);
+      var batchTable = new Cesium3DTileBatchTable(mockTileset, 1);
       batchTable.update(mockTileset, scene.frameState);
 
-      const center = ellipsoid.cartographicToCartesian(
+      var center = ellipsoid.cartographicToCartesian(
         Rectangle.center(rectangle)
       );
 
@@ -156,9 +156,9 @@ describe(
     });
 
     it("renders multiple polylines", function () {
-      const minHeight = 0.0;
-      const maxHeight = 100.0;
-      const cartoPositions = [
+      var minHeight = 0.0;
+      var maxHeight = 100.0;
+      var cartoPositions = [
         Cartographic.fromDegrees(1.0, 0.0, 1.0),
         Cartographic.fromDegrees(2.0, 0.0, 2.0),
         Cartographic.fromDegrees(-6.0, 0.0, 12.0),
@@ -168,17 +168,17 @@ describe(
         Cartographic.fromDegrees(0.0, 0.0, 10.0),
         Cartographic.fromDegrees(0.0, -5.0, 15.0),
       ];
-      const positions = encodePositions(
+      var positions = encodePositions(
         rectangle,
         minHeight,
         maxHeight,
         cartoPositions
       );
 
-      const batchTable = new Cesium3DTileBatchTable(mockTileset, 1);
+      var batchTable = new Cesium3DTileBatchTable(mockTileset, 1);
       batchTable.update(mockTileset, scene.frameState);
 
-      const center = ellipsoid.cartographicToCartesian(
+      var center = ellipsoid.cartographicToCartesian(
         Rectangle.center(rectangle)
       );
 
@@ -198,14 +198,14 @@ describe(
         })
       );
       return loadPolylines(polylines).then(function () {
-        for (let i = 0; i < cartoPositions.length; i += 2) {
-          const p1 = cartoPositions[i];
-          const p2 = cartoPositions[i + 1];
+        for (var i = 0; i < cartoPositions.length; i += 2) {
+          var p1 = cartoPositions[i];
+          var p2 = cartoPositions[i + 1];
 
-          const longitude = CesiumMath.lerp(p1.longitude, p2.longitude, 0.5);
-          const latitude = CesiumMath.lerp(p1.latitude, p2.latitude, 0.5);
-          const height = CesiumMath.lerp(p1.height, p2.height, 0.5);
-          const target = Cartesian3.fromRadians(longitude, latitude, height);
+          var longitude = CesiumMath.lerp(p1.longitude, p2.longitude, 0.5);
+          var latitude = CesiumMath.lerp(p1.latitude, p2.latitude, 0.5);
+          var height = CesiumMath.lerp(p1.height, p2.height, 0.5);
+          var target = Cartesian3.fromRadians(longitude, latitude, height);
           scene.camera.lookAt(target, new Cartesian3(0.0, 0.0, 1.0));
           expect(scene).toRender([255, 255, 255, 255]);
         }
@@ -213,22 +213,22 @@ describe(
     });
 
     it("picks a polyline", function () {
-      const minHeight = 0.0;
-      const maxHeight = 5.0;
-      const cartoPositions = [
+      var minHeight = 0.0;
+      var maxHeight = 5.0;
+      var cartoPositions = [
         Cartographic.fromDegrees(0.0, 0.0, 1.0),
         Cartographic.fromDegrees(1.0, 0.0, 2.0),
       ];
-      const positions = encodePositions(
+      var positions = encodePositions(
         rectangle,
         minHeight,
         maxHeight,
         cartoPositions
       );
 
-      const batchTable = new Cesium3DTileBatchTable(mockTileset, 1);
+      var batchTable = new Cesium3DTileBatchTable(mockTileset, 1);
 
-      const center = ellipsoid.cartographicToCartesian(
+      var center = ellipsoid.cartographicToCartesian(
         Rectangle.center(rectangle)
       );
 
@@ -253,10 +253,10 @@ describe(
           new Cartesian3(0.0, 0.0, 1.0)
         );
 
-        const features = [];
+        var features = [];
         polylines.createFeatures(mockTileset, features);
 
-        const getFeature = mockTileset.getFeature;
+        var getFeature = mockTileset.getFeature;
         mockTileset.getFeature = function (index) {
           return features[index];
         };

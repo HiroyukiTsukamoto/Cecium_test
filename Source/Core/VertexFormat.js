@@ -14,7 +14,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  * @example
  * // Create a vertex format with position and 2D texture coordinate attributes.
- * const format = new Cesium.VertexFormat({
+ * var format = new Cesium.VertexFormat({
  *   position : true,
  *   st : true
  * });

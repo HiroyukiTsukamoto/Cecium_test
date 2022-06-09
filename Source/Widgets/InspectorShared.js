@@ -5,7 +5,7 @@ import defined from "../Core/defined.js";
  * A static class with helper functions used by the CesiumInspector and Cesium3DTilesInspector
  * @private
  */
-const InspectorShared = {};
+var InspectorShared = {};
 
 /**
  * Creates a checkbox component
@@ -23,14 +23,14 @@ InspectorShared.createCheckbox = function (
   Check.typeOf.string("labelText", labelText);
   Check.typeOf.string("checkedBinding", checkedBinding);
   //>>includeEnd('debug');
-  const checkboxContainer = document.createElement("div");
-  const checkboxLabel = document.createElement("label");
-  const checkboxInput = document.createElement("input");
+  var checkboxContainer = document.createElement("div");
+  var checkboxLabel = document.createElement("label");
+  var checkboxInput = document.createElement("input");
   checkboxInput.type = "checkbox";
 
-  let binding = `checked: ${checkedBinding}`;
+  var binding = "checked: " + checkedBinding;
   if (defined(enableBinding)) {
-    binding += `, enable: ${enableBinding}`;
+    binding += ", enable: " + enableBinding;
   }
   checkboxInput.setAttribute("data-bind", binding);
   checkboxLabel.appendChild(checkboxInput);
@@ -62,24 +62,26 @@ InspectorShared.createSection = function (
     toggleSectionVisibilityBinding
   );
   //>>includeEnd('debug');
-  const section = document.createElement("div");
+  var section = document.createElement("div");
   section.className = "cesium-cesiumInspector-section";
   section.setAttribute(
     "data-bind",
-    `css: { "cesium-cesiumInspector-section-collapsed": !${sectionVisibleBinding} }`
+    'css: { "cesium-cesiumInspector-section-collapsed": !' +
+      sectionVisibleBinding +
+      " }"
   );
   panel.appendChild(section);
 
-  const sectionHeader = document.createElement("h3");
+  var sectionHeader = document.createElement("h3");
   sectionHeader.className = "cesium-cesiumInspector-sectionHeader";
   sectionHeader.appendChild(document.createTextNode(headerText));
   sectionHeader.setAttribute(
     "data-bind",
-    `click: ${toggleSectionVisibilityBinding}`
+    "click: " + toggleSectionVisibilityBinding
   );
   section.appendChild(sectionHeader);
 
-  const sectionContent = document.createElement("div");
+  var sectionContent = document.createElement("div");
   sectionContent.className = "cesium-cesiumInspector-sectionContent";
   section.appendChild(sectionContent);
   return sectionContent;

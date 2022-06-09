@@ -1,3 +1,4 @@
+import when from "../ThirdParty/when.js";
 import Check from "./Check.js";
 import defaultValue from "./defaultValue.js";
 import defined from "./defined.js";
@@ -7,11 +8,11 @@ import Resource from "./Resource.js";
  * @private
  */
 function loadImageFromTypedArray(options) {
-  const uint8Array = options.uint8Array;
-  const format = options.format;
-  const request = options.request;
-  const flipY = defaultValue(options.flipY, false);
-  const skipColorSpaceConversion = defaultValue(
+  var uint8Array = options.uint8Array;
+  var format = options.format;
+  var request = options.request;
+  var flipY = defaultValue(options.flipY, false);
+  var skipColorSpaceConversion = defaultValue(
     options.skipColorSpaceConversion,
     false
   );
@@ -20,15 +21,15 @@ function loadImageFromTypedArray(options) {
   Check.typeOf.string("format", format);
   //>>includeEnd('debug');
 
-  const blob = new Blob([uint8Array], {
+  var blob = new Blob([uint8Array], {
     type: format,
   });
 
-  let blobUrl;
+  var blobUrl;
   return Resource.supportsImageBitmapOptions()
     .then(function (result) {
       if (result) {
-        return Promise.resolve(
+        return when(
           Resource.createImageBitmapFromBlob(blob, {
             flipY: flipY,
             premultiplyAlpha: false,
@@ -38,7 +39,7 @@ function loadImageFromTypedArray(options) {
       }
 
       blobUrl = window.URL.createObjectURL(blob);
-      const resource = new Resource({
+      var resource = new Resource({
         url: blobUrl,
         request: request,
       });
@@ -54,11 +55,11 @@ function loadImageFromTypedArray(options) {
       }
       return result;
     })
-    .catch(function (error) {
+    .otherwise(function (error) {
       if (defined(blobUrl)) {
         window.URL.revokeObjectURL(blobUrl);
       }
-      return Promise.reject(error);
+      return when.reject(error);
     });
 }
 export default loadImageFromTypedArray;

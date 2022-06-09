@@ -20,14 +20,14 @@ import VertexFormat from "./VertexFormat.js";
  * @param {VertexFormat} [options.vertexFormat=VertexFormat.DEFAULT] The vertex attributes to be computed.
  *
  * @example
- * const planeGeometry = new Cesium.PlaneGeometry({
+ * var planeGeometry = new Cesium.PlaneGeometry({
  *   vertexFormat : Cesium.VertexFormat.POSITION_ONLY
  * });
  */
 function PlaneGeometry(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const vertexFormat = defaultValue(options.vertexFormat, VertexFormat.DEFAULT);
+  var vertexFormat = defaultValue(options.vertexFormat, VertexFormat.DEFAULT);
 
   this._vertexFormat = vertexFormat;
   this._workerName = "createPlaneGeometry";
@@ -61,8 +61,8 @@ PlaneGeometry.pack = function (value, array, startingIndex) {
   return array;
 };
 
-const scratchVertexFormat = new VertexFormat();
-const scratchOptions = {
+var scratchVertexFormat = new VertexFormat();
+var scratchOptions = {
   vertexFormat: scratchVertexFormat,
 };
 
@@ -81,7 +81,7 @@ PlaneGeometry.unpack = function (array, startingIndex, result) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  const vertexFormat = VertexFormat.unpack(
+  var vertexFormat = VertexFormat.unpack(
     array,
     startingIndex,
     scratchVertexFormat
@@ -96,8 +96,8 @@ PlaneGeometry.unpack = function (array, startingIndex, result) {
   return result;
 };
 
-const min = new Cartesian3(-0.5, -0.5, 0.0);
-const max = new Cartesian3(0.5, 0.5, 0.0);
+var min = new Cartesian3(-0.5, -0.5, 0.0);
+var max = new Cartesian3(0.5, 0.5, 0.0);
 
 /**
  * Computes the geometric representation of a plane, including its vertices, indices, and a bounding sphere.
@@ -106,11 +106,11 @@ const max = new Cartesian3(0.5, 0.5, 0.0);
  * @returns {Geometry|undefined} The computed vertices and indices.
  */
 PlaneGeometry.createGeometry = function (planeGeometry) {
-  const vertexFormat = planeGeometry._vertexFormat;
+  var vertexFormat = planeGeometry._vertexFormat;
 
-  const attributes = new GeometryAttributes();
-  let indices;
-  let positions;
+  var attributes = new GeometryAttributes();
+  var indices;
+  var positions;
 
   if (vertexFormat.position) {
     // 4 corner points.  Duplicated 3 times each for each incident edge/face.
@@ -137,7 +137,7 @@ PlaneGeometry.createGeometry = function (planeGeometry) {
     });
 
     if (vertexFormat.normal) {
-      const normals = new Float32Array(4 * 3);
+      var normals = new Float32Array(4 * 3);
 
       // +z face
       normals[0] = 0.0;
@@ -161,7 +161,7 @@ PlaneGeometry.createGeometry = function (planeGeometry) {
     }
 
     if (vertexFormat.st) {
-      const texCoords = new Float32Array(4 * 2);
+      var texCoords = new Float32Array(4 * 2);
 
       // +z face
       texCoords[0] = 0.0;
@@ -181,7 +181,7 @@ PlaneGeometry.createGeometry = function (planeGeometry) {
     }
 
     if (vertexFormat.tangent) {
-      const tangents = new Float32Array(4 * 3);
+      var tangents = new Float32Array(4 * 3);
 
       // +z face
       tangents[0] = 1.0;
@@ -205,7 +205,7 @@ PlaneGeometry.createGeometry = function (planeGeometry) {
     }
 
     if (vertexFormat.bitangent) {
-      const bitangents = new Float32Array(4 * 3);
+      var bitangents = new Float32Array(4 * 3);
 
       // +z face
       bitangents[0] = 0.0;

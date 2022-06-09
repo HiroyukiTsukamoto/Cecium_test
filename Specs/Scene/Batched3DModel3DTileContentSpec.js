@@ -1,16 +1,17 @@
 import {
-  B3dmParser,
   Cartesian3,
-  Cesium3DContentGroup,
-  ContentMetadata,
   Color,
+  ExperimentalFeatures,
   HeadingPitchRange,
   HeadingPitchRoll,
   Matrix4,
   Transforms,
+  Batched3DModel3DTileContent,
   Cesium3DTilePass,
   ClippingPlane,
   ClippingPlaneCollection,
+  Cesium3DTileFeature,
+  Cesium3DTileContentFeatureTable,
   MetadataClass,
   GroupMetadata,
   Model,
@@ -21,36 +22,38 @@ import createScene from "../createScene.js";
 describe(
   "Scene/Batched3DModel3DTileContent",
   function () {
-    let scene;
-    const centerLongitude = -1.31968;
-    const centerLatitude = 0.698874;
+    var scene;
+    var centerLongitude = -1.31968;
+    var centerLatitude = 0.698874;
 
-    const withBatchTableUrl =
+    var withBatchTableUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithBatchTable/tileset.json";
-    const withBatchTableBinaryUrl =
+    var withBatchTableBinaryUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithBatchTableBinary/tileset.json";
-    const withoutBatchTableUrl =
+    var withoutBatchTableUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithoutBatchTable/tileset.json";
-    const translucentUrl =
+    var translucentUrl =
       "./Data/Cesium3DTiles/Batched/BatchedTranslucent/tileset.json";
-    const translucentOpaqueMixUrl =
+    var translucentOpaqueMixUrl =
       "./Data/Cesium3DTiles/Batched/BatchedTranslucentOpaqueMix/tileset.json";
-    const withTransformBoxUrl =
+    var withTransformBoxUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithTransformBox/tileset.json";
-    const withTransformSphereUrl =
+    var withTransformSphereUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithTransformSphere/tileset.json";
-    const withTransformRegionUrl =
+    var withTransformRegionUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithTransformRegion/tileset.json";
-    const texturedUrl =
+    var texturedUrl =
       "./Data/Cesium3DTiles/Batched/BatchedTextured/tileset.json";
-    const withRtcCenterUrl =
+    var deprecated1Url =
+      "./Data/Cesium3DTiles/Batched/BatchedDeprecated1/tileset.json";
+    var deprecated2Url =
+      "./Data/Cesium3DTiles/Batched/BatchedDeprecated2/tileset.json";
+    var withRtcCenterUrl =
       "./Data/Cesium3DTiles/Batched/BatchedWithRtcCenter/tileset.json";
-    const withCopyrightUrl =
-      "./Data/Cesium3DTiles/Batched/BatchedWithCopyright/tileset.json";
 
     function setCamera(longitude, latitude) {
       // One feature is located at the center, point the camera there
-      const center = Cartesian3.fromRadians(longitude, latitude);
+      var center = Cartesian3.fromRadians(longitude, latitude);
       scene.camera.lookAt(center, new HeadingPitchRange(0.0, -1.57, 15.0));
     }
 
@@ -58,7 +61,7 @@ describe(
       scene = createScene();
 
       // Keep the error from logging to the console when running tests
-      spyOn(B3dmParser, "_deprecationWarning");
+      spyOn(Batched3DModel3DTileContent, "_deprecationWarning");
     });
 
     afterAll(function () {
@@ -71,6 +74,56 @@ describe(
 
     afterEach(function () {
       scene.primitives.removeAll();
+    });
+
+    it("throws with invalid version", function () {
+      var arrayBuffer = Cesium3DTilesTester.generateBatchedTileBuffer({
+        version: 2,
+      });
+      Cesium3DTilesTester.loadTileExpectError(scene, arrayBuffer, "b3dm");
+    });
+
+    it("recognizes the legacy 20-byte header", function () {
+      return Cesium3DTilesTester.loadTileset(scene, deprecated1Url).then(
+        function (tileset) {
+          expect(
+            Batched3DModel3DTileContent._deprecationWarning
+          ).toHaveBeenCalled();
+          Cesium3DTilesTester.expectRenderTileset(scene, tileset);
+          var batchTable = tileset.root.content.batchTable;
+          expect(batchTable._properties).toBeDefined();
+        }
+      );
+    });
+
+    it("recognizes the legacy 24-byte header", function () {
+      return Cesium3DTilesTester.loadTileset(scene, deprecated2Url).then(
+        function (tileset) {
+          expect(
+            Batched3DModel3DTileContent._deprecationWarning
+          ).toHaveBeenCalled();
+          Cesium3DTilesTester.expectRenderTileset(scene, tileset);
+          var batchTable = tileset.root.content.batchTable;
+          expect(batchTable._properties).toBeDefined();
+        }
+      );
+    });
+
+    it("logs deprecation warning for use of BATCHID without prefixed underscore", function () {
+      return Cesium3DTilesTester.loadTileset(scene, deprecated1Url).then(
+        function (tileset) {
+          expect(
+            Batched3DModel3DTileContent._deprecationWarning
+          ).toHaveBeenCalled();
+          Cesium3DTilesTester.expectRenderTileset(scene, tileset);
+        }
+      );
+    });
+
+    it("throws with empty gltf", function () {
+      // Expect to throw DeveloperError in Model due to invalid gltf magic
+      var arrayBuffer = Cesium3DTilesTester.generateBatchedTileBuffer();
+      Cesium3DTilesTester.loadTileExpectError(scene, arrayBuffer, "b3dm");
     });
 
     it("resolves readyPromise", function () {
@@ -136,15 +189,11 @@ describe(
       ) {
         Cesium3DTilesTester.expectRenderTileset(scene, tileset);
 
-        const newLongitude = -1.31962;
-        const newLatitude = 0.698874;
-        const newCenter = Cartesian3.fromRadians(
-          newLongitude,
-          newLatitude,
-          0.0
-        );
-        const newHPR = new HeadingPitchRoll();
-        const newTransform = Transforms.headingPitchRollToFixedFrame(
+        var newLongitude = -1.31962;
+        var newLatitude = 0.698874;
+        var newCenter = Cartesian3.fromRadians(newLongitude, newLatitude, 0.0);
+        var newHPR = new HeadingPitchRoll();
+        var newTransform = Transforms.headingPitchRollToFixedFrame(
           newCenter,
           newHPR
         );
@@ -174,7 +223,7 @@ describe(
     it("picks with batch table", function () {
       return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
         function (tileset) {
-          const content = tileset.root.content;
+          var content = tileset.root.content;
           tileset.show = false;
           expect(scene).toPickPrimitive(undefined);
           tileset.show = true;
@@ -190,7 +239,7 @@ describe(
     it("picks without batch table", function () {
       return Cesium3DTilesTester.loadTileset(scene, withoutBatchTableUrl).then(
         function (tileset) {
-          const content = tileset.root.content;
+          var content = tileset.root.content;
           tileset.show = false;
           expect(scene).toPickPrimitive(undefined);
           tileset.show = true;
@@ -206,7 +255,7 @@ describe(
     it("can get features and properties", function () {
       return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
         function (tileset) {
-          const content = tileset.root.content;
+          var content = tileset.root.content;
           expect(content.featuresLength).toBe(10);
           expect(content.innerContents).toBeUndefined();
           expect(content.hasProperty(0, "id")).toBe(true);
@@ -218,7 +267,7 @@ describe(
     it("throws when calling getFeature with invalid index", function () {
       return Cesium3DTilesTester.loadTileset(scene, withoutBatchTableUrl).then(
         function (tileset) {
-          const content = tileset.root.content;
+          var content = tileset.root.content;
           expect(function () {
             content.getFeature(-1);
           }).toThrowDeveloperError();
@@ -236,18 +285,18 @@ describe(
       return Cesium3DTilesTester.loadTileset(scene, texturedUrl).then(function (
         tileset
       ) {
-        const content = tileset.root.content;
+        var content = tileset.root.content;
 
         // 10 buildings, 36 ushort indices and 24 vertices per building, 8 float components (position, normal, uv) and 1 uint component (batchId) per vertex.
         // 10 * ((24 * (8 * 4 + 1 * 4)) + (36 * 2)) = 9360
-        const geometryByteLength = 9360;
+        var geometryByteLength = 9360;
 
         // Texture is 128x128 RGBA bytes, not mipmapped
-        const texturesByteLength = 65536;
+        var texturesByteLength = 65536;
 
         // One RGBA byte pixel per feature
-        const batchTexturesByteLength = content.featuresLength * 4;
-        const pickTexturesByteLength = content.featuresLength * 4;
+        var batchTexturesByteLength = content.featuresLength * 4;
+        var pickTexturesByteLength = content.featuresLength * 4;
 
         // Features have not been picked or colored yet, so the batch table contribution is 0.
         expect(content.geometryByteLength).toEqual(geometryByteLength);
@@ -274,16 +323,16 @@ describe(
     it("Links model to tileset clipping planes based on bounding volume clipping", function () {
       return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
         function (tileset) {
-          const tile = tileset.root;
-          const content = tile.content;
-          const model = content._model;
-          const passOptions = Cesium3DTilePass.getPassOptions(
+          var tile = tileset.root;
+          var content = tile.content;
+          var model = content._model;
+          var passOptions = Cesium3DTilePass.getPassOptions(
             Cesium3DTilePass.RENDER
           );
 
           expect(model.clippingPlanes).toBeUndefined();
 
-          const clippingPlaneCollection = new ClippingPlaneCollection({
+          var clippingPlaneCollection = new ClippingPlaneCollection({
             planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
           });
           tileset.clippingPlanes = clippingPlaneCollection;
@@ -304,15 +353,15 @@ describe(
     it("Links model to tileset clipping planes if tileset clipping planes are reassigned", function () {
       return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
         function (tileset) {
-          const tile = tileset.root;
-          const model = tile.content._model;
-          const passOptions = Cesium3DTilePass.getPassOptions(
+          var tile = tileset.root;
+          var model = tile.content._model;
+          var passOptions = Cesium3DTilePass.getPassOptions(
             Cesium3DTilePass.RENDER
           );
 
           expect(model.clippingPlanes).toBeUndefined();
 
-          const clippingPlaneCollection = new ClippingPlaneCollection({
+          var clippingPlaneCollection = new ClippingPlaneCollection({
             planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
           });
           tileset.clippingPlanes = clippingPlaneCollection;
@@ -322,7 +371,7 @@ describe(
           expect(model.clippingPlanes).toBeDefined();
           expect(model.clippingPlanes).toBe(tileset.clippingPlanes);
 
-          const newClippingPlaneCollection = new ClippingPlaneCollection({
+          var newClippingPlaneCollection = new ClippingPlaneCollection({
             planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
           });
           tileset.clippingPlanes = newClippingPlaneCollection;
@@ -340,12 +389,12 @@ describe(
 
       return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
         function (tileset) {
-          const tile = tileset.root;
-          const passOptions = Cesium3DTilePass.getPassOptions(
+          var tile = tileset.root;
+          var passOptions = Cesium3DTilePass.getPassOptions(
             Cesium3DTilePass.RENDER
           );
 
-          const clippingPlaneCollection = new ClippingPlaneCollection({
+          var clippingPlaneCollection = new ClippingPlaneCollection({
             planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
           });
           tileset.clippingPlanes = clippingPlaneCollection;
@@ -362,12 +411,12 @@ describe(
         function (tileset) {
           Cesium3DTilesTester.expectRenderTileset(scene, tileset);
 
-          const rtcTransform = tileset.root.content._rtcCenterTransform;
+          var rtcTransform = tileset.root.content._rtcCenterTransform;
           expect(rtcTransform).toEqual(
             Matrix4.fromTranslation(new Cartesian3(0.1, 0.2, 0.3))
           );
 
-          let expectedModelTransform = Matrix4.multiply(
+          var expectedModelTransform = Matrix4.multiply(
             tileset.root.transform,
             rtcTransform,
             new Matrix4()
@@ -380,15 +429,15 @@ describe(
           );
 
           // Update tile transform
-          const newLongitude = -1.31962;
-          const newLatitude = 0.698874;
-          const newCenter = Cartesian3.fromRadians(
+          var newLongitude = -1.31962;
+          var newLatitude = 0.698874;
+          var newCenter = Cartesian3.fromRadians(
             newLongitude,
             newLatitude,
             0.0
           );
-          const newHPR = new HeadingPitchRoll();
-          const newTransform = Transforms.headingPitchRollToFixedFrame(
+          var newHPR = new HeadingPitchRoll();
+          var newTransform = Transforms.headingPitchRollToFixedFrame(
             newCenter,
             newHPR
           );
@@ -408,118 +457,100 @@ describe(
       );
     });
 
-    it("gets copyright from glTF", function () {
-      return Cesium3DTilesTester.loadTileset(scene, withCopyrightUrl).then(
-        function (tileset) {
-          const creditDisplay = scene.frameState.creditDisplay;
-          const credits =
-            creditDisplay._currentFrameCredits.lightboxCredits.values;
-          expect(credits.length).toEqual(1);
-          expect(credits[0].credit.html).toEqual("Sample Copyright");
-        }
-      );
-    });
-
-    it("shows copyright from glTF on screen", function () {
-      return Cesium3DTilesTester.loadTileset(scene, withCopyrightUrl, {
-        showCreditsOnScreen: true,
-      }).then(function (tileset) {
-        const creditDisplay = scene.frameState.creditDisplay;
-        const credits = creditDisplay._currentFrameCredits.screenCredits.values;
-        expect(credits.length).toEqual(1);
-        expect(credits[0].credit.html).toEqual("Sample Copyright");
-      });
-    });
-
-    it("toggles showing copyright from glTF on screen", function () {
-      return Cesium3DTilesTester.loadTileset(scene, withCopyrightUrl, {
-        showCreditsOnScreen: false,
-      }).then(function (tileset) {
-        const creditDisplay = scene.frameState.creditDisplay;
-        const lightboxCredits =
-          creditDisplay._currentFrameCredits.lightboxCredits.values;
-        const screenCredits =
-          creditDisplay._currentFrameCredits.screenCredits.values;
-
-        expect(lightboxCredits.length).toEqual(1);
-        expect(lightboxCredits[0].credit.html).toEqual("Sample Copyright");
-        expect(screenCredits.length).toEqual(0);
-
-        tileset.showCreditsOnScreen = true;
-        scene.renderForSpecs();
-        expect(screenCredits.length).toEqual(1);
-        expect(screenCredits[0].credit.html).toEqual("Sample Copyright");
-        expect(lightboxCredits.length).toEqual(0);
-
-        tileset.showCreditsOnScreen = false;
-        scene.renderForSpecs();
-        expect(lightboxCredits.length).toEqual(1);
-        expect(lightboxCredits[0].credit.html).toEqual("Sample Copyright");
-        expect(screenCredits.length).toEqual(0);
-      });
-    });
-
     it("destroys", function () {
       return Cesium3DTilesTester.tileDestroys(scene, withoutBatchTableUrl);
     });
 
-    describe("metadata", function () {
-      let metadataClass;
-      let groupMetadata;
-      let contentMetadataClass;
-      let contentMetadata;
+    describe("ModelExperimental", function () {
+      beforeEach(function () {
+        ExperimentalFeatures.enableModelExperimental = true;
+      });
 
-      beforeAll(function () {
-        metadataClass = new MetadataClass({
-          id: "test",
-          class: {
-            properties: {
-              name: {
-                type: "STRING",
-              },
-              height: {
-                type: "SCALAR",
-                componentType: "FLOAT32",
-              },
+      afterEach(function () {
+        ExperimentalFeatures.enableModelExperimental = false;
+      });
+
+      it("renders B3DM content with batch table", function () {
+        return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
+          function (tileset) {
+            Cesium3DTilesTester.expectRender(scene, tileset);
+          }
+        );
+      });
+
+      it("renders B3DM content without batch table", function () {
+        return Cesium3DTilesTester.loadTileset(
+          scene,
+          withoutBatchTableUrl
+        ).then(function (tileset) {
+          Cesium3DTilesTester.expectRender(scene, tileset);
+        });
+      });
+
+      it("assigns feature table as batch table", function () {
+        return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
+          function (tileset) {
+            var content = tileset.root.content;
+            expect(content.batchTable).toBeDefined();
+            expect(content.batchTable).toBeInstanceOf(
+              Cesium3DTileContentFeatureTable
+            );
+          }
+        );
+      });
+
+      it("hasProperty works", function () {
+        return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
+          function (tileset) {
+            var content = tileset.root.content;
+            var featureTable = content.batchTable;
+            expect(featureTable).toBeDefined();
+            for (var i = 0; i < featureTable.featuresLength; i++) {
+              expect(content.hasProperty(i, "Height")).toEqual(true);
+              expect(content.hasProperty(i, "Width")).toEqual(false);
+            }
+          }
+        );
+      });
+
+      it("getFeature works", function () {
+        return Cesium3DTilesTester.loadTileset(scene, withBatchTableUrl).then(
+          function (tileset) {
+            var content = tileset.root.content;
+            var featureTable = content.batchTable;
+            expect(featureTable).toBeDefined();
+            for (var i = 0; i < featureTable.featuresLength; i++) {
+              var feature = content.getFeature(i);
+              expect(feature).toBeInstanceOf(Cesium3DTileFeature);
+            }
+          }
+        );
+      });
+    });
+
+    describe("3DTILES_metadata", function () {
+      var metadataClass = new MetadataClass({
+        id: "test",
+        class: {
+          properties: {
+            name: {
+              type: "STRING",
+            },
+            height: {
+              type: "FLOAT32",
             },
           },
-        });
-
-        groupMetadata = new GroupMetadata({
-          id: "testGroup",
-          group: {
-            properties: {
-              name: "Test Group",
-              height: 35.6,
-            },
+        },
+      });
+      var groupMetadata = new GroupMetadata({
+        id: "testGroup",
+        group: {
+          properties: {
+            name: "Test Group",
+            height: 35.6,
           },
-          class: metadataClass,
-        });
-
-        contentMetadataClass = new MetadataClass({
-          id: "contentTest",
-          class: {
-            properties: {
-              author: {
-                type: "STRING",
-              },
-              color: {
-                type: "VEC3",
-                componentType: "UINT8",
-              },
-            },
-          },
-        });
-
-        contentMetadata = new ContentMetadata({
-          content: {
-            properties: {
-              author: "Test Author",
-              color: [255, 0, 0],
-            },
-          },
-          class: contentMetadataClass,
-        });
+        },
+        class: metadataClass,
       });
 
       it("assigns groupMetadata", function () {
@@ -527,20 +558,9 @@ describe(
           scene,
           withoutBatchTableUrl
         ).then(function (tileset) {
-          const content = tileset.root.content;
-          content.group = new Cesium3DContentGroup({ metadata: groupMetadata });
-          expect(content.group.metadata).toBe(groupMetadata);
-        });
-      });
-
-      it("assigns metadata", function () {
-        return Cesium3DTilesTester.loadTileset(
-          scene,
-          withoutBatchTableUrl
-        ).then(function (tileset) {
-          const content = tileset.root.content;
-          content.metadata = contentMetadata;
-          expect(content.metadata).toBe(contentMetadata);
+          var content = tileset.root.content;
+          content.groupMetadata = groupMetadata;
+          expect(content.groupMetadata).toBe(groupMetadata);
         });
       });
     });

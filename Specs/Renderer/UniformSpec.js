@@ -10,7 +10,7 @@ import createContext from "../createContext.js";
 describe(
   "Renderer/Uniform",
   function () {
-    let context;
+    var context;
 
     beforeAll(function () {
       context = createContext();
@@ -21,13 +21,13 @@ describe(
     });
 
     it("sets float uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return 1.0;
         },
       };
 
-      const fs =
+      var fs =
         "uniform float u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == 1.0); " +
@@ -41,13 +41,13 @@ describe(
     });
 
     it("sets vec2 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian2(0.25, 0.5);
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec2 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == vec2(0.25, 0.5)); " +
@@ -61,13 +61,13 @@ describe(
     });
 
     it("sets vec3 uniform (Cartesian3)", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian3(0.25, 0.5, 0.75);
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec3 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == vec3(0.25, 0.5, 0.75)); " +
@@ -81,13 +81,13 @@ describe(
     });
 
     it("sets vec3 uniform (Color)", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Color(0.25, 0.5, 0.75);
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec3 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == vec3(0.25, 0.5, 0.75)); " +
@@ -101,13 +101,13 @@ describe(
     });
 
     it("sets vec4 uniform (Cartesian4)", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian4(0.25, 0.5, 0.75, 1.0);
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec4 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == vec4(0.25, 0.5, 0.75, 1.0)); " +
@@ -121,13 +121,13 @@ describe(
     });
 
     it("sets vec4 uniform (Color)", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Color(0.25, 0.5, 0.75, 1.0);
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec4 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == vec4(0.25, 0.5, 0.75, 1.0)); " +
@@ -141,13 +141,13 @@ describe(
     });
 
     it("sets int uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return 1;
         },
       };
 
-      const fs =
+      var fs =
         "uniform int u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == 1); " +
@@ -161,13 +161,13 @@ describe(
     });
 
     it("sets ivec2 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian2(1, 2);
         },
       };
 
-      const fs =
+      var fs =
         "uniform ivec2 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == ivec2(1, 2)); " +
@@ -181,13 +181,13 @@ describe(
     });
 
     it("sets ivec3 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian3(1, 2, 3);
         },
       };
 
-      const fs =
+      var fs =
         "uniform ivec3 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == ivec3(1, 2, 3)); " +
@@ -201,13 +201,13 @@ describe(
     });
 
     it("sets ivec4 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian4(1, 2, 3, 4);
         },
       };
 
-      const fs =
+      var fs =
         "uniform ivec4 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == ivec4(1, 2, 3, 4)); " +
@@ -221,13 +221,13 @@ describe(
     });
 
     it("sets bool uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return true;
         },
       };
 
-      const fs =
+      var fs =
         "uniform bool u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u); " +
@@ -241,13 +241,13 @@ describe(
     });
 
     it("sets bvec2 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian2(true, false);
         },
       };
 
-      const fs =
+      var fs =
         "uniform bvec2 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == bvec2(true, false)); " +
@@ -261,13 +261,13 @@ describe(
     });
 
     it("sets bvec3 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian3(true, false, true);
         },
       };
 
-      const fs =
+      var fs =
         "uniform bvec3 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == bvec3(true, false, true)); " +
@@ -281,13 +281,13 @@ describe(
     });
 
     it("sets bvec4 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Cartesian4(true, false, true, false);
         },
       };
 
-      const fs =
+      var fs =
         "uniform bvec4 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(u == bvec4(true, false, true, false)); " +
@@ -301,13 +301,13 @@ describe(
     });
 
     it("sets mat2 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Matrix2(1.0, 2.0, 3.0, 4.0);
         },
       };
 
-      const fs =
+      var fs =
         "uniform mat2 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -324,13 +324,13 @@ describe(
     });
 
     it("sets mat3 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Matrix3(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
         },
       };
 
-      const fs =
+      var fs =
         "uniform mat3 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -348,7 +348,7 @@ describe(
     });
 
     it("sets mat4 uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Matrix4(
             1.0,
@@ -371,7 +371,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform mat4 u;" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -390,7 +390,7 @@ describe(
     });
 
     it("sets a struct uniform", function () {
-      const uniformMap = {
+      var uniformMap = {
         "u.f": function () {
           return 2.5;
         },
@@ -399,7 +399,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform struct { float f; vec4 v; } u;" +
         "void main() { " +
         "  gl_FragColor = vec4((u.f == 2.5)); " +
@@ -418,7 +418,7 @@ describe(
     });
 
     it("sets float uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Float32Array([0.25, 0.5]);
         },
@@ -427,7 +427,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform float u[2];" +
         "uniform float u2[2];" +
         "void main() { " +
@@ -445,13 +445,13 @@ describe(
     });
 
     it("sets vec2 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [new Cartesian2(0.25, 0.5), new Cartesian2(1.25, 1.5)];
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec2 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -468,7 +468,7 @@ describe(
     });
 
     it("sets vec3 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Cartesian3(0.25, 0.5, 0.75),
@@ -477,7 +477,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec3 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -494,7 +494,7 @@ describe(
     });
 
     it("sets vec4 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Cartesian4(0.25, 0.5, 0.75, 1.0),
@@ -503,7 +503,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform vec4 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -520,7 +520,7 @@ describe(
     });
 
     it("sets int uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Int32Array([1, 2]);
         },
@@ -529,7 +529,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform int u[2];" +
         "uniform int u2[2];" +
         "void main() { " +
@@ -547,13 +547,13 @@ describe(
     });
 
     it("sets ivec2 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [new Cartesian2(1, 2), new Cartesian2(3, 4)];
         },
       };
 
-      const fs =
+      var fs =
         "uniform ivec2 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -570,13 +570,13 @@ describe(
     });
 
     it("sets ivec3 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [new Cartesian3(1, 2, 3), new Cartesian3(4, 5, 6)];
         },
       };
 
-      const fs =
+      var fs =
         "uniform ivec3 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -593,13 +593,13 @@ describe(
     });
 
     it("sets ivec4 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [new Cartesian4(1, 2, 3, 4), new Cartesian4(5, 6, 7, 8)];
         },
       };
 
-      const fs =
+      var fs =
         "uniform ivec4 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -616,7 +616,7 @@ describe(
     });
 
     it("sets bool uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return new Int32Array([1, 0]);
         },
@@ -625,7 +625,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform bool u[2];" +
         "uniform bool u2[2];" +
         "void main() { " +
@@ -643,13 +643,13 @@ describe(
     });
 
     it("sets bvec2 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [new Cartesian2(true, false), new Cartesian2(false, true)];
         },
       };
 
-      const fs =
+      var fs =
         "uniform bvec2 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -666,7 +666,7 @@ describe(
     });
 
     it("sets bvec3 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Cartesian3(true, false, true),
@@ -675,7 +675,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform bvec3 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -692,7 +692,7 @@ describe(
     });
 
     it("sets bvec4 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Cartesian4(true, false, true, false),
@@ -701,7 +701,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform bvec4 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -718,7 +718,7 @@ describe(
     });
 
     it("sets mat2 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Matrix2(1.0, 2.0, 3.0, 4.0),
@@ -727,7 +727,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform mat2 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -746,7 +746,7 @@ describe(
     });
 
     it("sets mat3 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Matrix3(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0),
@@ -755,7 +755,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform mat3 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +
@@ -776,7 +776,7 @@ describe(
     });
 
     it("sets mat4 uniform array", function () {
-      const uniformMap = {
+      var uniformMap = {
         u: function () {
           return [
             new Matrix4(
@@ -819,7 +819,7 @@ describe(
         },
       };
 
-      const fs =
+      var fs =
         "uniform mat4 u[2];" +
         "void main() { " +
         "  gl_FragColor = vec4(" +

@@ -2,8 +2,7 @@
   "compilerOptions": {
     "noEmit": true,
     "types": [],
-    "strict": true,
-    "isolatedModules": true
+    "strict": true
   },
   "include": [
     "index.ts",

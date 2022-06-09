@@ -2,13 +2,13 @@ import { ImplicitSubdivisionScheme } from "../../Source/Cesium.js";
 
 describe("Scene/ImplicitSubdivisionScheme", function () {
   it("getBranchingFactor returns the right branching factor", function () {
-    const treeTypes = [
+    var treeTypes = [
       ImplicitSubdivisionScheme.OCTREE,
       ImplicitSubdivisionScheme.QUADTREE,
     ];
-    const branchingFactors = [8, 4];
+    var branchingFactors = [8, 4];
 
-    for (let i = 0; i < treeTypes.length; i++) {
+    for (var i = 0; i < treeTypes.length; i++) {
       expect(ImplicitSubdivisionScheme.getBranchingFactor(treeTypes[i])).toBe(
         branchingFactors[i]
       );

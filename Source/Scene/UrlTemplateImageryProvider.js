@@ -12,11 +12,12 @@ import CesiumMath from "../Core/Math.js";
 import Rectangle from "../Core/Rectangle.js";
 import Resource from "../Core/Resource.js";
 import WebMercatorTilingScheme from "../Core/WebMercatorTilingScheme.js";
+import when from "../ThirdParty/when.js";
 import ImageryProvider from "./ImageryProvider.js";
 
-const templateRegex = /{[^}]+}/g;
+var templateRegex = /{[^}]+}/g;
 
-const tags = {
+var tags = {
   x: xTag,
   y: yTag,
   z: zTag,
@@ -36,7 +37,7 @@ const tags = {
   height: heightTag,
 };
 
-const pickFeaturesTags = combine(tags, {
+var pickFeaturesTags = combine(tags, {
   i: iTag,
   j: jTag,
   reverseI: reverseITag,
@@ -147,19 +148,19 @@ const pickFeaturesTags = combine(tags, {
  *
  * @example
  * // Access Natural Earth II imagery, which uses a TMS tiling scheme and Geographic (EPSG:4326) project
- * const tms = new Cesium.UrlTemplateImageryProvider({
+ * var tms = new Cesium.UrlTemplateImageryProvider({
  *     url : Cesium.buildModuleUrl('Assets/Textures/NaturalEarthII') + '/{z}/{x}/{reverseY}.jpg',
  *     credit : '© Analytical Graphics, Inc.',
  *     tilingScheme : new Cesium.GeographicTilingScheme(),
  *     maximumLevel : 5
  * });
  * // Access the CartoDB Positron basemap, which uses an OpenStreetMap-like tiling scheme.
- * const positron = new Cesium.UrlTemplateImageryProvider({
+ * var positron = new Cesium.UrlTemplateImageryProvider({
  *     url : 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
  *     credit : 'Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.'
  * });
  * // Access a Web Map Service (WMS) server.
- * const wms = new Cesium.UrlTemplateImageryProvider({
+ * var wms = new Cesium.UrlTemplateImageryProvider({
  *    url : 'https://programs.communications.gov.au/geoserver/ows?tiled=true&' +
  *          'transparent=true&format=image%2Fpng&exceptions=application%2Fvnd.ogc.se_xml&' +
  *          'styles=&service=WMS&version=1.1.1&request=GetMap&' +
@@ -169,7 +170,7 @@ const pickFeaturesTags = combine(tags, {
  *    rectangle : Cesium.Rectangle.fromDegrees(96.799393, -43.598214999057824, 153.63925700000001, -9.2159219997013)
  * });
  * // Using custom tags in your template url.
- * const custom = new Cesium.UrlTemplateImageryProvider({
+ * var custom = new Cesium.UrlTemplateImageryProvider({
  *    url : 'https://yoururl/{Time}/{z}/{y}/{x}.png',
  *    customTags : {
  *        Time: function(imageryProvider, x, y, level) {
@@ -192,7 +193,7 @@ function UrlTemplateImageryProvider(options) {
   if (!defined(options)) {
     throw new DeveloperError("options is required.");
   }
-  if (!defined(options.then) && !defined(options.url)) {
+  if (!when.isPromise(options) && !defined(options.url)) {
     throw new DeveloperError("options is required.");
   }
   //>>includeEnd('debug');
@@ -651,8 +652,8 @@ Object.defineProperties(UrlTemplateImageryProvider.prototype, {
  * @param {Promise.<Object>|Object} options Any of the options that may be passed to the {@link UrlTemplateImageryProvider} constructor.
  */
 UrlTemplateImageryProvider.prototype.reinitialize = function (options) {
-  const that = this;
-  that._readyPromise = Promise.resolve(options).then(function (properties) {
+  var that = this;
+  that._readyPromise = when(options).then(function (properties) {
     //>>includeStart('debug', pragmas.debug);
     if (!defined(properties)) {
       throw new DeveloperError("options is required.");
@@ -662,11 +663,11 @@ UrlTemplateImageryProvider.prototype.reinitialize = function (options) {
     }
     //>>includeEnd('debug');
 
-    const customTags = properties.customTags;
-    const allTags = combine(tags, customTags);
-    const allPickFeaturesTags = combine(pickFeaturesTags, customTags);
-    const resource = Resource.createIfNeeded(properties.url);
-    const pickFeaturesResource = Resource.createIfNeeded(
+    var customTags = properties.customTags;
+    var allTags = combine(tags, customTags);
+    var allPickFeaturesTags = combine(pickFeaturesTags, customTags);
+    var resource = Resource.createIfNeeded(properties.url);
+    var pickFeaturesResource = Resource.createIfNeeded(
       properties.pickFeaturesUrl
     );
 
@@ -708,7 +709,7 @@ UrlTemplateImageryProvider.prototype.reinitialize = function (options) {
     );
     that._hasAlphaChannel = defaultValue(properties.hasAlphaChannel, true);
 
-    let credit = properties.credit;
+    var credit = properties.credit;
     if (typeof credit === "string") {
       credit = new Credit(credit);
     }
@@ -752,8 +753,10 @@ UrlTemplateImageryProvider.prototype.getTileCredits = function (x, y, level) {
  * @param {Number} y The tile Y coordinate.
  * @param {Number} level The tile level.
  * @param {Request} [request] The request object. Intended for internal use only.
- * @returns {Promise.<ImageryTypes>|undefined} A promise for the image that will resolve when the image is available, or
- *          undefined if there are too many active requests to the server, and the request should be retried later.
+ * @returns {Promise.<HTMLImageElement|HTMLCanvasElement>|undefined} A promise for the image that will resolve when the image is available, or
+ *          undefined if there are too many active requests to the server, and the request
+ *          should be retried later.  The resolved image may be either an
+ *          Image or a Canvas DOM object.
  */
 UrlTemplateImageryProvider.prototype.requestImage = function (
   x,
@@ -811,9 +814,9 @@ UrlTemplateImageryProvider.prototype.pickFeatures = function (
     return undefined;
   }
 
-  let formatIndex = 0;
+  var formatIndex = 0;
 
-  const that = this;
+  var that = this;
 
   function handleResponse(format, data) {
     return format.callback(data);
@@ -822,11 +825,11 @@ UrlTemplateImageryProvider.prototype.pickFeatures = function (
   function doRequest() {
     if (formatIndex >= that._getFeatureInfoFormats.length) {
       // No valid formats, so no features picked.
-      return Promise.resolve([]);
+      return when([]);
     }
 
-    const format = that._getFeatureInfoFormats[formatIndex];
-    const resource = buildPickFeaturesResource(
+    var format = that._getFeatureInfoFormats[formatIndex];
+    var resource = buildPickFeaturesResource(
       that,
       x,
       y,
@@ -839,41 +842,41 @@ UrlTemplateImageryProvider.prototype.pickFeatures = function (
     ++formatIndex;
 
     if (format.type === "json") {
-      return resource.fetchJson().then(format.callback).catch(doRequest);
+      return resource.fetchJson().then(format.callback).otherwise(doRequest);
     } else if (format.type === "xml") {
-      return resource.fetchXML().then(format.callback).catch(doRequest);
+      return resource.fetchXML().then(format.callback).otherwise(doRequest);
     } else if (format.type === "text" || format.type === "html") {
-      return resource.fetchText().then(format.callback).catch(doRequest);
+      return resource.fetchText().then(format.callback).otherwise(doRequest);
     }
     return resource
       .fetch({
         responseType: format.format,
       })
       .then(handleResponse.bind(undefined, format))
-      .catch(doRequest);
+      .otherwise(doRequest);
   }
 
   return doRequest();
 };
 
-let degreesScratchComputed = false;
-const degreesScratch = new Rectangle();
-let projectedScratchComputed = false;
-const projectedScratch = new Rectangle();
+var degreesScratchComputed = false;
+var degreesScratch = new Rectangle();
+var projectedScratchComputed = false;
+var projectedScratch = new Rectangle();
 
 function buildImageResource(imageryProvider, x, y, level, request) {
   degreesScratchComputed = false;
   projectedScratchComputed = false;
 
-  const resource = imageryProvider._resource;
-  const url = resource.getUrlComponent(true);
-  const allTags = imageryProvider._tags;
-  const templateValues = {};
+  var resource = imageryProvider._resource;
+  var url = resource.getUrlComponent(true);
+  var allTags = imageryProvider._tags;
+  var templateValues = {};
 
-  const match = url.match(templateRegex);
+  var match = url.match(templateRegex);
   if (defined(match)) {
     match.forEach(function (tag) {
-      const key = tag.substring(1, tag.length - 1); //strip {}
+      var key = tag.substring(1, tag.length - 1); //strip {}
       if (defined(allTags[key])) {
         templateValues[key] = allTags[key](imageryProvider, x, y, level);
       }
@@ -886,9 +889,9 @@ function buildImageResource(imageryProvider, x, y, level, request) {
   });
 }
 
-let ijScratchComputed = false;
-const ijScratch = new Cartesian2();
-let longitudeLatitudeProjectedScratchComputed = false;
+var ijScratchComputed = false;
+var ijScratch = new Cartesian2();
+var longitudeLatitudeProjectedScratchComputed = false;
 
 function buildPickFeaturesResource(
   imageryProvider,
@@ -904,14 +907,14 @@ function buildPickFeaturesResource(
   ijScratchComputed = false;
   longitudeLatitudeProjectedScratchComputed = false;
 
-  const resource = imageryProvider._pickFeaturesResource;
-  const url = resource.getUrlComponent(true);
-  const allTags = imageryProvider._pickFeaturesTags;
-  const templateValues = {};
-  const match = url.match(templateRegex);
+  var resource = imageryProvider._pickFeaturesResource;
+  var url = resource.getUrlComponent(true);
+  var allTags = imageryProvider._pickFeaturesTags;
+  var templateValues = {};
+  var match = url.match(templateRegex);
   if (defined(match)) {
     match.forEach(function (tag) {
-      const key = tag.substring(1, tag.length - 1); //strip {}
+      var key = tag.substring(1, tag.length - 1); //strip {}
       if (defined(allTags[key])) {
         templateValues[key] = allTags[key](
           imageryProvider,
@@ -937,9 +940,9 @@ function padWithZerosIfNecessary(imageryProvider, key, value) {
     imageryProvider.urlSchemeZeroPadding &&
     imageryProvider.urlSchemeZeroPadding.hasOwnProperty(key)
   ) {
-    const paddingTemplate = imageryProvider.urlSchemeZeroPadding[key];
+    var paddingTemplate = imageryProvider.urlSchemeZeroPadding[key];
     if (typeof paddingTemplate === "string") {
-      const paddingTemplateWidth = paddingTemplate.length;
+      var paddingTemplateWidth = paddingTemplate.length;
       if (paddingTemplateWidth > 1) {
         value =
           value.length >= paddingTemplateWidth
@@ -958,7 +961,7 @@ function xTag(imageryProvider, x, y, level) {
 }
 
 function reverseXTag(imageryProvider, x, y, level) {
-  const reverseX =
+  var reverseX =
     imageryProvider.tilingScheme.getNumberOfXTilesAtLevel(level) - x - 1;
   return padWithZerosIfNecessary(imageryProvider, "{reverseX}", reverseX);
 }
@@ -968,14 +971,14 @@ function yTag(imageryProvider, x, y, level) {
 }
 
 function reverseYTag(imageryProvider, x, y, level) {
-  const reverseY =
+  var reverseY =
     imageryProvider.tilingScheme.getNumberOfYTilesAtLevel(level) - y - 1;
   return padWithZerosIfNecessary(imageryProvider, "{reverseY}", reverseY);
 }
 
 function reverseZTag(imageryProvider, x, y, level) {
-  const maximumLevel = imageryProvider.maximumLevel;
-  const reverseZ =
+  var maximumLevel = imageryProvider.maximumLevel;
+  var reverseZ =
     defined(maximumLevel) && level < maximumLevel
       ? maximumLevel - level - 1
       : level;
@@ -987,7 +990,7 @@ function zTag(imageryProvider, x, y, level) {
 }
 
 function sTag(imageryProvider, x, y, level) {
-  const index = (x + y + level) % imageryProvider._subdomains.length;
+  var index = (x + y + level) % imageryProvider._subdomains.length;
   return imageryProvider._subdomains[index];
 }
 
@@ -1104,8 +1107,8 @@ function reverseJTag(
   return imageryProvider.tileHeight - ijScratch.y - 1;
 }
 
-const rectangleScratch = new Rectangle();
-const longitudeLatitudeProjectedScratch = new Cartesian3();
+var rectangleScratch = new Rectangle();
+var longitudeLatitudeProjectedScratch = new Cartesian3();
 
 function computeIJ(imageryProvider, x, y, level, longitude, latitude, format) {
   if (ijScratchComputed) {
@@ -1120,9 +1123,9 @@ function computeIJ(imageryProvider, x, y, level, longitude, latitude, format) {
     longitude,
     latitude
   );
-  const projected = longitudeLatitudeProjectedScratch;
+  var projected = longitudeLatitudeProjectedScratch;
 
-  const rectangle = imageryProvider.tilingScheme.tileXYToNativeRectangle(
+  var rectangle = imageryProvider.tilingScheme.tileXYToNativeRectangle(
     x,
     y,
     level,
@@ -1203,7 +1206,7 @@ function latitudeProjectedTag(
   return longitudeLatitudeProjectedScratch.y;
 }
 
-const cartographicScratch = new Cartographic();
+var cartographicScratch = new Cartographic();
 
 function computeLongitudeLatitudeProjected(
   imageryProvider,
@@ -1222,7 +1225,7 @@ function computeLongitudeLatitudeProjected(
     longitudeLatitudeProjectedScratch.x = CesiumMath.toDegrees(longitude);
     longitudeLatitudeProjectedScratch.y = CesiumMath.toDegrees(latitude);
   } else {
-    const cartographic = cartographicScratch;
+    var cartographic = cartographicScratch;
     cartographic.longitude = longitude;
     cartographic.latitude = latitude;
     imageryProvider.tilingScheme.projection.project(

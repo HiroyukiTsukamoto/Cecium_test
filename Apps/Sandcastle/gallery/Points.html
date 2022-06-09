@@ -29,10 +29,10 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
+        var viewer = new Cesium.Viewer("cesiumContainer");
 
         function addPoint() {
           Sandcastle.declare(addPoint);
@@ -64,7 +64,7 @@
         function changePointProperties() {
           Sandcastle.declare(changePointProperties);
 
-          const entity = viewer.entities.add({
+          var entity = viewer.entities.add({
             position: Cesium.Cartesian3.fromDegrees(
               -75.59777,
               40.03883,
@@ -75,7 +75,7 @@
             },
           });
 
-          const point = entity.point;
+          var point = entity.point;
           point.pixelSize = 20.0;
           point.color = Cesium.Color.YELLOW.withAlpha(0.33);
         }
@@ -187,10 +187,10 @@
         };
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

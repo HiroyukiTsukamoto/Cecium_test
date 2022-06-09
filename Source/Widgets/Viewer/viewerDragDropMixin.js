@@ -6,7 +6,6 @@ import wrapFunction from "../../Core/wrapFunction.js";
 import CzmlDataSource from "../../DataSources/CzmlDataSource.js";
 import GeoJsonDataSource from "../../DataSources/GeoJsonDataSource.js";
 import KmlDataSource from "../../DataSources/KmlDataSource.js";
-import GpxDataSource from "../../DataSources/GpxDataSource.js";
 import getElement from "../getElement.js";
 
 /**
@@ -31,7 +30,7 @@ import getElement from "../getElement.js";
  *
  * @example
  * // Add basic drag and drop support and pop up an alert window on error.
- * const viewer = new Cesium.Viewer('cesiumContainer');
+ * var viewer = new Cesium.Viewer('cesiumContainer');
  * viewer.extend(Cesium.viewerDragDropMixin);
  * viewer.dropError.addEventListener(function(viewerArg, source, error) {
  *     window.alert('Error processing ' + source + ':' + error);
@@ -68,13 +67,13 @@ function viewerDragDropMixin(viewer, options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
   //Local variables to be closed over by defineProperties.
-  let dropEnabled = true;
-  let flyToOnDrop = defaultValue(options.flyToOnDrop, true);
-  const dropError = new Event();
-  let clearOnDrop = defaultValue(options.clearOnDrop, true);
-  let dropTarget = defaultValue(options.dropTarget, viewer.container);
-  let clampToGround = defaultValue(options.clampToGround, true);
-  let proxy = options.proxy;
+  var dropEnabled = true;
+  var flyToOnDrop = defaultValue(options.flyToOnDrop, true);
+  var dropError = new Event();
+  var clearOnDrop = defaultValue(options.clearOnDrop, true);
+  var dropTarget = defaultValue(options.dropTarget, viewer.container);
+  var clampToGround = defaultValue(options.clampToGround, true);
+  var proxy = options.proxy;
 
   dropTarget = getElement(dropTarget);
 
@@ -199,11 +198,11 @@ function viewerDragDropMixin(viewer, options) {
       viewer.dataSources.removeAll();
     }
 
-    const files = event.dataTransfer.files;
-    const length = files.length;
-    for (let i = 0; i < length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
+    var files = event.dataTransfer.files;
+    var length = files.length;
+    for (var i = 0; i < length; i++) {
+      var file = files[i];
+      var reader = new FileReader();
       reader.onload = createOnLoadCallback(viewer, file, proxy, clampToGround);
       reader.onerror = createDropErrorCallback(viewer, file);
       reader.readAsText(file);
@@ -228,7 +227,7 @@ function stop(event) {
 }
 
 function unsubscribe(dropTarget, handleDrop) {
-  const currentTarget = dropTarget;
+  var currentTarget = dropTarget;
   if (defined(currentTarget)) {
     currentTarget.removeEventListener("drop", handleDrop, false);
     currentTarget.removeEventListener("dragenter", stop, false);
@@ -245,11 +244,11 @@ function subscribe(dropTarget, handleDrop) {
 }
 
 function createOnLoadCallback(viewer, file, proxy, clampToGround) {
-  const scene = viewer.scene;
+  var scene = viewer.scene;
   return function (evt) {
-    const fileName = file.name;
+    var fileName = file.name;
     try {
-      let loadPromise;
+      var loadPromise;
 
       if (/\.czml$/i.test(fileName)) {
         loadPromise = CzmlDataSource.load(JSON.parse(evt.target.result), {
@@ -271,18 +270,12 @@ function createOnLoadCallback(viewer, file, proxy, clampToGround) {
           camera: scene.camera,
           canvas: scene.canvas,
           clampToGround: clampToGround,
-          screenOverlayContainer: viewer.container,
-        });
-      } else if (/\.gpx$/i.test(fileName)) {
-        loadPromise = GpxDataSource.load(file, {
-          sourceUri: fileName,
-          proxy: proxy,
         });
       } else {
         viewer.dropError.raiseEvent(
           viewer,
           fileName,
-          `Unrecognized file: ${fileName}`
+          "Unrecognized file: " + fileName
         );
         return;
       }
@@ -295,7 +288,7 @@ function createOnLoadCallback(viewer, file, proxy, clampToGround) {
               viewer.flyTo(dataSource);
             }
           })
-          .catch(function (error) {
+          .otherwise(function (error) {
             viewer.dropError.raiseEvent(viewer, fileName, error);
           });
       }

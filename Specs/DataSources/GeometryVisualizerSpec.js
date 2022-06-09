@@ -27,9 +27,9 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "DataSources/GeometryVisualizer",
   function () {
-    const time = JulianDate.now();
+    var time = JulianDate.now();
 
-    let scene;
+    var scene;
     beforeAll(function () {
       scene = createScene();
 
@@ -49,7 +49,7 @@ describe(
     function visualizerUpdated(visualizer) {
       return pollToPromise(function () {
         scene.initializeFrame();
-        const isUpdated = visualizer.update(time);
+        var isUpdated = visualizer.update(time);
         scene.render(time);
         return isUpdated;
       });
@@ -67,8 +67,8 @@ describe(
     }
 
     it("Can create and destroy", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
@@ -82,21 +82,21 @@ describe(
     });
 
     it("Creates and removes static color open geometry", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new ColorMaterialProperty();
       ellipse.height = new ConstantProperty(0);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -104,8 +104,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -125,21 +125,21 @@ describe(
     });
 
     it("Creates and removes static material open geometry", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new GridMaterialProperty();
       ellipse.height = new ConstantProperty(1.0);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -147,8 +147,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -166,21 +166,21 @@ describe(
     });
 
     it("Creates and removes static color closed geometry", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new ColorMaterialProperty();
       ellipse.extrudedHeight = new ConstantProperty(1000);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -188,8 +188,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -209,21 +209,21 @@ describe(
     });
 
     it("Creates and removes static material closed geometry", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new GridMaterialProperty();
       ellipse.extrudedHeight = new ConstantProperty(1000);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -231,8 +231,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -250,22 +250,22 @@ describe(
     });
 
     it("Creates and removes static outline geometry", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.outline = new ConstantProperty(true);
       ellipse.outlineColor = new ConstantProperty(Color.BLUE);
       ellipse.fill = new ConstantProperty(false);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -273,8 +273,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -293,22 +293,22 @@ describe(
     });
 
     function createAndRemoveGeometryWithShadows(shadows) {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new ColorMaterialProperty();
       ellipse.extrudedHeight = new ConstantProperty(1000);
       ellipse.shadows = new ConstantProperty(shadows);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -316,7 +316,7 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.primitives.get(0);
+        var primitive = scene.primitives.get(0);
         expect(primitive.shadows).toBe(shadows);
 
         objects.remove(entity);
@@ -344,21 +344,21 @@ describe(
     });
 
     function createAndRemoveGeometryWithClassificationType(type) {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new ColorMaterialProperty();
       ellipse.classificationType = new ConstantProperty(type);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -366,7 +366,7 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        const primitive = scene.groundPrimitives.get(0);
+        var primitive = scene.groundPrimitives.get(0);
         expect(primitive.classificationType).toBe(type);
 
         objects.remove(entity);
@@ -396,21 +396,21 @@ describe(
     });
 
     it("Correctly handles geometry changing batches", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new ColorMaterialProperty();
       ellipse.height = new ConstantProperty(0);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -418,8 +418,8 @@ describe(
       objects.add(entity);
 
       return visualizerUpdated(visualizer).then(function () {
-        let primitive = scene.primitives.get(0);
-        let attributes = primitive.getGeometryInstanceAttributes(entity);
+        var primitive = scene.primitives.get(0);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(attributes).toBeDefined();
         expect(attributes.show).toEqual(
           ShowGeometryInstanceAttribute.toValue(true)
@@ -454,16 +454,16 @@ describe(
     });
 
     it("Correctly handles modifying translucent outline color", function () {
-      const entities = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entities = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entities,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      let color = Color.BLUE.withAlpha(0.5);
-      const entity = entities.add({
+      var color = Color.BLUE.withAlpha(0.5);
+      var entity = entities.add({
         position: new Cartesian3(1234, 5678, 9101112),
         ellipse: {
           semiMajorAxis: 2,
@@ -476,8 +476,8 @@ describe(
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.color).toEqual(
             ColorGeometryInstanceAttribute.toValue(color)
@@ -489,8 +489,8 @@ describe(
           return visualizerUpdated(visualizer);
         })
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.color).toEqual(
             ColorGeometryInstanceAttribute.toValue(color)
@@ -502,22 +502,22 @@ describe(
     });
 
     it("Creates and removes dynamic geometry", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new SampledProperty(Number);
       ellipse.semiMajorAxis.addSample(time, 2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.extrudedHeight = new ConstantProperty(1000);
       ellipse.material = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -536,21 +536,21 @@ describe(
     });
 
     it("Creates and removes dynamic geometry on terrain ", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new SampledProperty(Number);
       ellipse.semiMajorAxis.addSample(time, 2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.material = new ColorMaterialProperty();
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = new ConstantPositionProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -569,7 +569,7 @@ describe(
     });
 
     it("Constructor throws without scene", function () {
-      const objects = new EntityCollection();
+      var objects = new EntityCollection();
       expect(function () {
         return new GeometryVisualizer(
           undefined,
@@ -592,7 +592,7 @@ describe(
     });
 
     it("Update throws without time parameter", function () {
-      const visualizer = new GeometryVisualizer(
+      var visualizer = new GeometryVisualizer(
         scene,
         new EntityCollection(),
         scene.primitives,
@@ -604,8 +604,8 @@ describe(
     });
 
     it("removes the listener from the entity collection when destroyed", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entityCollection = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entityCollection,
         scene.primitives,
@@ -617,15 +617,15 @@ describe(
     });
 
     it("calls destroy on all updaterSets", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entityCollection = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entityCollection,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const destroySpy = jasmine.createSpy("destroy");
+      var destroySpy = jasmine.createSpy("destroy");
       visualizer._updaterSets.set("test", {
         destroy: destroySpy,
       });
@@ -639,26 +639,26 @@ describe(
     });
 
     it("Computes dynamic geometry bounding sphere.", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entityCollection = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entityCollection,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const ellipse = new EllipseGraphics();
+      var ellipse = new EllipseGraphics();
       ellipse.semiMajorAxis = new ConstantProperty(2);
       ellipse.semiMinorAxis = new ConstantProperty(1);
       ellipse.height = new ConstantProperty(0);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.position = Cartesian3.fromDegrees(0, 0, 0);
       entity.ellipse = ellipse;
       entityCollection.add(entity);
 
-      let state;
-      const result = new BoundingSphere();
+      var state;
+      var result = new BoundingSphere();
 
       return pollToPromise(function () {
         scene.initializeFrame();
@@ -667,9 +667,9 @@ describe(
         state = visualizer.getBoundingSphere(entity, result);
         return state !== BoundingSphereState.PENDING;
       }).then(function () {
-        const primitive = scene.primitives.get(0);
+        var primitive = scene.primitives.get(0);
         expect(state).toBe(BoundingSphereState.DONE);
-        const attributes = primitive.getGeometryInstanceAttributes(entity);
+        var attributes = primitive.getGeometryInstanceAttributes(entity);
         expect(result).toEqual(
           BoundingSphere.transform(
             attributes.boundingSphere,
@@ -683,15 +683,15 @@ describe(
     });
 
     it("Compute dynamic geometry bounding sphere throws without entity.", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entityCollection = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entityCollection,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const result = new BoundingSphere();
+      var result = new BoundingSphere();
       expect(function () {
         visualizer.getBoundingSphere(undefined, result);
       }).toThrowDeveloperError();
@@ -700,10 +700,10 @@ describe(
     });
 
     it("Compute dynamic geometry bounding sphere throws without result.", function () {
-      const entityCollection = new EntityCollection();
-      const entity = new Entity();
+      var entityCollection = new EntityCollection();
+      var entity = new Entity();
       entityCollection.add(entity);
-      const visualizer = new GeometryVisualizer(
+      var visualizer = new GeometryVisualizer(
         scene,
         entityCollection,
         scene.primitives,
@@ -718,15 +718,15 @@ describe(
     });
 
     it("Can remove and entity and then add a new new instance with the same id.", function () {
-      const objects = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var objects = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         objects,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const entity = new Entity({
+      var entity = new Entity({
         id: "test",
         position: Cartesian3.fromDegrees(0, 0, 0),
         ellipse: {
@@ -741,7 +741,7 @@ describe(
       return visualizerUpdated(visualizer).then(function () {
         objects.remove(entity);
 
-        const entity2 = new Entity({
+        var entity2 = new Entity({
           id: "test",
           position: Cartesian3.fromDegrees(0, 0, 0),
           ellipse: {
@@ -754,8 +754,8 @@ describe(
         objects.add(entity2);
 
         return visualizerUpdated(visualizer).then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity2);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity2);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -777,15 +777,15 @@ describe(
     });
 
     it("Sets static geometry primitive show attribute when using dynamic fill color", function () {
-      const entities = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entities = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entities,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const entity = entities.add({
+      var entity = entities.add({
         position: new Cartesian3(1234, 5678, 9101112),
         ellipse: {
           semiMajorAxis: 2,
@@ -799,8 +799,8 @@ describe(
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -811,8 +811,8 @@ describe(
           return visualizerUpdated(visualizer);
         })
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(false)
@@ -824,15 +824,15 @@ describe(
     });
 
     it("Sets static geometry primitive show attribute when using dynamic outline color", function () {
-      const entities = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entities = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entities,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const entity = entities.add({
+      var entity = entities.add({
         position: new Cartesian3(1234, 5678, 9101112),
         ellipse: {
           semiMajorAxis: 2,
@@ -845,8 +845,8 @@ describe(
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -857,8 +857,8 @@ describe(
           return visualizerUpdated(visualizer);
         })
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(false)
@@ -870,15 +870,15 @@ describe(
     });
 
     it("Sets static geometry primitive show attribute when using dynamic fill material", function () {
-      const entities = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entities = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entities,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const entity = entities.add({
+      var entity = entities.add({
         position: new Cartesian3(1234, 5678, 9101112),
         ellipse: {
           semiMajorAxis: 2,
@@ -892,8 +892,8 @@ describe(
 
       return visualizerUpdated(visualizer)
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(true)
@@ -904,8 +904,8 @@ describe(
           return visualizerUpdated(visualizer);
         })
         .then(function () {
-          const primitive = scene.primitives.get(0);
-          const attributes = primitive.getGeometryInstanceAttributes(entity);
+          var primitive = scene.primitives.get(0);
+          var attributes = primitive.getGeometryInstanceAttributes(entity);
           expect(attributes).toBeDefined();
           expect(attributes.show).toEqual(
             ShowGeometryInstanceAttribute.toValue(false)
@@ -924,15 +924,15 @@ describe(
         return;
       }
 
-      const entities = new EntityCollection();
-      const visualizer = new GeometryVisualizer(
+      var entities = new EntityCollection();
+      var visualizer = new GeometryVisualizer(
         scene,
         entities,
         scene.primitives,
         scene.groundPrimitives
       );
 
-      const blueColor = Color.BLUE.withAlpha(0.5);
+      var blueColor = Color.BLUE.withAlpha(0.5);
       entities.add({
         position: Cartesian3.fromDegrees(1, 2),
         ellipse: {

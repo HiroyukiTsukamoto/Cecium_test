@@ -4,6 +4,7 @@ import defined from "../Core/defined.js";
 import loadImageFromTypedArray from "../Core/loadImageFromTypedArray.js";
 import loadKTX2 from "../Core/loadKTX2.js";
 import RuntimeError from "../Core/RuntimeError.js";
+import when from "../ThirdParty/when.js";
 import ResourceLoader from "./ResourceLoader.js";
 import ResourceLoaderState from "./ResourceLoaderState.js";
 
@@ -29,12 +30,12 @@ import ResourceLoaderState from "./ResourceLoaderState.js";
  */
 export default function GltfImageLoader(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const resourceCache = options.resourceCache;
-  const gltf = options.gltf;
-  const imageId = options.imageId;
-  const gltfResource = options.gltfResource;
-  const baseResource = options.baseResource;
-  const cacheKey = options.cacheKey;
+  var resourceCache = options.resourceCache;
+  var gltf = options.gltf;
+  var imageId = options.imageId;
+  var gltfResource = options.gltfResource;
+  var baseResource = options.baseResource;
+  var cacheKey = options.cacheKey;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.func("options.resourceCache", resourceCache);
@@ -44,9 +45,9 @@ export default function GltfImageLoader(options) {
   Check.typeOf.object("options.baseResource", baseResource);
   //>>includeEnd('debug');
 
-  const image = gltf.images[imageId];
-  const bufferViewId = image.bufferView;
-  const uri = image.uri;
+  var image = gltf.images[imageId];
+  var bufferViewId = image.bufferView;
+  var uri = image.uri;
 
   this._resourceCache = resourceCache;
   this._gltfResource = gltfResource;
@@ -59,7 +60,7 @@ export default function GltfImageLoader(options) {
   this._image = undefined;
   this._mipLevels = undefined;
   this._state = ResourceLoaderState.UNLOADED;
-  this._promise = undefined;
+  this._promise = when.defer();
 }
 
 if (defined(Object.create)) {
@@ -69,17 +70,17 @@ if (defined(Object.create)) {
 
 Object.defineProperties(GltfImageLoader.prototype, {
   /**
-   * A promise that resolves to the resource when the resource is ready, or undefined if the resource hasn't started loading.
+   * A promise that resolves to the resource when the resource is ready.
    *
    * @memberof GltfImageLoader.prototype
    *
-   * @type {Promise.<GltfImageLoader>|undefined}
+   * @type {Promise.<GltfImageLoader>}
    * @readonly
    * @private
    */
   promise: {
     get: function () {
-      return this._promise;
+      return this._promise.promise;
     },
   },
   /**
@@ -128,23 +129,20 @@ Object.defineProperties(GltfImageLoader.prototype, {
 
 /**
  * Loads the resource.
- * @returns {Promise.<GltfImageLoader>} A promise which resolves to the loader when the resource loading is completed.
  * @private
  */
 GltfImageLoader.prototype.load = function () {
   if (defined(this._bufferViewId)) {
-    this._promise = loadFromBufferView(this);
-    return this._promise;
+    loadFromBufferView(this);
+  } else {
+    loadFromUri(this);
   }
-
-  this._promise = loadFromUri(this);
-  return this._promise;
 };
 
 function getImageAndMipLevels(image) {
   // Images transcoded from KTX2 can contain multiple mip levels:
   // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_texture_basisu
-  let mipLevels;
+  var mipLevels;
   if (Array.isArray(image)) {
     // highest detail mip should be level 0
     mipLevels = image.slice(1, image.length).map(function (mipLevel) {
@@ -159,8 +157,8 @@ function getImageAndMipLevels(image) {
 }
 
 function loadFromBufferView(imageLoader) {
-  const resourceCache = imageLoader._resourceCache;
-  const bufferViewLoader = resourceCache.loadBufferView({
+  var resourceCache = imageLoader._resourceCache;
+  var bufferViewLoader = resourceCache.loadBufferView({
     gltf: imageLoader._gltf,
     bufferViewId: imageLoader._bufferViewId,
     gltfResource: imageLoader._gltfResource,
@@ -170,19 +168,19 @@ function loadFromBufferView(imageLoader) {
   imageLoader._bufferViewLoader = bufferViewLoader;
   imageLoader._state = ResourceLoaderState.LOADING;
 
-  return bufferViewLoader.promise
+  bufferViewLoader.promise
     .then(function () {
       if (imageLoader.isDestroyed()) {
         return;
       }
 
-      const typedArray = bufferViewLoader.typedArray;
+      var typedArray = bufferViewLoader.typedArray;
       return loadImageFromBufferTypedArray(typedArray).then(function (image) {
         if (imageLoader.isDestroyed()) {
           return;
         }
 
-        const imageAndMipLevels = getImageAndMipLevels(image);
+        var imageAndMipLevels = getImageAndMipLevels(image);
 
         // Unload everything except the image
         imageLoader.unload();
@@ -190,31 +188,31 @@ function loadFromBufferView(imageLoader) {
         imageLoader._image = imageAndMipLevels.image;
         imageLoader._mipLevels = imageAndMipLevels.mipLevels;
         imageLoader._state = ResourceLoaderState.READY;
-        return imageLoader;
+        imageLoader._promise.resolve(imageLoader);
       });
     })
-    .catch(function (error) {
+    .otherwise(function (error) {
       if (imageLoader.isDestroyed()) {
         return;
       }
-      return handleError(imageLoader, error, "Failed to load embedded image");
+      handleError(imageLoader, error, "Failed to load embedded image");
     });
 }
 
 function loadFromUri(imageLoader) {
-  const baseResource = imageLoader._baseResource;
-  const uri = imageLoader._uri;
-  const resource = baseResource.getDerivedResource({
+  var baseResource = imageLoader._baseResource;
+  var uri = imageLoader._uri;
+  var resource = baseResource.getDerivedResource({
     url: uri,
   });
   imageLoader._state = ResourceLoaderState.LOADING;
-  return loadImageFromUri(resource)
+  loadImageFromUri(resource)
     .then(function (image) {
       if (imageLoader.isDestroyed()) {
         return;
       }
 
-      const imageAndMipLevels = getImageAndMipLevels(image);
+      var imageAndMipLevels = getImageAndMipLevels(image);
 
       // Unload everything except the image
       imageLoader.unload();
@@ -222,26 +220,26 @@ function loadFromUri(imageLoader) {
       imageLoader._image = imageAndMipLevels.image;
       imageLoader._mipLevels = imageAndMipLevels.mipLevels;
       imageLoader._state = ResourceLoaderState.READY;
-      return imageLoader;
+      imageLoader._promise.resolve(imageLoader);
     })
-    .catch(function (error) {
+    .otherwise(function (error) {
       if (imageLoader.isDestroyed()) {
         return;
       }
-      return handleError(imageLoader, error, `Failed to load image: ${uri}`);
+      handleError(imageLoader, error, "Failed to load image: " + uri);
     });
 }
 
 function handleError(imageLoader, error, errorMessage) {
   imageLoader.unload();
   imageLoader._state = ResourceLoaderState.FAILED;
-  return Promise.reject(imageLoader.getError(errorMessage, error));
+  imageLoader._promise.reject(imageLoader.getError(errorMessage, error));
 }
 
 function getMimeTypeFromTypedArray(typedArray) {
-  const header = typedArray.subarray(0, 2);
-  const webpHeaderRIFFChars = typedArray.subarray(0, 4);
-  const webpHeaderWEBPChars = typedArray.subarray(8, 12);
+  var header = typedArray.subarray(0, 2);
+  var webpHeaderRIFFChars = typedArray.subarray(0, 4);
+  var webpHeaderWEBPChars = typedArray.subarray(8, 12);
 
   if (header[0] === 0xff && header[1] === 0xd8) {
     // See https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format
@@ -270,13 +268,13 @@ function getMimeTypeFromTypedArray(typedArray) {
 }
 
 function loadImageFromBufferTypedArray(typedArray) {
-  const mimeType = getMimeTypeFromTypedArray(typedArray);
+  var mimeType = getMimeTypeFromTypedArray(typedArray);
   if (mimeType === "image/ktx2") {
     // Need to make a copy of the embedded KTX2 buffer otherwise the underlying
     // ArrayBuffer may be accessed on both the worker and the main thread and
     // throw an error like "Cannot perform Construct on a detached ArrayBuffer".
     // Look into SharedArrayBuffer at some point to get around this.
-    const ktxBuffer = new Uint8Array(typedArray);
+    var ktxBuffer = new Uint8Array(typedArray);
 
     // Resolves to a CompressedTextureBuffer
     return loadKTX2(ktxBuffer);
@@ -290,10 +288,10 @@ function loadImageFromBufferTypedArray(typedArray) {
   });
 }
 
-const ktx2Regex = /(^data:image\/ktx2)|(\.ktx2$)/i;
+var ktx2Regex = /(^data:image\/ktx2)|(\.ktx2$)/i;
 
 function loadImageFromUri(resource) {
-  const uri = resource.url;
+  var uri = resource.url;
   if (ktx2Regex.test(uri)) {
     // Resolves to a CompressedTextureBuffer
     return loadKTX2(resource);

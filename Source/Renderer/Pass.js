@@ -3,7 +3,7 @@
  *
  * @private
  */
-const Pass = {
+var Pass = {
   // If you add/modify/remove Pass constants, also change the automatic GLSL constants
   // that start with 'czm_pass'
   //

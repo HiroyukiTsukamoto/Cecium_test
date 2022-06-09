@@ -1,9 +1,10 @@
+import when from "../ThirdParty/when.js";
 import Cartesian2 from "./Cartesian2.js";
 import defined from "./defined.js";
 import DeveloperError from "./DeveloperError.js";
 import sampleTerrain from "./sampleTerrain.js";
 
-const scratchCartesian2 = new Cartesian2();
+var scratchCartesian2 = new Cartesian2();
 
 /**
  * Initiates a sampleTerrain() request at the maximum available tile level for a terrain dataset.
@@ -17,13 +18,13 @@ const scratchCartesian2 = new Cartesian2();
  *
  * @example
  * // Query the terrain height of two Cartographic positions
- * const terrainProvider = Cesium.createWorldTerrain();
- * const positions = [
+ * var terrainProvider = Cesium.createWorldTerrain();
+ * var positions = [
  *     Cesium.Cartographic.fromDegrees(86.925145, 27.988257),
  *     Cesium.Cartographic.fromDegrees(87.0, 28.0)
  * ];
- * const promise = Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
- * Promise.resolve(promise).then(function(updatedPositions) {
+ * var promise = Cesium.sampleTerrainMostDetailed(terrainProvider, positions);
+ * Cesium.when(promise, function(updatedPositions) {
  *     // positions[0].height and positions[1].height have been updated.
  *     // updatedPositions is just a reference to positions.
  * });
@@ -39,10 +40,10 @@ function sampleTerrainMostDetailed(terrainProvider, positions) {
   //>>includeEnd('debug');
 
   return terrainProvider.readyPromise.then(function () {
-    const byLevel = [];
-    const maxLevels = [];
+    var byLevel = [];
+    var maxLevels = [];
 
-    const availability = terrainProvider.availability;
+    var availability = terrainProvider.availability;
 
     //>>includeStart('debug', pragmas.debug);
     if (!defined(availability)) {
@@ -52,10 +53,10 @@ function sampleTerrainMostDetailed(terrainProvider, positions) {
     }
     //>>includeEnd('debug');
 
-    const promises = [];
-    for (let i = 0; i < positions.length; ++i) {
-      const position = positions[i];
-      const maxLevel = availability.computeMaximumLevelAtPosition(position);
+    var promises = [];
+    for (var i = 0; i < positions.length; ++i) {
+      var position = positions[i];
+      var maxLevel = availability.computeMaximumLevelAtPosition(position);
       maxLevels[i] = maxLevel;
       if (maxLevel === 0) {
         // This is a special case where we have a parent terrain and we are requesting
@@ -66,7 +67,7 @@ function sampleTerrainMostDetailed(terrainProvider, positions) {
           1,
           scratchCartesian2
         );
-        const promise = terrainProvider.loadTileDataAvailability(
+        var promise = terrainProvider.loadTileDataAvailability(
           scratchCartesian2.x,
           scratchCartesian2.y,
           1
@@ -76,16 +77,17 @@ function sampleTerrainMostDetailed(terrainProvider, positions) {
         }
       }
 
-      let atLevel = byLevel[maxLevel];
+      var atLevel = byLevel[maxLevel];
       if (!defined(atLevel)) {
         byLevel[maxLevel] = atLevel = [];
       }
       atLevel.push(position);
     }
 
-    return Promise.all(promises)
+    return when
+      .all(promises)
       .then(function () {
-        return Promise.all(
+        return when.all(
           byLevel.map(function (positionsAtLevel, index) {
             if (defined(positionsAtLevel)) {
               return sampleTerrain(terrainProvider, index, positionsAtLevel);
@@ -94,10 +96,10 @@ function sampleTerrainMostDetailed(terrainProvider, positions) {
         );
       })
       .then(function () {
-        const changedPositions = [];
-        for (let i = 0; i < positions.length; ++i) {
-          const position = positions[i];
-          const maxLevel = availability.computeMaximumLevelAtPosition(position);
+        var changedPositions = [];
+        for (var i = 0; i < positions.length; ++i) {
+          var position = positions[i];
+          var maxLevel = availability.computeMaximumLevelAtPosition(position);
 
           if (maxLevel !== maxLevels[i]) {
             // Now that we loaded the max availability, a higher level has become available

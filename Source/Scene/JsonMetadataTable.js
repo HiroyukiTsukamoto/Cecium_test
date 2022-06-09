@@ -15,11 +15,6 @@ import MetadataEntity from "./MetadataEntity.js";
  * @constructor
  * @private
  */
-
-// An empty class is used because JsonMetadataTable is an older type of metadata table
-// that does not have a class definition.
-const emptyClass = {};
-
 export default function JsonMetadataTable(options) {
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number.greaterThan("options.count", options.count, 0);
@@ -38,7 +33,7 @@ export default function JsonMetadataTable(options) {
  * @private
  */
 JsonMetadataTable.prototype.hasProperty = function (propertyId) {
-  return MetadataEntity.hasProperty(propertyId, this._properties, emptyClass);
+  return MetadataEntity.hasProperty(propertyId, this._properties);
 };
 
 /**
@@ -49,7 +44,7 @@ JsonMetadataTable.prototype.hasProperty = function (propertyId) {
  * @private
  */
 JsonMetadataTable.prototype.getPropertyIds = function (results) {
-  return MetadataEntity.getPropertyIds(this._properties, emptyClass, results);
+  return MetadataEntity.getPropertyIds(this._properties, undefined, results);
 };
 
 /**
@@ -68,11 +63,13 @@ JsonMetadataTable.prototype.getProperty = function (index, propertyId) {
   Check.typeOf.string("propertyId", propertyId);
 
   if (index < 0 || index >= this._count) {
-    throw new DeveloperError(`index must be in the range [0, ${this._count})`);
+    throw new DeveloperError(
+      "index must be in the range [0, " + this._count + ")"
+    );
   }
   //>>includeEnd('debug');
 
-  const property = this._properties[propertyId];
+  var property = this._properties[propertyId];
   if (defined(property)) {
     return clone(property[index], true);
   }
@@ -97,11 +94,13 @@ JsonMetadataTable.prototype.setProperty = function (index, propertyId, value) {
   Check.typeOf.string("propertyId", propertyId);
 
   if (index < 0 || index >= this._count) {
-    throw new DeveloperError(`index must be in the range [0, ${this._count})`);
+    throw new DeveloperError(
+      "index must be in the range [0, " + this._count + ")"
+    );
   }
   //>>includeEnd('debug');
 
-  const property = this._properties[propertyId];
+  var property = this._properties[propertyId];
   if (defined(property)) {
     property[index] = clone(value, true);
     return true;

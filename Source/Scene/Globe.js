@@ -19,8 +19,8 @@ import ShaderSource from "../Renderer/ShaderSource.js";
 import Texture from "../Renderer/Texture.js";
 import GlobeFS from "../Shaders/GlobeFS.js";
 import GlobeVS from "../Shaders/GlobeVS.js";
-import AtmosphereCommon from "../Shaders/AtmosphereCommon.js";
 import GroundAtmosphere from "../Shaders/GroundAtmosphere.js";
+import when from "../ThirdParty/when.js";
 import GlobeSurfaceShaderSet from "./GlobeSurfaceShaderSet.js";
 import GlobeSurfaceTileProvider from "./GlobeSurfaceTileProvider.js";
 import GlobeTranslucency from "./GlobeTranslucency.js";
@@ -41,10 +41,10 @@ import ShadowMode from "./ShadowMode.js";
  */
 function Globe(ellipsoid) {
   ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
-  const terrainProvider = new EllipsoidTerrainProvider({
+  var terrainProvider = new EllipsoidTerrainProvider({
     ellipsoid: ellipsoid,
   });
-  const imageryLayerCollection = new ImageryLayerCollection();
+  var imageryLayerCollection = new ImageryLayerCollection();
 
   this._ellipsoid = ellipsoid;
   this._imageryLayerCollection = imageryLayerCollection;
@@ -159,16 +159,6 @@ function Globe(ellipsoid) {
   this.enableLighting = false;
 
   /**
-   * A multiplier to adjust terrain lambert lighting.
-   * This number is multiplied by the result of <code>czm_getLambertDiffuse</code> in GlobeFS.glsl.
-   * This only takes effect when <code>enableLighting</code> is <code>true</code>.
-   *
-   * @type {Number}
-   * @default 0.9
-   */
-  this.lambertDiffuseMultiplier = 0.9;
-
-  /**
    * Enable dynamic lighting effects on atmosphere and fog. This only takes effect
    * when <code>enableLighting</code> is <code>true</code>.
    *
@@ -190,60 +180,12 @@ function Globe(ellipsoid) {
   /**
    * Enable the ground atmosphere, which is drawn over the globe when viewed from a distance between <code>lightingFadeInDistance</code> and <code>lightingFadeOutDistance</code>.
    *
+   * @demo {@link https://sandcastle.cesium.com/index.html?src=Ground%20Atmosphere.html|Ground atmosphere demo in Sandcastle}
+   *
    * @type {Boolean}
    * @default true
    */
   this.showGroundAtmosphere = true;
-
-  /**
-   * The intensity of the light that is used for computing the ground atmosphere color.
-   *
-   * @type {Number}
-   * @default 10.0
-   */
-  this.atmosphereLightIntensity = 10.0;
-
-  /**
-   * The Rayleigh scattering coefficient used in the atmospheric scattering equations for the ground atmosphere.
-   *
-   * @type {Cartesian3}
-   * @default Cartesian3(5.5e-6, 13.0e-6, 28.4e-6)
-   */
-  this.atmosphereRayleighCoefficient = new Cartesian3(5.5e-6, 13.0e-6, 28.4e-6);
-
-  /**
-   * The Mie scattering coefficient used in the atmospheric scattering equations for the ground atmosphere.
-   *
-   * @type {Cartesian3}
-   * @default Cartesian3(21e-6, 21e-6, 21e-6)
-   */
-  this.atmosphereMieCoefficient = new Cartesian3(21e-6, 21e-6, 21e-6);
-
-  /**
-   * The Rayleigh scale height used in the atmospheric scattering equations for the ground atmosphere, in meters.
-   *
-   * @type {Number}
-   * @default 10000.0
-   */
-  this.atmosphereRayleighScaleHeight = 10000.0;
-
-  /**
-   * The Mie scale height used in the atmospheric scattering equations for the ground atmosphere, in meters.
-   *
-   * @type {Number}
-   * @default 3200.0
-   */
-  this.atmosphereMieScaleHeight = 3200.0;
-
-  /**
-   * The anisotropy of the medium to consider for Mie scattering.
-   * <p>
-   * Valid values are between -1.0 and 1.0.
-   * </p>
-   * @type {Number}
-   * @default 0.9
-   */
-  this.atmosphereMieAnisotropy = 0.9;
 
   /**
    * The distance where everything becomes lit. This only takes effect
@@ -547,7 +489,7 @@ Object.defineProperties(Globe.prototype, {
    * Gets or sets the material appearance of the Globe.  This can be one of several built-in {@link Material} objects or a custom material, scripted with
    * {@link https://github.com/CesiumGS/cesium/wiki/Fabric|Fabric}.
    * @memberof Globe.prototype
-   * @type {Material | undefined}
+   * @type {Material}
    */
   material: {
     get: function () {
@@ -632,14 +574,14 @@ Object.defineProperties(Globe.prototype, {
 });
 
 function makeShadersDirty(globe) {
-  const defines = [];
+  var defines = [];
 
-  const requireNormals =
+  var requireNormals =
     defined(globe._material) &&
     (globe._material.shaderSource.match(/slope/) ||
       globe._material.shaderSource.match("normalEC"));
 
-  const fragmentSources = [AtmosphereCommon, GroundAtmosphere];
+  var fragmentSources = [GroundAtmosphere];
   if (
     defined(globe._material) &&
     (!requireNormals || globe._terrainProvider.requestVertexNormals)
@@ -653,7 +595,7 @@ function makeShadersDirty(globe) {
   fragmentSources.push(GlobeFS);
 
   globe._surfaceShaderSet.baseVertexShaderSource = new ShaderSource({
-    sources: [AtmosphereCommon, GroundAtmosphere, GlobeVS],
+    sources: [GroundAtmosphere, GlobeVS],
     defines: defines,
   });
 
@@ -666,11 +608,11 @@ function makeShadersDirty(globe) {
 
 function createComparePickTileFunction(rayOrigin) {
   return function (a, b) {
-    const aDist = BoundingSphere.distanceSquaredTo(
+    var aDist = BoundingSphere.distanceSquaredTo(
       a.pickBoundingSphere,
       rayOrigin
     );
-    const bDist = BoundingSphere.distanceSquaredTo(
+    var bDist = BoundingSphere.distanceSquaredTo(
       b.pickBoundingSphere,
       rayOrigin
     );
@@ -679,8 +621,8 @@ function createComparePickTileFunction(rayOrigin) {
   };
 }
 
-const scratchArray = [];
-const scratchSphereIntersectionResult = {
+var scratchArray = [];
+var scratchSphereIntersectionResult = {
   start: 0.0,
   stop: 0.0,
 };
@@ -713,27 +655,27 @@ Globe.prototype.pickWorldCoordinates = function (
 
   cullBackFaces = defaultValue(cullBackFaces, true);
 
-  const mode = scene.mode;
-  const projection = scene.mapProjection;
+  var mode = scene.mode;
+  var projection = scene.mapProjection;
 
-  const sphereIntersections = scratchArray;
+  var sphereIntersections = scratchArray;
   sphereIntersections.length = 0;
 
-  const tilesToRender = this._surface._tilesToRender;
-  let length = tilesToRender.length;
+  var tilesToRender = this._surface._tilesToRender;
+  var length = tilesToRender.length;
 
-  let tile;
-  let i;
+  var tile;
+  var i;
 
   for (i = 0; i < length; ++i) {
     tile = tilesToRender[i];
-    const surfaceTile = tile.data;
+    var surfaceTile = tile.data;
 
     if (!defined(surfaceTile)) {
       continue;
     }
 
-    let boundingVolume = surfaceTile.pickBoundingSphere;
+    var boundingVolume = surfaceTile.pickBoundingSphere;
     if (mode !== SceneMode.SCENE3D) {
       surfaceTile.pickBoundingSphere = boundingVolume = BoundingSphere.fromRectangleWithHeights2D(
         tile.rectangle,
@@ -758,7 +700,7 @@ Globe.prototype.pickWorldCoordinates = function (
       continue;
     }
 
-    const boundingSphereIntersection = IntersectionTests.raySphere(
+    var boundingSphereIntersection = IntersectionTests.raySphere(
       ray,
       boundingVolume,
       scratchSphereIntersectionResult
@@ -770,7 +712,7 @@ Globe.prototype.pickWorldCoordinates = function (
 
   sphereIntersections.sort(createComparePickTileFunction(ray.origin));
 
-  let intersection;
+  var intersection;
   length = sphereIntersections.length;
   for (i = 0; i < length; ++i) {
     intersection = sphereIntersections[i].pick(
@@ -788,7 +730,7 @@ Globe.prototype.pickWorldCoordinates = function (
   return intersection;
 };
 
-const cartoScratch = new Cartographic();
+var cartoScratch = new Cartographic();
 /**
  * Find an intersection between a ray and the globe surface that was rendered. The ray must be given in world coordinates.
  *
@@ -799,24 +741,24 @@ const cartoScratch = new Cartographic();
  *
  * @example
  * // find intersection of ray through a pixel and the globe
- * const ray = viewer.camera.getPickRay(windowCoordinates);
- * const intersection = globe.pick(ray, scene);
+ * var ray = viewer.camera.getPickRay(windowCoordinates);
+ * var intersection = globe.pick(ray, scene);
  */
 Globe.prototype.pick = function (ray, scene, result) {
   result = this.pickWorldCoordinates(ray, scene, true, result);
   if (defined(result) && scene.mode !== SceneMode.SCENE3D) {
     result = Cartesian3.fromElements(result.y, result.z, result.x, result);
-    const carto = scene.mapProjection.unproject(result, cartoScratch);
+    var carto = scene.mapProjection.unproject(result, cartoScratch);
     result = scene.globe.ellipsoid.cartographicToCartesian(carto, result);
   }
 
   return result;
 };
 
-const scratchGetHeightCartesian = new Cartesian3();
-const scratchGetHeightIntersection = new Cartesian3();
-const scratchGetHeightCartographic = new Cartographic();
-const scratchGetHeightRay = new Ray();
+var scratchGetHeightCartesian = new Cartesian3();
+var scratchGetHeightIntersection = new Cartesian3();
+var scratchGetHeightCartographic = new Cartographic();
+var scratchGetHeightRay = new Ray();
 
 function tileIfContainsCartographic(tile, cartographic) {
   return defined(tile) && Rectangle.contains(tile.rectangle, cartographic)
@@ -837,15 +779,15 @@ Globe.prototype.getHeight = function (cartographic) {
   }
   //>>includeEnd('debug');
 
-  const levelZeroTiles = this._surface._levelZeroTiles;
+  var levelZeroTiles = this._surface._levelZeroTiles;
   if (!defined(levelZeroTiles)) {
     return;
   }
 
-  let tile;
-  let i;
+  var tile;
+  var i;
 
-  const length = levelZeroTiles.length;
+  var length = levelZeroTiles.length;
   for (i = 0; i < length; ++i) {
     tile = levelZeroTiles[i];
     if (Rectangle.contains(tile.rectangle, cartographic)) {
@@ -857,7 +799,7 @@ Globe.prototype.getHeight = function (cartographic) {
     return undefined;
   }
 
-  let tileWithMesh = tile;
+  var tileWithMesh = tile;
 
   while (defined(tile)) {
     tile =
@@ -891,11 +833,11 @@ Globe.prototype.getHeight = function (cartographic) {
     return undefined;
   }
 
-  const projection = this._surface._tileProvider.tilingScheme.projection;
-  const ellipsoid = this._surface._tileProvider.tilingScheme.ellipsoid;
+  var projection = this._surface._tileProvider.tilingScheme.projection;
+  var ellipsoid = this._surface._tileProvider.tilingScheme.ellipsoid;
 
   //cartesian has to be on the ellipsoid surface for `ellipsoid.geodeticSurfaceNormal`
-  const cartesian = Cartesian3.fromRadians(
+  var cartesian = Cartesian3.fromRadians(
     cartographic.longitude,
     cartographic.latitude,
     0.0,
@@ -903,15 +845,12 @@ Globe.prototype.getHeight = function (cartographic) {
     scratchGetHeightCartesian
   );
 
-  const ray = scratchGetHeightRay;
-  const surfaceNormal = ellipsoid.geodeticSurfaceNormal(
-    cartesian,
-    ray.direction
-  );
+  var ray = scratchGetHeightRay;
+  var surfaceNormal = ellipsoid.geodeticSurfaceNormal(cartesian, ray.direction);
 
   // Try to find the intersection point between the surface normal and z-axis.
   // minimum height (-11500.0) for the terrain set, need to get this information from the terrain provider
-  const rayOrigin = ellipsoid.getSurfaceNormalIntersectionWithZAxis(
+  var rayOrigin = ellipsoid.getSurfaceNormalIntersectionWithZAxis(
     cartesian,
     11500.0,
     ray.origin
@@ -921,14 +860,14 @@ Globe.prototype.getHeight = function (cartographic) {
   if (!defined(rayOrigin)) {
     // intersection point is outside the ellipsoid, try other value
     // minimum height (-11500.0) for the terrain set, need to get this information from the terrain provider
-    let minimumHeight;
+    var minimumHeight;
     if (defined(tile.data.tileBoundingRegion)) {
       minimumHeight = tile.data.tileBoundingRegion.minimumHeight;
     }
-    const magnitude = Math.min(defaultValue(minimumHeight, 0.0), -11500.0);
+    var magnitude = Math.min(defaultValue(minimumHeight, 0.0), -11500.0);
 
     // multiply by the *positive* value of the magnitude
-    const vectorToMinimumPoint = Cartesian3.multiplyByScalar(
+    var vectorToMinimumPoint = Cartesian3.multiplyByScalar(
       surfaceNormal,
       Math.abs(magnitude) + 1,
       scratchGetHeightIntersection
@@ -936,7 +875,7 @@ Globe.prototype.getHeight = function (cartographic) {
     Cartesian3.subtract(cartesian, vectorToMinimumPoint, ray.origin);
   }
 
-  const intersection = tile.data.pick(
+  var intersection = tile.data.pick(
     ray,
     undefined,
     projection,
@@ -970,10 +909,10 @@ Globe.prototype.update = function (frameState) {
  * @private
  */
 Globe.prototype.beginFrame = function (frameState) {
-  const surface = this._surface;
-  const tileProvider = surface.tileProvider;
-  const terrainProvider = this.terrainProvider;
-  const hasWaterMask =
+  var surface = this._surface;
+  var tileProvider = surface.tileProvider;
+  var terrainProvider = this.terrainProvider;
+  var hasWaterMask =
     this.showWaterEffect &&
     terrainProvider.ready &&
     terrainProvider.hasWaterMask;
@@ -981,11 +920,11 @@ Globe.prototype.beginFrame = function (frameState) {
   if (hasWaterMask && this._oceanNormalMapResourceDirty) {
     // url changed, load new normal map asynchronously
     this._oceanNormalMapResourceDirty = false;
-    const oceanNormalMapResource = this._oceanNormalMapResource;
-    const oceanNormalMapUrl = oceanNormalMapResource.url;
+    var oceanNormalMapResource = this._oceanNormalMapResource;
+    var oceanNormalMapUrl = oceanNormalMapResource.url;
     if (defined(oceanNormalMapUrl)) {
-      const that = this;
-      oceanNormalMapResource.fetchImage().then(function (image) {
+      var that = this;
+      when(oceanNormalMapResource.fetchImage(), function (image) {
         if (oceanNormalMapUrl !== that._oceanNormalMapResource.url) {
           // url changed while we were loading
           return;
@@ -1004,8 +943,8 @@ Globe.prototype.beginFrame = function (frameState) {
     }
   }
 
-  const pass = frameState.passes;
-  const mode = frameState.mode;
+  var pass = frameState.passes;
+  var mode = frameState.mode;
 
   if (pass.render) {
     if (this.showGroundAtmosphere) {
@@ -1033,12 +972,6 @@ Globe.prototype.beginFrame = function (frameState) {
     tileProvider.dynamicAtmosphereLighting = this.dynamicAtmosphereLighting;
     tileProvider.dynamicAtmosphereLightingFromSun = this.dynamicAtmosphereLightingFromSun;
     tileProvider.showGroundAtmosphere = this.showGroundAtmosphere;
-    tileProvider.atmosphereLightIntensity = this.atmosphereLightIntensity;
-    tileProvider.atmosphereRayleighCoefficient = this.atmosphereRayleighCoefficient;
-    tileProvider.atmosphereMieCoefficient = this.atmosphereMieCoefficient;
-    tileProvider.atmosphereRayleighScaleHeight = this.atmosphereRayleighScaleHeight;
-    tileProvider.atmosphereMieScaleHeight = this.atmosphereMieScaleHeight;
-    tileProvider.atmosphereMieAnisotropy = this.atmosphereMieAnisotropy;
     tileProvider.shadows = this.shadows;
     tileProvider.hueShift = this.atmosphereHueShift;
     tileProvider.saturationShift = this.atmosphereSaturationShift;
@@ -1048,7 +981,6 @@ Globe.prototype.beginFrame = function (frameState) {
     tileProvider.backFaceCulling = this.backFaceCulling;
     tileProvider.undergroundColor = this._undergroundColor;
     tileProvider.undergroundColorAlphaByDistance = this._undergroundColorAlphaByDistance;
-    tileProvider.lambertDiffuseMultiplier = this.lambertDiffuseMultiplier;
     surface.beginFrame(frameState);
   }
 };

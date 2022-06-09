@@ -5,7 +5,7 @@ import WebGLConstants from "../Core/WebGLConstants.js";
  *
  * @enum {Number}
  */
-const BlendFunction = {
+var BlendFunction = {
   /**
    * The blend factor is zero.
    *

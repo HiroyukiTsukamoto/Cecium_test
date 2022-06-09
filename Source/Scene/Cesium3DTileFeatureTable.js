@@ -20,8 +20,8 @@ function getTypedArrayFromBinary(
   count,
   byteOffset
 ) {
-  const cachedTypedArrays = featureTable._cachedTypedArrays;
-  let typedArray = cachedTypedArrays[semantic];
+  var cachedTypedArrays = featureTable._cachedTypedArrays;
+  var typedArray = cachedTypedArrays[semantic];
   if (!defined(typedArray)) {
     typedArray = ComponentDatatype.createArrayBufferView(
       componentType,
@@ -35,8 +35,8 @@ function getTypedArrayFromBinary(
 }
 
 function getTypedArrayFromArray(featureTable, semantic, componentType, array) {
-  const cachedTypedArrays = featureTable._cachedTypedArrays;
-  let typedArray = cachedTypedArrays[semantic];
+  var cachedTypedArrays = featureTable._cachedTypedArrays;
+  var typedArray = cachedTypedArrays[semantic];
   if (!defined(typedArray)) {
     typedArray = ComponentDatatype.createTypedArray(componentType, array);
     cachedTypedArrays[semantic] = typedArray;
@@ -49,7 +49,7 @@ Cesium3DTileFeatureTable.prototype.getGlobalProperty = function (
   componentType,
   componentLength
 ) {
-  const jsonValue = this.json[semantic];
+  var jsonValue = this.json[semantic];
   if (!defined(jsonValue)) {
     return undefined;
   }
@@ -70,16 +70,12 @@ Cesium3DTileFeatureTable.prototype.getGlobalProperty = function (
   return jsonValue;
 };
 
-Cesium3DTileFeatureTable.prototype.hasProperty = function (semantic) {
-  return defined(this.json[semantic]);
-};
-
 Cesium3DTileFeatureTable.prototype.getPropertyArray = function (
   semantic,
   componentType,
   componentLength
 ) {
-  const jsonValue = this.json[semantic];
+  var jsonValue = this.json[semantic];
   if (!defined(jsonValue)) {
     return undefined;
   }
@@ -108,12 +104,12 @@ Cesium3DTileFeatureTable.prototype.getProperty = function (
   featureId,
   result
 ) {
-  const jsonValue = this.json[semantic];
+  var jsonValue = this.json[semantic];
   if (!defined(jsonValue)) {
     return undefined;
   }
 
-  const typedArray = this.getPropertyArray(
+  var typedArray = this.getPropertyArray(
     semantic,
     componentType,
     componentLength
@@ -123,7 +119,7 @@ Cesium3DTileFeatureTable.prototype.getProperty = function (
     return typedArray[featureId];
   }
 
-  for (let i = 0; i < componentLength; ++i) {
+  for (var i = 0; i < componentLength; ++i) {
     result[i] = typedArray[componentLength * featureId + i];
   }
 

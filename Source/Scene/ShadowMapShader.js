@@ -12,7 +12,16 @@ ShadowMapShader.getShadowCastShaderKeyword = function (
   usesDepthTexture,
   isOpaque
 ) {
-  return `castShadow ${isPointLight} ${isTerrain} ${usesDepthTexture} ${isOpaque}`;
+  return (
+    "castShadow " +
+    isPointLight +
+    " " +
+    isTerrain +
+    " " +
+    usesDepthTexture +
+    " " +
+    isOpaque
+  );
 };
 
 ShadowMapShader.createShadowCastVertexShader = function (
@@ -20,8 +29,8 @@ ShadowMapShader.createShadowCastVertexShader = function (
   isPointLight,
   isTerrain
 ) {
-  const defines = vs.defines.slice(0);
-  const sources = vs.sources.slice(0);
+  var defines = vs.defines.slice(0);
+  var sources = vs.sources.slice(0);
 
   defines.push("SHADOW_MAP");
 
@@ -29,16 +38,16 @@ ShadowMapShader.createShadowCastVertexShader = function (
     defines.push("GENERATE_POSITION");
   }
 
-  const positionVaryingName = ShaderSource.findPositionVarying(vs);
-  const hasPositionVarying = defined(positionVaryingName);
+  var positionVaryingName = ShaderSource.findPositionVarying(vs);
+  var hasPositionVarying = defined(positionVaryingName);
 
   if (isPointLight && !hasPositionVarying) {
-    const length = sources.length;
-    for (let j = 0; j < length; ++j) {
+    var length = sources.length;
+    for (var j = 0; j < length; ++j) {
       sources[j] = ShaderSource.replaceMain(sources[j], "czm_shadow_cast_main");
     }
 
-    const shadowVS =
+    var shadowVS =
       "varying vec3 v_positionEC; \n" +
       "void main() \n" +
       "{ \n" +
@@ -60,23 +69,21 @@ ShadowMapShader.createShadowCastFragmentShader = function (
   usesDepthTexture,
   opaque
 ) {
-  const defines = fs.defines.slice(0);
-  const sources = fs.sources.slice(0);
+  var defines = fs.defines.slice(0);
+  var sources = fs.sources.slice(0);
 
-  defines.push("SHADOW_MAP");
-
-  let positionVaryingName = ShaderSource.findPositionVarying(fs);
-  const hasPositionVarying = defined(positionVaryingName);
+  var positionVaryingName = ShaderSource.findPositionVarying(fs);
+  var hasPositionVarying = defined(positionVaryingName);
   if (!hasPositionVarying) {
     positionVaryingName = "v_positionEC";
   }
 
-  const length = sources.length;
-  for (let i = 0; i < length; ++i) {
+  var length = sources.length;
+  for (var i = 0; i < length; ++i) {
     sources[i] = ShaderSource.replaceMain(sources[i], "czm_shadow_cast_main");
   }
 
-  let fsSource = "";
+  var fsSource = "";
 
   if (isPointLight) {
     if (!hasPositionVarying) {
@@ -100,13 +107,15 @@ ShadowMapShader.createShadowCastFragmentShader = function (
 
   if (isPointLight) {
     fsSource +=
-      `    float distance = length(${positionVaryingName}); \n` +
-      `    if (distance >= shadowMap_lightPositionEC.w) \n` +
-      `    { \n` +
-      `        discard; \n` +
-      `    } \n` +
-      `    distance /= shadowMap_lightPositionEC.w; // radius \n` +
-      `    gl_FragColor = czm_packDepth(distance); \n`;
+      "    float distance = length(" +
+      positionVaryingName +
+      "); \n" +
+      "    if (distance >= shadowMap_lightPositionEC.w) \n" +
+      "    { \n" +
+      "        discard; \n" +
+      "    } \n" +
+      "    distance /= shadowMap_lightPositionEC.w; // radius \n" +
+      "    gl_FragColor = czm_packDepth(distance); \n";
   } else if (usesDepthTexture) {
     fsSource += "    gl_FragColor = vec4(1.0); \n";
   } else {
@@ -129,15 +138,27 @@ ShadowMapShader.getShadowReceiveShaderKeyword = function (
   isTerrain,
   hasTerrainNormal
 ) {
-  const usesDepthTexture = shadowMap._usesDepthTexture;
-  const polygonOffsetSupported = shadowMap._polygonOffsetSupported;
-  const isPointLight = shadowMap._isPointLight;
-  const isSpotLight = shadowMap._isSpotLight;
-  const hasCascades = shadowMap._numberOfCascades > 1;
-  const debugCascadeColors = shadowMap.debugCascadeColors;
-  const softShadows = shadowMap.softShadows;
+  var usesDepthTexture = shadowMap._usesDepthTexture;
+  var polygonOffsetSupported = shadowMap._polygonOffsetSupported;
+  var isPointLight = shadowMap._isPointLight;
+  var isSpotLight = shadowMap._isSpotLight;
+  var hasCascades = shadowMap._numberOfCascades > 1;
+  var debugCascadeColors = shadowMap.debugCascadeColors;
+  var softShadows = shadowMap.softShadows;
 
-  return `receiveShadow ${usesDepthTexture}${polygonOffsetSupported}${isPointLight}${isSpotLight}${hasCascades}${debugCascadeColors}${softShadows}${castShadows}${isTerrain}${hasTerrainNormal}`;
+  return (
+    "receiveShadow " +
+    usesDepthTexture +
+    polygonOffsetSupported +
+    isPointLight +
+    isSpotLight +
+    hasCascades +
+    debugCascadeColors +
+    softShadows +
+    castShadows +
+    isTerrain +
+    hasTerrainNormal
+  );
 };
 
 ShadowMapShader.createShadowReceiveVertexShader = function (
@@ -145,8 +166,8 @@ ShadowMapShader.createShadowReceiveVertexShader = function (
   isTerrain,
   hasTerrainNormal
 ) {
-  const defines = vs.defines.slice(0);
-  const sources = vs.sources.slice(0);
+  var defines = vs.defines.slice(0);
+  var sources = vs.sources.slice(0);
 
   defines.push("SHADOW_MAP");
 
@@ -171,32 +192,32 @@ ShadowMapShader.createShadowReceiveFragmentShader = function (
   isTerrain,
   hasTerrainNormal
 ) {
-  const normalVaryingName = ShaderSource.findNormalVarying(fs);
-  const hasNormalVarying =
+  var normalVaryingName = ShaderSource.findNormalVarying(fs);
+  var hasNormalVarying =
     (!isTerrain && defined(normalVaryingName)) ||
     (isTerrain && hasTerrainNormal);
 
-  const positionVaryingName = ShaderSource.findPositionVarying(fs);
-  const hasPositionVarying = defined(positionVaryingName);
+  var positionVaryingName = ShaderSource.findPositionVarying(fs);
+  var hasPositionVarying = defined(positionVaryingName);
 
-  const usesDepthTexture = shadowMap._usesDepthTexture;
-  const polygonOffsetSupported = shadowMap._polygonOffsetSupported;
-  const isPointLight = shadowMap._isPointLight;
-  const isSpotLight = shadowMap._isSpotLight;
-  const hasCascades = shadowMap._numberOfCascades > 1;
-  const debugCascadeColors = shadowMap.debugCascadeColors;
-  const softShadows = shadowMap.softShadows;
-  const bias = isPointLight
+  var usesDepthTexture = shadowMap._usesDepthTexture;
+  var polygonOffsetSupported = shadowMap._polygonOffsetSupported;
+  var isPointLight = shadowMap._isPointLight;
+  var isSpotLight = shadowMap._isSpotLight;
+  var hasCascades = shadowMap._numberOfCascades > 1;
+  var debugCascadeColors = shadowMap.debugCascadeColors;
+  var softShadows = shadowMap.softShadows;
+  var bias = isPointLight
     ? shadowMap._pointBias
     : isTerrain
     ? shadowMap._terrainBias
     : shadowMap._primitiveBias;
 
-  const defines = fs.defines.slice(0);
-  const sources = fs.sources.slice(0);
+  var defines = fs.defines.slice(0);
+  var sources = fs.sources.slice(0);
 
-  const length = sources.length;
-  for (let i = 0; i < length; ++i) {
+  var length = sources.length;
+  for (var i = 0; i < length; ++i) {
     sources[i] = ShaderSource.replaceMain(
       sources[i],
       "czm_shadow_receive_main"
@@ -229,7 +250,7 @@ ShadowMapShader.createShadowReceiveFragmentShader = function (
     }
   }
 
-  let fsSource = "";
+  var fsSource = "";
 
   if (isPointLight) {
     fsSource += "uniform samplerCube shadowMap_textureCube; \n";
@@ -237,9 +258,9 @@ ShadowMapShader.createShadowReceiveFragmentShader = function (
     fsSource += "uniform sampler2D shadowMap_texture; \n";
   }
 
-  let returnPositionEC;
+  var returnPositionEC;
   if (hasPositionVarying) {
-    returnPositionEC = `    return vec4(${positionVaryingName}, 1.0); \n`;
+    returnPositionEC = "    return vec4(" + positionVaryingName + ", 1.0); \n";
   } else {
     returnPositionEC =
       "#ifndef LOG_DEPTH \n" +
@@ -250,34 +271,34 @@ ShadowMapShader.createShadowReceiveFragmentShader = function (
   }
 
   fsSource +=
-    `${
-      "uniform mat4 shadowMap_matrix; \n" +
-      "uniform vec3 shadowMap_lightDirectionEC; \n" +
-      "uniform vec4 shadowMap_lightPositionEC; \n" +
-      "uniform vec4 shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness; \n" +
-      "uniform vec4 shadowMap_texelSizeDepthBiasAndNormalShadingSmooth; \n" +
-      "#ifdef LOG_DEPTH \n" +
-      "varying vec3 v_logPositionEC; \n" +
-      "#endif \n" +
-      "vec4 getPositionEC() \n" +
-      "{ \n"
-    }${returnPositionEC}} \n` +
-    `vec3 getNormalEC() \n` +
-    `{ \n${
-      hasNormalVarying
-        ? `    return normalize(${normalVaryingName}); \n`
-        : "    return vec3(1.0); \n"
-    }} \n` +
+    "uniform mat4 shadowMap_matrix; \n" +
+    "uniform vec3 shadowMap_lightDirectionEC; \n" +
+    "uniform vec4 shadowMap_lightPositionEC; \n" +
+    "uniform vec4 shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness; \n" +
+    "uniform vec4 shadowMap_texelSizeDepthBiasAndNormalShadingSmooth; \n" +
+    "#ifdef LOG_DEPTH \n" +
+    "varying vec3 v_logPositionEC; \n" +
+    "#endif \n" +
+    "vec4 getPositionEC() \n" +
+    "{ \n" +
+    returnPositionEC +
+    "} \n" +
+    "vec3 getNormalEC() \n" +
+    "{ \n" +
+    (hasNormalVarying
+      ? "    return normalize(" + normalVaryingName + "); \n"
+      : "    return vec3(1.0); \n") +
+    "} \n" +
     // Offset the shadow position in the direction of the normal for perpendicular and back faces
-    `void applyNormalOffset(inout vec4 positionEC, vec3 normalEC, float nDotL) \n` +
-    `{ \n${
-      bias.normalOffset && hasNormalVarying
-        ? "    float normalOffset = shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness.x; \n" +
-          "    float normalOffsetScale = 1.0 - nDotL; \n" +
-          "    vec3 offset = normalOffset * normalOffsetScale * normalEC; \n" +
-          "    positionEC.xyz += offset; \n"
-        : ""
-    }} \n`;
+    "void applyNormalOffset(inout vec4 positionEC, vec3 normalEC, float nDotL) \n" +
+    "{ \n" +
+    (bias.normalOffset && hasNormalVarying
+      ? "    float normalOffset = shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness.x; \n" +
+        "    float normalOffsetScale = 1.0 - nDotL; \n" +
+        "    vec3 offset = normalOffset * normalOffsetScale * normalEC; \n" +
+        "    positionEC.xyz += offset; \n"
+      : "") +
+    "} \n";
 
   fsSource +=
     "void main() \n" +
@@ -338,7 +359,7 @@ ShadowMapShader.createShadowReceiveFragmentShader = function (
       "    shadowParameters.nDotL = nDotL; \n" +
       "    float visibility = czm_shadowVisibility(shadowMap_texture, shadowParameters); \n";
   } else if (hasCascades) {
-    fsSource += `${
+    fsSource +=
       "    float maxDepth = shadowMap_cascadeSplits[1].w; \n" +
       "    // Stop early if the eye depth exceeds the last cascade \n" +
       "    if (depth > maxDepth) \n" +
@@ -360,13 +381,11 @@ ShadowMapShader.createShadowReceiveFragmentShader = function (
       "    // Fade out shadows that are far away \n" +
       "    float shadowMapMaximumDistance = shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness.z; \n" +
       "    float fade = max((depth - shadowMapMaximumDistance * 0.8) / (shadowMapMaximumDistance * 0.2), 0.0); \n" +
-      "    visibility = mix(visibility, 1.0, fade); \n"
-    }${
-      debugCascadeColors
+      "    visibility = mix(visibility, 1.0, fade); \n" +
+      (debugCascadeColors
         ? "    // Draw cascade colors for debugging \n" +
           "    gl_FragColor *= czm_cascadeColor(weights); \n"
-        : ""
-    }`;
+        : "");
   } else {
     fsSource +=
       "    float nDotL = clamp(dot(normalEC, shadowMap_lightDirectionEC), 0.0, 1.0); \n" +

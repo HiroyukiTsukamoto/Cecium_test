@@ -76,32 +76,32 @@
       </table>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           terrainProvider: Cesium.createWorldTerrain(),
         });
 
-        const scene = viewer.scene;
-        const camera = scene.camera;
+        var scene = viewer.scene;
+        var camera = scene.camera;
 
-        let center = new Cesium.Cartesian3(
+        var center = new Cesium.Cartesian3(
           1216389.3637977627,
           -4736323.641980423,
           4081321.7428341154
         );
-        let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
-        let hprRotation = Cesium.Matrix3.fromHeadingPitchRoll(
+        var modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
+        var hprRotation = Cesium.Matrix3.fromHeadingPitchRoll(
           new Cesium.HeadingPitchRoll(2.619728786416368, 0.0, 0.0)
         );
-        let hpr = Cesium.Matrix4.fromRotationTranslation(
+        var hpr = Cesium.Matrix4.fromRotationTranslation(
           hprRotation,
           new Cesium.Cartesian3(0.0, 0.0, -2.0)
         );
         Cesium.Matrix4.multiply(modelMatrix, hpr, modelMatrix);
 
-        const buildingHighlight = scene.primitives.add(
+        var buildingHighlight = scene.primitives.add(
           new Cesium.ClassificationPrimitive({
             geometryInstances: new Cesium.GeometryInstance({
               geometry: Cesium.BoxGeometry.fromDimensions({
@@ -136,7 +136,7 @@
         );
         Cesium.Matrix4.multiply(modelMatrix, hpr, modelMatrix);
 
-        const treeHighlight1 = scene.primitives.add(
+        var treeHighlight1 = scene.primitives.add(
           new Cesium.ClassificationPrimitive({
             geometryInstances: new Cesium.GeometryInstance({
               geometry: new Cesium.EllipsoidGeometry({
@@ -170,7 +170,7 @@
         );
         Cesium.Matrix4.multiply(modelMatrix, hpr, modelMatrix);
 
-        const treeHighlight2 = scene.primitives.add(
+        var treeHighlight2 = scene.primitives.add(
           new Cesium.ClassificationPrimitive({
             geometryInstances: new Cesium.GeometryInstance({
               geometry: new Cesium.EllipsoidGeometry({
@@ -195,12 +195,12 @@
           4081387.9562678365
         );
         modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
-        let translation = Cesium.Matrix4.fromTranslation(
+        var translation = Cesium.Matrix4.fromTranslation(
           new Cesium.Cartesian3(0.0, 0.0, -2.0)
         );
         Cesium.Matrix4.multiply(modelMatrix, translation, modelMatrix);
 
-        const treeHighlight3 = scene.primitives.add(
+        var treeHighlight3 = scene.primitives.add(
           new Cesium.ClassificationPrimitive({
             geometryInstances: new Cesium.GeometryInstance({
               geometry: new Cesium.EllipsoidGeometry({
@@ -230,7 +230,7 @@
         );
         Cesium.Matrix4.multiply(modelMatrix, translation, modelMatrix);
 
-        const treeHighlight4 = scene.primitives.add(
+        var treeHighlight4 = scene.primitives.add(
           new Cesium.ClassificationPrimitive({
             geometryInstances: new Cesium.GeometryInstance({
               geometry: new Cesium.SphereGeometry({
@@ -311,19 +311,19 @@
           scene.invertClassificationColor.alpha = parseFloat(value);
         }
 
-        const tileset = new Cesium.Cesium3DTileset({
+        var tileset = new Cesium.Cesium3DTileset({
           url: Cesium.IonResource.fromAssetId(40866),
         });
         scene.primitives.add(tileset);
 
-        const viewModel = {
+        var viewModel = {
           inverted: viewer.scene.invertClassification,
           invertedAlpha: viewer.scene.invertClassificationColor.alpha,
           highlightBuilding: highlightBuilding,
           highlightTrees: highlightTrees,
         };
         Cesium.knockout.track(viewModel);
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
         Cesium.knockout
           .getObservable(viewModel, "inverted")
@@ -334,15 +334,15 @@
 
         highlightTrees();
 
-        let currentObjectId;
-        let currentPrimitive;
-        let currentColor;
-        let currentShow;
-        let attributes;
+        var currentObjectId;
+        var currentPrimitive;
+        var currentColor;
+        var currentShow;
+        var attributes;
 
-        const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+        var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
         handler.setInputAction(function (movement) {
-          const pickedObject = scene.pick(movement.endPosition);
+          var pickedObject = scene.pick(movement.endPosition);
           if (Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id)) {
             if (pickedObject.id === currentObjectId) {
               return;
@@ -391,10 +391,10 @@
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

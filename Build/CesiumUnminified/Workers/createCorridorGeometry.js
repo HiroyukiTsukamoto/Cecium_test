@@ -21,30 +21,30 @@
  * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
  */
 
-define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7', './Transforms-1e6de713', './Matrix2-e0921750', './RuntimeError-8952249c', './ComponentDatatype-0f8fc942', './PolylineVolumeGeometryLibrary-4b64579e', './CorridorGeometryLibrary-2301be41', './defaultValue-81eec7ed', './GeometryAttribute-09cd5be5', './GeometryAttributes-32b29525', './IndexDatatype-2261ba8d', './PolygonPipeline-0af4a3b8', './VertexFormat-7df34ea5', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './WebGLConstants-508b9636', './EllipsoidTangentPlane-0bf2bfc2', './AxisAlignedBoundingBox-1eb5a9d8', './IntersectionTests-b9a7d403', './Plane-e7da25b6', './PolylinePipeline-acf96c79', './EllipsoidGeodesic-ca8d04b3', './EllipsoidRhumbLine-ac050b55'], (function (GeometryOffsetAttribute, arrayRemoveDuplicates, Transforms, Matrix2, RuntimeError, ComponentDatatype, PolylineVolumeGeometryLibrary, CorridorGeometryLibrary, defaultValue, GeometryAttribute, GeometryAttributes, IndexDatatype, PolygonPipeline, VertexFormat, _commonjsHelpers3aae1032, combine$1, WebGLConstants, EllipsoidTangentPlane, AxisAlignedBoundingBox, IntersectionTests, Plane, PolylinePipeline, EllipsoidGeodesic, EllipsoidRhumbLine) { 'use strict';
+define(['./GeometryOffsetAttribute-6a692b56', './arrayRemoveDuplicates-cf5c3227', './Transforms-b4151f9c', './Matrix2-32d4a9a0', './RuntimeError-346a3079', './ComponentDatatype-f194c48b', './PolylineVolumeGeometryLibrary-5052702f', './CorridorGeometryLibrary-03e6fa0d', './when-4bbc8319', './GeometryAttribute-900e07ee', './GeometryAttributes-7827a6c2', './IndexDatatype-ee69f1fd', './PolygonPipeline-c597b314', './VertexFormat-f9c1a155', './combine-83860057', './WebGLConstants-1c8239cc', './EllipsoidTangentPlane-9edb4c29', './AxisAlignedBoundingBox-5fa363ce', './IntersectionTests-4c2a8ace', './Plane-87991fdc', './PolylinePipeline-4b4963b2', './EllipsoidGeodesic-c3b968c7', './EllipsoidRhumbLine-1bebfad1'], (function (GeometryOffsetAttribute, arrayRemoveDuplicates, Transforms, Matrix2, RuntimeError, ComponentDatatype, PolylineVolumeGeometryLibrary, CorridorGeometryLibrary, when, GeometryAttribute, GeometryAttributes, IndexDatatype, PolygonPipeline, VertexFormat, combine$1, WebGLConstants, EllipsoidTangentPlane, AxisAlignedBoundingBox, IntersectionTests, Plane, PolylinePipeline, EllipsoidGeodesic, EllipsoidRhumbLine) { 'use strict';
 
-  const cartesian1 = new Matrix2.Cartesian3();
-  const cartesian2 = new Matrix2.Cartesian3();
-  const cartesian3 = new Matrix2.Cartesian3();
-  const cartesian4 = new Matrix2.Cartesian3();
-  const cartesian5 = new Matrix2.Cartesian3();
-  const cartesian6 = new Matrix2.Cartesian3();
+  var cartesian1 = new Matrix2.Cartesian3();
+  var cartesian2 = new Matrix2.Cartesian3();
+  var cartesian3 = new Matrix2.Cartesian3();
+  var cartesian4 = new Matrix2.Cartesian3();
+  var cartesian5 = new Matrix2.Cartesian3();
+  var cartesian6 = new Matrix2.Cartesian3();
 
-  const scratch1 = new Matrix2.Cartesian3();
-  const scratch2 = new Matrix2.Cartesian3();
+  var scratch1 = new Matrix2.Cartesian3();
+  var scratch2 = new Matrix2.Cartesian3();
 
   function scaleToSurface(positions, ellipsoid) {
-    for (let i = 0; i < positions.length; i++) {
+    for (var i = 0; i < positions.length; i++) {
       positions[i] = ellipsoid.scaleToGeodeticSurface(positions[i], positions[i]);
     }
     return positions;
   }
 
   function addNormals(attr, normal, left, front, back, vertexFormat) {
-    const normals = attr.normals;
-    const tangents = attr.tangents;
-    const bitangents = attr.bitangents;
-    const forward = Matrix2.Cartesian3.normalize(
+    var normals = attr.normals;
+    var tangents = attr.tangents;
+    var bitangents = attr.bitangents;
+    var forward = Matrix2.Cartesian3.normalize(
       Matrix2.Cartesian3.cross(left, normal, scratch1),
       scratch1
     );
@@ -60,18 +60,18 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
   }
 
   function combine(computedPositions, vertexFormat, ellipsoid) {
-    const positions = computedPositions.positions;
-    const corners = computedPositions.corners;
-    const endPositions = computedPositions.endPositions;
-    const computedLefts = computedPositions.lefts;
-    const computedNormals = computedPositions.normals;
-    const attributes = new GeometryAttributes.GeometryAttributes();
-    let corner;
-    let leftCount = 0;
-    let rightCount = 0;
-    let i;
-    let indicesLength = 0;
-    let length;
+    var positions = computedPositions.positions;
+    var corners = computedPositions.corners;
+    var endPositions = computedPositions.endPositions;
+    var computedLefts = computedPositions.lefts;
+    var computedNormals = computedPositions.normals;
+    var attributes = new GeometryAttributes.GeometryAttributes();
+    var corner;
+    var leftCount = 0;
+    var rightCount = 0;
+    var i;
+    var indicesLength = 0;
+    var length;
     for (i = 0; i < positions.length; i += 2) {
       length = positions[i].length - 3;
       leftCount += length; //subtracting 3 to account for duplicate points at corners
@@ -82,8 +82,8 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     rightCount += 3;
     for (i = 0; i < corners.length; i++) {
       corner = corners[i];
-      const leftSide = corners[i].leftPositions;
-      if (defaultValue.defined(leftSide)) {
+      var leftSide = corners[i].leftPositions;
+      if (when.defined(leftSide)) {
         length = leftSide.length;
         leftCount += length;
         indicesLength += length;
@@ -94,8 +94,8 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       }
     }
 
-    const addEndPositions = defaultValue.defined(endPositions);
-    let endPositionLength;
+    var addEndPositions = when.defined(endPositions);
+    var endPositionLength;
     if (addEndPositions) {
       endPositionLength = endPositions[0].length - 3;
       leftCount += endPositionLength;
@@ -103,33 +103,31 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       endPositionLength /= 3;
       indicesLength += endPositionLength * 6;
     }
-    const size = leftCount + rightCount;
-    const finalPositions = new Float64Array(size);
-    const normals = vertexFormat.normal ? new Float32Array(size) : undefined;
-    const tangents = vertexFormat.tangent ? new Float32Array(size) : undefined;
-    const bitangents = vertexFormat.bitangent
-      ? new Float32Array(size)
-      : undefined;
-    const attr = {
+    var size = leftCount + rightCount;
+    var finalPositions = new Float64Array(size);
+    var normals = vertexFormat.normal ? new Float32Array(size) : undefined;
+    var tangents = vertexFormat.tangent ? new Float32Array(size) : undefined;
+    var bitangents = vertexFormat.bitangent ? new Float32Array(size) : undefined;
+    var attr = {
       normals: normals,
       tangents: tangents,
       bitangents: bitangents,
     };
-    let front = 0;
-    let back = size - 1;
-    let UL, LL, UR, LR;
-    let normal = cartesian1;
-    let left = cartesian2;
-    let rightPos, leftPos;
-    const halfLength = endPositionLength / 2;
+    var front = 0;
+    var back = size - 1;
+    var UL, LL, UR, LR;
+    var normal = cartesian1;
+    var left = cartesian2;
+    var rightPos, leftPos;
+    var halfLength = endPositionLength / 2;
 
-    const indices = IndexDatatype.IndexDatatype.createTypedArray(size / 3, indicesLength);
-    let index = 0;
+    var indices = IndexDatatype.IndexDatatype.createTypedArray(size / 3, indicesLength);
+    var index = 0;
     if (addEndPositions) {
       // add rounded end
       leftPos = cartesian3;
       rightPos = cartesian4;
-      const firstEndPositions = endPositions[0];
+      var firstEndPositions = endPositions[0];
       normal = Matrix2.Cartesian3.fromArray(computedNormals, 0, normal);
       left = Matrix2.Cartesian3.fromArray(computedLefts, 0, left);
       for (i = 0; i < halfLength; i++) {
@@ -168,16 +166,16 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       }
     }
 
-    let posIndex = 0;
-    let compIndex = 0;
-    let rightEdge = positions[posIndex++]; //add first two edges
-    let leftEdge = positions[posIndex++];
+    var posIndex = 0;
+    var compIndex = 0;
+    var rightEdge = positions[posIndex++]; //add first two edges
+    var leftEdge = positions[posIndex++];
     finalPositions.set(rightEdge, front);
     finalPositions.set(leftEdge, back - leftEdge.length + 1);
 
     left = Matrix2.Cartesian3.fromArray(computedLefts, compIndex, left);
-    let rightNormal;
-    let leftNormal;
+    var rightNormal;
+    var leftNormal;
     length = leftEdge.length - 3;
     for (i = 0; i < length; i += 3) {
       rightNormal = ellipsoid.geodeticSurfaceNormal(
@@ -223,17 +221,17 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     );
     compIndex += 3;
     for (i = 0; i < corners.length; i++) {
-      let j;
+      var j;
       corner = corners[i];
-      const l = corner.leftPositions;
-      const r = corner.rightPositions;
-      let pivot;
-      let start;
-      let outsidePoint = cartesian6;
-      let previousPoint = cartesian3;
-      let nextPoint = cartesian4;
+      var l = corner.leftPositions;
+      var r = corner.rightPositions;
+      var pivot;
+      var start;
+      var outsidePoint = cartesian6;
+      var previousPoint = cartesian3;
+      var nextPoint = cartesian4;
       normal = Matrix2.Cartesian3.fromArray(computedNormals, compIndex, normal);
-      if (defaultValue.defined(l)) {
+      if (when.defined(l)) {
         addNormals(attr, normal, left, undefined, back, vertexFormat);
         back -= 3;
         pivot = LR;
@@ -392,7 +390,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       back -= 3;
       leftPos = cartesian3;
       rightPos = cartesian4;
-      const lastEndPositions = endPositions[1];
+      var lastEndPositions = endPositions[1];
       for (i = 0; i < halfLength; i++) {
         leftPos = Matrix2.Cartesian3.fromArray(
           lastEndPositions,
@@ -432,18 +430,18 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     });
 
     if (vertexFormat.st) {
-      const st = new Float32Array((size / 3) * 2);
-      let rightSt;
-      let leftSt;
-      let stIndex = 0;
+      var st = new Float32Array((size / 3) * 2);
+      var rightSt;
+      var leftSt;
+      var stIndex = 0;
       if (addEndPositions) {
         leftCount /= 3;
         rightCount /= 3;
-        const theta = Math.PI / (endPositionLength + 1);
+        var theta = Math.PI / (endPositionLength + 1);
         leftSt = 1 / (leftCount - endPositionLength + 1);
         rightSt = 1 / (rightCount - endPositionLength + 1);
-        let a;
-        const halfEndPos = endPositionLength / 2;
+        var a;
+        var halfEndPos = endPositionLength / 2;
         for (i = halfEndPos + 1; i < endPositionLength + 1; i++) {
           // lower left rounded end
           a = ComponentDatatype.CesiumMath.PI_OVER_TWO + theta * i;
@@ -541,37 +539,37 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     ) {
       return attributes;
     }
-    const positions = attributes.position.values;
-    let topNormals;
-    let topBitangents;
+    var positions = attributes.position.values;
+    var topNormals;
+    var topBitangents;
     if (vertexFormat.normal || vertexFormat.bitangent) {
       topNormals = attributes.normal.values;
       topBitangents = attributes.bitangent.values;
     }
-    const size = attributes.position.values.length / 18;
-    const threeSize = size * 3;
-    const twoSize = size * 2;
-    const sixSize = threeSize * 2;
-    let i;
+    var size = attributes.position.values.length / 18;
+    var threeSize = size * 3;
+    var twoSize = size * 2;
+    var sixSize = threeSize * 2;
+    var i;
     if (vertexFormat.normal || vertexFormat.bitangent || vertexFormat.tangent) {
-      const normals = vertexFormat.normal
+      var normals = vertexFormat.normal
         ? new Float32Array(threeSize * 6)
         : undefined;
-      const tangents = vertexFormat.tangent
+      var tangents = vertexFormat.tangent
         ? new Float32Array(threeSize * 6)
         : undefined;
-      const bitangents = vertexFormat.bitangent
+      var bitangents = vertexFormat.bitangent
         ? new Float32Array(threeSize * 6)
         : undefined;
-      let topPosition = cartesian1;
-      let bottomPosition = cartesian2;
-      let previousPosition = cartesian3;
-      let normal = cartesian4;
-      let tangent = cartesian5;
-      let bitangent = cartesian6;
-      let attrIndex = sixSize;
+      var topPosition = cartesian1;
+      var bottomPosition = cartesian2;
+      var previousPosition = cartesian3;
+      var normal = cartesian4;
+      var tangent = cartesian5;
+      var bitangent = cartesian6;
+      var attrIndex = sixSize;
       for (i = 0; i < threeSize; i += 3) {
-        const attrIndexOffset = attrIndex + sixSize;
+        var attrIndexOffset = attrIndex + sixSize;
         topPosition = Matrix2.Cartesian3.fromArray(positions, i, topPosition);
         bottomPosition = Matrix2.Cartesian3.fromArray(
           positions,
@@ -680,25 +678,25 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       }
 
       if (vertexFormat.tangent) {
-        const topTangents = attributes.tangent.values;
+        var topTangents = attributes.tangent.values;
         tangents.set(topTangents); //top
         tangents.set(topTangents, threeSize); //bottom
         attributes.tangent.values = tangents;
       }
     }
     if (vertexFormat.st) {
-      const topSt = attributes.st.values;
-      const st = new Float32Array(twoSize * 6);
+      var topSt = attributes.st.values;
+      var st = new Float32Array(twoSize * 6);
       st.set(topSt); //top
       st.set(topSt, twoSize); //bottom
-      let index = twoSize * 2;
+      var index = twoSize * 2;
 
-      for (let j = 0; j < 2; j++) {
+      for (var j = 0; j < 2; j++) {
         st[index++] = topSt[0];
         st[index++] = topSt[1];
         for (i = 2; i < twoSize; i += 2) {
-          const s = topSt[i];
-          const t = topSt[i + 1];
+          var s = topSt[i];
+          var t = topSt[i + 1];
           st[index++] = s;
           st[index++] = t;
           st[index++] = s;
@@ -717,10 +715,10 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     wallPositions[index++] = positions[0];
     wallPositions[index++] = positions[1];
     wallPositions[index++] = positions[2];
-    for (let i = 3; i < positions.length; i += 3) {
-      const x = positions[i];
-      const y = positions[i + 1];
-      const z = positions[i + 2];
+    for (var i = 3; i < positions.length; i += 3) {
+      var x = positions[i];
+      var y = positions[i + 1];
+      var z = positions[i + 2];
       wallPositions[index++] = x;
       wallPositions[index++] = y;
       wallPositions[index++] = z;
@@ -736,7 +734,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
   }
 
   function computePositionsExtruded(params, vertexFormat) {
-    const topVertexFormat = new VertexFormat.VertexFormat({
+    var topVertexFormat = new VertexFormat.VertexFormat({
       position: vertexFormat.position,
       normal:
         vertexFormat.normal || vertexFormat.bitangent || params.shadowVolume,
@@ -744,19 +742,19 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       bitangent: vertexFormat.normal || vertexFormat.bitangent,
       st: vertexFormat.st,
     });
-    const ellipsoid = params.ellipsoid;
-    const computedPositions = CorridorGeometryLibrary.CorridorGeometryLibrary.computePositions(params);
-    const attr = combine(computedPositions, topVertexFormat, ellipsoid);
-    const height = params.height;
-    const extrudedHeight = params.extrudedHeight;
-    let attributes = attr.attributes;
-    const indices = attr.indices;
-    let positions = attributes.position.values;
-    let length = positions.length;
-    const newPositions = new Float64Array(length * 6);
-    let extrudedPositions = new Float64Array(length);
+    var ellipsoid = params.ellipsoid;
+    var computedPositions = CorridorGeometryLibrary.CorridorGeometryLibrary.computePositions(params);
+    var attr = combine(computedPositions, topVertexFormat, ellipsoid);
+    var height = params.height;
+    var extrudedHeight = params.extrudedHeight;
+    var attributes = attr.attributes;
+    var indices = attr.indices;
+    var positions = attributes.position.values;
+    var length = positions.length;
+    var newPositions = new Float64Array(length * 6);
+    var extrudedPositions = new Float64Array(length);
     extrudedPositions.set(positions);
-    let wallPositions = new Float64Array(length * 4);
+    var wallPositions = new Float64Array(length * 4);
 
     positions = PolygonPipeline.PolygonPipeline.scaleToGeodeticHeight(
       positions,
@@ -780,13 +778,13 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     attributes.position.values = newPositions;
 
     attributes = extrudedAttributes(attributes, vertexFormat);
-    let i;
-    const size = length / 3;
+    var i;
+    var size = length / 3;
     if (params.shadowVolume) {
-      const topNormals = attributes.normal.values;
+      var topNormals = attributes.normal.values;
       length = topNormals.length;
 
-      let extrudeNormals = new Float32Array(length * 6);
+      var extrudeNormals = new Float32Array(length * 6);
       for (i = 0; i < length; i++) {
         topNormals[i] = -topNormals[i];
       }
@@ -802,13 +800,13 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
         attributes.normal = undefined;
       }
     }
-    if (defaultValue.defined(params.offsetAttribute)) {
-      let applyOffset = new Uint8Array(size * 6);
+    if (when.defined(params.offsetAttribute)) {
+      var applyOffset = new Uint8Array(size * 6);
       if (params.offsetAttribute === GeometryOffsetAttribute.GeometryOffsetAttribute.TOP) {
         applyOffset = GeometryOffsetAttribute.arrayFill(applyOffset, 1, 0, size); // top face
         applyOffset = GeometryOffsetAttribute.arrayFill(applyOffset, 1, size * 2, size * 4); // top wall
       } else {
-        const applyOffsetValue =
+        var applyOffsetValue =
           params.offsetAttribute === GeometryOffsetAttribute.GeometryOffsetAttribute.NONE ? 0 : 1;
         applyOffset = GeometryOffsetAttribute.arrayFill(applyOffset, applyOffsetValue);
       }
@@ -819,25 +817,25 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       });
     }
 
-    const iLength = indices.length;
-    const twoSize = size + size;
-    const newIndices = IndexDatatype.IndexDatatype.createTypedArray(
+    var iLength = indices.length;
+    var twoSize = size + size;
+    var newIndices = IndexDatatype.IndexDatatype.createTypedArray(
       newPositions.length / 3,
       iLength * 2 + twoSize * 3
     );
     newIndices.set(indices);
-    let index = iLength;
+    var index = iLength;
     for (i = 0; i < iLength; i += 3) {
       // bottom indices
-      const v0 = indices[i];
-      const v1 = indices[i + 1];
-      const v2 = indices[i + 2];
+      var v0 = indices[i];
+      var v1 = indices[i + 1];
+      var v2 = indices[i + 2];
       newIndices[index++] = v2 + size;
       newIndices[index++] = v1 + size;
       newIndices[index++] = v0 + size;
     }
 
-    let UL, LL, UR, LR;
+    var UL, LL, UR, LR;
 
     for (i = 0; i < twoSize; i += 2) {
       //wall indices
@@ -859,9 +857,9 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     };
   }
 
-  const scratchCartesian1 = new Matrix2.Cartesian3();
-  const scratchCartesian2 = new Matrix2.Cartesian3();
-  const scratchCartographic = new Matrix2.Cartographic();
+  var scratchCartesian1 = new Matrix2.Cartesian3();
+  var scratchCartesian2 = new Matrix2.Cartesian3();
+  var scratchCartographic = new Matrix2.Cartographic();
 
   function computeOffsetPoints(
     position1,
@@ -872,31 +870,23 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     max
   ) {
     // Compute direction of offset the point
-    const direction = Matrix2.Cartesian3.subtract(
-      position2,
-      position1,
-      scratchCartesian1
-    );
+    var direction = Matrix2.Cartesian3.subtract(position2, position1, scratchCartesian1);
     Matrix2.Cartesian3.normalize(direction, direction);
-    const normal = ellipsoid.geodeticSurfaceNormal(position1, scratchCartesian2);
-    const offsetDirection = Matrix2.Cartesian3.cross(
-      direction,
-      normal,
-      scratchCartesian1
-    );
+    var normal = ellipsoid.geodeticSurfaceNormal(position1, scratchCartesian2);
+    var offsetDirection = Matrix2.Cartesian3.cross(direction, normal, scratchCartesian1);
     Matrix2.Cartesian3.multiplyByScalar(offsetDirection, halfWidth, offsetDirection);
 
-    let minLat = min.latitude;
-    let minLon = min.longitude;
-    let maxLat = max.latitude;
-    let maxLon = max.longitude;
+    var minLat = min.latitude;
+    var minLon = min.longitude;
+    var maxLat = max.latitude;
+    var maxLon = max.longitude;
 
     // Compute 2 offset points
     Matrix2.Cartesian3.add(position1, offsetDirection, scratchCartesian2);
     ellipsoid.cartesianToCartographic(scratchCartesian2, scratchCartographic);
 
-    let lat = scratchCartographic.latitude;
-    let lon = scratchCartographic.longitude;
+    var lat = scratchCartographic.latitude;
+    var lon = scratchCartographic.longitude;
     minLat = Math.min(minLat, lat);
     minLon = Math.min(minLon, lon);
     maxLat = Math.max(maxLat, lat);
@@ -918,32 +908,32 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     max.longitude = maxLon;
   }
 
-  const scratchCartesianOffset = new Matrix2.Cartesian3();
-  const scratchCartesianEnds = new Matrix2.Cartesian3();
-  const scratchCartographicMin = new Matrix2.Cartographic();
-  const scratchCartographicMax = new Matrix2.Cartographic();
+  var scratchCartesianOffset = new Matrix2.Cartesian3();
+  var scratchCartesianEnds = new Matrix2.Cartesian3();
+  var scratchCartographicMin = new Matrix2.Cartographic();
+  var scratchCartographicMax = new Matrix2.Cartographic();
 
   function computeRectangle(positions, ellipsoid, width, cornerType, result) {
     positions = scaleToSurface(positions, ellipsoid);
-    const cleanPositions = arrayRemoveDuplicates.arrayRemoveDuplicates(
+    var cleanPositions = arrayRemoveDuplicates.arrayRemoveDuplicates(
       positions,
       Matrix2.Cartesian3.equalsEpsilon
     );
-    const length = cleanPositions.length;
+    var length = cleanPositions.length;
     if (length < 2 || width <= 0) {
       return new Matrix2.Rectangle();
     }
-    const halfWidth = width * 0.5;
+    var halfWidth = width * 0.5;
 
     scratchCartographicMin.latitude = Number.POSITIVE_INFINITY;
     scratchCartographicMin.longitude = Number.POSITIVE_INFINITY;
     scratchCartographicMax.latitude = Number.NEGATIVE_INFINITY;
     scratchCartographicMax.longitude = Number.NEGATIVE_INFINITY;
 
-    let lat, lon;
+    var lat, lon;
     if (cornerType === PolylineVolumeGeometryLibrary.CornerType.ROUNDED) {
       // Compute start cap
-      const first = cleanPositions[0];
+      var first = cleanPositions[0];
       Matrix2.Cartesian3.subtract(first, cleanPositions[1], scratchCartesianOffset);
       Matrix2.Cartesian3.normalize(scratchCartesianOffset, scratchCartesianOffset);
       Matrix2.Cartesian3.multiplyByScalar(
@@ -978,7 +968,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     }
 
     // Compute the rest
-    for (let i = 0; i < length - 1; ++i) {
+    for (var i = 0; i < length - 1; ++i) {
       computeOffsetPoints(
         cleanPositions[i],
         cleanPositions[i + 1],
@@ -990,7 +980,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     }
 
     // Compute ending point
-    const last = cleanPositions[length - 1];
+    var last = cleanPositions[length - 1];
     Matrix2.Cartesian3.subtract(last, cleanPositions[length - 2], scratchCartesianOffset);
     Matrix2.Cartesian3.normalize(scratchCartesianOffset, scratchCartesianOffset);
     Matrix2.Cartesian3.multiplyByScalar(
@@ -1034,7 +1024,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       );
     }
 
-    const rectangle = defaultValue.defined(result) ? result : new Matrix2.Rectangle();
+    var rectangle = when.defined(result) ? result : new Matrix2.Rectangle();
     rectangle.north = scratchCartographicMax.latitude;
     rectangle.south = scratchCartographicMin.latitude;
     rectangle.east = scratchCartographicMax.longitude;
@@ -1065,41 +1055,41 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
    * @demo {@link https://sandcastle.cesium.com/index.html?src=Corridor.html|Cesium Sandcastle Corridor Demo}
    *
    * @example
-   * const corridor = new Cesium.CorridorGeometry({
+   * var corridor = new Cesium.CorridorGeometry({
    *   vertexFormat : Cesium.VertexFormat.POSITION_ONLY,
    *   positions : Cesium.Cartesian3.fromDegreesArray([-72.0, 40.0, -70.0, 35.0]),
    *   width : 100000
    * });
    */
   function CorridorGeometry(options) {
-    options = defaultValue.defaultValue(options, defaultValue.defaultValue.EMPTY_OBJECT);
-    const positions = options.positions;
-    const width = options.width;
+    options = when.defaultValue(options, when.defaultValue.EMPTY_OBJECT);
+    var positions = options.positions;
+    var width = options.width;
 
     //>>includeStart('debug', pragmas.debug);
     RuntimeError.Check.defined("options.positions", positions);
     RuntimeError.Check.defined("options.width", width);
     //>>includeEnd('debug');
 
-    const height = defaultValue.defaultValue(options.height, 0.0);
-    const extrudedHeight = defaultValue.defaultValue(options.extrudedHeight, height);
+    var height = when.defaultValue(options.height, 0.0);
+    var extrudedHeight = when.defaultValue(options.extrudedHeight, height);
 
     this._positions = positions;
     this._ellipsoid = Matrix2.Ellipsoid.clone(
-      defaultValue.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84)
+      when.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84)
     );
     this._vertexFormat = VertexFormat.VertexFormat.clone(
-      defaultValue.defaultValue(options.vertexFormat, VertexFormat.VertexFormat.DEFAULT)
+      when.defaultValue(options.vertexFormat, VertexFormat.VertexFormat.DEFAULT)
     );
     this._width = width;
     this._height = Math.max(height, extrudedHeight);
     this._extrudedHeight = Math.min(height, extrudedHeight);
-    this._cornerType = defaultValue.defaultValue(options.cornerType, PolylineVolumeGeometryLibrary.CornerType.ROUNDED);
-    this._granularity = defaultValue.defaultValue(
+    this._cornerType = when.defaultValue(options.cornerType, PolylineVolumeGeometryLibrary.CornerType.ROUNDED);
+    this._granularity = when.defaultValue(
       options.granularity,
       ComponentDatatype.CesiumMath.RADIANS_PER_DEGREE
     );
-    this._shadowVolume = defaultValue.defaultValue(options.shadowVolume, false);
+    this._shadowVolume = when.defaultValue(options.shadowVolume, false);
     this._workerName = "createCorridorGeometry";
     this._offsetAttribute = options.offsetAttribute;
     this._rectangle = undefined;
@@ -1131,13 +1121,13 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     RuntimeError.Check.defined("array", array);
     //>>includeEnd('debug');
 
-    startingIndex = defaultValue.defaultValue(startingIndex, 0);
+    startingIndex = when.defaultValue(startingIndex, 0);
 
-    const positions = value._positions;
-    const length = positions.length;
+    var positions = value._positions;
+    var length = positions.length;
     array[startingIndex++] = length;
 
-    for (let i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
+    for (var i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
       Matrix2.Cartesian3.pack(positions[i], array, startingIndex);
     }
 
@@ -1153,14 +1143,14 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     array[startingIndex++] = value._cornerType;
     array[startingIndex++] = value._granularity;
     array[startingIndex++] = value._shadowVolume ? 1.0 : 0.0;
-    array[startingIndex] = defaultValue.defaultValue(value._offsetAttribute, -1);
+    array[startingIndex] = when.defaultValue(value._offsetAttribute, -1);
 
     return array;
   };
 
-  const scratchEllipsoid = Matrix2.Ellipsoid.clone(Matrix2.Ellipsoid.UNIT_SPHERE);
-  const scratchVertexFormat = new VertexFormat.VertexFormat();
-  const scratchOptions = {
+  var scratchEllipsoid = Matrix2.Ellipsoid.clone(Matrix2.Ellipsoid.UNIT_SPHERE);
+  var scratchVertexFormat = new VertexFormat.VertexFormat();
+  var scratchOptions = {
     positions: undefined,
     ellipsoid: scratchEllipsoid,
     vertexFormat: scratchVertexFormat,
@@ -1186,34 +1176,34 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     RuntimeError.Check.defined("array", array);
     //>>includeEnd('debug');
 
-    startingIndex = defaultValue.defaultValue(startingIndex, 0);
+    startingIndex = when.defaultValue(startingIndex, 0);
 
-    const length = array[startingIndex++];
-    const positions = new Array(length);
+    var length = array[startingIndex++];
+    var positions = new Array(length);
 
-    for (let i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
+    for (var i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
       positions[i] = Matrix2.Cartesian3.unpack(array, startingIndex);
     }
 
-    const ellipsoid = Matrix2.Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
+    var ellipsoid = Matrix2.Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
     startingIndex += Matrix2.Ellipsoid.packedLength;
 
-    const vertexFormat = VertexFormat.VertexFormat.unpack(
+    var vertexFormat = VertexFormat.VertexFormat.unpack(
       array,
       startingIndex,
       scratchVertexFormat
     );
     startingIndex += VertexFormat.VertexFormat.packedLength;
 
-    const width = array[startingIndex++];
-    const height = array[startingIndex++];
-    const extrudedHeight = array[startingIndex++];
-    const cornerType = array[startingIndex++];
-    const granularity = array[startingIndex++];
-    const shadowVolume = array[startingIndex++] === 1.0;
-    const offsetAttribute = array[startingIndex];
+    var width = array[startingIndex++];
+    var height = array[startingIndex++];
+    var extrudedHeight = array[startingIndex++];
+    var cornerType = array[startingIndex++];
+    var granularity = array[startingIndex++];
+    var shadowVolume = array[startingIndex++] === 1.0;
+    var offsetAttribute = array[startingIndex];
 
-    if (!defaultValue.defined(result)) {
+    if (!when.defined(result)) {
       scratchOptions.positions = positions;
       scratchOptions.width = width;
       scratchOptions.height = height;
@@ -1255,17 +1245,17 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
    * @returns {Rectangle} The result rectangle.
    */
   CorridorGeometry.computeRectangle = function (options, result) {
-    options = defaultValue.defaultValue(options, defaultValue.defaultValue.EMPTY_OBJECT);
-    const positions = options.positions;
-    const width = options.width;
+    options = when.defaultValue(options, when.defaultValue.EMPTY_OBJECT);
+    var positions = options.positions;
+    var width = options.width;
 
     //>>includeStart('debug', pragmas.debug);
     RuntimeError.Check.defined("options.positions", positions);
     RuntimeError.Check.defined("options.width", width);
     //>>includeEnd('debug');
 
-    const ellipsoid = defaultValue.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84);
-    const cornerType = defaultValue.defaultValue(options.cornerType, PolylineVolumeGeometryLibrary.CornerType.ROUNDED);
+    var ellipsoid = when.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84);
+    var cornerType = when.defaultValue(options.cornerType, PolylineVolumeGeometryLibrary.CornerType.ROUNDED);
 
     return computeRectangle(positions, ellipsoid, width, cornerType, result);
   };
@@ -1277,12 +1267,12 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
    * @returns {Geometry|undefined} The computed vertices and indices.
    */
   CorridorGeometry.createGeometry = function (corridorGeometry) {
-    let positions = corridorGeometry._positions;
-    const width = corridorGeometry._width;
-    const ellipsoid = corridorGeometry._ellipsoid;
+    var positions = corridorGeometry._positions;
+    var width = corridorGeometry._width;
+    var ellipsoid = corridorGeometry._ellipsoid;
 
     positions = scaleToSurface(positions, ellipsoid);
-    const cleanPositions = arrayRemoveDuplicates.arrayRemoveDuplicates(
+    var cleanPositions = arrayRemoveDuplicates.arrayRemoveDuplicates(
       positions,
       Matrix2.Cartesian3.equalsEpsilon
     );
@@ -1291,17 +1281,17 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       return;
     }
 
-    const height = corridorGeometry._height;
-    const extrudedHeight = corridorGeometry._extrudedHeight;
-    const extrude = !ComponentDatatype.CesiumMath.equalsEpsilon(
+    var height = corridorGeometry._height;
+    var extrudedHeight = corridorGeometry._extrudedHeight;
+    var extrude = !ComponentDatatype.CesiumMath.equalsEpsilon(
       height,
       extrudedHeight,
       0,
       ComponentDatatype.CesiumMath.EPSILON2
     );
 
-    const vertexFormat = corridorGeometry._vertexFormat;
-    const params = {
+    var vertexFormat = corridorGeometry._vertexFormat;
+    var params = {
       ellipsoid: ellipsoid,
       positions: cleanPositions,
       width: width,
@@ -1309,7 +1299,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       granularity: corridorGeometry._granularity,
       saveAttributes: true,
     };
-    let attr;
+    var attr;
     if (extrude) {
       params.height = height;
       params.extrudedHeight = extrudedHeight;
@@ -1317,7 +1307,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
       params.offsetAttribute = corridorGeometry._offsetAttribute;
       attr = computePositionsExtruded(params, vertexFormat);
     } else {
-      const computedPositions = CorridorGeometryLibrary.CorridorGeometryLibrary.computePositions(params);
+      var computedPositions = CorridorGeometryLibrary.CorridorGeometryLibrary.computePositions(params);
       attr = combine(computedPositions, vertexFormat, ellipsoid);
       attr.attributes.position.values = PolygonPipeline.PolygonPipeline.scaleToGeodeticHeight(
         attr.attributes.position.values,
@@ -1325,13 +1315,13 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
         ellipsoid
       );
 
-      if (defaultValue.defined(corridorGeometry._offsetAttribute)) {
-        const applyOffsetValue =
+      if (when.defined(corridorGeometry._offsetAttribute)) {
+        var applyOffsetValue =
           corridorGeometry._offsetAttribute === GeometryOffsetAttribute.GeometryOffsetAttribute.NONE
             ? 0
             : 1;
-        const length = attr.attributes.position.values.length;
-        const applyOffset = new Uint8Array(length / 3);
+        var length = attr.attributes.position.values.length;
+        var applyOffset = new Uint8Array(length / 3);
         GeometryOffsetAttribute.arrayFill(applyOffset, applyOffsetValue);
         attr.attributes.applyOffset = new GeometryAttribute.GeometryAttribute({
           componentDatatype: ComponentDatatype.ComponentDatatype.UNSIGNED_BYTE,
@@ -1340,8 +1330,8 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
         });
       }
     }
-    const attributes = attr.attributes;
-    const boundingSphere = Transforms.BoundingSphere.fromVertices(
+    var attributes = attr.attributes;
+    var boundingSphere = Transforms.BoundingSphere.fromVertices(
       attributes.position.values,
       undefined,
       3
@@ -1367,11 +1357,11 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
     minHeightFunc,
     maxHeightFunc
   ) {
-    const granularity = corridorGeometry._granularity;
-    const ellipsoid = corridorGeometry._ellipsoid;
+    var granularity = corridorGeometry._granularity;
+    var ellipsoid = corridorGeometry._ellipsoid;
 
-    const minHeight = minHeightFunc(granularity, ellipsoid);
-    const maxHeight = maxHeightFunc(granularity, ellipsoid);
+    var minHeight = minHeightFunc(granularity, ellipsoid);
+    var maxHeight = maxHeightFunc(granularity, ellipsoid);
 
     return new CorridorGeometry({
       positions: corridorGeometry._positions,
@@ -1392,7 +1382,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
      */
     rectangle: {
       get: function () {
-        if (!defaultValue.defined(this._rectangle)) {
+        if (!when.defined(this._rectangle)) {
           this._rectangle = computeRectangle(
             this._positions,
             this._ellipsoid,
@@ -1418,7 +1408,7 @@ define(['./GeometryOffsetAttribute-2bff0974', './arrayRemoveDuplicates-9877adc7'
   });
 
   function createCorridorGeometry(corridorGeometry, offset) {
-    if (defaultValue.defined(offset)) {
+    if (when.defined(offset)) {
       corridorGeometry = CorridorGeometry.unpack(corridorGeometry, offset);
     }
     corridorGeometry._ellipsoid = Matrix2.Ellipsoid.clone(corridorGeometry._ellipsoid);

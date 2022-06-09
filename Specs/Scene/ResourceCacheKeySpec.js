@@ -5,22 +5,22 @@ import {
 } from "../../Source/Cesium.js";
 
 describe("ResourceCacheKey", function () {
-  const schemaUri = "https://example.com/schema.json";
-  const schemaResource = new Resource({ url: schemaUri });
+  var schemaUri = "https://example.com/schema.json";
+  var schemaResource = new Resource({ url: schemaUri });
 
-  const gltfUri = "https://example.com/parent.gltf";
-  const gltfResource = new Resource({ url: gltfUri });
+  var gltfUri = "https://example.com/parent.gltf";
+  var gltfResource = new Resource({ url: gltfUri });
 
-  const baseUri = "https://example.com/resources/";
-  const baseResource = new Resource({ url: baseUri });
+  var baseUri = "https://example.com/resources/";
+  var baseResource = new Resource({ url: baseUri });
 
-  const schemaJson = {};
+  var schemaJson = {};
 
-  const bufferUri = "https://example.com/external.bin";
-  const bufferResource = new Resource({ url: bufferUri });
-  const bufferId = 0;
+  var bufferUri = "https://example.com/external.bin";
+  var bufferResource = new Resource({ url: bufferUri });
+  var bufferId = 0;
 
-  const meshoptGltfEmbeddedBuffer = {
+  var meshoptGltfEmbeddedBuffer = {
     buffers: [
       {
         byteLength: 100,
@@ -42,7 +42,7 @@ describe("ResourceCacheKey", function () {
     ],
   };
 
-  const gltfEmbeddedBuffer = {
+  var gltfEmbeddedBuffer = {
     buffers: [
       {
         byteLength: 100,
@@ -57,7 +57,7 @@ describe("ResourceCacheKey", function () {
     ],
   };
 
-  const gltfExternalBuffer = {
+  var gltfExternalBuffer = {
     buffers: [
       {
         uri: "external.bin",
@@ -73,7 +73,7 @@ describe("ResourceCacheKey", function () {
     ],
   };
 
-  const gltfUncompressed = {
+  var gltfUncompressed = {
     buffers: [
       {
         uri: "external.bin",
@@ -137,7 +137,7 @@ describe("ResourceCacheKey", function () {
     ],
   };
 
-  const gltfDraco = {
+  var gltfDraco = {
     buffers: [
       {
         uri: "external.bin",
@@ -194,7 +194,7 @@ describe("ResourceCacheKey", function () {
     ],
   };
 
-  const gltfWithTextures = {
+  var gltfWithTextures = {
     buffers: [
       {
         uri: "external.bin",
@@ -260,19 +260,19 @@ describe("ResourceCacheKey", function () {
   };
 
   it("getSchemaCacheKey works for external schemas", function () {
-    const cacheKey = ResourceCacheKey.getSchemaCacheKey({
+    var cacheKey = ResourceCacheKey.getSchemaCacheKey({
       resource: schemaResource,
     });
 
-    expect(cacheKey).toBe(`external-schema:${schemaUri}`);
+    expect(cacheKey).toBe("external-schema:" + schemaUri);
   });
 
   it("getSchemaCacheKey works for JSON schemas", function () {
-    const cacheKey = ResourceCacheKey.getSchemaCacheKey({
+    var cacheKey = ResourceCacheKey.getSchemaCacheKey({
       schema: schemaJson,
     });
 
-    expect(cacheKey).toBe(`embedded-schema:${JSON.stringify(schemaJson)}`);
+    expect(cacheKey).toBe("embedded-schema:" + JSON.stringify(schemaJson));
   });
 
   it("getSchemaCacheKey throws if neither options.schema nor options.resource are defined", function () {
@@ -291,11 +291,11 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getExternalBufferCacheKey works", function () {
-    const cacheKey = ResourceCacheKey.getExternalBufferCacheKey({
+    var cacheKey = ResourceCacheKey.getExternalBufferCacheKey({
       resource: bufferResource,
     });
 
-    expect(cacheKey).toBe(`external-buffer:${bufferUri}`);
+    expect(cacheKey).toBe("external-buffer:" + bufferUri);
   });
 
   it("getExternalBufferCacheKey throws if resource is undefined", function () {
@@ -305,12 +305,12 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getEmbeddedBufferCacheKey works", function () {
-    const cacheKey = ResourceCacheKey.getEmbeddedBufferCacheKey({
+    var cacheKey = ResourceCacheKey.getEmbeddedBufferCacheKey({
       parentResource: gltfResource,
       bufferId: bufferId,
     });
 
-    expect(cacheKey).toBe(`embedded-buffer:${gltfUri}-buffer-id-0`);
+    expect(cacheKey).toBe("embedded-buffer:" + gltfUri + "-buffer-id-0");
   });
 
   it("getEmbeddedBufferCacheKey throws if parentResource is undefined", function () {
@@ -330,11 +330,11 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getGltfCacheKey works", function () {
-    const cacheKey = ResourceCacheKey.getGltfCacheKey({
+    var cacheKey = ResourceCacheKey.getGltfCacheKey({
       gltfResource: gltfResource,
     });
 
-    expect(cacheKey).toBe(`gltf:${gltfUri}`);
+    expect(cacheKey).toBe("gltf:" + gltfUri);
   });
 
   it("getGltfCacheKey throws if gltfResource is undefined", function () {
@@ -344,18 +344,20 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getBufferViewCacheKey works with embedded buffer", function () {
-    const cacheKey = ResourceCacheKey.getBufferViewCacheKey({
+    var cacheKey = ResourceCacheKey.getBufferViewCacheKey({
       gltf: gltfEmbeddedBuffer,
       bufferViewId: 0,
       gltfResource: gltfResource,
       baseResource: baseResource,
     });
 
-    expect(cacheKey).toBe(`buffer-view:${gltfUri}-buffer-id-0-range-0-100`);
+    expect(cacheKey).toBe(
+      "buffer-view:" + gltfUri + "-buffer-id-0-range-0-100"
+    );
   });
 
   it("getBufferViewCacheKey works with external buffer", function () {
-    const cacheKey = ResourceCacheKey.getBufferViewCacheKey({
+    var cacheKey = ResourceCacheKey.getBufferViewCacheKey({
       gltf: gltfExternalBuffer,
       bufferViewId: 0,
       gltfResource: gltfResource,
@@ -368,14 +370,16 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getBufferViewCacheKey works with meshopt", function () {
-    const cacheKey = ResourceCacheKey.getBufferViewCacheKey({
+    var cacheKey = ResourceCacheKey.getBufferViewCacheKey({
       gltf: meshoptGltfEmbeddedBuffer,
       bufferViewId: 0,
       gltfResource: gltfResource,
       baseResource: baseResource,
     });
 
-    expect(cacheKey).toBe(`buffer-view:${gltfUri}-buffer-id-1-range-25-75`);
+    expect(cacheKey).toBe(
+      "buffer-view:" + gltfUri + "-buffer-id-1-range-25-75"
+    );
   });
 
   it("getBufferViewCacheKey throws if gltf is undefined", function () {
@@ -423,10 +427,10 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getDracoCacheKey works", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
-    const cacheKey = ResourceCacheKey.getDracoCacheKey({
+    var cacheKey = ResourceCacheKey.getDracoCacheKey({
       gltf: gltfDraco,
       draco: draco,
       gltfResource: gltfResource,
@@ -439,7 +443,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getDracoCacheKey throws if gltf is undefined", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
     expect(function () {
@@ -464,7 +468,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getDracoCacheKey throws if gltfResource is undefined", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
     expect(function () {
@@ -478,7 +482,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getDracoCacheKey throws if baseResource is undefined", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
     expect(function () {
@@ -492,78 +496,32 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getVertexBufferCacheKey works from buffer view", function () {
-    const cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
+    var cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
       gltf: gltfUncompressed,
       gltfResource: gltfResource,
       baseResource: baseResource,
       bufferViewId: 0,
-      loadBuffer: true,
     });
 
     expect(cacheKey).toBe(
-      "vertex-buffer:https://example.com/resources/external.bin-range-0-40-buffer"
+      "vertex-buffer:https://example.com/resources/external.bin-range-0-40"
     );
   });
 
   it("getVertexBufferCacheKey works from draco", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
-    const cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
+    var cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
       gltf: gltfDraco,
       gltfResource: gltfResource,
       baseResource: baseResource,
       draco: draco,
       attributeSemantic: "POSITION",
-      loadBuffer: true,
     });
 
     expect(cacheKey).toBe(
-      "vertex-buffer:https://example.com/resources/external.bin-range-0-100-draco-POSITION-buffer"
-    );
-  });
-
-  it("getVertexBufferCacheKey works with dequantize", function () {
-    const cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
-      gltf: gltfUncompressed,
-      gltfResource: gltfResource,
-      baseResource: baseResource,
-      bufferViewId: 0,
-      dequantize: true,
-      loadBuffer: true,
-    });
-
-    expect(cacheKey).toBe(
-      "vertex-buffer:https://example.com/resources/external.bin-range-0-40-dequantize-buffer"
-    );
-  });
-
-  it("getVertexBufferCacheKey works with loadTypedArray", function () {
-    const cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
-      gltf: gltfUncompressed,
-      gltfResource: gltfResource,
-      baseResource: baseResource,
-      bufferViewId: 0,
-      loadTypedArray: true,
-    });
-
-    expect(cacheKey).toBe(
-      "vertex-buffer:https://example.com/resources/external.bin-range-0-40-typed-array"
-    );
-  });
-
-  it("getVertexBufferCacheKey works with loadBuffer and loadTypedArray", function () {
-    const cacheKey = ResourceCacheKey.getVertexBufferCacheKey({
-      gltf: gltfUncompressed,
-      gltfResource: gltfResource,
-      baseResource: baseResource,
-      bufferViewId: 0,
-      loadBuffer: true,
-      loadTypedArray: true,
-    });
-
-    expect(cacheKey).toBe(
-      "vertex-buffer:https://example.com/resources/external.bin-range-0-40-buffer-typed-array"
+      "vertex-buffer:https://example.com/resources/external.bin-range-0-100-draco-POSITION"
     );
   });
 
@@ -611,7 +569,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getVertexBufferCacheKey throws if both bufferViewId and draco are defined", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
     expect(function () {
@@ -627,7 +585,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getVertexBufferCacheKey throws if both draco is defined and attributeSemantic is undefined", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
     expect(function () {
@@ -641,77 +599,33 @@ describe("ResourceCacheKey", function () {
     }).toThrowDeveloperError();
   });
 
-  it("getIndexBufferCacheKey throws if both loadBuffer and loadTypedArray are false", function () {
-    expect(function () {
-      ResourceCacheKey.getVertexBufferCacheKey({
-        gltf: gltfUncompressed,
-        gltfResource: gltfResource,
-        baseResource: baseResource,
-        bufferViewId: 0,
-        loadBuffer: false,
-        loadTypedArray: false,
-      });
-    }).toThrowDeveloperError();
-  });
-
   it("getIndexBufferCacheKey works from buffer view", function () {
-    const cacheKey = ResourceCacheKey.getIndexBufferCacheKey({
+    var cacheKey = ResourceCacheKey.getIndexBufferCacheKey({
       gltf: gltfUncompressed,
       accessorId: 2,
       gltfResource: gltfResource,
       baseResource: baseResource,
-      loadBuffer: true,
     });
 
     expect(cacheKey).toBe(
-      "index-buffer:https://example.com/resources/external.bin-accessor-80-5123-SCALAR-36-buffer"
+      "index-buffer:https://example.com/resources/external.bin-accessor-80-5123-SCALAR-36"
     );
   });
 
   it("getIndexBufferCacheKey works from draco", function () {
-    const draco =
+    var draco =
       gltfDraco.meshes[0].primitives[0].extensions.KHR_draco_mesh_compression;
 
-    const cacheKey = ResourceCacheKey.getIndexBufferCacheKey({
+    var cacheKey = ResourceCacheKey.getIndexBufferCacheKey({
       gltf: gltfDraco,
       accessorId: 2,
       gltfResource: gltfResource,
       baseResource: baseResource,
       draco: draco,
-      loadBuffer: true,
     });
 
     expect(cacheKey).toBe(
-      "index-buffer:https://example.com/resources/external.bin-range-0-100-draco-buffer"
-    );
-  });
-
-  it("getIndexBufferCacheKey works with loadTypedArray", function () {
-    const cacheKey = ResourceCacheKey.getIndexBufferCacheKey({
-      gltf: gltfUncompressed,
-      accessorId: 2,
-      gltfResource: gltfResource,
-      baseResource: baseResource,
-      loadTypedArray: true,
-    });
-
-    expect(cacheKey).toBe(
-      "index-buffer:https://example.com/resources/external.bin-accessor-80-5123-SCALAR-36-typed-array"
-    );
-  });
-
-  it("getIndexBufferCacheKey works with loadBuffer and loadTypedArray", function () {
-    const cacheKey = ResourceCacheKey.getIndexBufferCacheKey({
-      gltf: gltfUncompressed,
-      accessorId: 2,
-      gltfResource: gltfResource,
-      baseResource: baseResource,
-      loadBuffer: true,
-      loadTypedArray: true,
-    });
-
-    expect(cacheKey).toBe(
-      "index-buffer:https://example.com/resources/external.bin-accessor-80-5123-SCALAR-36-buffer-typed-array"
+      "index-buffer:https://example.com/resources/external.bin-range-0-100-draco"
     );
   });
 
@@ -722,7 +636,6 @@ describe("ResourceCacheKey", function () {
         accessorId: 2,
         gltfResource: gltfResource,
         baseResource: baseResource,
-        loadBuffer: true,
       });
     }).toThrowDeveloperError();
   });
@@ -734,7 +647,6 @@ describe("ResourceCacheKey", function () {
         accessorId: 2,
         gltfResource: undefined,
         baseResource: baseResource,
-        loadBuffer: true,
       });
     }).toThrowDeveloperError();
   });
@@ -746,26 +658,12 @@ describe("ResourceCacheKey", function () {
         accessorId: 2,
         gltfResource: gltfResource,
         baseResource: undefined,
-        loadBuffer: true,
-      });
-    }).toThrowDeveloperError();
-  });
-
-  it("getIndexBufferCacheKey throws if both loadBuffer and loadTypedArray are false", function () {
-    expect(function () {
-      ResourceCacheKey.getIndexBufferCacheKey({
-        gltf: gltfUncompressed,
-        accessorId: 2,
-        gltfResource: gltfResource,
-        baseResource: baseResource,
-        loadBuffer: false,
-        loadTypedArray: false,
       });
     }).toThrowDeveloperError();
   });
 
   it("getImageCacheKey works from uri", function () {
-    const cacheKey = ResourceCacheKey.getImageCacheKey({
+    var cacheKey = ResourceCacheKey.getImageCacheKey({
       gltf: gltfWithTextures,
       imageId: 0,
       gltfResource: gltfResource,
@@ -776,7 +674,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getImageCacheKey works from buffer view", function () {
-    const cacheKey = ResourceCacheKey.getImageCacheKey({
+    var cacheKey = ResourceCacheKey.getImageCacheKey({
       gltf: gltfWithTextures,
       imageId: 1,
       gltfResource: gltfResource,
@@ -833,7 +731,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getTextureCacheKey works with default sampler", function () {
-    const cacheKey = ResourceCacheKey.getTextureCacheKey({
+    var cacheKey = ResourceCacheKey.getTextureCacheKey({
       gltf: gltfWithTextures,
       textureInfo: {
         index: 0,
@@ -850,7 +748,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getTextureCacheKey works with explicit sampler", function () {
-    const cacheKey = ResourceCacheKey.getTextureCacheKey({
+    var cacheKey = ResourceCacheKey.getTextureCacheKey({
       gltf: gltfWithTextures,
       textureInfo: {
         index: 1,
@@ -867,7 +765,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getTextureCacheKey works with EXT_texture_webp extension", function () {
-    const cacheKey = ResourceCacheKey.getTextureCacheKey({
+    var cacheKey = ResourceCacheKey.getTextureCacheKey({
       gltf: gltfWithTextures,
       textureInfo: {
         index: 2,
@@ -886,7 +784,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getTextureCacheKey ignores EXT_texture_webp extension if WebP is not supported", function () {
-    const cacheKey = ResourceCacheKey.getTextureCacheKey({
+    var cacheKey = ResourceCacheKey.getTextureCacheKey({
       gltf: gltfWithTextures,
       textureInfo: {
         index: 2,
@@ -903,7 +801,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getTextureCacheKey works with KHR_texture_basisu extension", function () {
-    const cacheKey = ResourceCacheKey.getTextureCacheKey({
+    var cacheKey = ResourceCacheKey.getTextureCacheKey({
       gltf: gltfWithTextures,
       textureInfo: {
         index: 3,
@@ -922,7 +820,7 @@ describe("ResourceCacheKey", function () {
   });
 
   it("getTextureCacheKey ignores KHR_texture_basisu extension if Basis is not supported", function () {
-    const cacheKey = ResourceCacheKey.getTextureCacheKey({
+    var cacheKey = ResourceCacheKey.getTextureCacheKey({
       gltf: gltfWithTextures,
       textureInfo: {
         index: 3,

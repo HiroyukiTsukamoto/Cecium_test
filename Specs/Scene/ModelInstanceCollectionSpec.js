@@ -14,24 +14,25 @@ import { ModelInstanceCollection } from "../../Source/Cesium.js";
 import { ShadowMode } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 
 describe(
   "Scene/ModelInstanceCollection",
   function () {
-    const boxUrl = "./Data/Models/Box/CesiumBoxTest.gltf";
-    const cesiumAirUrl = "./Data/Models/CesiumAir/Cesium_Air.gltf";
-    const riggedFigureUrl =
+    var boxUrl = "./Data/Models/Box/CesiumBoxTest.gltf";
+    var cesiumAirUrl = "./Data/Models/CesiumAir/Cesium_Air.gltf";
+    var riggedFigureUrl =
       "./Data/Models/rigged-figure-test/rigged-figure-test.gltf";
-    const movingBoxUrl = "./Data/Models/moving-box/moving-box.gltf";
+    var movingBoxUrl = "./Data/Models/moving-box/moving-box.gltf";
 
-    let scene;
-    let boxRadius;
+    var scene;
+    var boxRadius;
 
     beforeAll(function () {
       scene = createScene();
 
       return loadModel(boxUrl).then(function (model) {
-        boxRadius = model.boundingSphereInternal.radius;
+        boxRadius = model.boundingSphere.radius;
         scene.primitives.remove(model);
       });
     });
@@ -49,7 +50,7 @@ describe(
     });
 
     function loadModel(url) {
-      const model = scene.primitives.add(
+      var model = scene.primitives.add(
         Model.fromGltf({
           url: url,
         })
@@ -65,7 +66,7 @@ describe(
     }
 
     function loadCollection(options) {
-      const collection = scene.primitives.add(
+      var collection = scene.primitives.add(
         new ModelInstanceCollection(options)
       );
 
@@ -82,24 +83,24 @@ describe(
     function createInstances(count, heightOffset) {
       heightOffset = defaultValue(heightOffset, 0.0);
 
-      const spacing = 20.0;
-      const centerLongitude = -123.0744619;
-      const centerLatitude = 44.0503706;
-      const height = 5000.0 + heightOffset;
+      var spacing = 20.0;
+      var centerLongitude = -123.0744619;
+      var centerLatitude = 44.0503706;
+      var height = 5000.0 + heightOffset;
 
-      const instances = [];
-      for (let i = 0; i < count; ++i) {
-        const instanceHeight = height + spacing * i;
-        const position = Cartesian3.fromDegrees(
+      var instances = [];
+      for (var i = 0; i < count; ++i) {
+        var instanceHeight = height + spacing * i;
+        var position = Cartesian3.fromDegrees(
           centerLongitude,
           centerLatitude,
           instanceHeight
         );
-        const heading = Math.PI / 2.0;
-        const pitch = 0.0;
-        const roll = 0.0;
-        const hpr = new HeadingPitchRoll(heading, pitch, roll);
-        const modelMatrix = Transforms.headingPitchRollToFixedFrame(
+        var heading = Math.PI / 2.0;
+        var pitch = 0.0;
+        var roll = 0.0;
+        var hpr = new HeadingPitchRoll(heading, pitch, roll);
+        var modelMatrix = Transforms.headingPitchRollToFixedFrame(
           position,
           hpr
         );
@@ -112,27 +113,27 @@ describe(
     }
 
     function getBoundingSphere(instances, modelRadius) {
-      const length = instances.length;
-      const points = new Array(length);
-      for (let i = 0; i < length; ++i) {
-        const translation = new Cartesian3();
+      var length = instances.length;
+      var points = new Array(length);
+      for (var i = 0; i < length; ++i) {
+        var translation = new Cartesian3();
         Matrix4.getTranslation(instances[i].modelMatrix, translation);
         points[i] = translation;
       }
-      const boundingSphere = new BoundingSphere();
+      var boundingSphere = new BoundingSphere();
       BoundingSphere.fromPoints(points, boundingSphere);
       boundingSphere.radius += modelRadius;
       return boundingSphere;
     }
 
-    const centerScratch = new Cartesian3();
+    var centerScratch = new Cartesian3();
 
     function zoomTo(collection, instance) {
-      const center = Matrix4.getTranslation(
+      var center = Matrix4.getTranslation(
         collection._instances[instance].modelMatrix,
         centerScratch
       );
-      const camera = scene.camera;
+      var camera = scene.camera;
       camera.lookAt(center, new HeadingPitchRange(0.0, 0.0, 10.0));
     }
 
@@ -144,8 +145,8 @@ describe(
       collection.show = true;
 
       // Verify each instance
-      const length = collection.length;
-      for (let i = 0; i < length; ++i) {
+      var length = collection.length;
+      for (var i = 0; i < length; ++i) {
         zoomTo(collection, i);
         if (expectColor) {
           expect({
@@ -176,8 +177,8 @@ describe(
       collection.show = true;
 
       // Verify each instance
-      const length = collection.length;
-      for (let i = 0; i < length; ++i) {
+      var length = collection.length;
+      for (var i = 0; i < length; ++i) {
         zoomTo(collection, i);
         expect(scene).toPickAndCall(verifyPickedInstance(collection, i));
       }
@@ -194,7 +195,7 @@ describe(
         expect(function () {
           return new ModelInstanceCollection({
             url: boxUrl,
-            gltf: model.gltfInternal,
+            gltf: model.gltf,
           });
         }).toThrowDeveloperError();
       });
@@ -215,10 +216,9 @@ describe(
         expect(collection._cull).toEqual(true);
         expect(collection._model).toBeDefined();
         expect(collection._model.ready).toEqual(true);
-        expect(collection.showCreditsOnScreen).toEqual(false);
 
         if (collection._instancingSupported) {
-          expect(collection._model.cacheKey).toEqual(`${boxUrl}#instanced`);
+          expect(collection._model.cacheKey).toEqual(boxUrl + "#instanced");
         }
       });
     });
@@ -233,7 +233,7 @@ describe(
     });
 
     it("renders from Resource", function () {
-      const resource = new Resource({
+      var resource = new Resource({
         url: boxUrl,
       });
 
@@ -255,7 +255,7 @@ describe(
     });
 
     it("resolves readyPromise", function () {
-      const collection = scene.primitives.add(
+      var collection = scene.primitives.add(
         new ModelInstanceCollection({
           url: boxUrl,
           instances: createInstances(4),
@@ -276,7 +276,7 @@ describe(
 
     it("rejects readyPromise on error", function () {
       // Expect promise to be rejected in Model, then in ModelInstanceCollection.
-      const collection = scene.primitives.add(
+      var collection = scene.primitives.add(
         new ModelInstanceCollection({
           url: "invalid.gltf",
           instances: createInstances(4),
@@ -289,7 +289,7 @@ describe(
         .then(function (collection) {
           fail("should not resolve");
         })
-        .catch(function (error) {
+        .otherwise(function (error) {
           expect(collection.ready).toEqual(false);
         });
     });
@@ -304,7 +304,7 @@ describe(
     });
 
     it("renders zero instances", function () {
-      const collection = scene.primitives.add(
+      var collection = scene.primitives.add(
         new ModelInstanceCollection({
           url: boxUrl,
           instances: createInstances(0),
@@ -312,7 +312,7 @@ describe(
       );
 
       // Collection never reaches the ready state due to returning early
-      for (let i = 0; i < 10; ++i) {
+      for (var i = 0; i < 10; ++i) {
         expectRender(collection, false);
         expect(collection.ready).toBe(false);
       }
@@ -341,9 +341,9 @@ describe(
         url: riggedFigureUrl,
         instances: createInstances(4),
       }).then(function (collection) {
-        const instances = collection._instances;
+        var instances = collection._instances;
         // Rotate instances to account for empty space between legs of rigged model.
-        for (let i = 0; i < instances.length; ++i) {
+        for (var i = 0; i < instances.length; ++i) {
           instances[i].modelMatrix = Matrix4.multiply(
             instances[i].modelMatrix,
             Axis.Y_UP_TO_X_UP,
@@ -357,7 +357,7 @@ describe(
 
     it("renders when instancing is disabled", function () {
       // Disable extension
-      const instancedArrays = scene.context._instancedArrays;
+      var instancedArrays = scene.context._instancedArrays;
       scene.context._instancedArrays = undefined;
 
       return loadCollection({
@@ -381,12 +381,12 @@ describe(
     });
 
     it("verify bounding volume", function () {
-      const instances = createInstances(4);
+      var instances = createInstances(4);
       return loadCollection({
         url: boxUrl,
         instances: instances,
       }).then(function (collection) {
-        const boundingSphere = getBoundingSphere(instances, boxRadius);
+        var boundingSphere = getBoundingSphere(instances, boxRadius);
         expect(collection._boundingSphere.center).toEqual(
           boundingSphere.center
         );
@@ -429,7 +429,7 @@ describe(
         collection.activeAnimations.addAll();
 
         // Render when animation is in view
-        let time = JulianDate.now();
+        var time = JulianDate.now();
         expectRender(collection, true, time);
 
         // Render when animation is out of view
@@ -442,7 +442,7 @@ describe(
       // Instance transforms are updated differently when instancing is disabled
 
       // Disable extension
-      const instancedArrays = scene.context._instancedArrays;
+      var instancedArrays = scene.context._instancedArrays;
       scene.context._instancedArrays = undefined;
 
       return loadCollection({
@@ -452,7 +452,7 @@ describe(
         collection.activeAnimations.addAll();
 
         // Render when animation is in view
-        let time = JulianDate.now();
+        var time = JulianDate.now();
         expectRender(collection, true, time);
 
         // Render when animation is out of view
@@ -465,8 +465,8 @@ describe(
     });
 
     it("renders two model instance collections that use the same cache key", function () {
-      const collections = [];
-      const promises = [];
+      var collections = [];
+      var promises = [];
 
       promises.push(
         loadCollection({
@@ -486,10 +486,10 @@ describe(
         })
       );
 
-      return Promise.all(promises).then(function () {
-        const resourcesFirst = collections[0]._model._rendererResources;
-        const resourcesSecond = collections[1]._model._rendererResources;
-        let name;
+      return when.all(promises).then(function () {
+        var resourcesFirst = collections[0]._model._rendererResources;
+        var resourcesSecond = collections[1]._model._rendererResources;
+        var name;
 
         expect(collections[0]._model.cacheKey).toEqual(
           collections[1]._model.cacheKey
@@ -571,7 +571,7 @@ describe(
       }).then(function (collection) {
         scene.renderForSpecs();
         expect(collection._shadows).toBe(ShadowMode.ENABLED);
-        let drawCommand = collection._drawCommands[0];
+        var drawCommand = collection._drawCommands[0];
         expect(drawCommand.castShadows).toBe(true);
         expect(drawCommand.receiveShadows).toBe(true);
         collection.shadows = ShadowMode.DISABLED;
@@ -595,7 +595,7 @@ describe(
 
     it("picks when instancing is disabled", function () {
       // Disable extension
-      const instancedArrays = scene.context._instancedArrays;
+      var instancedArrays = scene.context._instancedArrays;
       scene.context._instancedArrays = undefined;
 
       return loadCollection({
@@ -614,7 +614,7 @@ describe(
         instances: createInstances(4),
       }).then(function (collection) {
         expect(scene).toPickAndCall(function (result) {
-          const originalMatrix = result.modelMatrix;
+          var originalMatrix = result.modelMatrix;
           result.modelMatrix = Matrix4.IDENTITY;
           expect(scene).notToPick();
           result.modelMatrix = originalMatrix;
@@ -625,7 +625,7 @@ describe(
 
     it("moves instance when instancing is disabled", function () {
       // Disable extension
-      const instancedArrays = scene.context._instancedArrays;
+      var instancedArrays = scene.context._instancedArrays;
       scene.context._instancedArrays = undefined;
 
       return loadCollection({
@@ -633,8 +633,8 @@ describe(
         instances: createInstances(4),
       }).then(function (collection) {
         expect(scene).toPickAndCall(function (result) {
-          const originalMatrix = result.modelMatrix;
-          const originalRadius = collection._boundingSphere.radius;
+          var originalMatrix = result.modelMatrix;
+          var originalRadius = collection._boundingSphere.radius;
           result.modelMatrix = Matrix4.IDENTITY;
           expect(scene).notToPick();
           expect(collection._boundingSphere.radius).toBeGreaterThan(
@@ -661,7 +661,7 @@ describe(
 
     it("renders in 2D when instancing is disabled", function () {
       // Disable extension
-      const instancedArrays = scene.context._instancedArrays;
+      var instancedArrays = scene.context._instancedArrays;
       scene.context._instancedArrays = undefined;
 
       return loadCollection({
@@ -690,7 +690,7 @@ describe(
 
     it("renders in CV when instancing is disabled", function () {
       // Disable extension
-      const instancedArrays = scene.context._instancedArrays;
+      var instancedArrays = scene.context._instancedArrays;
       scene.context._instancedArrays = undefined;
 
       return loadCollection({
@@ -712,7 +712,7 @@ describe(
         instances: createInstances(4),
         cull: false,
       }).then(function () {
-        const commandList = scene.frameState.commandList;
+        var commandList = scene.frameState.commandList;
         scene.renderForSpecs();
         expect(commandList.length).toBeGreaterThan(0);
         scene.morphToColumbusView(1.0);

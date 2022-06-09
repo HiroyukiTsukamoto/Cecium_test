@@ -9,7 +9,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  * @see PackableForInterpolation
  */
-const Packable = {
+var Packable = {
   /**
    * The number of elements used to pack the object into an array.
    * @type {Number}

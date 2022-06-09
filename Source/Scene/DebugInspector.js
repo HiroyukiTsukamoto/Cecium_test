@@ -12,9 +12,9 @@ function DebugInspector() {
 }
 
 function getAttributeLocations(shaderProgram) {
-  const attributeLocations = {};
-  const attributes = shaderProgram.vertexAttributes;
-  for (const a in attributes) {
+  var attributeLocations = {};
+  var attributes = shaderProgram.vertexAttributes;
+  for (var a in attributes) {
     if (attributes.hasOwnProperty(a)) {
       attributeLocations[a] = attributes[a].index;
     }
@@ -24,15 +24,15 @@ function getAttributeLocations(shaderProgram) {
 }
 
 function createDebugShowFrustumsShaderProgram(scene, shaderProgram) {
-  const context = scene.context;
-  const sp = shaderProgram;
-  const fs = sp.fragmentShaderSource.clone();
+  var context = scene.context;
+  var sp = shaderProgram;
+  var fs = sp.fragmentShaderSource.clone();
 
-  const targets = [];
+  var targets = [];
   fs.sources = fs.sources.map(function (source) {
     source = ShaderSource.replaceMain(source, "czm_Debug_main");
-    const re = /gl_FragData\[(\d+)\]/g;
-    let match;
+    var re = /gl_FragData\[(\d+)\]/g;
+    var match;
     while ((match = re.exec(source)) !== null) {
       if (targets.indexOf(match[1]) === -1) {
         targets.push(match[1]);
@@ -40,20 +40,22 @@ function createDebugShowFrustumsShaderProgram(scene, shaderProgram) {
     }
     return source;
   });
-  const length = targets.length;
+  var length = targets.length;
 
-  let newMain = "";
+  var newMain = "";
   newMain += "uniform vec3 debugShowCommandsColor;\n";
   newMain += "uniform vec3 debugShowFrustumsColor;\n";
   newMain += "void main() \n" + "{ \n" + "    czm_Debug_main(); \n";
 
   // set debugShowCommandsColor to Color(1.0, 1.0, 1.0, 1.0) to stop rendering scene.debugShowCommands
   // set debugShowFrustumsColor to Color(1.0, 1.0, 1.0, 1.0) to stop rendering scene.debugShowFrustums
-  let i;
+  var i;
   if (length > 0) {
     for (i = 0; i < length; ++i) {
-      newMain += `    gl_FragData[${targets[i]}].rgb *= debugShowCommandsColor;\n`;
-      newMain += `    gl_FragData[${targets[i]}].rgb *= debugShowFrustumsColor;\n`;
+      newMain +=
+        "    gl_FragData[" + targets[i] + "].rgb *= debugShowCommandsColor;\n";
+      newMain +=
+        "    gl_FragData[" + targets[i] + "].rgb *= debugShowFrustumsColor;\n";
     }
   } else {
     newMain += "    gl_FragColor.rgb *= debugShowCommandsColor;\n";
@@ -63,7 +65,7 @@ function createDebugShowFrustumsShaderProgram(scene, shaderProgram) {
 
   fs.sources.push(newMain);
 
-  const attributeLocations = getAttributeLocations(sp);
+  var attributeLocations = getAttributeLocations(sp);
 
   return ShaderProgram.fromCache({
     context: context,
@@ -73,10 +75,10 @@ function createDebugShowFrustumsShaderProgram(scene, shaderProgram) {
   });
 }
 
-const scratchFrustumColor = new Color();
+var scratchFrustumColor = new Color();
 function createDebugShowFrustumsUniformMap(scene, command) {
   // setup uniform for the shader
-  let debugUniformMap;
+  var debugUniformMap;
   if (!defined(command.uniformMap)) {
     debugUniformMap = {};
   } else {
@@ -122,15 +124,15 @@ function createDebugShowFrustumsUniformMap(scene, command) {
   return debugUniformMap;
 }
 
-const scratchShowFrustumCommand = new DrawCommand();
+var scratchShowFrustumCommand = new DrawCommand();
 DebugInspector.prototype.executeDebugShowFrustumsCommand = function (
   scene,
   command,
   passState
 ) {
   // create debug command
-  const shaderProgramId = command.shaderProgram.id;
-  let debugShaderProgram = this._cachedShowFrustumsShaders[shaderProgramId];
+  var shaderProgramId = command.shaderProgram.id;
+  var debugShaderProgram = this._cachedShowFrustumsShaders[shaderProgramId];
   if (!defined(debugShaderProgram)) {
     debugShaderProgram = createDebugShowFrustumsShaderProgram(
       scene,
@@ -140,7 +142,7 @@ DebugInspector.prototype.executeDebugShowFrustumsCommand = function (
     this._cachedShowFrustumsShaders[shaderProgramId] = debugShaderProgram;
   }
 
-  const debugCommand = DrawCommand.shallowClone(
+  var debugCommand = DrawCommand.shallowClone(
     command,
     scratchShowFrustumCommand
   );

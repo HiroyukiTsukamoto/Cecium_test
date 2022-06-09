@@ -4,7 +4,7 @@ import { Pass } from "../../Source/Cesium.js";
 
 describe("Renderer/DrawCommand", function () {
   it("constructs", function () {
-    const c = new DrawCommand();
+    var c = new DrawCommand();
     expect(c.boundingVolume).toBeUndefined();
     expect(c.orientedBoundingBox).toBeUndefined();
     expect(c.cull).toEqual(true);
@@ -31,20 +31,20 @@ describe("Renderer/DrawCommand", function () {
   });
 
   it("constructs with options", function () {
-    const boundingVolume = {};
-    const orientedBoundingBox = {};
-    const modelMatrix = {};
-    const primitiveType = PrimitiveType.TRIANGLE_FAN;
-    const vertexArray = {};
-    const shaderProgram = {};
-    const uniformMap = {};
-    const renderState = {};
-    const framebuffer = {};
-    const pass = Pass.TRANSLUCENT;
-    const owner = {};
-    const pickId = {};
+    var boundingVolume = {};
+    var orientedBoundingBox = {};
+    var modelMatrix = {};
+    var primitiveType = PrimitiveType.TRIANGLE_FAN;
+    var vertexArray = {};
+    var shaderProgram = {};
+    var uniformMap = {};
+    var renderState = {};
+    var framebuffer = {};
+    var pass = Pass.TRANSLUCENT;
+    var owner = {};
+    var pickId = {};
 
-    const c = new DrawCommand({
+    var c = new DrawCommand({
       boundingVolume: boundingVolume,
       orientedBoundingBox: orientedBoundingBox,
       cull: false,
@@ -95,7 +95,7 @@ describe("Renderer/DrawCommand", function () {
   });
 
   it("shallow clones", function () {
-    const c = new DrawCommand({
+    var c = new DrawCommand({
       boundingVolume: {},
       orientedBoundingBox: {},
       cull: false,
@@ -120,7 +120,7 @@ describe("Renderer/DrawCommand", function () {
       pickOnly: true,
     });
 
-    const clone = DrawCommand.shallowClone(c);
+    var clone = DrawCommand.shallowClone(c);
 
     expect(clone.boundingVolume).toBe(c.boundingVolume);
     expect(clone.orientedBoundingBox).toBe(c.orientedBoundingBox);
@@ -148,7 +148,7 @@ describe("Renderer/DrawCommand", function () {
   });
 
   it("shallow clones with result", function () {
-    const c = new DrawCommand({
+    var c = new DrawCommand({
       boundingVolume: {},
       orientedBoundingBox: {},
       cull: false,
@@ -173,8 +173,8 @@ describe("Renderer/DrawCommand", function () {
       pickOnly: true,
     });
 
-    const result = new DrawCommand();
-    const clone = DrawCommand.shallowClone(c, result);
+    var result = new DrawCommand();
+    var clone = DrawCommand.shallowClone(c, result);
 
     expect(result).toBe(clone);
     expect(clone.boundingVolume).toBe(c.boundingVolume);

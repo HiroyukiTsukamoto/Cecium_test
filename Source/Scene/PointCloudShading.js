@@ -20,7 +20,7 @@ import PointCloudEyeDomeLighting from "./PointCloudEyeDomeLighting.js";
  * @constructor
  */
 function PointCloudShading(options) {
-  const pointCloudShading = defaultValue(options, {});
+  var pointCloudShading = defaultValue(options, {});
 
   /**
    * Perform point attenuation based on geometric error.

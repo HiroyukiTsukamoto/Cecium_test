@@ -13,19 +13,19 @@ function calculateM(ellipticity, major, latitude) {
     return major * latitude;
   }
 
-  const e2 = ellipticity * ellipticity;
-  const e4 = e2 * e2;
-  const e6 = e4 * e2;
-  const e8 = e6 * e2;
-  const e10 = e8 * e2;
-  const e12 = e10 * e2;
-  const phi = latitude;
-  const sin2Phi = Math.sin(2 * phi);
-  const sin4Phi = Math.sin(4 * phi);
-  const sin6Phi = Math.sin(6 * phi);
-  const sin8Phi = Math.sin(8 * phi);
-  const sin10Phi = Math.sin(10 * phi);
-  const sin12Phi = Math.sin(12 * phi);
+  var e2 = ellipticity * ellipticity;
+  var e4 = e2 * e2;
+  var e6 = e4 * e2;
+  var e8 = e6 * e2;
+  var e10 = e8 * e2;
+  var e12 = e10 * e2;
+  var phi = latitude;
+  var sin2Phi = Math.sin(2 * phi);
+  var sin4Phi = Math.sin(4 * phi);
+  var sin6Phi = Math.sin(6 * phi);
+  var sin8Phi = Math.sin(8 * phi);
+  var sin10Phi = Math.sin(10 * phi);
+  var sin12Phi = Math.sin(12 * phi);
 
   return (
     major *
@@ -63,34 +63,34 @@ function calculateM(ellipticity, major, latitude) {
 }
 
 function calculateInverseM(M, ellipticity, major) {
-  const d = M / major;
+  var d = M / major;
 
   if (ellipticity === 0.0) {
     // sphere
     return d;
   }
 
-  const d2 = d * d;
-  const d3 = d2 * d;
-  const d4 = d3 * d;
-  const e = ellipticity;
-  const e2 = e * e;
-  const e4 = e2 * e2;
-  const e6 = e4 * e2;
-  const e8 = e6 * e2;
-  const e10 = e8 * e2;
-  const e12 = e10 * e2;
-  const sin2D = Math.sin(2 * d);
-  const cos2D = Math.cos(2 * d);
-  const sin4D = Math.sin(4 * d);
-  const cos4D = Math.cos(4 * d);
-  const sin6D = Math.sin(6 * d);
-  const cos6D = Math.cos(6 * d);
-  const sin8D = Math.sin(8 * d);
-  const cos8D = Math.cos(8 * d);
-  const sin10D = Math.sin(10 * d);
-  const cos10D = Math.cos(10 * d);
-  const sin12D = Math.sin(12 * d);
+  var d2 = d * d;
+  var d3 = d2 * d;
+  var d4 = d3 * d;
+  var e = ellipticity;
+  var e2 = e * e;
+  var e4 = e2 * e2;
+  var e6 = e4 * e2;
+  var e8 = e6 * e2;
+  var e10 = e8 * e2;
+  var e12 = e10 * e2;
+  var sin2D = Math.sin(2 * d);
+  var cos2D = Math.cos(2 * d);
+  var sin4D = Math.sin(4 * d);
+  var cos4D = Math.cos(4 * d);
+  var sin6D = Math.sin(6 * d);
+  var cos6D = Math.cos(6 * d);
+  var sin8D = Math.sin(8 * d);
+  var cos8D = Math.cos(8 * d);
+  var sin10D = Math.sin(10 * d);
+  var cos10D = Math.cos(10 * d);
+  var sin12D = Math.sin(12 * d);
 
   return (
     d +
@@ -164,7 +164,7 @@ function calculateSigma(ellipticity, latitude) {
     return Math.log(Math.tan(0.5 * (CesiumMath.PI_OVER_TWO + latitude)));
   }
 
-  const eSinL = ellipticity * Math.sin(latitude);
+  var eSinL = ellipticity * Math.sin(latitude);
   return (
     Math.log(Math.tan(0.5 * (CesiumMath.PI_OVER_TWO + latitude))) -
     (ellipticity / 2.0) * Math.log((1 + eSinL) / (1 - eSinL))
@@ -178,11 +178,8 @@ function calculateHeading(
   secondLongitude,
   secondLatitude
 ) {
-  const sigma1 = calculateSigma(ellipsoidRhumbLine._ellipticity, firstLatitude);
-  const sigma2 = calculateSigma(
-    ellipsoidRhumbLine._ellipticity,
-    secondLatitude
-  );
+  var sigma1 = calculateSigma(ellipsoidRhumbLine._ellipticity, firstLatitude);
+  var sigma2 = calculateSigma(ellipsoidRhumbLine._ellipticity, secondLatitude);
   return Math.atan2(
     CesiumMath.negativePiToPi(secondLongitude - firstLongitude),
     sigma2 - sigma1
@@ -198,10 +195,10 @@ function calculateArcLength(
   secondLongitude,
   secondLatitude
 ) {
-  const heading = ellipsoidRhumbLine._heading;
-  const deltaLongitude = secondLongitude - firstLongitude;
+  var heading = ellipsoidRhumbLine._heading;
+  var deltaLongitude = secondLongitude - firstLongitude;
 
-  let distance = 0.0;
+  var distance = 0.0;
 
   //Check to see if the rhumb line has constant latitude
   //This equation will diverge if heading gets close to 90 degrees
@@ -219,7 +216,7 @@ function calculateArcLength(
         Math.cos(firstLatitude) *
         CesiumMath.negativePiToPi(deltaLongitude);
     } else {
-      const sinPhi = Math.sin(firstLatitude);
+      var sinPhi = Math.sin(firstLatitude);
       distance =
         (major *
           Math.cos(firstLatitude) *
@@ -227,31 +224,23 @@ function calculateArcLength(
         Math.sqrt(1 - ellipsoidRhumbLine._ellipticitySquared * sinPhi * sinPhi);
     }
   } else {
-    const M1 = calculateM(
-      ellipsoidRhumbLine._ellipticity,
-      major,
-      firstLatitude
-    );
-    const M2 = calculateM(
-      ellipsoidRhumbLine._ellipticity,
-      major,
-      secondLatitude
-    );
+    var M1 = calculateM(ellipsoidRhumbLine._ellipticity, major, firstLatitude);
+    var M2 = calculateM(ellipsoidRhumbLine._ellipticity, major, secondLatitude);
 
     distance = (M2 - M1) / Math.cos(heading);
   }
   return Math.abs(distance);
 }
 
-const scratchCart1 = new Cartesian3();
-const scratchCart2 = new Cartesian3();
+var scratchCart1 = new Cartesian3();
+var scratchCart2 = new Cartesian3();
 
 function computeProperties(ellipsoidRhumbLine, start, end, ellipsoid) {
-  const firstCartesian = Cartesian3.normalize(
+  var firstCartesian = Cartesian3.normalize(
     ellipsoid.cartographicToCartesian(start, scratchCart2),
     scratchCart1
   );
-  const lastCartesian = Cartesian3.normalize(
+  var lastCartesian = Cartesian3.normalize(
     ellipsoid.cartographicToCartesian(end, scratchCart2),
     scratchCart2
   );
@@ -266,10 +255,10 @@ function computeProperties(ellipsoidRhumbLine, start, end, ellipsoid) {
   );
   //>>includeEnd('debug');
 
-  const major = ellipsoid.maximumRadius;
-  const minor = ellipsoid.minimumRadius;
-  const majorSquared = major * major;
-  const minorSquared = minor * minor;
+  var major = ellipsoid.maximumRadius;
+  var minor = ellipsoid.minimumRadius;
+  var majorSquared = major * major;
+  var minorSquared = minor * minor;
   ellipsoidRhumbLine._ellipticitySquared =
     (majorSquared - minorSquared) / majorSquared;
   ellipsoidRhumbLine._ellipticity = Math.sqrt(
@@ -315,11 +304,11 @@ function interpolateUsingSurfaceDistance(
     return Cartographic.clone(start, result);
   }
 
-  const ellipticitySquared = ellipticity * ellipticity;
+  var ellipticitySquared = ellipticity * ellipticity;
 
-  let longitude;
-  let latitude;
-  let deltaLongitude;
+  var longitude;
+  var latitude;
+  var deltaLongitude;
 
   //Check to see if the rhumb line has constant latitude
   //This won't converge if heading is close to 90 degrees
@@ -327,26 +316,26 @@ function interpolateUsingSurfaceDistance(
     Math.abs(CesiumMath.PI_OVER_TWO - Math.abs(heading)) > CesiumMath.EPSILON8
   ) {
     //Calculate latitude of the second point
-    const M1 = calculateM(ellipticity, major, start.latitude);
-    const deltaM = distance * Math.cos(heading);
-    const M2 = M1 + deltaM;
+    var M1 = calculateM(ellipticity, major, start.latitude);
+    var deltaM = distance * Math.cos(heading);
+    var M2 = M1 + deltaM;
     latitude = calculateInverseM(M2, ellipticity, major);
 
     //Now find the longitude of the second point
-    const sigma1 = calculateSigma(ellipticity, start.latitude);
-    const sigma2 = calculateSigma(ellipticity, latitude);
+    var sigma1 = calculateSigma(ellipticity, start.latitude);
+    var sigma2 = calculateSigma(ellipticity, latitude);
     deltaLongitude = Math.tan(heading) * (sigma2 - sigma1);
     longitude = CesiumMath.negativePiToPi(start.longitude + deltaLongitude);
   } else {
     //If heading is close to 90 degrees
     latitude = start.latitude;
-    let localRad;
+    var localRad;
 
     if (ellipticity === 0.0) {
       // sphere
       localRad = major * Math.cos(start.latitude);
     } else {
-      const sinPhi = Math.sin(start.latitude);
+      var sinPhi = Math.sin(start.latitude);
       localRad =
         (major * Math.cos(start.latitude)) /
         Math.sqrt(1 - ellipticitySquared * sinPhi * sinPhi);
@@ -384,7 +373,7 @@ function interpolateUsingSurfaceDistance(
  * @exception {DeveloperError} angle between start and end must be at least 0.0125 radians.
  */
 function EllipsoidRhumbLine(start, end, ellipsoid) {
-  const e = defaultValue(ellipsoid, Ellipsoid.WGS84);
+  var e = defaultValue(ellipsoid, Ellipsoid.WGS84);
   this._ellipsoid = e;
   this._start = new Cartographic();
   this._end = new Cartographic();
@@ -493,15 +482,15 @@ EllipsoidRhumbLine.fromStartHeadingDistance = function (
   Check.typeOf.number.greaterThan("distance", distance, 0.0);
   //>>includeEnd('debug');
 
-  const e = defaultValue(ellipsoid, Ellipsoid.WGS84);
-  const major = e.maximumRadius;
-  const minor = e.minimumRadius;
-  const majorSquared = major * major;
-  const minorSquared = minor * minor;
-  const ellipticity = Math.sqrt((majorSquared - minorSquared) / majorSquared);
+  var e = defaultValue(ellipsoid, Ellipsoid.WGS84);
+  var major = e.maximumRadius;
+  var minor = e.minimumRadius;
+  var majorSquared = major * major;
+  var minorSquared = minor * minor;
+  var ellipticity = Math.sqrt((majorSquared - minorSquared) / majorSquared);
 
   heading = CesiumMath.negativePiToPi(heading);
-  const end = interpolateUsingSurfaceDistance(
+  var end = interpolateUsingSurfaceDistance(
     start,
     heading,
     distance,
@@ -607,10 +596,10 @@ EllipsoidRhumbLine.prototype.findIntersectionWithLongitude = function (
   }
   //>>includeEnd('debug');
 
-  const ellipticity = this._ellipticity;
-  const heading = this._heading;
-  const absHeading = Math.abs(heading);
-  const start = this._start;
+  var ellipticity = this._ellipticity;
+  var heading = this._heading;
+  var absHeading = Math.abs(heading);
+  var start = this._start;
 
   intersectionLongitude = CesiumMath.negativePiToPi(intersectionLongitude);
 
@@ -661,19 +650,19 @@ EllipsoidRhumbLine.prototype.findIntersectionWithLongitude = function (
   }
 
   // Use iterative solver from Equation 9 from http://edwilliams.org/ellipsoid/ellipsoid.pdf
-  const phi1 = start.latitude;
-  const eSinPhi1 = ellipticity * Math.sin(phi1);
-  const leftComponent =
+  var phi1 = start.latitude;
+  var eSinPhi1 = ellipticity * Math.sin(phi1);
+  var leftComponent =
     Math.tan(0.5 * (CesiumMath.PI_OVER_TWO + phi1)) *
     Math.exp((intersectionLongitude - start.longitude) / Math.tan(heading));
-  const denominator = (1 + eSinPhi1) / (1 - eSinPhi1);
+  var denominator = (1 + eSinPhi1) / (1 - eSinPhi1);
 
-  let newPhi = start.latitude;
-  let phi;
+  var newPhi = start.latitude;
+  var phi;
   do {
     phi = newPhi;
-    const eSinPhi = ellipticity * Math.sin(phi);
-    const numerator = (1 + eSinPhi) / (1 - eSinPhi);
+    var eSinPhi = ellipticity * Math.sin(phi);
+    var numerator = (1 + eSinPhi) / (1 - eSinPhi);
     newPhi =
       2 *
         Math.atan(
@@ -711,9 +700,9 @@ EllipsoidRhumbLine.prototype.findIntersectionWithLatitude = function (
   }
   //>>includeEnd('debug');
 
-  const ellipticity = this._ellipticity;
-  const heading = this._heading;
-  const start = this._start;
+  var ellipticity = this._ellipticity;
+  var heading = this._heading;
+  var start = this._start;
 
   // If start and end have same latitude, return undefined since it's either no intersection or infinite intersections
   if (
@@ -727,10 +716,10 @@ EllipsoidRhumbLine.prototype.findIntersectionWithLatitude = function (
   }
 
   // Can be solved using the same equations from interpolateUsingSurfaceDistance
-  const sigma1 = calculateSigma(ellipticity, start.latitude);
-  const sigma2 = calculateSigma(ellipticity, intersectionLatitude);
-  const deltaLongitude = Math.tan(heading) * (sigma2 - sigma1);
-  const longitude = CesiumMath.negativePiToPi(start.longitude + deltaLongitude);
+  var sigma1 = calculateSigma(ellipticity, start.latitude);
+  var sigma2 = calculateSigma(ellipticity, intersectionLatitude);
+  var deltaLongitude = Math.tan(heading) * (sigma2 - sigma1);
+  var longitude = CesiumMath.negativePiToPi(start.longitude + deltaLongitude);
 
   if (defined(result)) {
     result.longitude = longitude;

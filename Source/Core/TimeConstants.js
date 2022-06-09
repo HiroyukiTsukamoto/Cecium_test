@@ -7,7 +7,7 @@
  *
  * @private
  */
-const TimeConstants = {
+var TimeConstants = {
   /**
    * The number of seconds in one millisecond: <code>0.001</code>
    * @type {Number}

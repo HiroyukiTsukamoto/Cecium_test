@@ -1,6 +1,7 @@
 import defined from "../Core/defined.js";
 import Rectangle from "../Core/Rectangle.js";
 import sampleTerrainMostDetailed from "../Core/sampleTerrainMostDetailed.js";
+import when from "../ThirdParty/when.js";
 import SceneMode from "./SceneMode.js";
 
 /**
@@ -15,12 +16,12 @@ import SceneMode from "./SceneMode.js";
  * @private
  */
 function computeFlyToLocationForRectangle(rectangle, scene) {
-  const terrainProvider = scene.terrainProvider;
-  const mapProjection = scene.mapProjection;
-  const ellipsoid = mapProjection.ellipsoid;
+  var terrainProvider = scene.terrainProvider;
+  var mapProjection = scene.mapProjection;
+  var ellipsoid = mapProjection.ellipsoid;
 
-  let positionWithoutTerrain;
-  const tmp = scene.camera.getRectangleCameraCoordinates(rectangle);
+  var positionWithoutTerrain;
+  var tmp = scene.camera.getRectangleCameraCoordinates(rectangle);
   if (scene.mode === SceneMode.SCENE3D) {
     positionWithoutTerrain = ellipsoid.cartesianToCartographic(tmp);
   } else {
@@ -28,17 +29,17 @@ function computeFlyToLocationForRectangle(rectangle, scene) {
   }
 
   if (!defined(terrainProvider)) {
-    return Promise.resolve(positionWithoutTerrain);
+    return when.resolve(positionWithoutTerrain);
   }
 
   return terrainProvider.readyPromise.then(function () {
-    const availability = terrainProvider.availability;
+    var availability = terrainProvider.availability;
 
     if (!defined(availability) || scene.mode === SceneMode.SCENE2D) {
       return positionWithoutTerrain;
     }
 
-    const cartographics = [
+    var cartographics = [
       Rectangle.center(rectangle),
       Rectangle.southeast(rectangle),
       Rectangle.southwest(rectangle),
@@ -49,15 +50,11 @@ function computeFlyToLocationForRectangle(rectangle, scene) {
     return computeFlyToLocationForRectangle
       ._sampleTerrainMostDetailed(terrainProvider, cartographics)
       .then(function (positionsOnTerrain) {
-        const maxHeight = positionsOnTerrain.reduce(function (
-          currentMax,
-          item
-        ) {
+        var maxHeight = positionsOnTerrain.reduce(function (currentMax, item) {
           return Math.max(item.height, currentMax);
-        },
-        -Number.MAX_VALUE);
+        }, -Number.MAX_VALUE);
 
-        const finalPosition = positionWithoutTerrain;
+        var finalPosition = positionWithoutTerrain;
         finalPosition.height += maxHeight;
         return finalPosition;
       });

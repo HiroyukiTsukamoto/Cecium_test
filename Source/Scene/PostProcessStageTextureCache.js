@@ -3,7 +3,8 @@ import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
 import CesiumMath from "../Core/Math.js";
 import ClearCommand from "../Renderer/ClearCommand.js";
-import FramebufferManager from "../Renderer/FramebufferManager.js";
+import Framebuffer from "../Renderer/Framebuffer.js";
+import Texture from "../Renderer/Texture.js";
 
 /**
  * Creates a minimal amount of textures and framebuffers.
@@ -44,19 +45,19 @@ function getStageDependencies(
     return previousName;
   }
 
-  const stageDependencies = (dependencies[stage.name] = {});
+  var stageDependencies = (dependencies[stage.name] = {});
   if (defined(previousName)) {
-    const previous = collection.getStageByName(previousName);
+    var previous = collection.getStageByName(previousName);
     stageDependencies[getLastStageName(previous)] = true;
   }
-  const uniforms = stage.uniforms;
+  var uniforms = stage.uniforms;
   if (defined(uniforms)) {
-    const uniformNames = Object.getOwnPropertyNames(uniforms);
-    const uniformNamesLength = uniformNames.length;
-    for (let i = 0; i < uniformNamesLength; ++i) {
-      const value = uniforms[uniformNames[i]];
+    var uniformNames = Object.getOwnPropertyNames(uniforms);
+    var uniformNamesLength = uniformNames.length;
+    for (var i = 0; i < uniformNamesLength; ++i) {
+      var value = uniforms[uniformNames[i]];
       if (typeof value === "string") {
-        const dependent = collection.getStageByName(value);
+        var dependent = collection.getStageByName(value);
         if (defined(dependent)) {
           stageDependencies[getLastStageName(dependent)] = true;
         }
@@ -81,15 +82,15 @@ function getCompositeDependencies(
     return previousName;
   }
 
-  const originalDependency = previousName;
+  var originalDependency = previousName;
 
-  const inSeries =
+  var inSeries =
     !defined(composite.inputPreviousStageTexture) ||
     composite.inputPreviousStageTexture;
-  let currentName = previousName;
-  const length = composite.length;
-  for (let i = 0; i < length; ++i) {
-    const stage = composite.get(i);
+  var currentName = previousName;
+  var length = composite.length;
+  for (var i = 0; i < length; ++i) {
+    var stage = composite.get(i);
     if (defined(stage.length)) {
       currentName = getCompositeDependencies(
         collection,
@@ -116,13 +117,13 @@ function getCompositeDependencies(
   // Stages not in a series depend on every stage executed before it since it could reference it as a uniform.
   // This prevents looking at the dependencies of each stage in the composite, but might create more framebuffers than necessary.
   // In practice, there are only 2-3 stages in these composites.
-  let j;
-  let name;
+  var j;
+  var name;
   if (!inSeries) {
     for (j = 1; j < length; ++j) {
       name = getLastStageName(composite.get(j));
-      const currentDependencies = dependencies[name];
-      for (let k = 0; k < j; ++k) {
+      var currentDependencies = dependencies[name];
+      for (var k = 0; k < j; ++k) {
         currentDependencies[getLastStageName(composite.get(k))] = true;
       }
     }
@@ -140,15 +141,15 @@ function getCompositeDependencies(
 }
 
 function getDependencies(collection, context) {
-  const dependencies = {};
+  var dependencies = {};
 
   if (defined(collection.ambientOcclusion)) {
-    const ao = collection.ambientOcclusion;
-    const bloom = collection.bloom;
-    const tonemapping = collection._tonemapping;
-    const fxaa = collection.fxaa;
+    var ao = collection.ambientOcclusion;
+    var bloom = collection.bloom;
+    var tonemapping = collection._tonemapping;
+    var fxaa = collection.fxaa;
 
-    let previousName = getCompositeDependencies(
+    var previousName = getCompositeDependencies(
       collection,
       context,
       dependencies,
@@ -191,19 +192,19 @@ function getDependencies(collection, context) {
 }
 
 function getFramebuffer(cache, stageName, dependencies) {
-  const collection = cache._collection;
-  const stage = collection.getStageByName(stageName);
+  var collection = cache._collection;
+  var stage = collection.getStageByName(stageName);
 
-  const textureScale = stage._textureScale;
-  const forcePowerOfTwo = stage._forcePowerOfTwo;
-  const pixelFormat = stage._pixelFormat;
-  const pixelDatatype = stage._pixelDatatype;
-  const clearColor = stage._clearColor;
+  var textureScale = stage._textureScale;
+  var forcePowerOfTwo = stage._forcePowerOfTwo;
+  var pixelFormat = stage._pixelFormat;
+  var pixelDatatype = stage._pixelDatatype;
+  var clearColor = stage._clearColor;
 
-  let i;
-  let framebuffer;
-  const framebuffers = cache._framebuffers;
-  const length = framebuffers.length;
+  var i;
+  var framebuffer;
+  var framebuffers = cache._framebuffers;
+  var length = framebuffers.length;
   for (i = 0; i < length; ++i) {
     framebuffer = framebuffers[i];
 
@@ -217,10 +218,10 @@ function getFramebuffer(cache, stageName, dependencies) {
       continue;
     }
 
-    const stageNames = framebuffer.stages;
-    const stagesLength = stageNames.length;
-    let foundConflict = false;
-    for (let j = 0; j < stagesLength; ++j) {
+    var stageNames = framebuffer.stages;
+    var stagesLength = stageNames.length;
+    var foundConflict = false;
+    for (var j = 0; j < stagesLength; ++j) {
       if (dependencies[stageNames[j]]) {
         foundConflict = true;
         break;
@@ -244,10 +245,7 @@ function getFramebuffer(cache, stageName, dependencies) {
     pixelDatatype: pixelDatatype,
     clearColor: clearColor,
     stages: [stageName],
-    buffer: new FramebufferManager({
-      pixelFormat: pixelFormat,
-      pixelDatatype: pixelDatatype,
-    }),
+    buffer: undefined,
     clear: undefined,
   };
 
@@ -256,8 +254,8 @@ function getFramebuffer(cache, stageName, dependencies) {
 }
 
 function createFramebuffers(cache, context) {
-  const dependencies = getDependencies(cache._collection, context);
-  for (const stageName in dependencies) {
+  var dependencies = getDependencies(cache._collection, context);
+  for (var stageName in dependencies) {
     if (dependencies.hasOwnProperty(stageName)) {
       cache._stageNameToFramebuffer[stageName] = getFramebuffer(
         cache,
@@ -269,28 +267,29 @@ function createFramebuffers(cache, context) {
 }
 
 function releaseResources(cache) {
-  const framebuffers = cache._framebuffers;
-  const length = framebuffers.length;
-  for (let i = 0; i < length; ++i) {
-    const framebuffer = framebuffers[i];
-    framebuffer.buffer.destroy();
+  var framebuffers = cache._framebuffers;
+  var length = framebuffers.length;
+  for (var i = 0; i < length; ++i) {
+    var framebuffer = framebuffers[i];
+    framebuffer.buffer = framebuffer.buffer && framebuffer.buffer.destroy();
+    framebuffer.buffer = undefined;
   }
 }
 
 function updateFramebuffers(cache, context) {
-  const width = cache._width;
-  const height = cache._height;
+  var width = cache._width;
+  var height = cache._height;
 
-  const framebuffers = cache._framebuffers;
-  const length = framebuffers.length;
-  for (let i = 0; i < length; ++i) {
-    const framebuffer = framebuffers[i];
+  var framebuffers = cache._framebuffers;
+  var length = framebuffers.length;
+  for (var i = 0; i < length; ++i) {
+    var framebuffer = framebuffers[i];
 
-    const scale = framebuffer.textureScale;
-    let textureWidth = Math.ceil(width * scale);
-    let textureHeight = Math.ceil(height * scale);
+    var scale = framebuffer.textureScale;
+    var textureWidth = Math.ceil(width * scale);
+    var textureHeight = Math.ceil(height * scale);
 
-    let size = Math.min(textureWidth, textureHeight);
+    var size = Math.min(textureWidth, textureHeight);
     if (framebuffer.forcePowerOfTwo) {
       if (!CesiumMath.isPowerOfTwo(size)) {
         size = CesiumMath.nextPowerOfTwo(size);
@@ -299,10 +298,21 @@ function updateFramebuffers(cache, context) {
       textureHeight = size;
     }
 
-    framebuffer.buffer.update(context, textureWidth, textureHeight);
+    framebuffer.buffer = new Framebuffer({
+      context: context,
+      colorTextures: [
+        new Texture({
+          context: context,
+          width: textureWidth,
+          height: textureHeight,
+          pixelFormat: framebuffer.pixelFormat,
+          pixelDatatype: framebuffer.pixelDatatype,
+        }),
+      ],
+    });
     framebuffer.clear = new ClearCommand({
       color: framebuffer.clearColor,
-      framebuffer: framebuffer.buffer.framebuffer,
+      framebuffer: framebuffer.buffer,
     });
   }
 }
@@ -317,25 +327,25 @@ PostProcessStageTextureCache.prototype.updateDependencies = function () {
  * @param {Context} context The context.
  */
 PostProcessStageTextureCache.prototype.update = function (context) {
-  const collection = this._collection;
-  const updateDependencies = this._updateDependencies;
-  const aoEnabled =
+  var collection = this._collection;
+  var updateDependencies = this._updateDependencies;
+  var aoEnabled =
     defined(collection.ambientOcclusion) &&
     collection.ambientOcclusion.enabled &&
     collection.ambientOcclusion._isSupported(context);
-  const bloomEnabled =
+  var bloomEnabled =
     defined(collection.bloom) &&
     collection.bloom.enabled &&
     collection.bloom._isSupported(context);
-  const tonemappingEnabled =
+  var tonemappingEnabled =
     defined(collection._tonemapping) &&
     collection._tonemapping.enabled &&
     collection._tonemapping._isSupported(context);
-  const fxaaEnabled =
+  var fxaaEnabled =
     defined(collection.fxaa) &&
     collection.fxaa.enabled &&
     collection.fxaa._isSupported(context);
-  const needsCheckDimensionsUpdate =
+  var needsCheckDimensionsUpdate =
     !defined(collection._activeStages) ||
     collection._activeStages.length > 0 ||
     aoEnabled ||
@@ -361,9 +371,9 @@ PostProcessStageTextureCache.prototype.update = function (context) {
     createFramebuffers(this, context);
   }
 
-  const width = context.drawingBufferWidth;
-  const height = context.drawingBufferHeight;
-  const dimensionsChanged = this._width !== width || this._height !== height;
+  var width = context.drawingBufferWidth;
+  var height = context.drawingBufferHeight;
+  var dimensionsChanged = this._width !== width || this._height !== height;
   if (!updateDependencies && !dimensionsChanged) {
     return;
   }
@@ -381,8 +391,8 @@ PostProcessStageTextureCache.prototype.update = function (context) {
  * @param {Context} context The context.
  */
 PostProcessStageTextureCache.prototype.clear = function (context) {
-  const framebuffers = this._framebuffers;
-  for (let i = 0; i < framebuffers.length; ++i) {
+  var framebuffers = this._framebuffers;
+  for (var i = 0; i < framebuffers.length; ++i) {
     framebuffers[i].clear.execute(context);
   }
 };
@@ -412,11 +422,11 @@ PostProcessStageTextureCache.prototype.getOutputTexture = function (name) {
  * @return {Framebuffer|undefined} The framebuffer for the stage with the given name.
  */
 PostProcessStageTextureCache.prototype.getFramebuffer = function (name) {
-  const framebuffer = this._stageNameToFramebuffer[name];
+  var framebuffer = this._stageNameToFramebuffer[name];
   if (!defined(framebuffer)) {
     return undefined;
   }
-  return framebuffer.buffer.framebuffer;
+  return framebuffer.buffer;
 };
 
 /**

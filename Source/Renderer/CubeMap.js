@@ -23,13 +23,13 @@ function CubeMap(options) {
   Check.defined("options.context", options.context);
   //>>includeEnd('debug');
 
-  const context = options.context;
-  const source = options.source;
-  let width;
-  let height;
+  var context = options.context;
+  var source = options.source;
+  var width;
+  var height;
 
   if (defined(source)) {
-    const faces = [
+    var faces = [
       source.positiveX,
       source.negativeX,
       source.positiveY,
@@ -57,7 +57,7 @@ function CubeMap(options) {
     height = faces[0].height;
 
     //>>includeStart('debug', pragmas.debug);
-    for (let i = 1; i < 6; ++i) {
+    for (var i = 1; i < 6; ++i) {
       if (
         Number(faces[i].width) !== width ||
         Number(faces[i].height) !== height
@@ -73,13 +73,13 @@ function CubeMap(options) {
     height = options.height;
   }
 
-  const size = width;
-  const pixelDatatype = defaultValue(
+  var size = width;
+  var pixelDatatype = defaultValue(
     options.pixelDatatype,
     PixelDatatype.UNSIGNED_BYTE
   );
-  const pixelFormat = defaultValue(options.pixelFormat, PixelFormat.RGBA);
-  const internalFormat = PixelFormat.toInternalFormat(
+  var pixelFormat = defaultValue(options.pixelFormat, PixelFormat.RGBA);
+  var internalFormat = PixelFormat.toInternalFormat(
     pixelFormat,
     pixelDatatype,
     context
@@ -102,7 +102,9 @@ function CubeMap(options) {
 
   if (size > ContextLimits.maximumCubeMapSize) {
     throw new DeveloperError(
-      `Width and height must be less than or equal to the maximum cube map size (${ContextLimits.maximumCubeMapSize}).  Check maximumCubeMapSize.`
+      "Width and height must be less than or equal to the maximum cube map size (" +
+        ContextLimits.maximumCubeMapSize +
+        ").  Check maximumCubeMapSize."
     );
   }
 
@@ -136,24 +138,24 @@ function CubeMap(options) {
   }
   //>>includeEnd('debug');
 
-  const sizeInBytes =
+  var sizeInBytes =
     PixelFormat.textureSizeInBytes(pixelFormat, pixelDatatype, size, size) * 6;
 
   // Use premultiplied alpha for opaque textures should perform better on Chrome:
   // http://media.tojicode.com/webglCamp4/#20
-  const preMultiplyAlpha =
+  var preMultiplyAlpha =
     options.preMultiplyAlpha ||
     pixelFormat === PixelFormat.RGB ||
     pixelFormat === PixelFormat.LUMINANCE;
-  const flipY = defaultValue(options.flipY, true);
-  const skipColorSpaceConversion = defaultValue(
+  var flipY = defaultValue(options.flipY, true);
+  var skipColorSpaceConversion = defaultValue(
     options.skipColorSpaceConversion,
     false
   );
 
-  const gl = context._gl;
-  const textureTarget = gl.TEXTURE_CUBE_MAP;
-  const texture = gl.createTexture();
+  var gl = context._gl;
+  var textureTarget = gl.TEXTURE_CUBE_MAP;
+  var texture = gl.createTexture();
 
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(textureTarget, texture);
@@ -165,12 +167,12 @@ function CubeMap(options) {
     flipY,
     skipColorSpaceConversion
   ) {
-    let arrayBufferView = sourceFace.arrayBufferView;
+    var arrayBufferView = sourceFace.arrayBufferView;
     if (!defined(arrayBufferView)) {
       arrayBufferView = sourceFace.bufferView;
     }
 
-    let unpackAlignment = 4;
+    var unpackAlignment = 4;
     if (defined(arrayBufferView)) {
       unpackAlignment = PixelFormat.alignmentInBytes(
         pixelFormat,
@@ -357,7 +359,7 @@ function CubeMap(options) {
   this._flipY = flipY;
   this._sampler = undefined;
 
-  const initialized = defined(source);
+  var initialized = defined(source);
   this._positiveX = new CubeMapFace(
     context,
     texture,
@@ -476,10 +478,10 @@ Object.defineProperties(CubeMap.prototype, {
       return this._sampler;
     },
     set: function (sampler) {
-      let minificationFilter = sampler.minificationFilter;
-      let magnificationFilter = sampler.magnificationFilter;
+      var minificationFilter = sampler.minificationFilter;
+      var magnificationFilter = sampler.magnificationFilter;
 
-      const mipmap =
+      var mipmap =
         minificationFilter ===
           TextureMinificationFilter.NEAREST_MIPMAP_NEAREST ||
         minificationFilter ===
@@ -488,8 +490,8 @@ Object.defineProperties(CubeMap.prototype, {
           TextureMinificationFilter.LINEAR_MIPMAP_NEAREST ||
         minificationFilter === TextureMinificationFilter.LINEAR_MIPMAP_LINEAR;
 
-      const context = this._context;
-      const pixelDatatype = this._pixelDatatype;
+      var context = this._context;
+      var pixelDatatype = this._pixelDatatype;
 
       // float textures only support nearest filtering unless the linear extensions are supported, so override the sampler's settings
       if (
@@ -504,8 +506,8 @@ Object.defineProperties(CubeMap.prototype, {
         magnificationFilter = TextureMagnificationFilter.NEAREST;
       }
 
-      const gl = context._gl;
-      const target = this._textureTarget;
+      var gl = context._gl;
+      var target = this._textureTarget;
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(target, this._texture);
@@ -605,8 +607,8 @@ CubeMap.prototype.generateMipmap = function (hint) {
 
   this._hasMipmap = true;
 
-  const gl = this._context._gl;
-  const target = this._textureTarget;
+  var gl = this._context._gl;
+  var target = this._textureTarget;
   gl.hint(gl.GENERATE_MIPMAP_HINT, hint);
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(target, this._texture);

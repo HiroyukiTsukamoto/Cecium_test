@@ -1,10 +1,10 @@
 import { FeatureDetection } from "../../Source/Cesium.js";
 import { TaskProcessor } from "../../Source/Cesium.js";
-import { RuntimeError } from "../../Source/Cesium.js";
 import absolutize from "../absolutize.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Core/TaskProcessor", function () {
-  let taskProcessor;
+  var taskProcessor;
 
   afterEach(function () {
     if (taskProcessor && !taskProcessor.isDestroyed()) {
@@ -16,7 +16,7 @@ describe("Core/TaskProcessor", function () {
     TaskProcessor._workerModulePrefix = absolutize("../Specs/TestWorkers/");
     taskProcessor = new TaskProcessor("returnParameters.js");
 
-    const parameters = {
+    var parameters = {
       prop: "blah",
       obj: {
         val: true,
@@ -28,7 +28,7 @@ describe("Core/TaskProcessor", function () {
       .then(function (result) {
         expect(result).toEqual(parameters);
       })
-      .finally(function () {
+      .always(function () {
         TaskProcessor._workerModulePrefix =
           TaskProcessor._defaultWorkerModulePrefix;
       });
@@ -51,25 +51,25 @@ describe("Core/TaskProcessor", function () {
       absolutize("../Specs/TestWorkers/returnByteLength.js")
     );
 
-    const byteLength = 100;
-    const parameters = new ArrayBuffer(byteLength);
+    var byteLength = 100;
+    var parameters = new ArrayBuffer(byteLength);
     expect(parameters.byteLength).toEqual(byteLength);
 
-    return Promise.resolve(TaskProcessor._canTransferArrayBuffer).then(
-      function (canTransferArrayBuffer) {
-        const promise = taskProcessor.scheduleTask(parameters, [parameters]);
+    return when(TaskProcessor._canTransferArrayBuffer, function (
+      canTransferArrayBuffer
+    ) {
+      var promise = taskProcessor.scheduleTask(parameters, [parameters]);
 
-        // the worker should see the array with proper byte length
-        return promise.then(function (result) {
-          if (canTransferArrayBuffer) {
-            // array buffer should be neutered when transferred
-            expect(parameters.byteLength).toEqual(0);
-          }
-
-          expect(result).toEqual(byteLength);
-        });
+      if (canTransferArrayBuffer) {
+        // array buffer should be neutered when transferred
+        expect(parameters.byteLength).toEqual(0);
       }
-    );
+
+      // the worker should see the array with proper byte length
+      return promise.then(function (result) {
+        expect(result).toEqual(byteLength);
+      });
+    });
   });
 
   it("can transfer array buffer back from worker", function () {
@@ -77,8 +77,8 @@ describe("Core/TaskProcessor", function () {
       absolutize("../Specs/TestWorkers/transferArrayBuffer.js")
     );
 
-    const byteLength = 100;
-    const parameters = {
+    var byteLength = 100;
+    var parameters = {
       byteLength: byteLength,
     };
 
@@ -93,8 +93,8 @@ describe("Core/TaskProcessor", function () {
       absolutize("../Specs/TestWorkers/throwError.js")
     );
 
-    const message = "foo";
-    const parameters = {
+    var message = "foo";
+    var parameters = {
       message: message,
     };
 
@@ -103,7 +103,7 @@ describe("Core/TaskProcessor", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error.message).toEqual(message);
       });
   });
@@ -113,8 +113,8 @@ describe("Core/TaskProcessor", function () {
       absolutize("../Specs/TestWorkers/returnNonCloneable.js")
     );
 
-    const message = "foo";
-    const parameters = {
+    var message = "foo";
+    var parameters = {
       message: message,
     };
 
@@ -123,7 +123,7 @@ describe("Core/TaskProcessor", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(error).toContain("postMessage failed");
       });
   });
@@ -133,14 +133,14 @@ describe("Core/TaskProcessor", function () {
       absolutize("../Specs/TestWorkers/returnParameters.js")
     );
 
-    const parameters = {
+    var parameters = {
       prop: "blah",
       obj: {
         val: true,
       },
     };
-    let eventRaised = false;
-    const removeListenerCallback = TaskProcessor.taskCompletedEvent.addEventListener(
+    var eventRaised = false;
+    var removeListenerCallback = TaskProcessor.taskCompletedEvent.addEventListener(
       function () {
         eventRaised = true;
       }
@@ -151,7 +151,7 @@ describe("Core/TaskProcessor", function () {
       .then(function (result) {
         expect(eventRaised).toBe(true);
       })
-      .finally(function () {
+      .always(function () {
         removeListenerCallback();
       });
   });
@@ -161,13 +161,13 @@ describe("Core/TaskProcessor", function () {
       absolutize("../Specs/TestWorkers/returnNonCloneable.js")
     );
 
-    const message = "foo";
-    const parameters = {
+    var message = "foo";
+    var parameters = {
       message: message,
     };
 
-    let eventRaised = false;
-    const removeListenerCallback = TaskProcessor.taskCompletedEvent.addEventListener(
+    var eventRaised = false;
+    var removeListenerCallback = TaskProcessor.taskCompletedEvent.addEventListener(
       function (error) {
         eventRaised = true;
         expect(error).toBeDefined();
@@ -179,20 +179,20 @@ describe("Core/TaskProcessor", function () {
       .then(function () {
         fail("should not be called");
       })
-      .catch(function (error) {
+      .otherwise(function (error) {
         expect(eventRaised).toBe(true);
       })
-      .finally(function () {
+      .always(function () {
         removeListenerCallback();
       });
   });
 
   it("can load and compile web assembly module", function () {
-    const binaryUrl = absolutize("../Specs/TestWorkers/TestWasm/testWasm.wasm");
+    var binaryUrl = absolutize("../Specs/TestWorkers/TestWasm/testWasm.wasm");
     taskProcessor = new TaskProcessor(
       absolutize("../Specs/TestWorkers/returnWasmConfig.js", 5)
     );
-    const promise = taskProcessor.initWebAssemblyModule({
+    var promise = taskProcessor.initWebAssemblyModule({
       modulePath: "TestWasm/testWasmWrapper",
       wasmBinaryFile: binaryUrl,
       fallbackModulePath: "TestWasm/testWasmFallback",
@@ -208,14 +208,14 @@ describe("Core/TaskProcessor", function () {
   });
 
   it("uses a backup module if web assembly is not supported", function () {
-    const binaryUrl = absolutize("../Specs/TestWorkers/TestWasm/testWasm.wasm");
+    var binaryUrl = absolutize("../Specs/TestWorkers/TestWasm/testWasm.wasm");
     taskProcessor = new TaskProcessor(
       absolutize("../Specs/TestWorkers/returnWasmConfig.js", 5)
     );
 
     spyOn(FeatureDetection, "supportsWebAssembly").and.returnValue(false);
 
-    const promise = taskProcessor.initWebAssemblyModule({
+    var promise = taskProcessor.initWebAssemblyModule({
       modulePath: "TestWasm/testWasmWrapper",
       wasmBinaryFile: binaryUrl,
       fallbackModulePath: "TestWasm/testWasmFallback",
@@ -229,7 +229,7 @@ describe("Core/TaskProcessor", function () {
   });
 
   it("throws runtime error if web assembly is not supported and no backup is provided", function () {
-    const binaryUrl = absolutize("../Specs/TestWorkers/TestWasm/testWasm.wasm");
+    var binaryUrl = absolutize("../Specs/TestWorkers/TestWasm/testWasm.wasm");
     taskProcessor = new TaskProcessor(
       absolutize("../Specs/TestWorkers/returnWasmConfig.js", 5)
     );
@@ -241,6 +241,6 @@ describe("Core/TaskProcessor", function () {
         modulePath: "TestWasm/testWasmWrapper",
         wasmBinaryFile: binaryUrl,
       });
-    }).toThrowError(RuntimeError);
+    }).toThrowRuntimeError();
   });
 });

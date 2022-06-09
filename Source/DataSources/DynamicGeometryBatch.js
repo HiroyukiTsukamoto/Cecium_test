@@ -22,8 +22,8 @@ DynamicGeometryBatch.prototype.add = function (time, updater) {
 };
 
 DynamicGeometryBatch.prototype.remove = function (updater) {
-  const id = updater.id;
-  const dynamicUpdater = this._dynamicUpdaters.get(id);
+  var id = updater.id;
+  var dynamicUpdater = this._dynamicUpdaters.get(id);
   if (defined(dynamicUpdater)) {
     this._dynamicUpdaters.remove(id);
     dynamicUpdater.destroy();
@@ -31,16 +31,16 @@ DynamicGeometryBatch.prototype.remove = function (updater) {
 };
 
 DynamicGeometryBatch.prototype.update = function (time) {
-  const geometries = this._dynamicUpdaters.values;
-  for (let i = 0, len = geometries.length; i < len; i++) {
+  var geometries = this._dynamicUpdaters.values;
+  for (var i = 0, len = geometries.length; i < len; i++) {
     geometries[i].update(time);
   }
   return true;
 };
 
 DynamicGeometryBatch.prototype.removeAllPrimitives = function () {
-  const geometries = this._dynamicUpdaters.values;
-  for (let i = 0, len = geometries.length; i < len; i++) {
+  var geometries = this._dynamicUpdaters.values;
+  for (var i = 0, len = geometries.length; i < len; i++) {
     geometries[i].destroy();
   }
   this._dynamicUpdaters.removeAll();

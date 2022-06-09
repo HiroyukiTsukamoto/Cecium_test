@@ -4,23 +4,23 @@ import defined from "./defined.js";
 import DeveloperError from "./DeveloperError.js";
 
 function measureText(context2D, textString, font, stroke, fill) {
-  const metrics = context2D.measureText(textString);
-  const isSpace = !/\S/.test(textString);
+  var metrics = context2D.measureText(textString);
+  var isSpace = !/\S/.test(textString);
 
   if (!isSpace) {
-    const fontSize = document.defaultView
+    var fontSize = document.defaultView
       .getComputedStyle(context2D.canvas)
       .getPropertyValue("font-size")
       .replace("px", "");
-    const canvas = document.createElement("canvas");
-    const padding = 100;
-    const width = (metrics.width + padding) | 0;
-    const height = 3 * fontSize;
-    const baseline = height / 2;
+    var canvas = document.createElement("canvas");
+    var padding = 100;
+    var width = (metrics.width + padding) | 0;
+    var height = 3 * fontSize;
+    var baseline = height / 2;
     canvas.width = width;
     canvas.height = height;
 
-    const ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext("2d");
     ctx.font = font;
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width + 1, canvas.height + 1);
@@ -38,12 +38,12 @@ function measureText(context2D, textString, font, stroke, fill) {
 
     // Context image data has width * height * 4 elements, because
     // each pixel's R, G, B and A are consecutive values in the array.
-    const pixelData = ctx.getImageData(0, 0, width, height).data;
-    const length = pixelData.length;
-    const width4 = width * 4;
-    let i, j;
+    var pixelData = ctx.getImageData(0, 0, width, height).data;
+    var length = pixelData.length;
+    var width4 = width * 4;
+    var i, j;
 
-    let ascent, descent;
+    var ascent, descent;
     // Find the number of rows (from the top) until the first non-white pixel
     for (i = 0; i < length; ++i) {
       if (pixelData[i] !== 255) {
@@ -60,11 +60,11 @@ function measureText(context2D, textString, font, stroke, fill) {
       }
     }
 
-    let minx = -1;
+    var minx = -1;
     // For each column, for each row, check for first non-white pixel
     for (i = 0; i < width && minx === -1; ++i) {
       for (j = 0; j < height; ++j) {
-        const pixelIndex = i * 4 + j * width4;
+        var pixelIndex = i * 4 + j * width4;
         if (
           pixelData[pixelIndex] !== 255 ||
           pixelData[pixelIndex + 1] !== 255 ||
@@ -95,7 +95,7 @@ function measureText(context2D, textString, font, stroke, fill) {
   };
 }
 
-let imageSmoothingEnabledName;
+var imageSmoothingEnabledName;
 
 /**
  * Writes the given text into a new canvas.  The canvas will be sized to fit the text.
@@ -128,22 +128,22 @@ function writeTextToCanvas(text, options) {
   }
 
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const font = defaultValue(options.font, "10px sans-serif");
-  const stroke = defaultValue(options.stroke, false);
-  const fill = defaultValue(options.fill, true);
-  const strokeWidth = defaultValue(options.strokeWidth, 1);
-  const backgroundColor = defaultValue(
+  var font = defaultValue(options.font, "10px sans-serif");
+  var stroke = defaultValue(options.stroke, false);
+  var fill = defaultValue(options.fill, true);
+  var strokeWidth = defaultValue(options.strokeWidth, 1);
+  var backgroundColor = defaultValue(
     options.backgroundColor,
     Color.TRANSPARENT
   );
-  const padding = defaultValue(options.padding, 0);
-  const doublePadding = padding * 2.0;
+  var padding = defaultValue(options.padding, 0);
+  var doublePadding = padding * 2.0;
 
-  const canvas = document.createElement("canvas");
+  var canvas = document.createElement("canvas");
   canvas.width = 1;
   canvas.height = 1;
   canvas.style.font = font;
-  const context2D = canvas.getContext("2d");
+  var context2D = canvas.getContext("2d");
 
   if (!defined(imageSmoothingEnabledName)) {
     if (defined(context2D.imageSmoothingEnabled)) {
@@ -167,7 +167,7 @@ function writeTextToCanvas(text, options) {
   canvas.style.visibility = "hidden";
   document.body.appendChild(canvas);
 
-  const dimensions = measureText(context2D, text, font, stroke, fill);
+  var dimensions = measureText(context2D, text, font, stroke, fill);
   // Set canvas.dimensions to be accessed in LabelCollection
   canvas.dimensions = dimensions;
 
@@ -177,18 +177,18 @@ function writeTextToCanvas(text, options) {
   // Some characters, such as the letter j, have a non-zero starting position.
   // This value is used for kerning later, but we need to take it into account
   // now in order to draw the text completely on the canvas
-  const x = -dimensions.minx;
+  var x = -dimensions.minx;
 
   // Expand the width to include the starting position.
-  const width = Math.ceil(dimensions.width) + x + doublePadding;
+  var width = Math.ceil(dimensions.width) + x + doublePadding;
 
   // While the height of the letter is correct, we need to adjust
   // where we start drawing it so that letters like j and y properly dip
   // below the line.
 
-  const height = dimensions.height + doublePadding;
-  const baseline = height - dimensions.ascent + padding;
-  const y = height - baseline + doublePadding;
+  var height = dimensions.height + doublePadding;
+  var baseline = height - dimensions.ascent + padding;
+  var y = height - baseline + doublePadding;
 
   canvas.width = width;
   canvas.height = height;
@@ -206,13 +206,13 @@ function writeTextToCanvas(text, options) {
   }
 
   if (stroke) {
-    const strokeColor = defaultValue(options.strokeColor, Color.BLACK);
+    var strokeColor = defaultValue(options.strokeColor, Color.BLACK);
     context2D.strokeStyle = strokeColor.toCssColorString();
     context2D.strokeText(text, x + padding, y);
   }
 
   if (fill) {
-    const fillColor = defaultValue(options.fillColor, Color.WHITE);
+    var fillColor = defaultValue(options.fillColor, Color.WHITE);
     context2D.fillStyle = fillColor.toCssColorString();
     context2D.fillText(text, x + padding, y);
   }

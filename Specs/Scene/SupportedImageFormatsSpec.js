@@ -2,7 +2,7 @@ import { SupportedImageFormats } from "../../Source/Cesium.js";
 
 describe("Scene/SupportedImageFormats", function () {
   it("constructs with options", function () {
-    const supportedImageFormats = new SupportedImageFormats({
+    var supportedImageFormats = new SupportedImageFormats({
       webp: true,
       basis: false,
     });
@@ -11,7 +11,7 @@ describe("Scene/SupportedImageFormats", function () {
   });
 
   it("constructs with default values", function () {
-    const supportedImageFormats = new SupportedImageFormats({});
+    var supportedImageFormats = new SupportedImageFormats({});
     expect(supportedImageFormats.webp).toBe(false);
     expect(supportedImageFormats.basis).toBe(false);
   });

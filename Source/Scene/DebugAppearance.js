@@ -25,7 +25,7 @@ import Appearance from "./Appearance.js";
  * @exception {DeveloperError} options.glslDatatype must be float, vec2, vec3, or vec4.
  *
  * @example
- * const primitive = new Cesium.Primitive({
+ * var primitive = new Cesium.Primitive({
  *   geometryInstances : // ...
  *   appearance : new Cesium.DebugAppearance({
  *     attributeName : 'normal'
@@ -34,8 +34,8 @@ import Appearance from "./Appearance.js";
  */
 function DebugAppearance(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const attributeName = options.attributeName;
-  let perInstanceAttribute = options.perInstanceAttribute;
+  var attributeName = options.attributeName;
+  var perInstanceAttribute = options.perInstanceAttribute;
 
   //>>includeStart('debug', pragmas.debug);
   if (!defined(attributeName)) {
@@ -47,9 +47,9 @@ function DebugAppearance(options) {
     perInstanceAttribute = false;
   }
 
-  let glslDatatype = defaultValue(options.glslDatatype, "vec3");
-  const varyingName = `v_${attributeName}`;
-  let getColor;
+  var glslDatatype = defaultValue(options.glslDatatype, "vec3");
+  var varyingName = "v_" + attributeName;
+  var getColor;
 
   // Well-known normalized vector attributes in VertexFormat
   if (
@@ -57,7 +57,10 @@ function DebugAppearance(options) {
     attributeName === "tangent" ||
     attributeName === "bitangent"
   ) {
-    getColor = `vec4 getColor() { return vec4((${varyingName} + vec3(1.0)) * 0.5, 1.0); }\n`;
+    getColor =
+      "vec4 getColor() { return vec4((" +
+      varyingName +
+      " + vec3(1.0)) * 0.5, 1.0); }\n";
   } else {
     // All other attributes, both well-known and custom
     if (attributeName === "st") {
@@ -66,16 +69,19 @@ function DebugAppearance(options) {
 
     switch (glslDatatype) {
       case "float":
-        getColor = `vec4 getColor() { return vec4(vec3(${varyingName}), 1.0); }\n`;
+        getColor =
+          "vec4 getColor() { return vec4(vec3(" + varyingName + "), 1.0); }\n";
         break;
       case "vec2":
-        getColor = `vec4 getColor() { return vec4(${varyingName}, 0.0, 1.0); }\n`;
+        getColor =
+          "vec4 getColor() { return vec4(" + varyingName + ", 0.0, 1.0); }\n";
         break;
       case "vec3":
-        getColor = `vec4 getColor() { return vec4(${varyingName}, 1.0); }\n`;
+        getColor =
+          "vec4 getColor() { return vec4(" + varyingName + ", 1.0); }\n";
         break;
       case "vec4":
-        getColor = `vec4 getColor() { return ${varyingName}; }\n`;
+        getColor = "vec4 getColor() { return " + varyingName + "; }\n";
         break;
       //>>includeStart('debug', pragmas.debug);
       default:
@@ -86,30 +92,38 @@ function DebugAppearance(options) {
     }
   }
 
-  const vs =
-    `${
-      "attribute vec3 position3DHigh;\n" +
-      "attribute vec3 position3DLow;\n" +
-      "attribute float batchId;\n"
-    }${
-      perInstanceAttribute
-        ? ""
-        : `attribute ${glslDatatype} ${attributeName};\n`
-    }varying ${glslDatatype} ${varyingName};\n` +
-    `void main()\n` +
-    `{\n` +
-    `vec4 p = czm_translateRelativeToEye(position3DHigh, position3DLow);\n${
-      perInstanceAttribute
-        ? `${varyingName} = czm_batchTable_${attributeName}(batchId);\n`
-        : `${varyingName} = ${attributeName};\n`
-    }gl_Position = czm_modelViewProjectionRelativeToEye * p;\n` +
-    `}`;
-  const fs =
-    `varying ${glslDatatype} ${varyingName};\n${getColor}\n` +
-    `void main()\n` +
-    `{\n` +
-    `gl_FragColor = getColor();\n` +
-    `}`;
+  var vs =
+    "attribute vec3 position3DHigh;\n" +
+    "attribute vec3 position3DLow;\n" +
+    "attribute float batchId;\n" +
+    (perInstanceAttribute
+      ? ""
+      : "attribute " + glslDatatype + " " + attributeName + ";\n") +
+    "varying " +
+    glslDatatype +
+    " " +
+    varyingName +
+    ";\n" +
+    "void main()\n" +
+    "{\n" +
+    "vec4 p = czm_translateRelativeToEye(position3DHigh, position3DLow);\n" +
+    (perInstanceAttribute
+      ? varyingName + " = czm_batchTable_" + attributeName + "(batchId);\n"
+      : varyingName + " = " + attributeName + ";\n") +
+    "gl_Position = czm_modelViewProjectionRelativeToEye * p;\n" +
+    "}";
+  var fs =
+    "varying " +
+    glslDatatype +
+    " " +
+    varyingName +
+    ";\n" +
+    getColor +
+    "\n" +
+    "void main()\n" +
+    "{\n" +
+    "gl_FragColor = getColor();\n" +
+    "}";
 
   /**
    * This property is part of the {@link Appearance} interface, but is not

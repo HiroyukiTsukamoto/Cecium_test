@@ -6,7 +6,6 @@ import Cartographic from "../Core/Cartographic.js";
 import Check from "../Core/Check.js";
 import Color from "../Core/Color.js";
 import defaultValue from "../Core/defaultValue.js";
-import defer from "../Core/defer.js";
 import defined from "../Core/defined.js";
 import DeveloperError from "../Core/DeveloperError.js";
 import Matrix4 from "../Core/Matrix4.js";
@@ -16,6 +15,7 @@ import PerspectiveFrustum from "../Core/PerspectiveFrustum.js";
 import PerspectiveOffCenterFrustum from "../Core/PerspectiveOffCenterFrustum.js";
 import Ray from "../Core/Ray.js";
 import ShowGeometryInstanceAttribute from "../Core/ShowGeometryInstanceAttribute.js";
+import when from "../ThirdParty/when.js";
 import Camera from "./Camera.js";
 import Cesium3DTileFeature from "./Cesium3DTileFeature.js";
 import Cesium3DTilePass from "./Cesium3DTilePass.js";
@@ -26,17 +26,17 @@ import SceneMode from "./SceneMode.js";
 import SceneTransforms from "./SceneTransforms.js";
 import View from "./View.js";
 
-const offscreenDefaultWidth = 0.1;
+var offscreenDefaultWidth = 0.1;
 
-const mostDetailedPreloadTilesetPassState = new Cesium3DTilePassState({
+var mostDetailedPreloadTilesetPassState = new Cesium3DTilePassState({
   pass: Cesium3DTilePass.MOST_DETAILED_PRELOAD,
 });
 
-const mostDetailedPickTilesetPassState = new Cesium3DTilePassState({
+var mostDetailedPickTilesetPassState = new Cesium3DTilePassState({
   pass: Cesium3DTilePass.MOST_DETAILED_PICK,
 });
 
-const pickTilesetPassState = new Cesium3DTilePassState({
+var pickTilesetPassState = new Cesium3DTilePassState({
   pass: Cesium3DTilePass.PICK,
 });
 
@@ -49,8 +49,8 @@ function Picking(scene) {
   this._pickPositionCache = {};
   this._pickPositionCacheDirty = false;
 
-  const pickOffscreenViewport = new BoundingRectangle(0, 0, 1, 1);
-  const pickOffscreenCamera = new Camera(scene);
+  var pickOffscreenViewport = new BoundingRectangle(0, 0, 1, 1);
+  var pickOffscreenCamera = new Camera(scene);
   pickOffscreenCamera.frustum = new OrthographicFrustum({
     width: offscreenDefaultWidth,
     aspectRatio: 1.0,
@@ -69,8 +69,8 @@ Picking.prototype.update = function () {
 };
 
 Picking.prototype.getPickDepth = function (scene, index) {
-  const pickDepths = scene.view.pickDepths;
-  let pickDepth = pickDepths[index];
+  var pickDepths = scene.view.pickDepths;
+  var pickDepth = pickDepths[index];
   if (!defined(pickDepth)) {
     pickDepth = new PickDepth();
     pickDepths[index] = pickDepth;
@@ -78,11 +78,11 @@ Picking.prototype.getPickDepth = function (scene, index) {
   return pickDepth;
 };
 
-const scratchOrthoPickingFrustum = new OrthographicOffCenterFrustum();
-const scratchOrthoOrigin = new Cartesian3();
-const scratchOrthoDirection = new Cartesian3();
-const scratchOrthoPixelSize = new Cartesian2();
-const scratchOrthoPickVolumeMatrix4 = new Matrix4();
+var scratchOrthoPickingFrustum = new OrthographicOffCenterFrustum();
+var scratchOrthoOrigin = new Cartesian3();
+var scratchOrthoDirection = new Cartesian3();
+var scratchOrthoPixelSize = new Cartesian2();
+var scratchOrthoPickVolumeMatrix4 = new Matrix4();
 
 function getPickOrthographicCullingVolume(
   scene,
@@ -91,27 +91,27 @@ function getPickOrthographicCullingVolume(
   height,
   viewport
 ) {
-  const camera = scene.camera;
-  let frustum = camera.frustum;
+  var camera = scene.camera;
+  var frustum = camera.frustum;
   if (defined(frustum._offCenterFrustum)) {
     frustum = frustum._offCenterFrustum;
   }
 
-  let x = (2.0 * (drawingBufferPosition.x - viewport.x)) / viewport.width - 1.0;
+  var x = (2.0 * (drawingBufferPosition.x - viewport.x)) / viewport.width - 1.0;
   x *= (frustum.right - frustum.left) * 0.5;
-  let y =
+  var y =
     (2.0 * (viewport.height - drawingBufferPosition.y - viewport.y)) /
       viewport.height -
     1.0;
   y *= (frustum.top - frustum.bottom) * 0.5;
 
-  const transform = Matrix4.clone(
+  var transform = Matrix4.clone(
     camera.transform,
     scratchOrthoPickVolumeMatrix4
   );
   camera._setTransform(Matrix4.IDENTITY);
 
-  const origin = Cartesian3.clone(camera.position, scratchOrthoOrigin);
+  var origin = Cartesian3.clone(camera.position, scratchOrthoOrigin);
   Cartesian3.multiplyByScalar(camera.right, x, scratchOrthoDirection);
   Cartesian3.add(scratchOrthoDirection, origin, origin);
   Cartesian3.multiplyByScalar(camera.up, y, scratchOrthoDirection);
@@ -123,7 +123,7 @@ function getPickOrthographicCullingVolume(
     Cartesian3.fromElements(origin.z, origin.x, origin.y, origin);
   }
 
-  const pixelSize = frustum.getPixelDimensions(
+  var pixelSize = frustum.getPixelDimensions(
     viewport.width,
     viewport.height,
     1.0,
@@ -131,7 +131,7 @@ function getPickOrthographicCullingVolume(
     scratchOrthoPixelSize
   );
 
-  const ortho = scratchOrthoPickingFrustum;
+  var ortho = scratchOrthoPickingFrustum;
   ortho.right = pixelSize.x * 0.5;
   ortho.left = -ortho.right;
   ortho.top = pixelSize.y * 0.5;
@@ -142,8 +142,8 @@ function getPickOrthographicCullingVolume(
   return ortho.computeCullingVolume(origin, camera.directionWC, camera.upWC);
 }
 
-const scratchPerspPickingFrustum = new PerspectiveOffCenterFrustum();
-const scratchPerspPixelSize = new Cartesian2();
+var scratchPerspPickingFrustum = new PerspectiveOffCenterFrustum();
+var scratchPerspPixelSize = new Cartesian2();
 
 function getPickPerspectiveCullingVolume(
   scene,
@@ -152,34 +152,33 @@ function getPickPerspectiveCullingVolume(
   height,
   viewport
 ) {
-  const camera = scene.camera;
-  const frustum = camera.frustum;
-  const near = frustum.near;
+  var camera = scene.camera;
+  var frustum = camera.frustum;
+  var near = frustum.near;
 
-  const tanPhi = Math.tan(frustum.fovy * 0.5);
-  const tanTheta = frustum.aspectRatio * tanPhi;
+  var tanPhi = Math.tan(frustum.fovy * 0.5);
+  var tanTheta = frustum.aspectRatio * tanPhi;
 
-  const x =
-    (2.0 * (drawingBufferPosition.x - viewport.x)) / viewport.width - 1.0;
-  const y =
+  var x = (2.0 * (drawingBufferPosition.x - viewport.x)) / viewport.width - 1.0;
+  var y =
     (2.0 * (viewport.height - drawingBufferPosition.y - viewport.y)) /
       viewport.height -
     1.0;
 
-  const xDir = x * near * tanTheta;
-  const yDir = y * near * tanPhi;
+  var xDir = x * near * tanTheta;
+  var yDir = y * near * tanPhi;
 
-  const pixelSize = frustum.getPixelDimensions(
+  var pixelSize = frustum.getPixelDimensions(
     viewport.width,
     viewport.height,
     1.0,
     1.0,
     scratchPerspPixelSize
   );
-  const pickWidth = pixelSize.x * width * 0.5;
-  const pickHeight = pixelSize.y * height * 0.5;
+  var pickWidth = pixelSize.x * width * 0.5;
+  var pickHeight = pixelSize.y * height * 0.5;
 
-  const offCenter = scratchPerspPickingFrustum;
+  var offCenter = scratchPerspPickingFrustum;
   offCenter.top = yDir + pickHeight;
   offCenter.bottom = yDir - pickHeight;
   offCenter.right = xDir + pickWidth;
@@ -201,7 +200,7 @@ function getPickCullingVolume(
   height,
   viewport
 ) {
-  const frustum = scene.camera.frustum;
+  var frustum = scene.camera.frustum;
   if (
     frustum instanceof OrthographicFrustum ||
     frustum instanceof OrthographicOffCenterFrustum
@@ -225,16 +224,16 @@ function getPickCullingVolume(
 }
 
 // pick rectangle width and height, assumed odd
-let scratchRectangleWidth = 3.0;
-let scratchRectangleHeight = 3.0;
-let scratchRectangle = new BoundingRectangle(
+var scratchRectangleWidth = 3.0;
+var scratchRectangleHeight = 3.0;
+var scratchRectangle = new BoundingRectangle(
   0.0,
   0.0,
   scratchRectangleWidth,
   scratchRectangleHeight
 );
-const scratchPosition = new Cartesian2();
-const scratchColorZero = new Color(0.0, 0.0, 0.0, 0.0);
+var scratchPosition = new Cartesian2();
+var scratchColorZero = new Color(0.0, 0.0, 0.0, 0.0);
 
 Picking.prototype.pick = function (scene, windowPosition, width, height) {
   //>>includeStart('debug', pragmas.debug);
@@ -246,23 +245,23 @@ Picking.prototype.pick = function (scene, windowPosition, width, height) {
   scratchRectangleWidth = defaultValue(width, 3.0);
   scratchRectangleHeight = defaultValue(height, scratchRectangleWidth);
 
-  const context = scene.context;
-  const us = context.uniformState;
-  const frameState = scene.frameState;
+  var context = scene.context;
+  var us = context.uniformState;
+  var frameState = scene.frameState;
 
-  const view = scene.defaultView;
+  var view = scene.defaultView;
   scene.view = view;
 
-  const viewport = view.viewport;
+  var viewport = view.viewport;
   viewport.x = 0;
   viewport.y = 0;
   viewport.width = context.drawingBufferWidth;
   viewport.height = context.drawingBufferHeight;
 
-  let passState = view.passState;
+  var passState = view.passState;
   passState.viewport = BoundingRectangle.clone(viewport, passState.viewport);
 
-  const drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(
+  var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(
     scene,
     windowPosition,
     scratchPosition
@@ -299,27 +298,27 @@ Picking.prototype.pick = function (scene, windowPosition, width, height) {
   scene.updateAndExecuteCommands(passState, scratchColorZero);
   scene.resolveFramebuffers(passState);
 
-  const object = view.pickFramebuffer.end(scratchRectangle);
+  var object = view.pickFramebuffer.end(scratchRectangle);
   context.endFrame();
   return object;
 };
 
 function renderTranslucentDepthForPick(scene, drawingBufferPosition) {
   // PERFORMANCE_IDEA: render translucent only and merge with the previous frame
-  const context = scene.context;
-  const frameState = scene.frameState;
-  const environmentState = scene.environmentState;
+  var context = scene.context;
+  var frameState = scene.frameState;
+  var environmentState = scene.environmentState;
 
-  const view = scene.defaultView;
+  var view = scene.defaultView;
   scene.view = view;
 
-  const viewport = view.viewport;
+  var viewport = view.viewport;
   viewport.x = 0;
   viewport.y = 0;
   viewport.width = context.drawingBufferWidth;
   viewport.height = context.drawingBufferHeight;
 
-  let passState = view.passState;
+  var passState = view.passState;
   passState.viewport = BoundingRectangle.clone(viewport, passState.viewport);
 
   scene.clearPasses(frameState.passes);
@@ -348,10 +347,10 @@ function renderTranslucentDepthForPick(scene, drawingBufferPosition) {
   context.endFrame();
 }
 
-const scratchPerspectiveFrustum = new PerspectiveFrustum();
-const scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
-const scratchOrthographicFrustum = new OrthographicFrustum();
-const scratchOrthographicOffCenterFrustum = new OrthographicOffCenterFrustum();
+var scratchPerspectiveFrustum = new PerspectiveFrustum();
+var scratchPerspectiveOffCenterFrustum = new PerspectiveOffCenterFrustum();
+var scratchOrthographicFrustum = new OrthographicFrustum();
+var scratchOrthographicOffCenterFrustum = new OrthographicOffCenterFrustum();
 
 Picking.prototype.pickPositionWorldCoordinates = function (
   scene,
@@ -373,7 +372,7 @@ Picking.prototype.pickPositionWorldCoordinates = function (
   }
   //>>includeEnd('debug');
 
-  const cacheKey = windowPosition.toString();
+  var cacheKey = windowPosition.toString();
 
   if (this._pickPositionCacheDirty) {
     this._pickPositionCache = {};
@@ -382,14 +381,14 @@ Picking.prototype.pickPositionWorldCoordinates = function (
     return Cartesian3.clone(this._pickPositionCache[cacheKey], result);
   }
 
-  const frameState = scene.frameState;
-  const context = scene.context;
-  const uniformState = context.uniformState;
+  var frameState = scene.frameState;
+  var context = scene.context;
+  var uniformState = context.uniformState;
 
-  const view = scene.defaultView;
+  var view = scene.defaultView;
   scene.view = view;
 
-  const drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(
+  var drawingBufferPosition = SceneTransforms.transformWindowToDrawingBuffer(
     scene,
     windowPosition,
     scratchPosition
@@ -403,10 +402,10 @@ Picking.prototype.pickPositionWorldCoordinates = function (
   }
   drawingBufferPosition.y = scene.drawingBufferHeight - drawingBufferPosition.y;
 
-  const camera = scene.camera;
+  var camera = scene.camera;
 
   // Create a working frustum from the original camera frustum.
-  let frustum;
+  var frustum;
   if (defined(camera.frustum.fov)) {
     frustum = camera.frustum.clone(scratchPerspectiveFrustum);
   } else if (defined(camera.frustum.infiniteProjectionMatrix)) {
@@ -417,11 +416,11 @@ Picking.prototype.pickPositionWorldCoordinates = function (
     frustum = camera.frustum.clone(scratchOrthographicOffCenterFrustum);
   }
 
-  const frustumCommandsList = view.frustumCommandsList;
-  const numFrustums = frustumCommandsList.length;
-  for (let i = 0; i < numFrustums; ++i) {
-    const pickDepth = this.getPickDepth(scene, i);
-    const depth = pickDepth.getDepth(
+  var frustumCommandsList = view.frustumCommandsList;
+  var numFrustums = frustumCommandsList.length;
+  for (var i = 0; i < numFrustums; ++i) {
+    var pickDepth = this.getPickDepth(scene, i);
+    var depth = pickDepth.getDepth(
       context,
       drawingBufferPosition.x,
       drawingBufferPosition.y
@@ -430,8 +429,8 @@ Picking.prototype.pickPositionWorldCoordinates = function (
       continue;
     }
     if (depth > 0.0 && depth < 1.0) {
-      const renderedFrustum = frustumCommandsList[i];
-      let height2D;
+      var renderedFrustum = frustumCommandsList[i];
+      var height2D;
       if (scene.mode === SceneMode.SCENE2D) {
         height2D = camera.position.z;
         camera.position.z = height2D - renderedFrustum.near + 1.0;
@@ -468,17 +467,17 @@ Picking.prototype.pickPositionWorldCoordinates = function (
   return undefined;
 };
 
-const scratchPickPositionCartographic = new Cartographic();
+var scratchPickPositionCartographic = new Cartographic();
 
 Picking.prototype.pickPosition = function (scene, windowPosition, result) {
   result = this.pickPositionWorldCoordinates(scene, windowPosition, result);
   if (defined(result) && scene.mode !== SceneMode.SCENE3D) {
     Cartesian3.fromElements(result.y, result.z, result.x, result);
 
-    const projection = scene.mapProjection;
-    const ellipsoid = projection.ellipsoid;
+    var projection = scene.mapProjection;
+    var ellipsoid = projection.ellipsoid;
 
-    const cart = projection.unproject(result, scratchPickPositionCartographic);
+    var cart = projection.unproject(result, scratchPickPositionCartographic);
     ellipsoid.cartographicToCartesian(cart, result);
   }
 
@@ -489,21 +488,21 @@ function drillPick(limit, pickCallback) {
   // PERFORMANCE_IDEA: This function calls each primitive's update for each pass. Instead
   // we could update the primitive once, and then just execute their commands for each pass,
   // and cull commands for picked primitives.  e.g., base on the command's owner.
-  let i;
-  let attributes;
-  const result = [];
-  const pickedPrimitives = [];
-  const pickedAttributes = [];
-  const pickedFeatures = [];
+  var i;
+  var attributes;
+  var result = [];
+  var pickedPrimitives = [];
+  var pickedAttributes = [];
+  var pickedFeatures = [];
   if (!defined(limit)) {
     limit = Number.MAX_VALUE;
   }
 
-  let pickedResult = pickCallback();
+  var pickedResult = pickCallback();
   while (defined(pickedResult)) {
-    const object = pickedResult.object;
-    const position = pickedResult.position;
-    const exclude = pickedResult.exclude;
+    var object = pickedResult.object;
+    var position = pickedResult.position;
+    var exclude = pickedResult.exclude;
 
     if (defined(position) && !defined(object)) {
       result.push(pickedResult);
@@ -521,8 +520,8 @@ function drillPick(limit, pickCallback) {
       }
     }
 
-    const primitive = object.primitive;
-    let hasShowAttribute = false;
+    var primitive = object.primitive;
+    var hasShowAttribute = false;
 
     // If the picked object has a show attribute, use it.
     if (typeof primitive.getGeometryInstanceAttributes === "function") {
@@ -581,9 +580,9 @@ Picking.prototype.drillPick = function (
   width,
   height
 ) {
-  const that = this;
-  const pickCallback = function () {
-    const object = that.pick(scene, windowPosition, width, height);
+  var that = this;
+  var pickCallback = function () {
+    var object = that.pick(scene, windowPosition, width, height);
     if (defined(object)) {
       return {
         object: object,
@@ -592,29 +591,29 @@ Picking.prototype.drillPick = function (
       };
     }
   };
-  const objects = drillPick(limit, pickCallback);
+  var objects = drillPick(limit, pickCallback);
   return objects.map(function (element) {
     return element.object;
   });
 };
 
-const scratchRight = new Cartesian3();
-const scratchUp = new Cartesian3();
+var scratchRight = new Cartesian3();
+var scratchUp = new Cartesian3();
 
 function MostDetailedRayPick(ray, width, tilesets) {
   this.ray = ray;
   this.width = width;
   this.tilesets = tilesets;
   this.ready = false;
-  this.deferred = defer();
+  this.deferred = when.defer();
   this.promise = this.deferred.promise;
 }
 
 function updateOffscreenCameraFromRay(picking, ray, width, camera) {
-  const direction = ray.direction;
-  const orthogonalAxis = Cartesian3.mostOrthogonalAxis(direction, scratchRight);
-  const right = Cartesian3.cross(direction, orthogonalAxis, scratchRight);
-  const up = Cartesian3.cross(direction, right, scratchUp);
+  var direction = ray.direction;
+  var orthogonalAxis = Cartesian3.mostOrthogonalAxis(direction, scratchRight);
+  var right = Cartesian3.cross(direction, orthogonalAxis, scratchRight);
+  var up = Cartesian3.cross(direction, right, scratchUp);
 
   camera.position = ray.origin;
   camera.direction = direction;
@@ -630,28 +629,23 @@ function updateOffscreenCameraFromRay(picking, ray, width, camera) {
 }
 
 function updateMostDetailedRayPick(picking, scene, rayPick) {
-  const frameState = scene.frameState;
+  var frameState = scene.frameState;
 
-  const ray = rayPick.ray;
-  const width = rayPick.width;
-  const tilesets = rayPick.tilesets;
+  var ray = rayPick.ray;
+  var width = rayPick.width;
+  var tilesets = rayPick.tilesets;
 
-  const camera = picking._pickOffscreenView.camera;
-  const cullingVolume = updateOffscreenCameraFromRay(
-    picking,
-    ray,
-    width,
-    camera
-  );
+  var camera = picking._pickOffscreenView.camera;
+  var cullingVolume = updateOffscreenCameraFromRay(picking, ray, width, camera);
 
-  const tilesetPassState = mostDetailedPreloadTilesetPassState;
+  var tilesetPassState = mostDetailedPreloadTilesetPassState;
   tilesetPassState.camera = camera;
   tilesetPassState.cullingVolume = cullingVolume;
 
-  let ready = true;
-  const tilesetsLength = tilesets.length;
-  for (let i = 0; i < tilesetsLength; ++i) {
-    const tileset = tilesets[i];
+  var ready = true;
+  var tilesetsLength = tilesets.length;
+  for (var i = 0; i < tilesetsLength; ++i) {
+    var tileset = tilesets[i];
     if (tileset.show && scene.primitives.contains(tileset)) {
       // Only update tilesets that are still contained in the scene's primitive collection and are still visible
       // Update tilesets continually until all tilesets are ready. This way tiles are never removed from the cache.
@@ -669,8 +663,8 @@ function updateMostDetailedRayPick(picking, scene, rayPick) {
 
 Picking.prototype.updateMostDetailedRayPicks = function (scene) {
   // Modifies array during iteration
-  const rayPicks = this._mostDetailedRayPicks;
-  for (let i = 0; i < rayPicks.length; ++i) {
+  var rayPicks = this._mostDetailedRayPicks;
+  for (var i = 0; i < rayPicks.length; ++i) {
     if (updateMostDetailedRayPick(this, scene, rayPicks[i])) {
       rayPicks.splice(i--, 1);
     }
@@ -678,9 +672,9 @@ Picking.prototype.updateMostDetailedRayPicks = function (scene) {
 };
 
 function getTilesets(primitives, objectsToExclude, tilesets) {
-  const length = primitives.length;
-  for (let i = 0; i < length; ++i) {
-    const primitive = primitives.get(i);
+  var length = primitives.length;
+  for (var i = 0; i < length; ++i) {
+    var primitive = primitives.get(i);
     if (primitive.show) {
       if (defined(primitive.isCesium3DTileset)) {
         if (
@@ -704,13 +698,13 @@ function launchMostDetailedRayPick(
   width,
   callback
 ) {
-  const tilesets = [];
+  var tilesets = [];
   getTilesets(scene.primitives, objectsToExclude, tilesets);
   if (tilesets.length === 0) {
-    return Promise.resolve(callback());
+    return when.resolve(callback());
   }
 
-  const rayPick = new MostDetailedRayPick(ray, width, tilesets);
+  var rayPick = new MostDetailedRayPick(ray, width, tilesets);
   picking._mostDetailedRayPicks.push(rayPick);
   return rayPick.promise.then(function () {
     return callback();
@@ -741,18 +735,18 @@ function getRayIntersection(
   requirePosition,
   mostDetailed
 ) {
-  const context = scene.context;
-  const uniformState = context.uniformState;
-  const frameState = scene.frameState;
+  var context = scene.context;
+  var uniformState = context.uniformState;
+  var frameState = scene.frameState;
 
-  const view = picking._pickOffscreenView;
+  var view = picking._pickOffscreenView;
   scene.view = view;
 
   updateOffscreenCameraFromRay(picking, ray, width, view.camera);
 
   scratchRectangle = BoundingRectangle.clone(view.viewport, scratchRectangle);
 
-  const passState = view.pickFramebuffer.begin(scratchRectangle, view.viewport);
+  var passState = view.pickFramebuffer.begin(scratchRectangle, view.viewport);
 
   scene.jobScheduler.disableThisFrame();
 
@@ -773,24 +767,24 @@ function getRayIntersection(
   scene.updateAndExecuteCommands(passState, scratchColorZero);
   scene.resolveFramebuffers(passState);
 
-  let position;
-  const object = view.pickFramebuffer.end(scratchRectangle);
+  var position;
+  var object = view.pickFramebuffer.end(scratchRectangle);
 
   if (scene.context.depthTexture) {
-    const numFrustums = view.frustumCommandsList.length;
-    for (let i = 0; i < numFrustums; ++i) {
-      const pickDepth = picking.getPickDepth(scene, i);
-      const depth = pickDepth.getDepth(context, 0, 0);
+    var numFrustums = view.frustumCommandsList.length;
+    for (var i = 0; i < numFrustums; ++i) {
+      var pickDepth = picking.getPickDepth(scene, i);
+      var depth = pickDepth.getDepth(context, 0, 0);
       if (!defined(depth)) {
         continue;
       }
       if (depth > 0.0 && depth < 1.0) {
-        const renderedFrustum = view.frustumCommandsList[i];
-        const near =
+        var renderedFrustum = view.frustumCommandsList[i];
+        var near =
           renderedFrustum.near *
           (i !== 0 ? scene.opaqueFrustumNearOffset : 1.0);
-        const far = renderedFrustum.far;
-        const distance = near + depth * (far - near);
+        var far = renderedFrustum.far;
+        var distance = near + depth * (far - near);
         position = Ray.getPoint(ray, distance);
         break;
       }
@@ -821,7 +815,7 @@ function getRayIntersections(
   requirePosition,
   mostDetailed
 ) {
-  const pickCallback = function () {
+  var pickCallback = function () {
     return getRayIntersection(
       picking,
       scene,
@@ -844,7 +838,7 @@ function pickFromRay(
   requirePosition,
   mostDetailed
 ) {
-  const results = getRayIntersections(
+  var results = getRayIntersections(
     picking,
     scene,
     ray,
@@ -884,16 +878,16 @@ function drillPickFromRay(
 function deferPromiseUntilPostRender(scene, promise) {
   // Resolve promise after scene's postRender in case entities are created when the promise resolves.
   // Entities can't be created between viewer._onTick and viewer._postRender.
-  const deferred = defer();
+  var deferred = when.defer();
   promise
     .then(function (result) {
-      const removeCallback = scene.postRender.addEventListener(function () {
+      var removeCallback = scene.postRender.addEventListener(function () {
         deferred.resolve(result);
         removeCallback();
       });
       scene.requestRender();
     })
-    .catch(function (error) {
+    .otherwise(function (error) {
       deferred.reject(error);
     });
   return deferred.promise;
@@ -955,7 +949,7 @@ Picking.prototype.pickFromRayMostDetailed = function (
   }
   //>>includeEnd('debug');
 
-  const that = this;
+  var that = this;
   ray = Ray.clone(ray);
   objectsToExclude = defined(objectsToExclude)
     ? objectsToExclude.slice()
@@ -999,7 +993,7 @@ Picking.prototype.drillPickFromRayMostDetailed = function (
   }
   //>>includeEnd('debug');
 
-  const that = this;
+  var that = this;
   ray = Ray.clone(ray);
   objectsToExclude = defined(objectsToExclude)
     ? objectsToExclude.slice()
@@ -1028,41 +1022,41 @@ Picking.prototype.drillPickFromRayMostDetailed = function (
   );
 };
 
-const scratchSurfacePosition = new Cartesian3();
-const scratchSurfaceNormal = new Cartesian3();
-const scratchSurfaceRay = new Ray();
-const scratchCartographic = new Cartographic();
+var scratchSurfacePosition = new Cartesian3();
+var scratchSurfaceNormal = new Cartesian3();
+var scratchSurfaceRay = new Ray();
+var scratchCartographic = new Cartographic();
 
 function getRayForSampleHeight(scene, cartographic) {
-  const globe = scene.globe;
-  const ellipsoid = defined(globe)
+  var globe = scene.globe;
+  var ellipsoid = defined(globe)
     ? globe.ellipsoid
     : scene.mapProjection.ellipsoid;
-  const height = ApproximateTerrainHeights._defaultMaxTerrainHeight;
-  const surfaceNormal = ellipsoid.geodeticSurfaceNormalCartographic(
+  var height = ApproximateTerrainHeights._defaultMaxTerrainHeight;
+  var surfaceNormal = ellipsoid.geodeticSurfaceNormalCartographic(
     cartographic,
     scratchSurfaceNormal
   );
-  const surfacePosition = Cartographic.toCartesian(
+  var surfacePosition = Cartographic.toCartesian(
     cartographic,
     ellipsoid,
     scratchSurfacePosition
   );
-  const surfaceRay = scratchSurfaceRay;
+  var surfaceRay = scratchSurfaceRay;
   surfaceRay.origin = surfacePosition;
   surfaceRay.direction = surfaceNormal;
-  const ray = new Ray();
+  var ray = new Ray();
   Ray.getPoint(surfaceRay, height, ray.origin);
   Cartesian3.negate(surfaceNormal, ray.direction);
   return ray;
 }
 
 function getRayForClampToHeight(scene, cartesian) {
-  const globe = scene.globe;
-  const ellipsoid = defined(globe)
+  var globe = scene.globe;
+  var ellipsoid = defined(globe)
     ? globe.ellipsoid
     : scene.mapProjection.ellipsoid;
-  const cartographic = Cartographic.fromCartesian(
+  var cartographic = Cartographic.fromCartesian(
     cartesian,
     ellipsoid,
     scratchCartographic
@@ -1071,11 +1065,11 @@ function getRayForClampToHeight(scene, cartesian) {
 }
 
 function getHeightFromCartesian(scene, cartesian) {
-  const globe = scene.globe;
-  const ellipsoid = defined(globe)
+  var globe = scene.globe;
+  var ellipsoid = defined(globe)
     ? globe.ellipsoid
     : scene.mapProjection.ellipsoid;
-  const cartographic = Cartographic.fromCartesian(
+  var cartographic = Cartographic.fromCartesian(
     cartesian,
     ellipsoid,
     scratchCartographic
@@ -1090,7 +1084,7 @@ function sampleHeightMostDetailed(
   objectsToExclude,
   width
 ) {
-  const ray = getRayForSampleHeight(scene, cartographic);
+  var ray = getRayForSampleHeight(scene, cartographic);
   return launchMostDetailedRayPick(
     picking,
     scene,
@@ -1098,7 +1092,7 @@ function sampleHeightMostDetailed(
     objectsToExclude,
     width,
     function () {
-      const pickResult = pickFromRay(
+      var pickResult = pickFromRay(
         picking,
         scene,
         ray,
@@ -1122,7 +1116,7 @@ function clampToHeightMostDetailed(
   width,
   result
 ) {
-  const ray = getRayForClampToHeight(scene, cartesian);
+  var ray = getRayForClampToHeight(scene, cartesian);
   return launchMostDetailedRayPick(
     picking,
     scene,
@@ -1130,7 +1124,7 @@ function clampToHeightMostDetailed(
     objectsToExclude,
     width,
     function () {
-      const pickResult = pickFromRay(
+      var pickResult = pickFromRay(
         picking,
         scene,
         ray,
@@ -1164,8 +1158,8 @@ Picking.prototype.sampleHeight = function (
   }
   //>>includeEnd('debug');
 
-  const ray = getRayForSampleHeight(scene, position);
-  const pickResult = pickFromRay(
+  var ray = getRayForSampleHeight(scene, position);
+  var pickResult = pickFromRay(
     this,
     scene,
     ray,
@@ -1198,8 +1192,8 @@ Picking.prototype.clampToHeight = function (
   }
   //>>includeEnd('debug');
 
-  const ray = getRayForClampToHeight(scene, cartesian);
-  const pickResult = pickFromRay(
+  var ray = getRayForClampToHeight(scene, cartesian);
+  var pickResult = pickFromRay(
     this,
     scene,
     ray,
@@ -1236,9 +1230,9 @@ Picking.prototype.sampleHeightMostDetailed = function (
   objectsToExclude = defined(objectsToExclude)
     ? objectsToExclude.slice()
     : objectsToExclude;
-  const length = positions.length;
-  const promises = new Array(length);
-  for (let i = 0; i < length; ++i) {
+  var length = positions.length;
+  var promises = new Array(length);
+  for (var i = 0; i < length; ++i) {
     promises[i] = sampleHeightMostDetailed(
       this,
       scene,
@@ -1249,9 +1243,9 @@ Picking.prototype.sampleHeightMostDetailed = function (
   }
   return deferPromiseUntilPostRender(
     scene,
-    Promise.all(promises).then(function (heights) {
-      const length = heights.length;
-      for (let i = 0; i < length; ++i) {
+    when.all(promises).then(function (heights) {
+      var length = heights.length;
+      for (var i = 0; i < length; ++i) {
         positions[i].height = heights[i];
       }
       return positions;
@@ -1282,9 +1276,9 @@ Picking.prototype.clampToHeightMostDetailed = function (
   objectsToExclude = defined(objectsToExclude)
     ? objectsToExclude.slice()
     : objectsToExclude;
-  const length = cartesians.length;
-  const promises = new Array(length);
-  for (let i = 0; i < length; ++i) {
+  var length = cartesians.length;
+  var promises = new Array(length);
+  for (var i = 0; i < length; ++i) {
     promises[i] = clampToHeightMostDetailed(
       this,
       scene,
@@ -1296,9 +1290,9 @@ Picking.prototype.clampToHeightMostDetailed = function (
   }
   return deferPromiseUntilPostRender(
     scene,
-    Promise.all(promises).then(function (clampedCartesians) {
-      const length = clampedCartesians.length;
-      for (let i = 0; i < length; ++i) {
+    when.all(promises).then(function (clampedCartesians) {
+      var length = clampedCartesians.length;
+      for (var i = 0; i < length; ++i) {
         cartesians[i] = clampedCartesians[i];
       }
       return cartesians;

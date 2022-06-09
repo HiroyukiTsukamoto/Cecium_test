@@ -51,19 +51,19 @@
     }
 
     // Look for d1.stack, "bucket.html:line:char"
-    let lineNumber = -1;
-    const errorMsg = d1.toString();
+    var lineNumber = -1;
+    var errorMsg = d1.toString();
     if (typeof d1.stack === "string") {
-      const stack = d1.stack;
-      let pos = stack.indexOf(Sandcastle.bucket);
+      var stack = d1.stack;
+      var pos = stack.indexOf(Sandcastle.bucket);
       if (pos < 0) {
         pos = stack.indexOf("<anonymous>");
       }
       if (pos >= 0) {
-        const lineStart = stack.indexOf(":", pos);
+        var lineStart = stack.indexOf(":", pos);
         if (lineStart > pos) {
-          let lineEnd1 = stack.indexOf(":", lineStart + 1);
-          const lineEnd2 = stack.indexOf("\n", lineStart + 1);
+          var lineEnd1 = stack.indexOf(":", lineStart + 1);
+          var lineEnd2 = stack.indexOf("\n", lineStart + 1);
           if (
             lineEnd2 > lineStart &&
             (lineEnd2 < lineEnd1 || lineEnd1 < lineStart)
@@ -112,7 +112,7 @@
         // Change lineNumber to the local one for highlighting.
         /*eslint-disable no-empty*/
         try {
-          let pos = errorMsg.indexOf(`${Sandcastle.bucket}:`);
+          var pos = errorMsg.indexOf(Sandcastle.bucket + ":");
           if (pos < 0) {
             pos = errorMsg.indexOf("<anonymous>");
           }
@@ -148,14 +148,14 @@
     /*eslint-disable no-empty*/
     try {
       //Browsers such as IE don't have a stack property until you actually throw the error.
-      let stack = "";
+      var stack = "";
       try {
         throw new Error();
       } catch (ex) {
         stack = ex.stack.toString();
       }
-      let needle = `${Sandcastle.bucket}:`; // Firefox
-      let pos = stack.indexOf(needle);
+      var needle = Sandcastle.bucket + ":"; // Firefox
+      var pos = stack.indexOf(needle);
       if (pos < 0) {
         needle = " (<anonymous>:"; // Chrome
         pos = stack.indexOf(needle);
@@ -166,7 +166,7 @@
       }
       if (pos >= 0) {
         pos += needle.length;
-        const lineNumber = parseInt(stack.substring(pos), 10);
+        var lineNumber = parseInt(stack.substring(pos), 10);
         Sandcastle.registered.push({
           obj: obj,
           lineNumber: lineNumber,
@@ -178,7 +178,7 @@
 
   Sandcastle.highlight = function (obj) {
     if (typeof obj !== "undefined") {
-      for (let i = 0, len = Sandcastle.registered.length; i < len; ++i) {
+      for (var i = 0, len = Sandcastle.registered.length; i < len; ++i) {
         if (
           obj === Sandcastle.registered[i].obj ||
           obj.primitive === Sandcastle.registered[i].obj

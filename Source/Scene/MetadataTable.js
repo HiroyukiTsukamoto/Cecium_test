@@ -1,22 +1,22 @@
 import Check from "../Core/Check.js";
-import clone from "../Core/clone.js";
 import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import MetadataEntity from "./MetadataEntity.js";
 import MetadataTableProperty from "./MetadataTableProperty.js";
+import MetadataType from "./MetadataType.js";
 
 /**
  * A table containing binary metadata for a collection of entities. This is
  * used for representing binary properties of a batch table, as well as binary
  * metadata in 3D Tiles next extensions.
  * <p>
- * For 3D Tiles Next details, see the {@link https://github.com/CesiumGS/3d-tiles/tree/main/extensions/3DTILES_metadata|3DTILES_metadata Extension} for 3D Tiles, as well as the {@link https://github.com/CesiumGS/glTF/tree/3d-tiles-next/extensions/2.0/Vendor/EXT_feature_metadata|EXT_feature_metadata Extension} for glTF.
+ * For 3D Tiles Next details, see the {@link https://github.com/CesiumGS/3d-tiles/tree/3d-tiles-next/extensions/3DTILES_metadata|3DTILES_metadata Extension} for 3D Tiles, as well as the {@link https://github.com/CesiumGS/glTF/tree/3d-tiles-next/extensions/2.0/Vendor/EXT_feature_metadata|EXT_feature_metadata Extension} for glTF.
  * </p>
  *
  * @param {Object} options Object with the following properties:
  * @param {Number} options.count The number of entities in the table.
  * @param {Object} [options.properties] A dictionary containing properties.
- * @param {MetadataClass} options.class The class that properties conform to.
+ * @param {MetadataClass} [options.class] The class that properties conform to.
  * @param {Object.<String, Uint8Array>} [options.bufferViews] An object mapping bufferView IDs to Uint8Array objects.
  *
  * @alias MetadataTable
@@ -27,22 +27,20 @@ import MetadataTableProperty from "./MetadataTableProperty.js";
  */
 function MetadataTable(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const count = options.count;
-  const metadataClass = options.class;
+  var count = options.count;
 
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number.greaterThan("options.count", count, 0);
-  Check.typeOf.object("options.class", metadataClass);
   //>>includeEnd('debug');
 
-  const properties = {};
+  var properties = {};
   if (defined(options.properties)) {
-    for (const propertyId in options.properties) {
+    for (var propertyId in options.properties) {
       if (options.properties.hasOwnProperty(propertyId)) {
         properties[propertyId] = new MetadataTableProperty({
           count: count,
           property: options.properties[propertyId],
-          classProperty: metadataClass.properties[propertyId],
+          classProperty: options.class.properties[propertyId],
           bufferViews: options.bufferViews,
         });
       }
@@ -50,7 +48,7 @@ function MetadataTable(options) {
   }
 
   this._count = count;
-  this._class = metadataClass;
+  this._class = options.class;
   this._properties = properties;
 }
 
@@ -151,9 +149,9 @@ MetadataTable.prototype.getProperty = function (index, propertyId) {
   Check.typeOf.string("propertyId", propertyId);
   //>>includeEnd('debug');
 
-  const property = this._properties[propertyId];
+  var property = this._properties[propertyId];
 
-  let value;
+  var value;
   if (defined(property)) {
     value = property.get(index);
   } else {
@@ -198,7 +196,7 @@ MetadataTable.prototype.setProperty = function (index, propertyId, value) {
   Check.typeOf.string("propertyId", propertyId);
   //>>includeEnd('debug');
 
-  const property = this._properties[propertyId];
+  var property = this._properties[propertyId];
   if (defined(property)) {
     property.set(index, value);
     return true;
@@ -222,16 +220,12 @@ MetadataTable.prototype.getPropertyBySemantic = function (index, semantic) {
   Check.typeOf.string("semantic", semantic);
   //>>includeEnd('debug');
 
-  let property;
-  const propertiesBySemantic = this._class.propertiesBySemantic;
-  if (defined(propertiesBySemantic)) {
-    property = propertiesBySemantic[semantic];
+  if (defined(this._class)) {
+    var property = this._class.propertiesBySemantic[semantic];
+    if (defined(property)) {
+      return this.getProperty(index, property.id);
+    }
   }
-
-  if (defined(property)) {
-    return this.getProperty(index, property.id);
-  }
-
   return undefined;
 };
 
@@ -258,14 +252,11 @@ MetadataTable.prototype.setPropertyBySemantic = function (
   Check.typeOf.string("semantic", semantic);
   //>>includeEnd('debug');
 
-  let property;
-  const propertiesBySemantic = this._class.propertiesBySemantic;
-  if (defined(propertiesBySemantic)) {
-    property = propertiesBySemantic[semantic];
-  }
-
-  if (defined(property)) {
-    return this.setProperty(index, property.id, value);
+  if (defined(this._class)) {
+    var property = this._class.propertiesBySemantic[semantic];
+    if (defined(property)) {
+      return this.setProperty(index, property.id, value);
+    }
   }
 
   return false;
@@ -284,7 +275,7 @@ MetadataTable.prototype.getPropertyTypedArray = function (propertyId) {
   Check.typeOf.string("propertyId", propertyId);
   //>>includeEnd('debug');
 
-  const property = this._properties[propertyId];
+  var property = this._properties[propertyId];
 
   if (defined(property)) {
     return property.getTypedArray();
@@ -306,33 +297,27 @@ MetadataTable.prototype.getPropertyTypedArrayBySemantic = function (semantic) {
   Check.typeOf.string("semantic", semantic);
   //>>includeEnd('debug');
 
-  let property;
-  const propertiesBySemantic = this._class.propertiesBySemantic;
-  if (defined(propertiesBySemantic)) {
-    property = propertiesBySemantic[semantic];
-  }
-
-  if (defined(property)) {
-    return this.getPropertyTypedArray(property.id);
+  if (defined(this._class)) {
+    var property = this._class.propertiesBySemantic[semantic];
+    if (defined(property)) {
+      return this.getPropertyTypedArray(property.id);
+    }
   }
 
   return undefined;
 };
 
 function getDefault(classDefinition, propertyId) {
-  const classProperties = classDefinition.properties;
-  if (!defined(classProperties)) {
-    return undefined;
-  }
-
-  const classProperty = classProperties[propertyId];
-  if (defined(classProperty) && defined(classProperty.default)) {
-    let value = classProperty.default;
-    if (classProperty.isArray) {
-      value = clone(value, true);
+  if (defined(classDefinition)) {
+    var classProperty = classDefinition.properties[propertyId];
+    if (defined(classProperty) && defined(classProperty.default)) {
+      var value = classProperty.default;
+      if (classProperty.type === MetadataType.ARRAY) {
+        value = value.slice(); // clone
+      }
+      value = classProperty.normalize(value);
+      return classProperty.unpackVectorTypes(value);
     }
-    value = classProperty.normalize(value);
-    return classProperty.unpackVectorAndMatrixTypes(value);
   }
 }
 

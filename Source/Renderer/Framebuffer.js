@@ -8,7 +8,7 @@ import ContextLimits from "./ContextLimits.js";
 import PixelDatatype from "./PixelDatatype.js";
 
 function attachTexture(framebuffer, attachment, texture) {
-  const gl = framebuffer._gl;
+  var gl = framebuffer._gl;
   gl.framebufferTexture2D(
     gl.FRAMEBUFFER,
     attachment,
@@ -19,7 +19,7 @@ function attachTexture(framebuffer, attachment, texture) {
 }
 
 function attachRenderbuffer(framebuffer, attachment, renderbuffer) {
-  const gl = framebuffer._gl;
+  var gl = framebuffer._gl;
   gl.framebufferRenderbuffer(
     gl.FRAMEBUFFER,
     attachment,
@@ -33,7 +33,7 @@ function attachRenderbuffer(framebuffer, attachment, renderbuffer) {
  * Framebuffers are used for render-to-texture effects; they allow us to render to
  * textures in one pass, and read from it in a later pass.
  *
- * @param {Object} options The initial framebuffer attachments as shown in the example below. <code>context</code> is required. The possible properties are <code>colorTextures</code>, <code>colorRenderbuffers</code>, <code>depthTexture</code>, <code>depthRenderbuffer</code>, <code>stencilRenderbuffer</code>, <code>depthStencilTexture</code>, <code>depthStencilRenderbuffer</code>, and <code>destroyAttachments</code>.
+ * @param {Object} options The initial framebuffer attachments as shown in the example below. <code>context</code> is required. The possible properties are <code>colorTextures</code>, <code>colorRenderbuffers</code>, <code>depthTexture</code>, <code>depthRenderbuffer</code>, <code>stencilRenderbuffer</code>, <code>depthStencilTexture</code>, and <code>depthStencilRenderbuffer</code>.
  *
  * @exception {DeveloperError} Cannot have both color texture and color renderbuffer attachments.
  * @exception {DeveloperError} Cannot have both a depth texture and depth renderbuffer attachment.
@@ -50,9 +50,9 @@ function attachRenderbuffer(framebuffer, attachment, renderbuffer) {
  *
  * @example
  * // Create a framebuffer with color and depth texture attachments.
- * const width = context.canvas.clientWidth;
- * const height = context.canvas.clientHeight;
- * const framebuffer = new Framebuffer({
+ * var width = context.canvas.clientWidth;
+ * var height = context.canvas.clientHeight;
+ * var framebuffer = new Framebuffer({
  *   context : context,
  *   colorTextures : [new Texture({
  *     context : context,
@@ -75,13 +75,13 @@ function attachRenderbuffer(framebuffer, attachment, renderbuffer) {
 function Framebuffer(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const context = options.context;
+  var context = options.context;
   //>>includeStart('debug', pragmas.debug);
   Check.defined("options.context", context);
   //>>includeEnd('debug');
 
-  const gl = context._gl;
-  const maximumColorAttachments = ContextLimits.maximumColorAttachments;
+  var gl = context._gl;
+  var maximumColorAttachments = ContextLimits.maximumColorAttachments;
 
   this._gl = gl;
   this._framebuffer = gl.createFramebuffer();
@@ -133,9 +133,9 @@ function Framebuffer(options) {
   //>>includeEnd('debug');
 
   // Avoid errors defined in Section 6.5 of the WebGL spec
-  const depthAttachment =
+  var depthAttachment =
     defined(options.depthTexture) || defined(options.depthRenderbuffer);
-  const depthStencilAttachment =
+  var depthStencilAttachment =
     defined(options.depthStencilTexture) ||
     defined(options.depthStencilRenderbuffer);
 
@@ -161,14 +161,14 @@ function Framebuffer(options) {
 
   this._bind();
 
-  let texture;
-  let renderbuffer;
-  let i;
-  let length;
-  let attachmentEnum;
+  var texture;
+  var renderbuffer;
+  var i;
+  var length;
+  var attachmentEnum;
 
   if (defined(options.colorTextures)) {
-    const textures = options.colorTextures;
+    var textures = options.colorTextures;
     length = this._colorTextures.length = this._activeColorAttachments.length =
       textures.length;
 
@@ -215,7 +215,7 @@ function Framebuffer(options) {
   }
 
   if (defined(options.colorRenderbuffers)) {
-    const renderbuffers = options.colorRenderbuffers;
+    var renderbuffers = options.colorRenderbuffers;
     length = this._colorRenderbuffers.length = this._activeColorAttachments.length =
       renderbuffers.length;
 
@@ -297,7 +297,7 @@ Object.defineProperties(Framebuffer.prototype, {
   status: {
     get: function () {
       this._bind();
-      const status = this._gl.checkFramebufferStatus(this._gl.FRAMEBUFFER);
+      var status = this._gl.checkFramebufferStatus(this._gl.FRAMEBUFFER);
       this._unBind();
       return status;
     },
@@ -353,23 +353,13 @@ Object.defineProperties(Framebuffer.prototype, {
 });
 
 Framebuffer.prototype._bind = function () {
-  const gl = this._gl;
+  var gl = this._gl;
   gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
 };
 
 Framebuffer.prototype._unBind = function () {
-  const gl = this._gl;
+  var gl = this._gl;
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-};
-
-Framebuffer.prototype.bindDraw = function () {
-  const gl = this._gl;
-  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this._framebuffer);
-};
-
-Framebuffer.prototype.bindRead = function () {
-  const gl = this._gl;
-  gl.bindFramebuffer(gl.READ_FRAMEBUFFER, this._framebuffer);
 };
 
 Framebuffer.prototype._getActiveColorAttachments = function () {
@@ -411,20 +401,20 @@ Framebuffer.prototype.isDestroyed = function () {
 Framebuffer.prototype.destroy = function () {
   if (this.destroyAttachments) {
     // If the color texture is a cube map face, it is owned by the cube map, and will not be destroyed.
-    let i = 0;
-    const textures = this._colorTextures;
-    let length = textures.length;
+    var i = 0;
+    var textures = this._colorTextures;
+    var length = textures.length;
     for (; i < length; ++i) {
-      const texture = textures[i];
+      var texture = textures[i];
       if (defined(texture)) {
         texture.destroy();
       }
     }
 
-    const renderbuffers = this._colorRenderbuffers;
+    var renderbuffers = this._colorRenderbuffers;
     length = renderbuffers.length;
     for (i = 0; i < length; ++i) {
-      const renderbuffer = renderbuffers[i];
+      var renderbuffer = renderbuffers[i];
       if (defined(renderbuffer)) {
         renderbuffer.destroy();
       }

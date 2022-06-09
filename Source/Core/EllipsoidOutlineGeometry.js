@@ -14,9 +14,9 @@ import IndexDatatype from "./IndexDatatype.js";
 import CesiumMath from "./Math.js";
 import PrimitiveType from "./PrimitiveType.js";
 
-const defaultRadii = new Cartesian3(1.0, 1.0, 1.0);
-const cos = Math.cos;
-const sin = Math.sin;
+var defaultRadii = new Cartesian3(1.0, 1.0, 1.0);
+var cos = Math.cos;
+var sin = Math.sin;
 
 /**
  * A description of the outline of an ellipsoid centered at the origin.
@@ -40,25 +40,25 @@ const sin = Math.sin;
  * @exception {DeveloperError} options.subdivisions must be greater than or equal to zero.
  *
  * @example
- * const ellipsoid = new Cesium.EllipsoidOutlineGeometry({
+ * var ellipsoid = new Cesium.EllipsoidOutlineGeometry({
  *   radii : new Cesium.Cartesian3(1000000.0, 500000.0, 500000.0),
  *   stackPartitions: 6,
  *   slicePartitions: 5
  * });
- * const geometry = Cesium.EllipsoidOutlineGeometry.createGeometry(ellipsoid);
+ * var geometry = Cesium.EllipsoidOutlineGeometry.createGeometry(ellipsoid);
  */
 function EllipsoidOutlineGeometry(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const radii = defaultValue(options.radii, defaultRadii);
-  const innerRadii = defaultValue(options.innerRadii, radii);
-  const minimumClock = defaultValue(options.minimumClock, 0.0);
-  const maximumClock = defaultValue(options.maximumClock, CesiumMath.TWO_PI);
-  const minimumCone = defaultValue(options.minimumCone, 0.0);
-  const maximumCone = defaultValue(options.maximumCone, CesiumMath.PI);
-  const stackPartitions = Math.round(defaultValue(options.stackPartitions, 10));
-  const slicePartitions = Math.round(defaultValue(options.slicePartitions, 8));
-  const subdivisions = Math.round(defaultValue(options.subdivisions, 128));
+  var radii = defaultValue(options.radii, defaultRadii);
+  var innerRadii = defaultValue(options.innerRadii, radii);
+  var minimumClock = defaultValue(options.minimumClock, 0.0);
+  var maximumClock = defaultValue(options.maximumClock, CesiumMath.TWO_PI);
+  var minimumCone = defaultValue(options.minimumCone, 0.0);
+  var maximumCone = defaultValue(options.maximumCone, CesiumMath.PI);
+  var stackPartitions = Math.round(defaultValue(options.stackPartitions, 10));
+  var slicePartitions = Math.round(defaultValue(options.slicePartitions, 8));
+  var subdivisions = Math.round(defaultValue(options.subdivisions, 128));
 
   //>>includeStart('debug', pragmas.debug);
   if (stackPartitions < 1) {
@@ -140,9 +140,9 @@ EllipsoidOutlineGeometry.pack = function (value, array, startingIndex) {
   return array;
 };
 
-const scratchRadii = new Cartesian3();
-const scratchInnerRadii = new Cartesian3();
-const scratchOptions = {
+var scratchRadii = new Cartesian3();
+var scratchInnerRadii = new Cartesian3();
+var scratchOptions = {
   radii: scratchRadii,
   innerRadii: scratchInnerRadii,
   minimumClock: undefined,
@@ -172,20 +172,20 @@ EllipsoidOutlineGeometry.unpack = function (array, startingIndex, result) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  const radii = Cartesian3.unpack(array, startingIndex, scratchRadii);
+  var radii = Cartesian3.unpack(array, startingIndex, scratchRadii);
   startingIndex += Cartesian3.packedLength;
 
-  const innerRadii = Cartesian3.unpack(array, startingIndex, scratchInnerRadii);
+  var innerRadii = Cartesian3.unpack(array, startingIndex, scratchInnerRadii);
   startingIndex += Cartesian3.packedLength;
 
-  const minimumClock = array[startingIndex++];
-  const maximumClock = array[startingIndex++];
-  const minimumCone = array[startingIndex++];
-  const maximumCone = array[startingIndex++];
-  const stackPartitions = array[startingIndex++];
-  const slicePartitions = array[startingIndex++];
-  const subdivisions = array[startingIndex++];
-  const offsetAttribute = array[startingIndex];
+  var minimumClock = array[startingIndex++];
+  var maximumClock = array[startingIndex++];
+  var minimumCone = array[startingIndex++];
+  var maximumCone = array[startingIndex++];
+  var stackPartitions = array[startingIndex++];
+  var slicePartitions = array[startingIndex++];
+  var subdivisions = array[startingIndex++];
+  var offsetAttribute = array[startingIndex];
 
   if (!defined(result)) {
     scratchOptions.minimumClock = minimumClock;
@@ -222,26 +222,26 @@ EllipsoidOutlineGeometry.unpack = function (array, startingIndex, result) {
  * @returns {Geometry|undefined} The computed vertices and indices.
  */
 EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
-  const radii = ellipsoidGeometry._radii;
+  var radii = ellipsoidGeometry._radii;
   if (radii.x <= 0 || radii.y <= 0 || radii.z <= 0) {
     return;
   }
 
-  const innerRadii = ellipsoidGeometry._innerRadii;
+  var innerRadii = ellipsoidGeometry._innerRadii;
   if (innerRadii.x <= 0 || innerRadii.y <= 0 || innerRadii.z <= 0) {
     return;
   }
 
-  const minimumClock = ellipsoidGeometry._minimumClock;
-  const maximumClock = ellipsoidGeometry._maximumClock;
-  const minimumCone = ellipsoidGeometry._minimumCone;
-  const maximumCone = ellipsoidGeometry._maximumCone;
-  const subdivisions = ellipsoidGeometry._subdivisions;
-  const ellipsoid = Ellipsoid.fromCartesian3(radii);
+  var minimumClock = ellipsoidGeometry._minimumClock;
+  var maximumClock = ellipsoidGeometry._maximumClock;
+  var minimumCone = ellipsoidGeometry._minimumCone;
+  var maximumCone = ellipsoidGeometry._maximumCone;
+  var subdivisions = ellipsoidGeometry._subdivisions;
+  var ellipsoid = Ellipsoid.fromCartesian3(radii);
 
   // Add an extra slice and stack to remain consistent with EllipsoidGeometry
-  let slicePartitions = ellipsoidGeometry._slicePartitions + 1;
-  let stackPartitions = ellipsoidGeometry._stackPartitions + 1;
+  var slicePartitions = ellipsoidGeometry._slicePartitions + 1;
+  var stackPartitions = ellipsoidGeometry._stackPartitions + 1;
 
   slicePartitions = Math.round(
     (slicePartitions * Math.abs(maximumClock - minimumClock)) /
@@ -258,14 +258,14 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
     stackPartitions = 2;
   }
 
-  let extraIndices = 0;
-  let vertexMultiplier = 1.0;
-  const hasInnerSurface =
+  var extraIndices = 0;
+  var vertexMultiplier = 1.0;
+  var hasInnerSurface =
     innerRadii.x !== radii.x ||
     innerRadii.y !== radii.y ||
     innerRadii.z !== radii.z;
-  let isTopOpen = false;
-  let isBotOpen = false;
+  var isTopOpen = false;
+  var isBotOpen = false;
   if (hasInnerSurface) {
     vertexMultiplier = 2.0;
     // Add 2x slicePartitions to connect the top/bottom of the outer to
@@ -280,27 +280,27 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
     }
   }
 
-  const vertexCount =
+  var vertexCount =
     subdivisions * vertexMultiplier * (stackPartitions + slicePartitions);
-  const positions = new Float64Array(vertexCount * 3);
+  var positions = new Float64Array(vertexCount * 3);
 
   // Multiply by two because two points define each line segment
-  const numIndices =
+  var numIndices =
     2 *
     (vertexCount +
       extraIndices -
       (slicePartitions + stackPartitions) * vertexMultiplier);
-  const indices = IndexDatatype.createTypedArray(vertexCount, numIndices);
+  var indices = IndexDatatype.createTypedArray(vertexCount, numIndices);
 
-  let i;
-  let j;
-  let theta;
-  let phi;
-  let index = 0;
+  var i;
+  var j;
+  var theta;
+  var phi;
+  var index = 0;
 
   // Calculate sin/cos phi
-  const sinPhi = new Array(stackPartitions);
-  const cosPhi = new Array(stackPartitions);
+  var sinPhi = new Array(stackPartitions);
+  var cosPhi = new Array(stackPartitions);
   for (i = 0; i < stackPartitions; i++) {
     phi =
       minimumCone + (i * (maximumCone - minimumCone)) / (stackPartitions - 1);
@@ -309,8 +309,8 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
   }
 
   // Calculate sin/cos theta
-  const sinTheta = new Array(subdivisions);
-  const cosTheta = new Array(subdivisions);
+  var sinTheta = new Array(subdivisions);
+  var cosTheta = new Array(subdivisions);
   for (i = 0; i < subdivisions; i++) {
     theta =
       minimumClock + (i * (maximumClock - minimumClock)) / (subdivisions - 1);
@@ -381,7 +381,7 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
   // Create indices for the latitude lines
   index = 0;
   for (i = 0; i < stackPartitions * vertexMultiplier; i++) {
-    const topOffset = i * subdivisions;
+    var topOffset = i * subdivisions;
     for (j = 0; j < subdivisions - 1; j++) {
       indices[index++] = topOffset + j;
       indices[index++] = topOffset + j + 1;
@@ -389,7 +389,7 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
   }
 
   // Create indices for the outer longitude lines
-  let offset = stackPartitions * subdivisions * vertexMultiplier;
+  var offset = stackPartitions * subdivisions * vertexMultiplier;
   for (i = 0; i < slicePartitions; i++) {
     for (j = 0; j < subdivisions - 1; j++) {
       indices[index++] = offset + i + j * slicePartitions;
@@ -411,8 +411,8 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
   }
 
   if (hasInnerSurface) {
-    let outerOffset = stackPartitions * subdivisions * vertexMultiplier;
-    let innerOffset = outerOffset + subdivisions * slicePartitions;
+    var outerOffset = stackPartitions * subdivisions * vertexMultiplier;
+    var innerOffset = outerOffset + subdivisions * slicePartitions;
     if (isTopOpen) {
       // Draw lines from the top of the inner surface to the top of the outer surface
       for (i = 0; i < slicePartitions; i++) {
@@ -432,7 +432,7 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
     }
   }
 
-  const attributes = new GeometryAttributes({
+  var attributes = new GeometryAttributes({
     position: new GeometryAttribute({
       componentDatatype: ComponentDatatype.DOUBLE,
       componentsPerAttribute: 3,
@@ -441,9 +441,9 @@ EllipsoidOutlineGeometry.createGeometry = function (ellipsoidGeometry) {
   });
 
   if (defined(ellipsoidGeometry._offsetAttribute)) {
-    const length = positions.length;
-    const applyOffset = new Uint8Array(length / 3);
-    const offsetValue =
+    var length = positions.length;
+    var applyOffset = new Uint8Array(length / 3);
+    var offsetValue =
       ellipsoidGeometry._offsetAttribute === GeometryOffsetAttribute.NONE
         ? 0
         : 1;

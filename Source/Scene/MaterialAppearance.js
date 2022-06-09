@@ -32,7 +32,7 @@ import Material from "./Material.js";
      * @demo {@link https://sandcastle.cesium.com/index.html?src=Materials.html|Cesium Sandcastle Material Appearance Demo}
      *
      * @example
-     * const primitive = new Cesium.Primitive({
+     * var primitive = new Cesium.Primitive({
      *   geometryInstances : new Cesium.GeometryInstance({
      *     geometry : new Cesium.WallGeometry({
             materialSupport :  Cesium.MaterialAppearance.MaterialSupport.BASIC.vertexFormat,
@@ -49,9 +49,9 @@ import Material from "./Material.js";
 function MaterialAppearance(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const translucent = defaultValue(options.translucent, true);
-  const closed = defaultValue(options.closed, false);
-  const materialSupport = defaultValue(
+  var translucent = defaultValue(options.translucent, true);
+  var closed = defaultValue(options.closed, false);
+  var materialSupport = defaultValue(
     options.materialSupport,
     MaterialAppearance.MaterialSupport.TEXTURED
   );

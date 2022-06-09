@@ -8,17 +8,17 @@ import { TextureMinificationFilter } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 
 describe("Scene/createElevationBandMaterial", function () {
-  let scene;
-  let isHeightDataPacked;
-  let heightData;
-  let colorData;
+  var scene;
+  var isHeightDataPacked;
+  var heightData;
+  var colorData;
 
   beforeAll(function () {
     scene = createScene();
 
     // Color and height textures are differentiated by the sampler filter.
     spyOn(Texture, "create").and.callFake(function (options) {
-      const data = options.source.arrayBufferView;
+      var data = options.source.arrayBufferView;
       if (
         options.sampler.minificationFilter === TextureMinificationFilter.NEAREST
       ) {
@@ -37,31 +37,31 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   function checkTextureDimensions(expectedDimension) {
-    const colorDimension = colorData.length / 4;
+    var colorDimension = colorData.length / 4;
     expect(colorDimension).toEqual(expectedDimension);
 
-    const heightDimension = isHeightDataPacked
+    var heightDimension = isHeightDataPacked
       ? heightData.length / 4
       : heightData.length;
     expect(heightDimension).toEqual(expectedDimension);
   }
   function checkTexel(texel, expectedColor, expectedHeight) {
-    const r = colorData[texel * 4 + 0];
-    const g = colorData[texel * 4 + 1];
-    const b = colorData[texel * 4 + 2];
-    const a = colorData[texel * 4 + 3];
-    const color = [r, g, b, a];
+    var r = colorData[texel * 4 + 0];
+    var g = colorData[texel * 4 + 1];
+    var b = colorData[texel * 4 + 2];
+    var a = colorData[texel * 4 + 3];
+    var color = [r, g, b, a];
 
     // The texture stores colors as premultiplied alpha, so we need to convert
     // the expected color to premultiplied alpha before comparing.
-    const premulipliedColor = Color.clone(expectedColor, new Color());
+    var premulipliedColor = Color.clone(expectedColor, new Color());
     premulipliedColor.red *= premulipliedColor.alpha;
     premulipliedColor.green *= premulipliedColor.alpha;
     premulipliedColor.blue *= premulipliedColor.alpha;
 
     expect(color).toEqualEpsilon(premulipliedColor.toBytes(), 1);
 
-    const height = isHeightDataPacked
+    var height = isHeightDataPacked
       ? Cartesian4.unpackFloat(Cartesian4.unpack(heightData, texel * 4))
       : heightData[texel];
     expect(height).toEqualEpsilon(expectedHeight, CesiumMath.EPSILON5);
@@ -80,7 +80,7 @@ describe("Scene/createElevationBandMaterial", function () {
       });
     }).toThrowDeveloperError();
 
-    const layers = [];
+    var layers = [];
     expect(function () {
       createElevationBandMaterial({
         scene: scene,
@@ -90,7 +90,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("throws with no entries", function () {
-    const layers = [
+    var layers = [
       {
         entries: [],
       },
@@ -105,7 +105,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("throws with no height", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -124,7 +124,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("throws with no color", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -143,7 +143,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with one entry", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -165,7 +165,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with one entry that extends upwards", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -188,7 +188,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with one entry that extends downwards", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -211,7 +211,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with one entry that extends upwards and downwards", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -235,7 +235,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("removes unused entries", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -289,7 +289,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("sorts entries", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -320,7 +320,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with antialiased band", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -356,7 +356,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with one layer completely before another", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -398,7 +398,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with one layer completely after another", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -440,7 +440,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with larger transparent layer on top of solid color layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -482,7 +482,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with smaller transparent layer on top of solid color layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -524,7 +524,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with transparent bi-color layer on top of bi-color layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -580,7 +580,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with transparent bi-color layer on top of gradient layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -632,7 +632,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with transparent gradient layer on top of bi-color layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -684,7 +684,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with transparent gradient layer on top of gradient layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -731,7 +731,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with transparent gradient layer on top of solid color layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -774,7 +774,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with transparent layer on top of gradient layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -817,7 +817,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with higher layer starting and ending on middle of lower layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -867,7 +867,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with lower layer starting and ending on middle of higher layer", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -917,7 +917,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates multi-layered material", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -1005,7 +1005,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates another multi-layered material", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -1103,7 +1103,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with complex layers", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -1151,7 +1151,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with unpacked height", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {
@@ -1180,7 +1180,7 @@ describe("Scene/createElevationBandMaterial", function () {
   });
 
   it("creates material with packed height", function () {
-    const layers = [
+    var layers = [
       {
         entries: [
           {

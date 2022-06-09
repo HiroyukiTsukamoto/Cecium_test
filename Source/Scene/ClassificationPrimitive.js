@@ -1,7 +1,6 @@
 import ColorGeometryInstanceAttribute from "../Core/ColorGeometryInstanceAttribute.js";
 import combine from "../Core/combine.js";
 import defaultValue from "../Core/defaultValue.js";
-import defer from "../Core/defer.js";
 import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
 import DeveloperError from "../Core/DeveloperError.js";
@@ -13,6 +12,7 @@ import ShaderProgram from "../Renderer/ShaderProgram.js";
 import ShaderSource from "../Renderer/ShaderSource.js";
 import ShadowVolumeAppearanceVS from "../Shaders/ShadowVolumeAppearanceVS.js";
 import ShadowVolumeFS from "../Shaders/ShadowVolumeFS.js";
+import when from "../ThirdParty/when.js";
 import BlendingState from "./BlendingState.js";
 import ClassificationType from "./ClassificationType.js";
 import DepthFunction from "./DepthFunction.js";
@@ -72,7 +72,7 @@ import StencilOperation from "./StencilOperation.js";
  */
 function ClassificationPrimitive(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const geometryInstances = options.geometryInstances;
+  var geometryInstances = options.geometryInstances;
 
   /**
    * The geometry instance rendered with this primitive.  This may
@@ -163,7 +163,7 @@ function ClassificationPrimitive(options) {
   this._commandsIgnoreShow = [];
 
   this._ready = false;
-  this._readyPromise = defer();
+  this._readyPromise = when.defer();
 
   this._primitive = undefined;
   this._pickPrimitive = options._pickPrimitive;
@@ -356,7 +356,7 @@ ClassificationPrimitive.isSupported = function (scene) {
 };
 
 function getStencilDepthRenderState(enableStencil, mask3DTiles) {
-  const stencilFunction = mask3DTiles
+  var stencilFunction = mask3DTiles
     ? StencilFunction.EQUAL
     : StencilFunction.ALWAYS;
   return {
@@ -420,7 +420,7 @@ function getColorRenderState(enableStencil) {
   };
 }
 
-const pickRenderState = {
+var pickRenderState = {
   stencilTest: {
     enabled: true,
     frontFunction: StencilFunction.NOT_EQUAL,
@@ -454,7 +454,7 @@ function createRenderStates(
   if (defined(classificationPrimitive._rsStencilDepthPass)) {
     return;
   }
-  const stencilEnabled = !classificationPrimitive.debugShowShadowVolume;
+  var stencilEnabled = !classificationPrimitive.debugShowShadowVolume;
 
   classificationPrimitive._rsStencilDepthPass = RenderState.fromCache(
     getStencilDepthRenderState(stencilEnabled, false)
@@ -476,15 +476,16 @@ function modifyForEncodedNormals(primitive, vertexShaderSource) {
   if (
     vertexShaderSource.search(/attribute\s+vec3\s+extrudeDirection;/g) !== -1
   ) {
-    const attributeName = "compressedAttributes";
+    var attributeName = "compressedAttributes";
 
     //only shadow volumes use extrudeDirection, and shadow volumes use vertexFormat: POSITION_ONLY so we don't need to check other attributes
-    const attributeDecl = `attribute vec2 ${attributeName};`;
+    var attributeDecl = "attribute vec2 " + attributeName + ";";
 
-    const globalDecl = "vec3 extrudeDirection;\n";
-    const decode = `    extrudeDirection = czm_octDecode(${attributeName}, 65535.0);\n`;
+    var globalDecl = "vec3 extrudeDirection;\n";
+    var decode =
+      "    extrudeDirection = czm_octDecode(" + attributeName + ", 65535.0);\n";
 
-    let modifiedVS = vertexShaderSource;
+    var modifiedVS = vertexShaderSource;
     modifiedVS = modifiedVS.replace(
       /attribute\s+vec3\s+extrudeDirection;/g,
       ""
@@ -493,18 +494,21 @@ function modifyForEncodedNormals(primitive, vertexShaderSource) {
       modifiedVS,
       "czm_non_compressed_main"
     );
-    const compressedMain =
-      `${"void main() \n" + "{ \n"}${decode}    czm_non_compressed_main(); \n` +
-      `}`;
+    var compressedMain =
+      "void main() \n" +
+      "{ \n" +
+      decode +
+      "    czm_non_compressed_main(); \n" +
+      "}";
 
     return [attributeDecl, globalDecl, modifiedVS, compressedMain].join("\n");
   }
 }
 
 function createShaderProgram(classificationPrimitive, frameState) {
-  const context = frameState.context;
-  const primitive = classificationPrimitive._primitive;
-  let vs = ShadowVolumeAppearanceVS;
+  var context = frameState.context;
+  var primitive = classificationPrimitive._primitive;
+  var vs = ShadowVolumeAppearanceVS;
   vs = classificationPrimitive._primitive._batchTable.getVertexShaderCallback()(
     vs
   );
@@ -516,29 +520,29 @@ function createShaderProgram(classificationPrimitive, frameState) {
   );
   vs = Primitive._updateColorAttribute(primitive, vs);
 
-  const planarExtents = classificationPrimitive._hasPlanarExtentsAttributes;
-  const cullFragmentsUsingExtents =
+  var planarExtents = classificationPrimitive._hasPlanarExtentsAttributes;
+  var cullFragmentsUsingExtents =
     planarExtents || classificationPrimitive._hasSphericalExtentsAttribute;
 
   if (classificationPrimitive._extruded) {
     vs = modifyForEncodedNormals(primitive, vs);
   }
 
-  const extrudedDefine = classificationPrimitive._extruded
+  var extrudedDefine = classificationPrimitive._extruded
     ? "EXTRUDED_GEOMETRY"
     : "";
 
-  let vsSource = new ShaderSource({
+  var vsSource = new ShaderSource({
     defines: [extrudedDefine],
     sources: [vs],
   });
-  const fsSource = new ShaderSource({
+  var fsSource = new ShaderSource({
     sources: [ShadowVolumeFS],
   });
-  const attributeLocations =
+  var attributeLocations =
     classificationPrimitive._primitive._attributeLocations;
 
-  const shadowVolumeAppearance = new ShadowVolumeAppearance(
+  var shadowVolumeAppearance = new ShadowVolumeAppearance(
     cullFragmentsUsingExtents,
     planarExtents,
     classificationPrimitive.appearance
@@ -553,12 +557,12 @@ function createShaderProgram(classificationPrimitive, frameState) {
   });
 
   if (classificationPrimitive._primitive.allowPicking) {
-    let vsPick = ShaderSource.createPickVertexShaderSource(vs);
+    var vsPick = ShaderSource.createPickVertexShaderSource(vs);
     vsPick = Primitive._appendShowToShader(primitive, vsPick);
     vsPick = Primitive._updatePickColorAttribute(vsPick);
 
-    const pickFS3D = shadowVolumeAppearance.createPickFragmentShader(false);
-    const pickVS3D = shadowVolumeAppearance.createPickVertexShader(
+    var pickFS3D = shadowVolumeAppearance.createPickFragmentShader(false);
+    var pickVS3D = shadowVolumeAppearance.createPickVertexShader(
       [extrudedDefine],
       vsPick,
       false,
@@ -576,13 +580,13 @@ function createShaderProgram(classificationPrimitive, frameState) {
     // Derive a 2D pick shader if the primitive uses texture coordinate-based fragment culling,
     // since texture coordinates are computed differently in 2D.
     if (cullFragmentsUsingExtents) {
-      let pickProgram2D = context.shaderCache.getDerivedShaderProgram(
+      var pickProgram2D = context.shaderCache.getDerivedShaderProgram(
         classificationPrimitive._spPick,
         "2dPick"
       );
       if (!defined(pickProgram2D)) {
-        const pickFS2D = shadowVolumeAppearance.createPickFragmentShader(true);
-        const pickVS2D = shadowVolumeAppearance.createPickVertexShader(
+        var pickFS2D = shadowVolumeAppearance.createPickFragmentShader(true);
+        var pickVS2D = shadowVolumeAppearance.createPickVertexShader(
           [extrudedDefine],
           vsPick,
           true,
@@ -625,8 +629,8 @@ function createShaderProgram(classificationPrimitive, frameState) {
   });
 
   // Create a fragment shader that computes only required material hookups using screen space techniques
-  const fsColorSource = shadowVolumeAppearance.createFragmentShader(false);
-  const vsColorSource = shadowVolumeAppearance.createVertexShader(
+  var fsColorSource = shadowVolumeAppearance.createFragmentShader(false);
+  var vsColorSource = shadowVolumeAppearance.createVertexShader(
     [extrudedDefine],
     vs,
     false,
@@ -645,13 +649,13 @@ function createShaderProgram(classificationPrimitive, frameState) {
   // since texture coordinates are computed differently in 2D.
   // Any material that uses texture coordinates will also equip texture coordinate-based fragment culling.
   if (cullFragmentsUsingExtents) {
-    let colorProgram2D = context.shaderCache.getDerivedShaderProgram(
+    var colorProgram2D = context.shaderCache.getDerivedShaderProgram(
       classificationPrimitive._spColor,
       "2dColor"
     );
     if (!defined(colorProgram2D)) {
-      const fsColorSource2D = shadowVolumeAppearance.createFragmentShader(true);
-      const vsColorSource2D = shadowVolumeAppearance.createVertexShader(
+      var fsColorSource2D = shadowVolumeAppearance.createFragmentShader(true);
+      var vsColorSource2D = shadowVolumeAppearance.createVertexShader(
         [extrudedDefine],
         vs,
         true,
@@ -673,22 +677,22 @@ function createShaderProgram(classificationPrimitive, frameState) {
 }
 
 function createColorCommands(classificationPrimitive, colorCommands) {
-  const primitive = classificationPrimitive._primitive;
-  let length = primitive._va.length * 2; // each geometry (pack of vertex attributes) needs 2 commands: front/back stencils and fill
+  var primitive = classificationPrimitive._primitive;
+  var length = primitive._va.length * 2; // each geometry (pack of vertex attributes) needs 2 commands: front/back stencils and fill
   colorCommands.length = length;
 
-  let i;
-  let command;
-  let derivedCommand;
-  let vaIndex = 0;
-  let uniformMap = primitive._batchTable.getUniformMapCallback()(
+  var i;
+  var command;
+  var derivedCommand;
+  var vaIndex = 0;
+  var uniformMap = primitive._batchTable.getUniformMapCallback()(
     classificationPrimitive._uniformMap
   );
 
-  const needs2DShader = classificationPrimitive._needs2DShader;
+  var needs2DShader = classificationPrimitive._needs2DShader;
 
   for (i = 0; i < length; i += 2) {
-    const vertexArray = primitive._va[vaIndex++];
+    var vertexArray = primitive._va[vaIndex++];
 
     // Stencil depth command
     command = colorCommands[i];
@@ -728,8 +732,8 @@ function createColorCommands(classificationPrimitive, colorCommands) {
     command.shaderProgram = classificationPrimitive._spColor;
     command.pass = Pass.TERRAIN_CLASSIFICATION;
 
-    const appearance = classificationPrimitive.appearance;
-    const material = appearance.material;
+    var appearance = classificationPrimitive.appearance;
+    var material = appearance.material;
     if (defined(material)) {
       uniformMap = combine(uniformMap, material._uniforms);
     }
@@ -746,7 +750,7 @@ function createColorCommands(classificationPrimitive, colorCommands) {
     // Derive for 2D if texture coordinates are ever computed
     if (needs2DShader) {
       // First derive from the terrain command
-      let derived2DCommand = DrawCommand.shallowClone(
+      var derived2DCommand = DrawCommand.shallowClone(
         command,
         command.derivedCommands.appearance2D
       );
@@ -763,14 +767,14 @@ function createColorCommands(classificationPrimitive, colorCommands) {
     }
   }
 
-  const commandsIgnoreShow = classificationPrimitive._commandsIgnoreShow;
-  const spStencil = classificationPrimitive._spStencil;
+  var commandsIgnoreShow = classificationPrimitive._commandsIgnoreShow;
+  var spStencil = classificationPrimitive._spStencil;
 
-  let commandIndex = 0;
+  var commandIndex = 0;
   length = commandsIgnoreShow.length = length / 2;
 
-  for (let j = 0; j < length; ++j) {
-    const commandIgnoreShow = (commandsIgnoreShow[j] = DrawCommand.shallowClone(
+  for (var j = 0; j < length; ++j) {
+    var commandIgnoreShow = (commandsIgnoreShow[j] = DrawCommand.shallowClone(
       colorCommands[commandIndex],
       commandsIgnoreShow[j]
     ));
@@ -782,15 +786,15 @@ function createColorCommands(classificationPrimitive, colorCommands) {
 }
 
 function createPickCommands(classificationPrimitive, pickCommands) {
-  const usePickOffsets = classificationPrimitive._usePickOffsets;
+  var usePickOffsets = classificationPrimitive._usePickOffsets;
 
-  const primitive = classificationPrimitive._primitive;
-  let length = primitive._va.length * 2; // each geometry (pack of vertex attributes) needs 2 commands: front/back stencils and fill
+  var primitive = classificationPrimitive._primitive;
+  var length = primitive._va.length * 2; // each geometry (pack of vertex attributes) needs 2 commands: front/back stencils and fill
 
   // Fallback for batching same-color geometry instances
-  let pickOffsets;
-  let pickIndex = 0;
-  let pickOffset;
+  var pickOffsets;
+  var pickIndex = 0;
+  var pickOffset;
   if (usePickOffsets) {
     pickOffsets = primitive._pickOffsets;
     length = pickOffsets.length * 2;
@@ -798,18 +802,18 @@ function createPickCommands(classificationPrimitive, pickCommands) {
 
   pickCommands.length = length;
 
-  let j;
-  let command;
-  let derivedCommand;
-  let vaIndex = 0;
-  const uniformMap = primitive._batchTable.getUniformMapCallback()(
+  var j;
+  var command;
+  var derivedCommand;
+  var vaIndex = 0;
+  var uniformMap = primitive._batchTable.getUniformMapCallback()(
     classificationPrimitive._uniformMap
   );
 
-  const needs2DShader = classificationPrimitive._needs2DShader;
+  var needs2DShader = classificationPrimitive._needs2DShader;
 
   for (j = 0; j < length; j += 2) {
-    let vertexArray = primitive._va[vaIndex++];
+    var vertexArray = primitive._va[vaIndex++];
     if (usePickOffsets) {
       pickOffset = pickOffsets[pickIndex++];
       vertexArray = primitive._va[pickOffset.index];
@@ -875,7 +879,7 @@ function createPickCommands(classificationPrimitive, pickCommands) {
     // Derive for 2D if texture coordinates are ever computed
     if (needs2DShader) {
       // First derive from the terrain command
-      let derived2DCommand = DrawCommand.shallowClone(
+      var derived2DCommand = DrawCommand.shallowClone(
         command,
         command.derivedCommands.pick2D
       );
@@ -950,10 +954,10 @@ function updateAndQueueCommands(
   debugShowBoundingVolume,
   twoPasses
 ) {
-  const primitive = classificationPrimitive._primitive;
+  var primitive = classificationPrimitive._primitive;
   Primitive._updateBoundingVolumes(primitive, frameState, modelMatrix);
 
-  let boundingVolumes;
+  var boundingVolumes;
   if (frameState.mode === SceneMode.SCENE3D) {
     boundingVolumes = primitive._boundingSphereWC;
   } else if (frameState.mode === SceneMode.COLUMBUS_VIEW) {
@@ -967,20 +971,19 @@ function updateAndQueueCommands(
     boundingVolumes = primitive._boundingSphereMorph;
   }
 
-  const classificationType = classificationPrimitive.classificationType;
-  const queueTerrainCommands =
+  var classificationType = classificationPrimitive.classificationType;
+  var queueTerrainCommands =
     classificationType !== ClassificationType.CESIUM_3D_TILE;
-  const queue3DTilesCommands =
-    classificationType !== ClassificationType.TERRAIN;
+  var queue3DTilesCommands = classificationType !== ClassificationType.TERRAIN;
 
-  const passes = frameState.passes;
+  var passes = frameState.passes;
 
-  let i;
-  let boundingVolume;
-  let command;
+  var i;
+  var boundingVolume;
+  var command;
 
   if (passes.render) {
-    const colorLength = colorCommands.length;
+    var colorLength = colorCommands.length;
     for (i = 0; i < colorLength; ++i) {
       boundingVolume = boundingVolumes[boundingVolumeIndex(i, colorLength)];
       if (queueTerrainCommands) {
@@ -1008,8 +1011,8 @@ function updateAndQueueCommands(
     }
 
     if (frameState.invertClassification) {
-      const ignoreShowCommands = classificationPrimitive._commandsIgnoreShow;
-      const ignoreShowCommandsLength = ignoreShowCommands.length;
+      var ignoreShowCommands = classificationPrimitive._commandsIgnoreShow;
+      var ignoreShowCommandsLength = ignoreShowCommands.length;
       for (i = 0; i < ignoreShowCommandsLength; ++i) {
         boundingVolume = boundingVolumes[i];
         command = ignoreShowCommands[i];
@@ -1026,10 +1029,10 @@ function updateAndQueueCommands(
   }
 
   if (passes.pick) {
-    const pickLength = pickCommands.length;
-    const pickOffsets = primitive._pickOffsets;
+    var pickLength = pickCommands.length;
+    var pickOffsets = primitive._pickOffsets;
     for (i = 0; i < pickLength; ++i) {
-      const pickOffset = pickOffsets[boundingVolumeIndex(i, pickLength)];
+      var pickOffset = pickOffsets[boundingVolumeIndex(i, pickLength)];
       boundingVolume = boundingVolumes[pickOffset.index];
       if (queueTerrainCommands) {
         command = pickCommands[i];
@@ -1072,29 +1075,29 @@ ClassificationPrimitive.prototype.update = function (frameState) {
     return;
   }
 
-  let appearance = this.appearance;
+  var appearance = this.appearance;
   if (defined(appearance) && defined(appearance.material)) {
     appearance.material.update(frameState.context);
   }
 
-  const that = this;
-  const primitiveOptions = this._primitiveOptions;
+  var that = this;
+  var primitiveOptions = this._primitiveOptions;
 
   if (!defined(this._primitive)) {
-    const instances = Array.isArray(this.geometryInstances)
+    var instances = Array.isArray(this.geometryInstances)
       ? this.geometryInstances
       : [this.geometryInstances];
-    const length = instances.length;
+    var length = instances.length;
 
-    let i;
-    let instance;
-    let attributes;
+    var i;
+    var instance;
+    var attributes;
 
-    let hasPerColorAttribute = false;
-    let allColorsSame = true;
-    let firstColor;
-    let hasSphericalExtentsAttribute = false;
-    let hasPlanarExtentsAttributes = false;
+    var hasPerColorAttribute = false;
+    var allColorsSame = true;
+    var firstColor;
+    var hasSphericalExtentsAttribute = false;
+    var hasPlanarExtentsAttributes = false;
 
     if (length > 0) {
       attributes = instances[0].attributes;
@@ -1111,7 +1114,7 @@ ClassificationPrimitive.prototype.update = function (frameState) {
 
     for (i = 0; i < length; i++) {
       instance = instances[i];
-      const color = instance.attributes.color;
+      var color = instance.attributes.color;
       if (defined(color)) {
         hasPerColorAttribute = true;
       }
@@ -1175,7 +1178,7 @@ ClassificationPrimitive.prototype.update = function (frameState) {
     this._hasPlanarExtentsAttributes = hasPlanarExtentsAttributes;
     this._hasPerColorAttribute = hasPerColorAttribute;
 
-    const geometryInstances = new Array(length);
+    var geometryInstances = new Array(length);
     for (i = 0; i < length; ++i) {
       instance = instances[i];
       geometryInstances[i] = new GeometryInstance({
@@ -1288,7 +1291,7 @@ ClassificationPrimitive.prototype.update = function (frameState) {
         that.geometryInstances = undefined;
       }
 
-      const error = primitive._error;
+      var error = primitive._error;
       if (!defined(error)) {
         that._readyPromise.resolve(that);
       } else {
@@ -1359,7 +1362,7 @@ ClassificationPrimitive.prototype.update = function (frameState) {
  * @exception {DeveloperError} must call update before calling getGeometryInstanceAttributes.
  *
  * @example
- * const attributes = primitive.getGeometryInstanceAttributes('an id');
+ * var attributes = primitive.getGeometryInstanceAttributes('an id');
  * attributes.color = Cesium.ColorGeometryInstanceAttribute.toValue(Cesium.Color.AQUA);
  * attributes.show = Cesium.ShowGeometryInstanceAttribute.toValue(true);
  */

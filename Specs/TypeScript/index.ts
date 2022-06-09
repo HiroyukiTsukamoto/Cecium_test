@@ -37,7 +37,6 @@ import {
   FrustumOutlineGeometry,
   GeoJsonDataSource,
   GeometryInstance,
-  GpxDataSource,
   GoogleEarthEnterpriseImageryProvider,
   GoogleEarthEnterpriseMapsProvider,
   GoogleEarthEnterpriseMetadata,
@@ -158,7 +157,6 @@ dataSource = new KmlDataSource({
   canvas: canvasElement,
   camera: new Camera(new Scene({ canvas: canvasElement })),
 });
-dataSource = new GpxDataSource();
 dataSource = new CustomDataSource();
 
 // Verify Property instances conform to the expected interface
@@ -390,7 +388,3 @@ geometryInstance = new GeometryInstance({
 });
 
 const canvas: HTMLCanvasElement | undefined = writeTextToCanvas("test");
-
-let pb = new PropertyBag();
-let hasProp: boolean = pb.hasProperty("xyz");
-property = pb.xyz;

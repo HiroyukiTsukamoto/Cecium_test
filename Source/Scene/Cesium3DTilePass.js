@@ -6,7 +6,7 @@ import Cesium3DTilesetTraversal from "./Cesium3DTilesetTraversal.js";
  *
  * @private
  */
-const Cesium3DTilePass = {
+var Cesium3DTilePass = {
   RENDER: 0,
   PICK: 1,
   SHADOW: 2,
@@ -18,7 +18,7 @@ const Cesium3DTilePass = {
   NUMBER_OF_PASSES: 8,
 };
 
-const passOptions = new Array(Cesium3DTilePass.NUMBER_OF_PASSES);
+var passOptions = new Array(Cesium3DTilePass.NUMBER_OF_PASSES);
 
 passOptions[Cesium3DTilePass.RENDER] = Object.freeze({
   traversal: Cesium3DTilesetTraversal,

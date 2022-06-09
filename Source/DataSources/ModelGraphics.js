@@ -409,9 +409,9 @@ ModelGraphics.prototype.merge = function (source) {
     source.clippingPlanes
   );
 
-  const sourceNodeTransformations = source.nodeTransformations;
+  var sourceNodeTransformations = source.nodeTransformations;
   if (defined(sourceNodeTransformations)) {
-    const targetNodeTransformations = this.nodeTransformations;
+    var targetNodeTransformations = this.nodeTransformations;
     if (defined(targetNodeTransformations)) {
       targetNodeTransformations.merge(sourceNodeTransformations);
     } else {
@@ -422,9 +422,9 @@ ModelGraphics.prototype.merge = function (source) {
     }
   }
 
-  const sourceArticulations = source.articulations;
+  var sourceArticulations = source.articulations;
   if (defined(sourceArticulations)) {
-    const targetArticulations = this.articulations;
+    var targetArticulations = this.articulations;
     if (defined(targetArticulations)) {
       targetArticulations.merge(sourceArticulations);
     } else {

@@ -6,8 +6,8 @@ import createContext from "../createContext.js";
 describe(
   "Renderer/Renderbuffer",
   function () {
-    let context;
-    let renderbuffer;
+    var context;
+    var renderbuffer;
 
     beforeAll(function () {
       context = createContext();
@@ -45,7 +45,7 @@ describe(
     });
 
     it("destroys", function () {
-      const r = new Renderbuffer({
+      var r = new Renderbuffer({
         context: context,
       });
       expect(r.isDestroyed()).toEqual(false);
@@ -99,7 +99,7 @@ describe(
     });
 
     it("throws when fails to destroy", function () {
-      const r = new Renderbuffer({
+      var r = new Renderbuffer({
         context: context,
       });
       r.destroy();

@@ -13,8 +13,8 @@ describe("Core/VideoSynchronizer", function () {
   }
 
   function loadVideo() {
-    const element = document.createElement("video");
-    let source = document.createElement("source");
+    var element = document.createElement("video");
+    var source = document.createElement("source");
     source.setAttribute("src", "Data/Videos/big-buck-bunny-trailer-small.webm");
     source.setAttribute("type", "video/webm");
     element.appendChild(source);
@@ -33,7 +33,7 @@ describe("Core/VideoSynchronizer", function () {
   }
 
   it("Can default construct", function () {
-    const videoSynchronizer = new VideoSynchronizer();
+    var videoSynchronizer = new VideoSynchronizer();
 
     expect(videoSynchronizer.clock).not.toBeDefined();
     expect(videoSynchronizer.element).not.toBeDefined();
@@ -45,12 +45,12 @@ describe("Core/VideoSynchronizer", function () {
   });
 
   it("Can construct with options", function () {
-    const clock = new Clock();
-    const element = document.createElement("video");
-    const epoch = new JulianDate();
-    const tolerance = 0.15;
+    var clock = new Clock();
+    var element = document.createElement("video");
+    var epoch = new JulianDate();
+    var tolerance = 0.15;
 
-    const videoSynchronizer = new VideoSynchronizer({
+    var videoSynchronizer = new VideoSynchronizer({
       clock: clock,
       element: element,
       epoch: epoch,
@@ -67,15 +67,15 @@ describe("Core/VideoSynchronizer", function () {
   });
 
   it("Syncs time when looping", function () {
-    const epoch = JulianDate.fromIso8601("2015-11-01T00:00:00Z");
-    const clock = new Clock();
+    var epoch = JulianDate.fromIso8601("2015-11-01T00:00:00Z");
+    var clock = new Clock();
     clock.shouldAnimate = false;
     clock.currentTime = epoch.clone();
 
-    const element = loadVideo();
+    var element = loadVideo();
     element.loop = true;
 
-    const videoSynchronizer = new VideoSynchronizer({
+    var videoSynchronizer = new VideoSynchronizer({
       clock: clock,
       element: element,
       epoch: epoch,
@@ -120,14 +120,14 @@ describe("Core/VideoSynchronizer", function () {
   });
 
   it("Syncs time when not looping", function () {
-    const epoch = JulianDate.fromIso8601("2015-11-01T00:00:00Z");
-    const clock = new Clock();
+    var epoch = JulianDate.fromIso8601("2015-11-01T00:00:00Z");
+    var clock = new Clock();
     clock.shouldAnimate = false;
     clock.currentTime = epoch.clone();
 
-    const element = loadVideo();
+    var element = loadVideo();
 
-    const videoSynchronizer = new VideoSynchronizer({
+    var videoSynchronizer = new VideoSynchronizer({
       clock: clock,
       element: element,
       epoch: epoch,
@@ -168,12 +168,12 @@ describe("Core/VideoSynchronizer", function () {
   });
 
   it("Plays/pauses video based on clock", function () {
-    const epoch = JulianDate.fromIso8601("2015-11-01T00:00:00Z");
-    const clock = new Clock();
+    var epoch = JulianDate.fromIso8601("2015-11-01T00:00:00Z");
+    var clock = new Clock();
 
     // Since Chrome doesn't allow video playback without user
     // interaction, we use a mock element.
-    const element = jasmine.createSpyObj("MockVideoElement", [
+    var element = jasmine.createSpyObj("MockVideoElement", [
       "addEventListener",
       "removeEventListener",
       "play",
@@ -187,7 +187,7 @@ describe("Core/VideoSynchronizer", function () {
       this.paused = true;
     });
 
-    const videoSynchronizer = new VideoSynchronizer({
+    var videoSynchronizer = new VideoSynchronizer({
       clock: clock,
       element: element,
       epoch: epoch,

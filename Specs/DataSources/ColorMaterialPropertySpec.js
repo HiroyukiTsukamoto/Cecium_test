@@ -7,15 +7,15 @@ import { TimeIntervalCollectionProperty } from "../../Source/Cesium.js";
 
 describe("DataSources/ColorMaterialProperty", function () {
   it("constructor provides the expected defaults", function () {
-    let property = new ColorMaterialProperty();
+    var property = new ColorMaterialProperty();
     expect(property.color).toBeUndefined();
     expect(property.getType()).toEqual("Color");
     expect(property.isConstant).toBe(true);
 
-    const result = property.getValue();
+    var result = property.getValue();
     expect(result.color).toEqual(Color.WHITE);
 
-    const colorProperty = new ConstantProperty(Color.BLUE);
+    var colorProperty = new ConstantProperty(Color.BLUE);
     property = new ColorMaterialProperty(colorProperty);
     expect(property.color).toBe(colorProperty);
 
@@ -25,19 +25,19 @@ describe("DataSources/ColorMaterialProperty", function () {
   });
 
   it("works with constant values", function () {
-    const property = new ColorMaterialProperty();
+    var property = new ColorMaterialProperty();
     property.color = new ConstantProperty(Color.RED);
 
-    const result = property.getValue(JulianDate.now());
+    var result = property.getValue(JulianDate.now());
     expect(result.color).toEqual(Color.RED);
   });
 
   it("works with dynamic values", function () {
-    const property = new ColorMaterialProperty();
+    var property = new ColorMaterialProperty();
     property.color = new TimeIntervalCollectionProperty();
 
-    const start = new JulianDate(1, 0);
-    const stop = new JulianDate(2, 0);
+    var start = new JulianDate(1, 0);
+    var stop = new JulianDate(2, 0);
     property.color.intervals.addInterval(
       new TimeInterval({
         start: start,
@@ -48,27 +48,27 @@ describe("DataSources/ColorMaterialProperty", function () {
 
     expect(property.isConstant).toBe(false);
 
-    const result = property.getValue(start);
+    var result = property.getValue(start);
     expect(result.color).toEqual(Color.BLUE);
   });
 
   it("works with a result parameter", function () {
-    const property = new ColorMaterialProperty();
+    var property = new ColorMaterialProperty();
     property.color = new ConstantProperty(Color.RED);
 
-    const result = {
+    var result = {
       color: Color.BLUE.clone(),
     };
-    const returnedResult = property.getValue(JulianDate.now(), result);
+    var returnedResult = property.getValue(JulianDate.now(), result);
     expect(returnedResult).toBe(result);
     expect(result.color).toEqual(Color.RED);
   });
 
   it("equals works", function () {
-    const left = new ColorMaterialProperty();
+    var left = new ColorMaterialProperty();
     left.color = new ConstantProperty(Color.WHITE);
 
-    const right = new ColorMaterialProperty();
+    var right = new ColorMaterialProperty();
     right.color = new ConstantProperty(Color.WHITE);
     expect(left.equals(right)).toEqual(true);
 
@@ -77,12 +77,12 @@ describe("DataSources/ColorMaterialProperty", function () {
   });
 
   it("raises definitionChanged when a color property is assigned or modified", function () {
-    const property = new ColorMaterialProperty();
+    var property = new ColorMaterialProperty();
 
-    const listener = jasmine.createSpy("listener");
+    var listener = jasmine.createSpy("listener");
     property.definitionChanged.addEventListener(listener);
 
-    const oldValue = property.color;
+    var oldValue = property.color;
     property.color = new ConstantProperty(Color.WHITE);
     expect(listener).toHaveBeenCalledWith(
       property,

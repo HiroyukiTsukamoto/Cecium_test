@@ -24,7 +24,7 @@
  *
  * @enum {Number}
  */
-const Cesium3DTileColorBlendMode = {
+var Cesium3DTileColorBlendMode = {
   /**
    * Multiplies the source color by the feature color.
    *

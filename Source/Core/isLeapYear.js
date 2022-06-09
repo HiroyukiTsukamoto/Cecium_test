@@ -9,7 +9,7 @@ import DeveloperError from "./DeveloperError.js";
  * @returns {Boolean} True if <code>year</code> is a leap year.
  *
  * @example
- * const leapYear = Cesium.isLeapYear(2000); // true
+ * var leapYear = Cesium.isLeapYear(2000); // true
  */
 function isLeapYear(year) {
   //>>includeStart('debug', pragmas.debug);

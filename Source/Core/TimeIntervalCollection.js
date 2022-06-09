@@ -25,8 +25,8 @@ function TimeIntervalCollection(intervals) {
   this._changedEvent = new Event();
 
   if (defined(intervals)) {
-    const length = intervals.length;
-    for (let i = 0; i < length; i++) {
+    var length = intervals.length;
+    for (var i = 0; i < length; i++) {
       this.addInterval(intervals[i]);
     }
   }
@@ -53,7 +53,7 @@ Object.defineProperties(TimeIntervalCollection.prototype, {
    */
   start: {
     get: function () {
-      const intervals = this._intervals;
+      var intervals = this._intervals;
       return intervals.length === 0 ? undefined : intervals[0].start;
     },
   },
@@ -66,7 +66,7 @@ Object.defineProperties(TimeIntervalCollection.prototype, {
    */
   isStartIncluded: {
     get: function () {
-      const intervals = this._intervals;
+      var intervals = this._intervals;
       return intervals.length === 0 ? false : intervals[0].isStartIncluded;
     },
   },
@@ -79,8 +79,8 @@ Object.defineProperties(TimeIntervalCollection.prototype, {
    */
   stop: {
     get: function () {
-      const intervals = this._intervals;
-      const length = intervals.length;
+      var intervals = this._intervals;
+      var length = intervals.length;
       return length === 0 ? undefined : intervals[length - 1].stop;
     },
   },
@@ -93,8 +93,8 @@ Object.defineProperties(TimeIntervalCollection.prototype, {
    */
   isStopIncluded: {
     get: function () {
-      const intervals = this._intervals;
-      const length = intervals.length;
+      var intervals = this._intervals;
+      var length = intervals.length;
       return length === 0 ? false : intervals[length - 1].isStopIncluded;
     },
   },
@@ -139,13 +139,13 @@ TimeIntervalCollection.prototype.equals = function (right, dataComparer) {
   if (!(right instanceof TimeIntervalCollection)) {
     return false;
   }
-  const intervals = this._intervals;
-  const rightIntervals = right._intervals;
-  const length = intervals.length;
+  var intervals = this._intervals;
+  var rightIntervals = right._intervals;
+  var length = intervals.length;
   if (length !== rightIntervals.length) {
     return false;
   }
-  for (let i = 0; i < length; i++) {
+  for (var i = 0; i < length; i++) {
     if (!TimeInterval.equals(intervals[i], rightIntervals[i], dataComparer)) {
       return false;
     }
@@ -186,7 +186,7 @@ TimeIntervalCollection.prototype.removeAll = function () {
  * @returns {TimeInterval|undefined} The interval containing the specified date, <code>undefined</code> if no such interval exists.
  */
 TimeIntervalCollection.prototype.findIntervalContainingDate = function (date) {
-  const index = this.indexOf(date);
+  var index = this.indexOf(date);
   return index >= 0 ? this._intervals[index] : undefined;
 };
 
@@ -199,7 +199,7 @@ TimeIntervalCollection.prototype.findIntervalContainingDate = function (date) {
 TimeIntervalCollection.prototype.findDataForIntervalContainingDate = function (
   date
 ) {
-  const index = this.indexOf(date);
+  var index = this.indexOf(date);
   return index >= 0 ? this._intervals[index].data : undefined;
 };
 
@@ -213,7 +213,7 @@ TimeIntervalCollection.prototype.contains = function (julianDate) {
   return this.indexOf(julianDate) >= 0;
 };
 
-const indexOfScratch = new TimeInterval();
+var indexOfScratch = new TimeInterval();
 
 /**
  * Finds and returns the index of the interval in the collection that contains the specified date.
@@ -231,10 +231,10 @@ TimeIntervalCollection.prototype.indexOf = function (date) {
   }
   //>>includeEnd('debug');
 
-  const intervals = this._intervals;
+  var intervals = this._intervals;
   indexOfScratch.start = date;
   indexOfScratch.stop = date;
-  let index = binarySearch(
+  var index = binarySearch(
     intervals,
     indexOfScratch,
     compareIntervalStartTimes
@@ -278,14 +278,14 @@ TimeIntervalCollection.prototype.indexOf = function (date) {
  */
 TimeIntervalCollection.prototype.findInterval = function (options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const start = options.start;
-  const stop = options.stop;
-  const isStartIncluded = options.isStartIncluded;
-  const isStopIncluded = options.isStopIncluded;
+  var start = options.start;
+  var stop = options.stop;
+  var isStartIncluded = options.isStartIncluded;
+  var isStopIncluded = options.isStopIncluded;
 
-  const intervals = this._intervals;
-  for (let i = 0, len = intervals.length; i < len; i++) {
-    const interval = intervals[i];
+  var intervals = this._intervals;
+  for (var i = 0, len = intervals.length; i < len; i++) {
+    var interval = intervals[i];
     if (
       (!defined(start) || interval.start.equals(start)) &&
       (!defined(stop) || interval.stop.equals(stop)) &&
@@ -321,7 +321,7 @@ TimeIntervalCollection.prototype.addInterval = function (
     return;
   }
 
-  const intervals = this._intervals;
+  var intervals = this._intervals;
 
   // Handle the common case quickly: we're adding a new interval which is after all existing intervals.
   if (
@@ -334,7 +334,7 @@ TimeIntervalCollection.prototype.addInterval = function (
   }
 
   // Keep the list sorted by the start date
-  let index = binarySearch(intervals, interval, compareIntervalStartTimes);
+  var index = binarySearch(intervals, interval, compareIntervalStartTimes);
   if (index < 0) {
     index = ~index;
   } else {
@@ -362,7 +362,7 @@ TimeIntervalCollection.prototype.addInterval = function (
     }
   }
 
-  let comparison;
+  var comparison;
   if (index > 0) {
     // Not the first thing in the list, so see if the interval before this one
     // overlaps this one.
@@ -518,14 +518,14 @@ TimeIntervalCollection.prototype.removeInterval = function (interval) {
     return false;
   }
 
-  const intervals = this._intervals;
+  var intervals = this._intervals;
 
-  let index = binarySearch(intervals, interval, compareIntervalStartTimes);
+  var index = binarySearch(intervals, interval, compareIntervalStartTimes);
   if (index < 0) {
     index = ~index;
   }
 
-  let result = false;
+  var result = false;
 
   // Check for truncation of the end of the previous interval.
   if (
@@ -679,15 +679,15 @@ TimeIntervalCollection.prototype.intersect = function (
   }
   //>>includeEnd('debug');
 
-  const result = new TimeIntervalCollection();
-  let left = 0;
-  let right = 0;
-  const intervals = this._intervals;
-  const otherIntervals = other._intervals;
+  var result = new TimeIntervalCollection();
+  var left = 0;
+  var right = 0;
+  var intervals = this._intervals;
+  var otherIntervals = other._intervals;
 
   while (left < intervals.length && right < otherIntervals.length) {
-    const leftInterval = intervals[left];
-    const rightInterval = otherIntervals[right];
+    var leftInterval = intervals[left];
+    var rightInterval = otherIntervals[right];
     if (JulianDate.lessThan(leftInterval.stop, rightInterval.start)) {
       ++left;
     } else if (JulianDate.lessThan(rightInterval.stop, leftInterval.start)) {
@@ -700,7 +700,7 @@ TimeIntervalCollection.prototype.intersect = function (
           dataComparer(leftInterval.data, rightInterval.data)) ||
         (!defined(dataComparer) && rightInterval.data === leftInterval.data)
       ) {
-        const intersection = TimeInterval.intersect(
+        var intersection = TimeInterval.intersect(
           leftInterval,
           rightInterval,
           new TimeInterval(),
@@ -755,18 +755,18 @@ TimeIntervalCollection.fromJulianDateArray = function (options, result) {
     result = new TimeIntervalCollection();
   }
 
-  const julianDates = options.julianDates;
-  const length = julianDates.length;
-  const dataCallback = options.dataCallback;
+  var julianDates = options.julianDates;
+  var length = julianDates.length;
+  var dataCallback = options.dataCallback;
 
-  const isStartIncluded = defaultValue(options.isStartIncluded, true);
-  const isStopIncluded = defaultValue(options.isStopIncluded, true);
-  const leadingInterval = defaultValue(options.leadingInterval, false);
-  const trailingInterval = defaultValue(options.trailingInterval, false);
-  let interval;
+  var isStartIncluded = defaultValue(options.isStartIncluded, true);
+  var isStopIncluded = defaultValue(options.isStopIncluded, true);
+  var leadingInterval = defaultValue(options.leadingInterval, false);
+  var trailingInterval = defaultValue(options.trailingInterval, false);
+  var interval;
 
   // Add a default interval, which will only end up being used up to first interval
-  let startIndex = 0;
+  var startIndex = 0;
   if (leadingInterval) {
     ++startIndex;
     interval = new TimeInterval({
@@ -781,9 +781,9 @@ TimeIntervalCollection.fromJulianDateArray = function (options, result) {
     result.addInterval(interval);
   }
 
-  for (let i = 0; i < length - 1; ++i) {
-    let startDate = julianDates[i];
-    const endDate = julianDates[i + 1];
+  for (var i = 0; i < length - 1; ++i) {
+    var startDate = julianDates[i];
+    var endDate = julianDates[i + 1];
 
     interval = new TimeInterval({
       start: startDate,
@@ -815,8 +815,8 @@ TimeIntervalCollection.fromJulianDateArray = function (options, result) {
   return result;
 };
 
-const scratchGregorianDate = new GregorianDate();
-const monthLengths = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+var scratchGregorianDate = new GregorianDate();
+var monthLengths = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 /**
  * Adds duration represented as a GregorianDate to a JulianDate
@@ -834,13 +834,13 @@ function addToDate(julianDate, duration, result) {
   }
   JulianDate.toGregorianDate(julianDate, scratchGregorianDate);
 
-  let millisecond = scratchGregorianDate.millisecond + duration.millisecond;
-  let second = scratchGregorianDate.second + duration.second;
-  let minute = scratchGregorianDate.minute + duration.minute;
-  let hour = scratchGregorianDate.hour + duration.hour;
-  let day = scratchGregorianDate.day + duration.day;
-  let month = scratchGregorianDate.month + duration.month;
-  let year = scratchGregorianDate.year + duration.year;
+  var millisecond = scratchGregorianDate.millisecond + duration.millisecond;
+  var second = scratchGregorianDate.second + duration.second;
+  var minute = scratchGregorianDate.minute + duration.minute;
+  var hour = scratchGregorianDate.hour + duration.hour;
+  var day = scratchGregorianDate.day + duration.day;
+  var month = scratchGregorianDate.month + duration.month;
+  var year = scratchGregorianDate.year + duration.year;
 
   if (millisecond >= 1000) {
     second += Math.floor(millisecond / 1000);
@@ -892,8 +892,8 @@ function addToDate(julianDate, duration, result) {
   return JulianDate.fromGregorianDate(scratchGregorianDate, result);
 }
 
-const scratchJulianDate = new JulianDate();
-const durationRegex = /P(?:([\d.,]+)Y)?(?:([\d.,]+)M)?(?:([\d.,]+)W)?(?:([\d.,]+)D)?(?:T(?:([\d.,]+)H)?(?:([\d.,]+)M)?(?:([\d.,]+)S)?)?/;
+var scratchJulianDate = new JulianDate();
+var durationRegex = /P(?:([\d.,]+)Y)?(?:([\d.,]+)M)?(?:([\d.,]+)W)?(?:([\d.,]+)D)?(?:T(?:([\d.,]+)H)?(?:([\d.,]+)M)?(?:([\d.,]+)S)?)?/;
 
 /**
  * Parses ISO8601 duration string
@@ -919,7 +919,7 @@ function parseDuration(iso8601, result) {
   result.millisecond = 0;
 
   if (iso8601[0] === "P") {
-    const matches = iso8601.match(durationRegex);
+    var matches = iso8601.match(durationRegex);
     if (!defined(matches)) {
       return false;
     }
@@ -949,7 +949,7 @@ function parseDuration(iso8601, result) {
     }
     if (defined(matches[7])) {
       // Seconds
-      const seconds = Number(matches[7].replace(",", "."));
+      var seconds = Number(matches[7].replace(",", "."));
       result.second = Math.floor(seconds);
       result.millisecond = (seconds % 1) * 1000;
     }
@@ -977,7 +977,7 @@ function parseDuration(iso8601, result) {
   );
 }
 
-const scratchDuration = new GregorianDate();
+var scratchDuration = new GregorianDate();
 /**
  * Creates a new instance from an {@link http://en.wikipedia.org/wiki/ISO_8601|ISO 8601} time interval (start/end/duration).
  *
@@ -1001,19 +1001,19 @@ TimeIntervalCollection.fromIso8601 = function (options, result) {
   }
   //>>includeEnd('debug');
 
-  const dates = options.iso8601.split("/");
-  const start = JulianDate.fromIso8601(dates[0]);
-  const stop = JulianDate.fromIso8601(dates[1]);
-  const julianDates = [];
+  var dates = options.iso8601.split("/");
+  var start = JulianDate.fromIso8601(dates[0]);
+  var stop = JulianDate.fromIso8601(dates[1]);
+  var julianDates = [];
 
   if (!parseDuration(dates[2], scratchDuration)) {
     julianDates.push(start, stop);
   } else {
-    let date = JulianDate.clone(start);
+    var date = JulianDate.clone(start);
     julianDates.push(date);
     while (JulianDate.compare(date, stop) < 0) {
       date = addToDate(date, scratchDuration);
-      const afterStop = JulianDate.compare(stop, date) <= 0;
+      var afterStop = JulianDate.compare(stop, date) <= 0;
       if (afterStop) {
         JulianDate.clone(stop, date);
       }
@@ -1101,14 +1101,14 @@ TimeIntervalCollection.fromIso8601DurationArray = function (options, result) {
   }
   //>>includeEnd('debug');
 
-  const epoch = options.epoch;
-  const iso8601Durations = options.iso8601Durations;
-  const relativeToPrevious = defaultValue(options.relativeToPrevious, false);
-  const julianDates = [];
-  let date, previousDate;
+  var epoch = options.epoch;
+  var iso8601Durations = options.iso8601Durations;
+  var relativeToPrevious = defaultValue(options.relativeToPrevious, false);
+  var julianDates = [];
+  var date, previousDate;
 
-  const length = iso8601Durations.length;
-  for (let i = 0; i < length; ++i) {
+  var length = iso8601Durations.length;
+  for (var i = 0; i < length; ++i) {
     // Allow a duration of 0 on the first iteration, because then it is just the epoch
     if (parseDuration(iso8601Durations[i], scratchDuration) || i === 0) {
       if (relativeToPrevious && defined(previousDate)) {

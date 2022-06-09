@@ -46,7 +46,11 @@ function createUniform(gl, activeUniform, uniformName, location) {
       return new UniformMat4(gl, activeUniform, uniformName, location);
     default:
       throw new RuntimeError(
-        `Unrecognized uniform type: ${activeUniform.type} for uniform "${uniformName}".`
+        "Unrecognized uniform type: " +
+          activeUniform.type +
+          ' for uniform "' +
+          uniformName +
+          '".'
       );
   }
 }
@@ -97,7 +101,7 @@ function UniformFloatVec2(gl, activeUniform, uniformName, location) {
 }
 
 UniformFloatVec2.prototype.set = function () {
-  const v = this.value;
+  var v = this.value;
   if (!Cartesian2.equals(v, this._value)) {
     Cartesian2.clone(v, this._value);
     this._gl.uniform2f(this._location, v.x, v.y);
@@ -125,7 +129,7 @@ function UniformFloatVec3(gl, activeUniform, uniformName, location) {
 }
 
 UniformFloatVec3.prototype.set = function () {
-  const v = this.value;
+  var v = this.value;
 
   if (defined(v.red)) {
     if (!Color.equals(v, this._value)) {
@@ -139,7 +143,9 @@ UniformFloatVec3.prototype.set = function () {
     }
   } else {
     //>>includeStart('debug', pragmas.debug);
-    throw new DeveloperError(`Invalid vec3 value for uniform "${this.name}".`);
+    throw new DeveloperError(
+      'Invalid vec3 value for uniform "' + this.name + '".'
+    );
     //>>includeEnd('debug');
   }
 };
@@ -165,7 +171,7 @@ function UniformFloatVec4(gl, activeUniform, uniformName, location) {
 }
 
 UniformFloatVec4.prototype.set = function () {
-  const v = this.value;
+  var v = this.value;
 
   if (defined(v.red)) {
     if (!Color.equals(v, this._value)) {
@@ -179,7 +185,9 @@ UniformFloatVec4.prototype.set = function () {
     }
   } else {
     //>>includeStart('debug', pragmas.debug);
-    throw new DeveloperError(`Invalid vec4 value for uniform "${this.name}".`);
+    throw new DeveloperError(
+      'Invalid vec4 value for uniform "' + this.name + '".'
+    );
     //>>includeEnd('debug');
   }
 };
@@ -206,10 +214,10 @@ function UniformSampler(gl, activeUniform, uniformName, location) {
 }
 
 UniformSampler.prototype.set = function () {
-  const gl = this._gl;
+  var gl = this._gl;
   gl.activeTexture(gl.TEXTURE0 + this.textureUnitIndex);
 
-  const v = this.value;
+  var v = this.value;
   gl.bindTexture(v._target, v._texture);
 };
 
@@ -266,7 +274,7 @@ function UniformIntVec2(gl, activeUniform, uniformName, location) {
 }
 
 UniformIntVec2.prototype.set = function () {
-  const v = this.value;
+  var v = this.value;
   if (!Cartesian2.equals(v, this._value)) {
     Cartesian2.clone(v, this._value);
     this._gl.uniform2i(this._location, v.x, v.y);
@@ -293,7 +301,7 @@ function UniformIntVec3(gl, activeUniform, uniformName, location) {
 }
 
 UniformIntVec3.prototype.set = function () {
-  const v = this.value;
+  var v = this.value;
   if (!Cartesian3.equals(v, this._value)) {
     Cartesian3.clone(v, this._value);
     this._gl.uniform3i(this._location, v.x, v.y, v.z);
@@ -320,7 +328,7 @@ function UniformIntVec4(gl, activeUniform, uniformName, location) {
 }
 
 UniformIntVec4.prototype.set = function () {
-  const v = this.value;
+  var v = this.value;
   if (!Cartesian4.equals(v, this._value)) {
     Cartesian4.clone(v, this._value);
     this._gl.uniform4i(this._location, v.x, v.y, v.z, v.w);
@@ -329,7 +337,7 @@ UniformIntVec4.prototype.set = function () {
 
 ///////////////////////////////////////////////////////////////////////////
 
-const scratchUniformArray = new Float32Array(4);
+var scratchUniformArray = new Float32Array(4);
 /**
  * @private
  * @constructor
@@ -352,14 +360,14 @@ UniformMat2.prototype.set = function () {
   if (!Matrix2.equalsArray(this.value, this._value, 0)) {
     Matrix2.clone(this.value, this._value);
 
-    const array = Matrix2.toArray(this.value, scratchUniformArray);
+    var array = Matrix2.toArray(this.value, scratchUniformArray);
     this._gl.uniformMatrix2fv(this._location, false, array);
   }
 };
 
 ///////////////////////////////////////////////////////////////////////////
 
-const scratchMat3Array = new Float32Array(9);
+var scratchMat3Array = new Float32Array(9);
 /**
  * @private
  * @constructor
@@ -382,14 +390,14 @@ UniformMat3.prototype.set = function () {
   if (!Matrix3.equalsArray(this.value, this._value, 0)) {
     Matrix3.clone(this.value, this._value);
 
-    const array = Matrix3.toArray(this.value, scratchMat3Array);
+    var array = Matrix3.toArray(this.value, scratchMat3Array);
     this._gl.uniformMatrix3fv(this._location, false, array);
   }
 };
 
 ///////////////////////////////////////////////////////////////////////////
 
-const scratchMat4Array = new Float32Array(16);
+var scratchMat4Array = new Float32Array(16);
 /**
  * @private
  * @constructor
@@ -412,7 +420,7 @@ UniformMat4.prototype.set = function () {
   if (!Matrix4.equalsArray(this.value, this._value, 0)) {
     Matrix4.clone(this.value, this._value);
 
-    const array = Matrix4.toArray(this.value, scratchMat4Array);
+    var array = Matrix4.toArray(this.value, scratchMat4Array);
     this._gl.uniformMatrix4fv(this._location, false, array);
   }
 };

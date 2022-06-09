@@ -23,9 +23,9 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "DataSources/BillboardVisualizer",
   function () {
-    let scene;
-    let entityCluster;
-    let visualizer;
+    var scene;
+    var entityCluster;
+    var visualizer;
 
     beforeAll(function () {
       scene = createScene();
@@ -55,7 +55,7 @@ describe(
     });
 
     it("update throws if no time specified.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
       expect(function () {
         visualizer.update();
@@ -63,7 +63,7 @@ describe(
     });
 
     it("isDestroy returns false until destroyed.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
       expect(visualizer.isDestroyed()).toEqual(false);
       visualizer.destroy();
@@ -72,21 +72,18 @@ describe(
     });
 
     it("removes the listener from the entity collection when destroyed", function () {
-      const entityCollection = new EntityCollection();
-      const visualizer = new BillboardVisualizer(
-        entityCluster,
-        entityCollection
-      );
+      var entityCollection = new EntityCollection();
+      var visualizer = new BillboardVisualizer(entityCluster, entityCollection);
       expect(entityCollection.collectionChanged.numberOfListeners).toEqual(1);
       visualizer.destroy();
       expect(entityCollection.collectionChanged.numberOfListeners).toEqual(0);
     });
 
     it("object with no billboard does not create a billboard.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var testObject = entityCollection.getOrCreateEntity("test");
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -95,11 +92,11 @@ describe(
     });
 
     it("object with no position does not create a billboard.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var testObject = entityCollection.getOrCreateEntity("test");
+      var billboard = (testObject.billboard = new BillboardGraphics());
       billboard.show = new ConstantProperty(true);
       billboard.image = new ConstantProperty("Data/Images/Blue.png");
 
@@ -108,14 +105,14 @@ describe(
     });
 
     it("object with no image does not create a billboard.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var testObject = entityCollection.getOrCreateEntity("test");
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var billboard = (testObject.billboard = new BillboardGraphics());
       billboard.show = new ConstantProperty(true);
 
       visualizer.update(JulianDate.now());
@@ -123,13 +120,14 @@ describe(
     });
 
     it("A BillboardGraphics causes a Billboard to be created and updated.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var testObject = entityCollection.getOrCreateEntity("test");
 
-      const time = JulianDate.now();
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var time = JulianDate.now();
+      var billboard = (testObject.billboard = new BillboardGraphics());
+      var bb;
 
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
@@ -167,10 +165,10 @@ describe(
 
       visualizer.update(time);
 
-      const billboardCollection = entityCluster._billboardCollection;
+      var billboardCollection = entityCluster._billboardCollection;
       expect(billboardCollection.length).toEqual(1);
 
-      const bb = billboardCollection.get(0);
+      bb = billboardCollection.get(0);
 
       return pollToPromise(function () {
         visualizer.update(time);
@@ -231,13 +229,14 @@ describe(
     });
 
     it("Display billboard after toggling show", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var testObject = entityCollection.getOrCreateEntity("test");
 
-      const time = JulianDate.now();
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var time = JulianDate.now();
+      var billboard = (testObject.billboard = new BillboardGraphics());
+      var bb;
 
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
@@ -275,10 +274,10 @@ describe(
 
       visualizer.update(time);
 
-      const billboardCollection = entityCluster._billboardCollection;
+      var billboardCollection = entityCluster._billboardCollection;
       expect(billboardCollection.length).toEqual(1);
 
-      const bb = billboardCollection.get(0);
+      bb = billboardCollection.get(0);
 
       return pollToPromise(function () {
         visualizer.update(time);
@@ -349,11 +348,11 @@ describe(
     });
 
     it("Reuses primitives when hiding one and showing another", function () {
-      const time = JulianDate.now();
-      const entityCollection = new EntityCollection();
+      var time = JulianDate.now();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var testObject = entityCollection.getOrCreateEntity("test");
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -363,7 +362,7 @@ describe(
 
       visualizer.update(time);
 
-      const billboardCollection = entityCluster._billboardCollection;
+      var billboardCollection = entityCluster._billboardCollection;
       expect(billboardCollection.length).toEqual(1);
 
       testObject.billboard.show = new ConstantProperty(false);
@@ -372,7 +371,7 @@ describe(
 
       expect(billboardCollection.length).toEqual(1);
 
-      const testObject2 = entityCollection.getOrCreateEntity("test2");
+      var testObject2 = entityCollection.getOrCreateEntity("test2");
       testObject2.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
       );
@@ -387,13 +386,13 @@ describe(
     });
 
     it("clear hides billboards.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var testObject = entityCollection.getOrCreateEntity("test");
 
-      const time = JulianDate.now();
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var time = JulianDate.now();
+      var billboard = (testObject.billboard = new BillboardGraphics());
 
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
@@ -402,9 +401,9 @@ describe(
       billboard.image = new ConstantProperty("Data/Images/Blue.png");
       visualizer.update(time);
 
-      const billboardCollection = entityCluster._billboardCollection;
+      var billboardCollection = entityCluster._billboardCollection;
       expect(billboardCollection.length).toEqual(1);
-      const bb = billboardCollection.get(0);
+      var bb = billboardCollection.get(0);
 
       return pollToPromise(function () {
         visualizer.update(time);
@@ -419,12 +418,12 @@ describe(
     });
 
     it("Visualizer sets entity property.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
-      const time = JulianDate.now();
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var testObject = entityCollection.getOrCreateEntity("test");
+      var time = JulianDate.now();
+      var billboard = (testObject.billboard = new BillboardGraphics());
 
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
@@ -433,19 +432,19 @@ describe(
       billboard.image = new ConstantProperty("Data/Images/Blue.png");
       visualizer.update(time);
 
-      const billboardCollection = entityCluster._billboardCollection;
+      var billboardCollection = entityCluster._billboardCollection;
       expect(billboardCollection.length).toEqual(1);
-      const bb = billboardCollection.get(0);
+      var bb = billboardCollection.get(0);
       expect(bb.id).toEqual(testObject);
     });
 
     it("Computes bounding sphere.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
 
-      const testObject = entityCollection.getOrCreateEntity("test");
-      const time = JulianDate.now();
-      const billboard = (testObject.billboard = new BillboardGraphics());
+      var testObject = entityCollection.getOrCreateEntity("test");
+      var time = JulianDate.now();
+      var billboard = (testObject.billboard = new BillboardGraphics());
 
       testObject.position = new ConstantProperty(
         new Cartesian3(1234, 5678, 9101112)
@@ -454,8 +453,8 @@ describe(
       billboard.image = new ConstantProperty("Data/Images/Blue.png");
       visualizer.update(time);
 
-      const result = new BoundingSphere();
-      const state = visualizer.getBoundingSphere(testObject, result);
+      var result = new BoundingSphere();
+      var state = visualizer.getBoundingSphere(testObject, result);
 
       expect(state).toBe(BoundingSphereState.DONE);
       expect(result.center).toEqual(testObject.position.getValue());
@@ -463,27 +462,27 @@ describe(
     });
 
     it("Fails bounding sphere for entity without billboard.", function () {
-      const entityCollection = new EntityCollection();
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var entityCollection = new EntityCollection();
+      var testObject = entityCollection.getOrCreateEntity("test");
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
       visualizer.update(JulianDate.now());
-      const result = new BoundingSphere();
-      const state = visualizer.getBoundingSphere(testObject, result);
+      var result = new BoundingSphere();
+      var state = visualizer.getBoundingSphere(testObject, result);
       expect(state).toBe(BoundingSphereState.FAILED);
     });
 
     it("Compute bounding sphere throws without entity.", function () {
-      const entityCollection = new EntityCollection();
+      var entityCollection = new EntityCollection();
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
-      const result = new BoundingSphere();
+      var result = new BoundingSphere();
       expect(function () {
         visualizer.getBoundingSphere(undefined, result);
       }).toThrowDeveloperError();
     });
 
     it("Compute bounding sphere throws without result.", function () {
-      const entityCollection = new EntityCollection();
-      const testObject = entityCollection.getOrCreateEntity("test");
+      var entityCollection = new EntityCollection();
+      var testObject = entityCollection.getOrCreateEntity("test");
       visualizer = new BillboardVisualizer(entityCluster, entityCollection);
       expect(function () {
         visualizer.getBoundingSphere(testObject, undefined);

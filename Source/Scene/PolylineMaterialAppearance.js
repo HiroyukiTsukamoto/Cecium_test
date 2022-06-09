@@ -8,11 +8,13 @@ import PolylineFS from "../Shaders/PolylineFS.js";
 import Appearance from "./Appearance.js";
 import Material from "./Material.js";
 
-let defaultVertexShaderSource = `${PolylineCommon}\n${PolylineMaterialAppearanceVS}`;
-const defaultFragmentShaderSource = PolylineFS;
+var defaultVertexShaderSource =
+  PolylineCommon + "\n" + PolylineMaterialAppearanceVS;
+var defaultFragmentShaderSource = PolylineFS;
 
 if (!FeatureDetection.isInternetExplorer()) {
-  defaultVertexShaderSource = `#define CLIP_POLYLINE \n${defaultVertexShaderSource}`;
+  defaultVertexShaderSource =
+    "#define CLIP_POLYLINE \n" + defaultVertexShaderSource;
 }
 
 /**
@@ -31,7 +33,7 @@ if (!FeatureDetection.isInternetExplorer()) {
  * @see {@link https://github.com/CesiumGS/cesium/wiki/Fabric|Fabric}
  *
  * @example
- * const primitive = new Cesium.Primitive({
+ * var primitive = new Cesium.Primitive({
  *   geometryInstances : new Cesium.GeometryInstance({
  *     geometry : new Cesium.PolylineGeometry({
  *       positions : Cesium.Cartesian3.fromDegreesArray([
@@ -50,9 +52,9 @@ if (!FeatureDetection.isInternetExplorer()) {
 function PolylineMaterialAppearance(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const translucent = defaultValue(options.translucent, true);
-  const closed = false;
-  const vertexFormat = PolylineMaterialAppearance.VERTEX_FORMAT;
+  var translucent = defaultValue(options.translucent, true);
+  var closed = false;
+  var vertexFormat = PolylineMaterialAppearance.VERTEX_FORMAT;
 
   /**
    * The material used to determine the fragment color.  Unlike other {@link PolylineMaterialAppearance}
@@ -109,13 +111,13 @@ Object.defineProperties(PolylineMaterialAppearance.prototype, {
    */
   vertexShaderSource: {
     get: function () {
-      let vs = this._vertexShaderSource;
+      var vs = this._vertexShaderSource;
       if (
         this.material.shaderSource.search(
           /varying\s+float\s+v_polylineAngle;/g
         ) !== -1
       ) {
-        vs = `#define POLYLINE_DASH\n${vs}`;
+        vs = "#define POLYLINE_DASH\n" + vs;
       }
       return vs;
     },

@@ -40,27 +40,28 @@ function GlyphTextureInfo(labelCollection, index, dimensions) {
 }
 
 // Traditionally, leading is %20 of the font size.
-const defaultLineSpacingPercent = 1.2;
-const whitePixelCanvasId = "ID_WHITE_PIXEL";
-const whitePixelSize = new Cartesian2(4, 4);
-const whitePixelBoundingRegion = new BoundingRectangle(1, 1, 1, 1);
+var defaultLineSpacingPercent = 1.2;
 
-function addWhitePixelCanvas(textureAtlas) {
-  const canvas = document.createElement("canvas");
+var whitePixelCanvasId = "ID_WHITE_PIXEL";
+var whitePixelSize = new Cartesian2(4, 4);
+var whitePixelBoundingRegion = new BoundingRectangle(1, 1, 1, 1);
+
+function addWhitePixelCanvas(textureAtlas, labelCollection) {
+  var canvas = document.createElement("canvas");
   canvas.width = whitePixelSize.x;
   canvas.height = whitePixelSize.y;
 
-  const context2D = canvas.getContext("2d");
+  var context2D = canvas.getContext("2d");
   context2D.fillStyle = "#fff";
   context2D.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Canvas operations take a frame to draw. Use the asynchronous add function which resolves a promise and allows the draw to complete,
-  // but there's no need to wait on the promise before operation can continue
-  textureAtlas.addImage(whitePixelCanvasId, canvas);
+  textureAtlas.addImage(whitePixelCanvasId, canvas).then(function (index) {
+    labelCollection._whitePixelIndex = index;
+  });
 }
 
 // reusable object for calling writeTextToCanvas
-const writeTextToCanvasParameters = {};
+var writeTextToCanvasParameters = {};
 function createGlyphCanvas(
   character,
   font,
@@ -99,7 +100,7 @@ function unbindGlyph(labelCollection, glyph) {
   glyph.textureInfo = undefined;
   glyph.dimensions = undefined;
 
-  const billboard = glyph.billboard;
+  var billboard = glyph.billboard;
   if (defined(billboard)) {
     billboard.show = false;
     billboard.image = undefined;
@@ -113,21 +114,23 @@ function unbindGlyph(labelCollection, glyph) {
 }
 
 function addGlyphToTextureAtlas(textureAtlas, id, canvas, glyphTextureInfo) {
-  glyphTextureInfo.index = textureAtlas.addImageSync(id, canvas);
+  textureAtlas.addImage(id, canvas).then(function (index) {
+    glyphTextureInfo.index = index;
+  });
 }
 
-const splitter = new GraphemeSplitter();
+var splitter = new GraphemeSplitter();
 
 function rebindAllGlyphs(labelCollection, label) {
-  const text = label._renderedText;
-  const graphemes = splitter.splitGraphemes(text);
-  const textLength = graphemes.length;
-  const glyphs = label._glyphs;
-  const glyphsLength = glyphs.length;
+  var text = label._renderedText;
+  var graphemes = splitter.splitGraphemes(text);
+  var textLength = graphemes.length;
+  var glyphs = label._glyphs;
+  var glyphsLength = glyphs.length;
 
-  let glyph;
-  let glyphIndex;
-  let textIndex;
+  var glyph;
+  var glyphIndex;
+  var textIndex;
 
   // Compute a font size scale relative to the sdf font generated size.
   label._relativeSize = label._fontSize / SDFSettings.FONT_SIZE;
@@ -142,10 +145,10 @@ function rebindAllGlyphs(labelCollection, label) {
   // presize glyphs to match the new text length
   glyphs.length = textLength;
 
-  const showBackground =
+  var showBackground =
     label._showBackground && text.split("\n").join("").length > 0;
-  let backgroundBillboard = label._backgroundBillboard;
-  const backgroundBillboardCollection =
+  var backgroundBillboard = label._backgroundBillboard;
+  var backgroundBillboardCollection =
     labelCollection._backgroundBillboardCollection;
   if (!showBackground) {
     if (defined(backgroundBillboard)) {
@@ -183,15 +186,15 @@ function rebindAllGlyphs(labelCollection, label) {
       label._disableDepthTestDistance;
   }
 
-  const glyphTextureCache = labelCollection._glyphTextureCache;
+  var glyphTextureCache = labelCollection._glyphTextureCache;
 
   // walk the text looking for new characters (creating new glyphs for each)
   // or changed characters (rebinding existing glyphs)
   for (textIndex = 0; textIndex < textLength; ++textIndex) {
-    const character = graphemes[textIndex];
-    const verticalOrigin = label._verticalOrigin;
+    var character = graphemes[textIndex];
+    var verticalOrigin = label._verticalOrigin;
 
-    const id = JSON.stringify([
+    var id = JSON.stringify([
       character,
       label._fontFamily,
       label._fontStyle,
@@ -199,11 +202,18 @@ function rebindAllGlyphs(labelCollection, label) {
       +verticalOrigin,
     ]);
 
-    let glyphTextureInfo = glyphTextureCache[id];
+    var glyphTextureInfo = glyphTextureCache[id];
     if (!defined(glyphTextureInfo)) {
-      const glyphFont = `${label._fontStyle} ${label._fontWeight} ${SDFSettings.FONT_SIZE}px ${label._fontFamily}`;
+      var glyphFont =
+        label._fontStyle +
+        " " +
+        label._fontWeight +
+        " " +
+        SDFSettings.FONT_SIZE +
+        "px " +
+        label._fontFamily;
 
-      const canvas = createGlyphCanvas(
+      var canvas = createGlyphCanvas(
         character,
         glyphFont,
         Color.WHITE,
@@ -221,20 +231,20 @@ function rebindAllGlyphs(labelCollection, label) {
       glyphTextureCache[id] = glyphTextureInfo;
 
       if (canvas.width > 0 && canvas.height > 0) {
-        const sdfValues = bitmapSDF(canvas, {
+        var sdfValues = bitmapSDF(canvas, {
           cutoff: SDFSettings.CUTOFF,
           radius: SDFSettings.RADIUS,
         });
 
-        const ctx = canvas.getContext("2d");
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const imgData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-        for (let i = 0; i < canvasWidth; i++) {
-          for (let j = 0; j < canvasHeight; j++) {
-            const baseIndex = j * canvasWidth + i;
-            const alpha = sdfValues[baseIndex] * 255;
-            const imageIndex = baseIndex * 4;
+        var ctx = canvas.getContext("2d");
+        var canvasWidth = canvas.width;
+        var canvasHeight = canvas.height;
+        var imgData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+        for (var i = 0; i < canvasWidth; i++) {
+          for (var j = 0; j < canvasHeight; j++) {
+            var baseIndex = j * canvasWidth + i;
+            var alpha = sdfValues[baseIndex] * 255;
+            var imageIndex = baseIndex * 4;
             imgData.data[imageIndex + 0] = alpha;
             imgData.data[imageIndex + 1] = alpha;
             imgData.data[imageIndex + 2] = alpha;
@@ -277,8 +287,8 @@ function rebindAllGlyphs(labelCollection, label) {
 
     // if we have a texture, configure the existing billboard, or obtain one
     if (glyphTextureInfo.index !== -1) {
-      let billboard = glyph.billboard;
-      const spareBillboards = labelCollection._spareBillboards;
+      var billboard = glyph.billboard;
+      var spareBillboards = labelCollection._spareBillboards;
       if (!defined(billboard)) {
         if (spareBillboards.length > 0) {
           billboard = spareBillboards.pop();
@@ -338,25 +348,25 @@ function calculateWidthOffset(lineWidth, horizontalOrigin, backgroundPadding) {
 }
 
 // reusable Cartesian2 instances
-const glyphPixelOffset = new Cartesian2();
-const scratchBackgroundPadding = new Cartesian2();
+var glyphPixelOffset = new Cartesian2();
+var scratchBackgroundPadding = new Cartesian2();
 
 function repositionAllGlyphs(label) {
-  const glyphs = label._glyphs;
-  const text = label._renderedText;
-  let glyph;
-  let dimensions;
-  let lastLineWidth = 0;
-  let maxLineWidth = 0;
-  const lineWidths = [];
-  let maxGlyphDescent = Number.NEGATIVE_INFINITY;
-  let maxGlyphY = 0;
-  let numberOfLines = 1;
-  let glyphIndex;
-  const glyphLength = glyphs.length;
+  var glyphs = label._glyphs;
+  var text = label._renderedText;
+  var glyph;
+  var dimensions;
+  var lastLineWidth = 0;
+  var maxLineWidth = 0;
+  var lineWidths = [];
+  var maxGlyphDescent = Number.NEGATIVE_INFINITY;
+  var maxGlyphY = 0;
+  var numberOfLines = 1;
+  var glyphIndex;
+  var glyphLength = glyphs.length;
 
-  const backgroundBillboard = label._backgroundBillboard;
-  const backgroundPadding = Cartesian2.clone(
+  var backgroundBillboard = label._backgroundBillboard;
+  var backgroundPadding = Cartesian2.clone(
     defined(backgroundBillboard) ? label._backgroundPadding : Cartesian2.ZERO,
     scratchBackgroundPadding
   );
@@ -385,25 +395,25 @@ function repositionAllGlyphs(label) {
     }
   }
   lineWidths.push(lastLineWidth);
-  const maxLineHeight = maxGlyphY + maxGlyphDescent;
+  var maxLineHeight = maxGlyphY + maxGlyphDescent;
 
-  const scale = label.totalScale;
-  const horizontalOrigin = label._horizontalOrigin;
-  const verticalOrigin = label._verticalOrigin;
-  let lineIndex = 0;
-  let lineWidth = lineWidths[lineIndex];
-  let widthOffset = calculateWidthOffset(
+  var scale = label.totalScale;
+  var horizontalOrigin = label._horizontalOrigin;
+  var verticalOrigin = label._verticalOrigin;
+  var lineIndex = 0;
+  var lineWidth = lineWidths[lineIndex];
+  var widthOffset = calculateWidthOffset(
     lineWidth,
     horizontalOrigin,
     backgroundPadding
   );
-  const lineSpacing =
+  var lineSpacing =
     (defined(label._lineHeight)
       ? label._lineHeight
       : defaultLineSpacingPercent * label._fontSize) / label._relativeSize;
-  const otherLinesHeight = lineSpacing * (numberOfLines - 1);
-  let totalLineWidth = maxLineWidth;
-  let totalLineHeight = maxLineHeight + otherLinesHeight;
+  var otherLinesHeight = lineSpacing * (numberOfLines - 1);
+  var totalLineWidth = maxLineWidth;
+  var totalLineHeight = maxLineHeight + otherLinesHeight;
 
   if (defined(backgroundBillboard)) {
     totalLineWidth += backgroundPadding.x * 2;
@@ -414,9 +424,9 @@ function repositionAllGlyphs(label) {
   glyphPixelOffset.x = widthOffset * scale;
   glyphPixelOffset.y = 0;
 
-  let firstCharOfLine = true;
+  var firstCharOfLine = true;
 
-  let lineOffsetY = 0;
+  var lineOffsetY = 0;
   for (glyphIndex = 0; glyphIndex < glyphLength; ++glyphIndex) {
     if (text.charAt(glyphIndex) === "\n") {
       ++lineIndex;
@@ -469,7 +479,7 @@ function repositionAllGlyphs(label) {
       //on both the current letter as well as the next letter to be drawn
       //as well as any applied scale.
       if (glyphIndex < glyphLength - 1) {
-        const nextGlyph = glyphs[glyphIndex + 1];
+        var nextGlyph = glyphs[glyphIndex + 1];
         glyphPixelOffset.x +=
           (dimensions.width - dimensions.minx + nextGlyph.dimensions.minx) *
           scale;
@@ -511,7 +521,7 @@ function repositionAllGlyphs(label) {
   if (label.heightReference === HeightReference.CLAMP_TO_GROUND) {
     for (glyphIndex = 0; glyphIndex < glyphLength; ++glyphIndex) {
       glyph = glyphs[glyphIndex];
-      const billboard = glyph.billboard;
+      var billboard = glyph.billboard;
       if (defined(billboard)) {
         billboard._labelTranslate = Cartesian2.clone(
           glyphPixelOffset,
@@ -523,8 +533,8 @@ function repositionAllGlyphs(label) {
 }
 
 function destroyLabel(labelCollection, label) {
-  const glyphs = label._glyphs;
-  for (let i = 0, len = glyphs.length; i < len; ++i) {
+  var glyphs = label._glyphs;
+  for (var i = 0, len = glyphs.length; i < len; ++i) {
     unbindGlyph(labelCollection, glyphs[i]);
   }
   if (defined(label._backgroundBillboard)) {
@@ -580,7 +590,7 @@ function destroyLabel(labelCollection, label) {
  *
  * @example
  * // Create a label collection with two labels
- * const labels = scene.primitives.add(new Cesium.LabelCollection());
+ * var labels = scene.primitives.add(new Cesium.LabelCollection());
  * labels.add({
  *   position : new Cesium.Cartesian3(1.0, 2.0, 3.0),
  *   text : 'A label'
@@ -598,6 +608,7 @@ function LabelCollection(options) {
 
   this._textureAtlas = undefined;
   this._backgroundTextureAtlas = undefined;
+  this._whitePixelIndex = undefined;
 
   this._backgroundBillboardCollection = new BillboardCollection({
     scene: this._scene,
@@ -637,7 +648,7 @@ function LabelCollection(options) {
    * @default {@link Matrix4.IDENTITY}
    *
    * @example
-   * const center = Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883);
+   * var center = Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883);
    * labels.modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(center);
    * labels.add({
    *   position : new Cesium.Cartesian3(0.0, 0.0, 0.0),
@@ -721,7 +732,7 @@ Object.defineProperties(LabelCollection.prototype, {
  *
  * @example
  * // Example 1:  Add a label, specifying all the default values.
- * const l = labels.add({
+ * var l = labels.add({
  *   show : true,
  *   position : Cesium.Cartesian3.ZERO,
  *   text : '',
@@ -747,7 +758,7 @@ Object.defineProperties(LabelCollection.prototype, {
  * @example
  * // Example 2:  Specify only the label's cartographic position,
  * // text, and font.
- * const l = labels.add({
+ * var l = labels.add({
  *   position : Cesium.Cartesian3.fromRadians(longitude, latitude, height),
  *   text : 'Hello World',
  *   font : '24px Helvetica',
@@ -757,7 +768,7 @@ Object.defineProperties(LabelCollection.prototype, {
  * @see LabelCollection#removeAll
  */
 LabelCollection.prototype.add = function (options) {
-  const label = new Label(options, this);
+  var label = new Label(options, this);
 
   this._labels.push(label);
   this._labelsToUpdate.push(label);
@@ -781,7 +792,7 @@ LabelCollection.prototype.add = function (options) {
  *
  *
  * @example
- * const l = labels.add(...);
+ * var l = labels.add(...);
  * labels.remove(l);  // Returns true
  *
  * @see LabelCollection#add
@@ -790,7 +801,7 @@ LabelCollection.prototype.add = function (options) {
  */
 LabelCollection.prototype.remove = function (label) {
   if (defined(label) && label._labelCollection === this) {
-    const index = this._labels.indexOf(label);
+    var index = this._labels.indexOf(label);
     if (index !== -1) {
       this._labels.splice(index, 1);
       destroyLabel(this, label);
@@ -818,9 +829,9 @@ LabelCollection.prototype.remove = function (label) {
  * @see LabelCollection#remove
  */
 LabelCollection.prototype.removeAll = function () {
-  const labels = this._labels;
+  var labels = this._labels;
 
-  for (let i = 0, len = labels.length; i < len; ++i) {
+  for (var i = 0, len = labels.length; i < len; ++i) {
     destroyLabel(this, labels[i]);
   }
 
@@ -860,9 +871,9 @@ LabelCollection.prototype.contains = function (label) {
  *
  * @example
  * // Toggle the show property of every label in the collection
- * const len = labels.length;
- * for (let i = 0; i < len; ++i) {
- *   const l = billboards.get(i);
+ * var len = labels.length;
+ * for (var i = 0; i < len; ++i) {
+ *   var l = billboards.get(i);
  *   l.show = !l.show;
  * }
  *
@@ -887,15 +898,15 @@ LabelCollection.prototype.update = function (frameState) {
     return;
   }
 
-  const billboardCollection = this._billboardCollection;
-  const backgroundBillboardCollection = this._backgroundBillboardCollection;
+  var billboardCollection = this._billboardCollection;
+  var backgroundBillboardCollection = this._backgroundBillboardCollection;
 
   billboardCollection.modelMatrix = this.modelMatrix;
   billboardCollection.debugShowBoundingVolume = this.debugShowBoundingVolume;
   backgroundBillboardCollection.modelMatrix = this.modelMatrix;
   backgroundBillboardCollection.debugShowBoundingVolume = this.debugShowBoundingVolume;
 
-  const context = frameState.context;
+  var context = frameState.context;
 
   if (!defined(this._textureAtlas)) {
     this._textureAtlas = new TextureAtlas({
@@ -910,17 +921,17 @@ LabelCollection.prototype.update = function (frameState) {
       initialSize: whitePixelSize,
     });
     backgroundBillboardCollection.textureAtlas = this._backgroundTextureAtlas;
-    addWhitePixelCanvas(this._backgroundTextureAtlas);
+    addWhitePixelCanvas(this._backgroundTextureAtlas, this);
   }
 
-  const len = this._labelsToUpdate.length;
-  for (let i = 0; i < len; ++i) {
-    const label = this._labelsToUpdate[i];
+  var len = this._labelsToUpdate.length;
+  for (var i = 0; i < len; ++i) {
+    var label = this._labelsToUpdate[i];
     if (label.isDestroyed()) {
       continue;
     }
 
-    const preUpdateGlyphCount = label._glyphs.length;
+    var preUpdateGlyphCount = label._glyphs.length;
 
     if (label._rebindAllGlyphs) {
       rebindAllGlyphs(this, label);
@@ -932,11 +943,11 @@ LabelCollection.prototype.update = function (frameState) {
       label._repositionAllGlyphs = false;
     }
 
-    const glyphCountDifference = label._glyphs.length - preUpdateGlyphCount;
+    var glyphCountDifference = label._glyphs.length - preUpdateGlyphCount;
     this._totalGlyphCount += glyphCountDifference;
   }
 
-  const blendOption =
+  var blendOption =
     backgroundBillboardCollection.length > 0
       ? BlendOption.TRANSLUCENT
       : this.blendOption;

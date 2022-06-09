@@ -83,15 +83,15 @@
       </table>
     </div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           terrainProvider: Cesium.createWorldTerrain(),
         });
 
         // A ~10 billion point 3D Tileset of the city of Montreal, Canada captured in 2015 with a resolution of 20 cm. Tiled and hosted by Cesium ion.
-        const tileset = viewer.scene.primitives.add(
+        var tileset = viewer.scene.primitives.add(
           new Cesium.Cesium3DTileset({
             url: Cesium.IonResource.fromAssetId(28945),
             pointCloudShading: {
@@ -253,7 +253,7 @@
         ]);
 
         // Set up checkboxes for toggling the various classification settings.
-        const viewModel = {
+        var viewModel = {
           ground: true,
           other: true,
           buildings: true,
@@ -263,7 +263,7 @@
         };
 
         // Assign colors to each classification type.
-        const pointStyles = {
+        var pointStyles = {
           unclassified: {
             color: "color('#808080')",
             show: true,
@@ -302,7 +302,7 @@
           },
         };
 
-        const classificationDictionary = {
+        var classificationDictionary = {
           not_awarded: 1,
           ground: 2,
           low_vegetation: 3,
@@ -316,8 +316,8 @@
 
         // This is a helper function to re-apply the styles each time the UI/checkboxes are updated.
         function applyStyle(tileset, styles) {
-          const styleObject = {};
-          const styleKeys = Object.keys(styles);
+          var styleObject = {};
+          var styleKeys = Object.keys(styles);
 
           styleObject.color = {
             conditions: [],
@@ -326,18 +326,18 @@
             conditions: [],
           };
 
-          let finalCondition;
+          var finalCondition;
 
-          for (let i = 0; i < styleKeys.length; ++i) {
-            const key = styleKeys[i];
-            const id = classificationDictionary[key];
+          for (var i = 0; i < styleKeys.length; ++i) {
+            var key = styleKeys[i];
+            var id = classificationDictionary[key];
 
-            const colorCondition = [
-              `\${Classification} === ${id}`,
+            var colorCondition = [
+              "${Classification} === " + id,
               styles[key].color,
             ];
-            const showCondition = [
-              `\${Classification} === ${id}`,
+            var showCondition = [
+              "${Classification} === " + id,
               styles[key].show,
             ];
 
@@ -368,7 +368,7 @@
 
         Cesium.knockout.track(viewModel);
 
-        const toolbar = document.getElementById("toolbar");
+        var toolbar = document.getElementById("toolbar");
         Cesium.knockout.applyBindings(viewModel, toolbar);
 
         // Set up the checkboxes.
@@ -424,10 +424,10 @@
           });
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

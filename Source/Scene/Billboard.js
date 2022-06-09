@@ -66,10 +66,10 @@ function Billboard(options, billboardCollection) {
   }
   //>>includeEnd('debug');
 
-  let translucencyByDistance = options.translucencyByDistance;
-  let pixelOffsetScaleByDistance = options.pixelOffsetScaleByDistance;
-  let scaleByDistance = options.scaleByDistance;
-  let distanceDisplayCondition = options.distanceDisplayCondition;
+  var translucencyByDistance = options.translucencyByDistance;
+  var pixelOffsetScaleByDistance = options.pixelOffsetScaleByDistance;
+  var scaleByDistance = options.scaleByDistance;
+  var distanceDisplayCondition = options.distanceDisplayCondition;
   if (defined(translucencyByDistance)) {
     //>>includeStart('debug', pragmas.debug);
     if (translucencyByDistance.far <= translucencyByDistance.near) {
@@ -175,8 +175,8 @@ function Billboard(options, billboardCollection) {
   this._labelHorizontalOrigin = undefined;
   this._labelTranslate = undefined;
 
-  const image = options.image;
-  let imageId = options.imageId;
+  var image = options.image;
+  var imageId = options.imageId;
   if (defined(image)) {
     if (!defined(imageId)) {
       if (typeof image === "string") {
@@ -214,28 +214,28 @@ function Billboard(options, billboardCollection) {
   this._updateClamping();
 }
 
-const SHOW_INDEX = (Billboard.SHOW_INDEX = 0);
-const POSITION_INDEX = (Billboard.POSITION_INDEX = 1);
-const PIXEL_OFFSET_INDEX = (Billboard.PIXEL_OFFSET_INDEX = 2);
-const EYE_OFFSET_INDEX = (Billboard.EYE_OFFSET_INDEX = 3);
-const HORIZONTAL_ORIGIN_INDEX = (Billboard.HORIZONTAL_ORIGIN_INDEX = 4);
-const VERTICAL_ORIGIN_INDEX = (Billboard.VERTICAL_ORIGIN_INDEX = 5);
-const SCALE_INDEX = (Billboard.SCALE_INDEX = 6);
-const IMAGE_INDEX_INDEX = (Billboard.IMAGE_INDEX_INDEX = 7);
-const COLOR_INDEX = (Billboard.COLOR_INDEX = 8);
-const ROTATION_INDEX = (Billboard.ROTATION_INDEX = 9);
-const ALIGNED_AXIS_INDEX = (Billboard.ALIGNED_AXIS_INDEX = 10);
-const SCALE_BY_DISTANCE_INDEX = (Billboard.SCALE_BY_DISTANCE_INDEX = 11);
-const TRANSLUCENCY_BY_DISTANCE_INDEX = (Billboard.TRANSLUCENCY_BY_DISTANCE_INDEX = 12);
-const PIXEL_OFFSET_SCALE_BY_DISTANCE_INDEX = (Billboard.PIXEL_OFFSET_SCALE_BY_DISTANCE_INDEX = 13);
-const DISTANCE_DISPLAY_CONDITION = (Billboard.DISTANCE_DISPLAY_CONDITION = 14);
-const DISABLE_DEPTH_DISTANCE = (Billboard.DISABLE_DEPTH_DISTANCE = 15);
+var SHOW_INDEX = (Billboard.SHOW_INDEX = 0);
+var POSITION_INDEX = (Billboard.POSITION_INDEX = 1);
+var PIXEL_OFFSET_INDEX = (Billboard.PIXEL_OFFSET_INDEX = 2);
+var EYE_OFFSET_INDEX = (Billboard.EYE_OFFSET_INDEX = 3);
+var HORIZONTAL_ORIGIN_INDEX = (Billboard.HORIZONTAL_ORIGIN_INDEX = 4);
+var VERTICAL_ORIGIN_INDEX = (Billboard.VERTICAL_ORIGIN_INDEX = 5);
+var SCALE_INDEX = (Billboard.SCALE_INDEX = 6);
+var IMAGE_INDEX_INDEX = (Billboard.IMAGE_INDEX_INDEX = 7);
+var COLOR_INDEX = (Billboard.COLOR_INDEX = 8);
+var ROTATION_INDEX = (Billboard.ROTATION_INDEX = 9);
+var ALIGNED_AXIS_INDEX = (Billboard.ALIGNED_AXIS_INDEX = 10);
+var SCALE_BY_DISTANCE_INDEX = (Billboard.SCALE_BY_DISTANCE_INDEX = 11);
+var TRANSLUCENCY_BY_DISTANCE_INDEX = (Billboard.TRANSLUCENCY_BY_DISTANCE_INDEX = 12);
+var PIXEL_OFFSET_SCALE_BY_DISTANCE_INDEX = (Billboard.PIXEL_OFFSET_SCALE_BY_DISTANCE_INDEX = 13);
+var DISTANCE_DISPLAY_CONDITION = (Billboard.DISTANCE_DISPLAY_CONDITION = 14);
+var DISABLE_DEPTH_DISTANCE = (Billboard.DISABLE_DEPTH_DISTANCE = 15);
 Billboard.TEXTURE_COORDINATE_BOUNDS = 16;
-const SDF_INDEX = (Billboard.SDF_INDEX = 17);
+var SDF_INDEX = (Billboard.SDF_INDEX = 17);
 Billboard.NUMBER_OF_PROPERTIES = 18;
 
 function makeDirty(billboard, propertyChanged) {
-  const billboardCollection = billboard._billboardCollection;
+  var billboardCollection = billboard._billboardCollection;
   if (defined(billboardCollection)) {
     billboardCollection._updateBillboard(billboard, propertyChanged);
     billboard._dirty = true;
@@ -280,7 +280,7 @@ Object.defineProperties(Billboard.prototype, {
       Check.typeOf.object("value", value);
       //>>includeEnd('debug');
 
-      const position = this._position;
+      var position = this._position;
       if (!Cartesian3.equals(position, value)) {
         Cartesian3.clone(value, position);
         Cartesian3.clone(value, this._actualPosition);
@@ -305,7 +305,7 @@ Object.defineProperties(Billboard.prototype, {
       Check.typeOf.number("value", value);
       //>>includeEnd('debug');
 
-      const heightReference = this._heightReference;
+      var heightReference = this._heightReference;
       if (value !== heightReference) {
         this._heightReference = value;
         this._updateClamping();
@@ -339,7 +339,7 @@ Object.defineProperties(Billboard.prototype, {
       Check.typeOf.object("value", value);
       //>>includeEnd('debug');
 
-      const pixelOffset = this._pixelOffset;
+      var pixelOffset = this._pixelOffset;
       if (!Cartesian2.equals(pixelOffset, value)) {
         Cartesian2.clone(value, pixelOffset);
         makeDirty(this, PIXEL_OFFSET_INDEX);
@@ -385,7 +385,7 @@ Object.defineProperties(Billboard.prototype, {
       }
       //>>includeEnd('debug');
 
-      const scaleByDistance = this._scaleByDistance;
+      var scaleByDistance = this._scaleByDistance;
       if (!NearFarScalar.equals(scaleByDistance, value)) {
         this._scaleByDistance = NearFarScalar.clone(value, scaleByDistance);
         makeDirty(this, SCALE_BY_DISTANCE_INDEX);
@@ -431,7 +431,7 @@ Object.defineProperties(Billboard.prototype, {
       }
       //>>includeEnd('debug');
 
-      const translucencyByDistance = this._translucencyByDistance;
+      var translucencyByDistance = this._translucencyByDistance;
       if (!NearFarScalar.equals(translucencyByDistance, value)) {
         this._translucencyByDistance = NearFarScalar.clone(
           value,
@@ -481,7 +481,7 @@ Object.defineProperties(Billboard.prototype, {
       }
       //>>includeEnd('debug');
 
-      const pixelOffsetScaleByDistance = this._pixelOffsetScaleByDistance;
+      var pixelOffsetScaleByDistance = this._pixelOffsetScaleByDistance;
       if (!NearFarScalar.equals(pixelOffsetScaleByDistance, value)) {
         this._pixelOffsetScaleByDistance = NearFarScalar.clone(
           value,
@@ -523,7 +523,7 @@ Object.defineProperties(Billboard.prototype, {
       Check.typeOf.object("value", value);
       //>>includeEnd('debug');
 
-      const eyeOffset = this._eyeOffset;
+      var eyeOffset = this._eyeOffset;
       if (!Cartesian3.equals(eyeOffset, value)) {
         Cartesian3.clone(value, eyeOffset);
         makeDirty(this, EYE_OFFSET_INDEX);
@@ -657,7 +657,7 @@ Object.defineProperties(Billboard.prototype, {
       Check.typeOf.object("value", value);
       //>>includeEnd('debug');
 
-      const color = this._color;
+      var color = this._color;
       if (!Color.equals(color, value)) {
         Color.clone(value, color);
         makeDirty(this, COLOR_INDEX);
@@ -716,7 +716,7 @@ Object.defineProperties(Billboard.prototype, {
       Check.typeOf.object("value", value);
       //>>includeEnd('debug');
 
-      const alignedAxis = this._alignedAxis;
+      var alignedAxis = this._alignedAxis;
       if (!Cartesian3.equals(alignedAxis, value)) {
         Cartesian3.clone(value, alignedAxis);
         makeDirty(this, ALIGNED_AXIS_INDEX);
@@ -1009,7 +1009,7 @@ Object.defineProperties(Billboard.prototype, {
       }
       //>>includeEnd('debug');
 
-      const outlineColor = this._outlineColor;
+      var outlineColor = this._outlineColor;
       if (!Color.equals(outlineColor, value)) {
         Color.clone(value, outlineColor);
         makeDirty(this, SDF_INDEX);
@@ -1052,11 +1052,11 @@ Billboard.prototype._updateClamping = function () {
   Billboard._updateClamping(this._billboardCollection, this);
 };
 
-const scratchCartographic = new Cartographic();
-const scratchPosition = new Cartesian3();
+var scratchCartographic = new Cartographic();
+var scratchPosition = new Cartesian3();
 
 Billboard._updateClamping = function (collection, owner) {
-  const scene = collection._scene;
+  var scene = collection._scene;
   if (!defined(scene) || !defined(scene.globe)) {
     //>>includeStart('debug', pragmas.debug);
     if (owner._heightReference !== HeightReference.NONE) {
@@ -1068,13 +1068,13 @@ Billboard._updateClamping = function (collection, owner) {
     return;
   }
 
-  const globe = scene.globe;
-  const ellipsoid = globe.ellipsoid;
-  const surface = globe._surface;
+  var globe = scene.globe;
+  var ellipsoid = globe.ellipsoid;
+  var surface = globe._surface;
 
-  const mode = scene.frameState.mode;
+  var mode = scene.frameState.mode;
 
-  const modeChanged = mode !== owner._mode;
+  var modeChanged = mode !== owner._mode;
   owner._mode = mode;
 
   if (
@@ -1093,7 +1093,7 @@ Billboard._updateClamping = function (collection, owner) {
     return;
   }
 
-  const position = ellipsoid.cartesianToCartographic(owner._position);
+  var position = ellipsoid.cartesianToCartographic(owner._position);
   if (!defined(position)) {
     owner._actualClampedPosition = undefined;
     return;
@@ -1106,7 +1106,7 @@ Billboard._updateClamping = function (collection, owner) {
   function updateFunction(clampedPosition) {
     if (owner._heightReference === HeightReference.RELATIVE_TO_GROUND) {
       if (owner._mode === SceneMode.SCENE3D) {
-        const clampedCart = ellipsoid.cartesianToCartographic(
+        var clampedCart = ellipsoid.cartesianToCartographic(
           clampedPosition,
           scratchCartographic
         );
@@ -1124,7 +1124,7 @@ Billboard._updateClamping = function (collection, owner) {
   owner._removeCallbackFunc = surface.updateHeight(position, updateFunction);
 
   Cartographic.clone(position, scratchCartographic);
-  const height = globe.getHeight(position);
+  var height = globe.getHeight(position);
   if (defined(height)) {
     scratchCartographic.height = height;
   }
@@ -1135,44 +1135,14 @@ Billboard._updateClamping = function (collection, owner) {
 };
 
 Billboard.prototype._loadImage = function () {
-  const atlas = this._billboardCollection._textureAtlas;
+  var atlas = this._billboardCollection._textureAtlas;
 
-  const imageId = this._imageId;
-  const image = this._image;
-  const imageSubRegion = this._imageSubRegion;
-  let imageIndexPromise;
-
-  const that = this;
-  function completeImageLoad(index) {
-    if (
-      that._imageId !== imageId ||
-      that._image !== image ||
-      !BoundingRectangle.equals(that._imageSubRegion, imageSubRegion)
-    ) {
-      // another load occurred before this one finished, ignore the index
-      return;
-    }
-
-    // fill in imageWidth and imageHeight
-    const textureCoordinates = atlas.textureCoordinates[index];
-    that._imageWidth = atlas.texture.width * textureCoordinates.width;
-    that._imageHeight = atlas.texture.height * textureCoordinates.height;
-
-    that._imageIndex = index;
-    that._ready = true;
-    that._image = undefined;
-    that._imageIndexPromise = undefined;
-    makeDirty(that, IMAGE_INDEX_INDEX);
-  }
+  var imageId = this._imageId;
+  var image = this._image;
+  var imageSubRegion = this._imageSubRegion;
+  var imageIndexPromise;
 
   if (defined(image)) {
-    // No need to wait on imageIndexPromise since these have already been added to the atlas
-    const index = atlas.getImageIndex(imageId);
-    if (defined(index)) {
-      completeImageLoad(index);
-      return;
-    }
-
     imageIndexPromise = atlas.addImage(imageId, image);
   }
   if (defined(imageSubRegion)) {
@@ -1185,10 +1155,33 @@ Billboard.prototype._loadImage = function () {
     return;
   }
 
-  imageIndexPromise.then(completeImageLoad).catch(function (error) {
-    console.error(`Error loading image for billboard: ${error}`);
-    that._imageIndexPromise = undefined;
-  });
+  var that = this;
+  imageIndexPromise
+    .then(function (index) {
+      if (
+        that._imageId !== imageId ||
+        that._image !== image ||
+        !BoundingRectangle.equals(that._imageSubRegion, imageSubRegion)
+      ) {
+        // another load occurred before this one finished, ignore the index
+        return;
+      }
+
+      // fill in imageWidth and imageHeight
+      var textureCoordinates = atlas.textureCoordinates[index];
+      that._imageWidth = atlas.texture.width * textureCoordinates.width;
+      that._imageHeight = atlas.texture.height * textureCoordinates.height;
+
+      that._imageIndex = index;
+      that._ready = true;
+      that._image = undefined;
+      that._imageIndexPromise = undefined;
+      makeDirty(that, IMAGE_INDEX_INDEX);
+    })
+    .otherwise(function (error) {
+      console.error("Error loading image for billboard: " + error);
+      that._imageIndexPromise = undefined;
+    });
 };
 
 /**
@@ -1213,8 +1206,8 @@ Billboard.prototype._loadImage = function () {
  * // create a billboard image dynamically
  * function drawImage(id) {
  *   // create and draw an image using a canvas
- *   const canvas = document.createElement('canvas');
- *   const context2D = canvas.getContext('2d');
+ *   var canvas = document.createElement('canvas');
+ *   var context2D = canvas.getContext('2d');
  *   // ... draw image
  *   return canvas;
  * }
@@ -1291,7 +1284,7 @@ Billboard.prototype._setTranslate = function (value) {
   }
   //>>includeEnd('debug');
 
-  const translate = this._translate;
+  var translate = this._translate;
   if (!Cartesian2.equals(translate, value)) {
     Cartesian2.clone(value, translate);
     makeDirty(this, PIXEL_OFFSET_INDEX);
@@ -1311,7 +1304,7 @@ Billboard.prototype._setActualPosition = function (value) {
   makeDirty(this, POSITION_INDEX);
 };
 
-const tempCartesian3 = new Cartesian4();
+var tempCartesian3 = new Cartesian4();
 Billboard._computeActualPosition = function (
   billboard,
   position,
@@ -1331,7 +1324,7 @@ Billboard._computeActualPosition = function (
   return SceneTransforms.computeActualWgs84Position(frameState, tempCartesian3);
 };
 
-const scratchCartesian3 = new Cartesian3();
+var scratchCartesian3 = new Cartesian3();
 
 // This function is basically a stripped-down JavaScript version of BillboardCollectionVS.glsl
 Billboard._computeScreenSpacePosition = function (
@@ -1343,14 +1336,14 @@ Billboard._computeScreenSpacePosition = function (
   result
 ) {
   // Model to world coordinates
-  const positionWorld = Matrix4.multiplyByPoint(
+  var positionWorld = Matrix4.multiplyByPoint(
     modelMatrix,
     position,
     scratchCartesian3
   );
 
   // World to window coordinates
-  const positionWC = SceneTransforms.wgs84WithEyeOffsetToWindowCoordinates(
+  var positionWC = SceneTransforms.wgs84WithEyeOffsetToWindowCoordinates(
     scene,
     positionWorld,
     eyeOffset,
@@ -1366,7 +1359,7 @@ Billboard._computeScreenSpacePosition = function (
   return positionWC;
 };
 
-const scratchPixelOffset = new Cartesian2(0.0, 0.0);
+var scratchPixelOffset = new Cartesian2(0.0, 0.0);
 
 /**
  * Computes the screen-space position of the billboard's origin, taking into account eye and pixel offsets.
@@ -1386,7 +1379,7 @@ const scratchPixelOffset = new Cartesian2(0.0, 0.0);
  * @see Billboard#pixelOffset
  */
 Billboard.prototype.computeScreenSpacePosition = function (scene, result) {
-  const billboardCollection = this._billboardCollection;
+  var billboardCollection = this._billboardCollection;
   if (!defined(result)) {
     result = new Cartesian2();
   }
@@ -1406,21 +1399,21 @@ Billboard.prototype.computeScreenSpacePosition = function (scene, result) {
   Cartesian2.clone(this._pixelOffset, scratchPixelOffset);
   Cartesian2.add(scratchPixelOffset, this._translate, scratchPixelOffset);
 
-  let modelMatrix = billboardCollection.modelMatrix;
-  let position = this._position;
+  var modelMatrix = billboardCollection.modelMatrix;
+  var position = this._position;
   if (defined(this._clampedPosition)) {
     position = this._clampedPosition;
     if (scene.mode !== SceneMode.SCENE3D) {
       // position needs to be in world coordinates
-      const projection = scene.mapProjection;
-      const ellipsoid = projection.ellipsoid;
-      const cart = projection.unproject(position, scratchCartographic);
+      var projection = scene.mapProjection;
+      var ellipsoid = projection.ellipsoid;
+      var cart = projection.unproject(position, scratchCartographic);
       position = ellipsoid.cartographicToCartesian(cart, scratchCartesian3);
       modelMatrix = Matrix4.IDENTITY;
     }
   }
 
-  const windowCoordinates = Billboard._computeScreenSpacePosition(
+  var windowCoordinates = Billboard._computeScreenSpacePosition(
     modelMatrix,
     position,
     this._eyeOffset,
@@ -1445,21 +1438,21 @@ Billboard.getScreenSpaceBoundingBox = function (
   screenSpacePosition,
   result
 ) {
-  let width = billboard.width;
-  let height = billboard.height;
+  var width = billboard.width;
+  var height = billboard.height;
 
-  const scale = billboard.scale;
+  var scale = billboard.scale;
   width *= scale;
   height *= scale;
 
-  let x = screenSpacePosition.x;
+  var x = screenSpacePosition.x;
   if (billboard.horizontalOrigin === HorizontalOrigin.RIGHT) {
     x -= width;
   } else if (billboard.horizontalOrigin === HorizontalOrigin.CENTER) {
     x -= width * 0.5;
   }
 
-  let y = screenSpacePosition.y;
+  var y = screenSpacePosition.y;
   if (
     billboard.verticalOrigin === VerticalOrigin.BOTTOM ||
     billboard.verticalOrigin === VerticalOrigin.BASELINE

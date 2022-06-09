@@ -1,11 +1,8 @@
-import BoundingSphere from "../../Core/BoundingSphere.js";
-import Cartesian3 from "../../Core/Cartesian3.js";
 import Check from "../../Core/Check.js";
-import clone from "../../Core/clone.js";
-import combine from "../../Core/combine.js";
 import defined from "../../Core/defined.js";
 import BlendingState from "../BlendingState.js";
 import DepthFunction from "../DepthFunction.js";
+import ModelAlphaOptions from "./ModelAlphaOptions.js";
 import ModelExperimentalUtility from "./ModelExperimentalUtility.js";
 import ModelLightingOptions from "./ModelLightingOptions.js";
 
@@ -68,7 +65,7 @@ export default function PrimitiveRenderResources(
   this.attributeIndex = nodeRenderResources.attributeIndex;
 
   /**
-   * The set index to assign to feature ID vertex attribute(s) created from the offset/repeat in the feature ID attribute.
+   * The set index to assign to feature ID vertex attribute(s) created from the constant/divisor in the feature ID attribute.
    * Inherited from the node render resources.
    *
    * @type {Number}
@@ -79,8 +76,7 @@ export default function PrimitiveRenderResources(
     nodeRenderResources.featureIdVertexAttributeSetIndex;
 
   /**
-   * Whether or not this primitive has a property table for storing metadata.
-   * When present, picking and styling can use this
+   * Whether or not this primitive has feature IDs (at the node's instance or through primitive's feature ID attribute or texture).
    *
    * @type {Boolean}
    * @default false
@@ -88,30 +84,29 @@ export default function PrimitiveRenderResources(
    *
    * @private
    */
-  this.hasPropertyTable = false;
+  this.hasFeatureIds = false;
 
   /**
-   * A dictionary mapping uniform name to functions that return the uniform
-   * values. Inherited from the node render resources.
-   *
-   * @type {Object.<String, Function>}
-   * @readonly
-   *
-   * @private
-   */
-  this.uniformMap = clone(nodeRenderResources.uniformMap);
-
-  /**
-   * Options for configuring the alpha stage such as pass and alpha mode. Inherited from the node
+   * The ID of the feature table to use for picking and styling. Inherited from the node
    * render resources.
    *
-   * @type {ModelAlphaOptions}
+   * @type {String}
    * @readonly
    *
    * @private
    */
-  this.alphaOptions = clone(nodeRenderResources.alphaOptions);
+  this.featureTableId = nodeRenderResources.featureTableId;
 
+  /**
+   * The computed model matrix for this primitive. This is cloned from the
+   * node render resources as the primitive may further modify it
+   *
+   * @type {Matrix4}
+   *
+   * @private
+   */
+
+  this.modelMatrix = nodeRenderResources.modelMatrix.clone();
   /**
    * An object used to build a shader incrementally. This is cloned from the
    * node render resources because each primitive can compute a different shader.
@@ -134,7 +129,7 @@ export default function PrimitiveRenderResources(
   this.instanceCount = nodeRenderResources.instanceCount;
 
   /**
-   * A reference to the runtime primitive
+   * A reference to the runtime node
    *
    * @type {ModelExperimentalPrimitive}
    * @readonly
@@ -151,7 +146,7 @@ export default function PrimitiveRenderResources(
    *
    * @private
    */
-  const primitive = runtimePrimitive.primitive;
+  var primitive = runtimePrimitive.primitive;
 
   // other properties
   /**
@@ -167,7 +162,6 @@ export default function PrimitiveRenderResources(
     ? primitive.indices.count
     : ModelExperimentalUtility.getAttributeBySemantic(primitive, "POSITION")
         .count;
-
   /**
    * The indices for this primitive
    *
@@ -177,17 +171,6 @@ export default function PrimitiveRenderResources(
    * @private
    */
   this.indices = primitive.indices;
-
-  /**
-   * Additional index buffer for wireframe mode (if enabled)
-   *
-   * @type {Buffer}
-   * @readonly
-   *
-   * @private
-   */
-  this.wireframeIndexBuffer = undefined;
-
   /**
    * The primitive type such as TRIANGLES or POINTS
    *
@@ -197,47 +180,27 @@ export default function PrimitiveRenderResources(
    * @private
    */
   this.primitiveType = primitive.primitiveType;
-
-  const positionMinMax = ModelExperimentalUtility.getPositionMinMax(
-    primitive,
-    nodeRenderResources.instancingTranslationMin,
-    nodeRenderResources.instancingTranslationMax
-  );
-
-  /**
-   * The minimum position value for this primitive.
-   *
-   * @type {Cartesian3}
-   * @readonly
-   *
-   * @private
-   */
-  this.positionMin = Cartesian3.clone(positionMinMax.min, new Cartesian3());
-
-  /**
-   * The maximum position value for this primitive.
-   *
-   * @type {Cartesian3}
-   * @readonly
-   *
-   * @private
-   */
-  this.positionMax = Cartesian3.clone(positionMinMax.max, new Cartesian3());
-
   /**
    * The bounding sphere that contains all the vertices in this primitive.
    *
    * @type {BoundingSphere}
+   */
+  this.boundingSphere = ModelExperimentalUtility.createBoundingSphere(
+    primitive,
+    this.modelMatrix,
+    nodeRenderResources.instancingTranslationMax,
+    nodeRenderResources.instancingTranslationMin
+  );
+  /**
+   * A dictionary mapping uniform name to functions that return the uniform
+   * values.
+   *
+   * @type {Object.<String, Function>}
    * @readonly
    *
    * @private
    */
-  this.boundingSphere = BoundingSphere.fromCornerPoints(
-    this.positionMin,
-    this.positionMax,
-    new BoundingSphere()
-  );
-
+  this.uniformMap = {};
   /**
    * Options for configuring the lighting stage such as selecting between
    * unlit and PBR shading.
@@ -248,6 +211,15 @@ export default function PrimitiveRenderResources(
    * @private
    */
   this.lightingOptions = new ModelLightingOptions();
+  /**
+   * Options for configuring the alpha stage such as pass and alpha mode.
+   *
+   * @type {ModelAlphaOptions}
+   * @readonly
+   *
+   * @private
+   */
+  this.alphaOptions = new ModelAlphaOptions();
 
   /**
    * The shader variable to use for picking.
@@ -269,21 +241,11 @@ export default function PrimitiveRenderResources(
    *
    * @private
    */
-  this.renderStateOptions = combine(nodeRenderResources.renderStateOptions, {
+  this.renderStateOptions = {
     depthTest: {
       enabled: true,
       func: DepthFunction.LESS_OR_EQUAL,
     },
     blending: BlendingState.DISABLED,
-  });
-
-  /**
-   * An enum describing the types of draw commands needed, based on the style.
-   *
-   * @type {StyleCommandsNeeded}
-   * @readonly
-   *
-   * @private
-   */
-  this.styleCommandsNeeded = undefined;
+  };
 }

@@ -22,13 +22,15 @@ import Sun from "../../Scene/Sun.js";
 import getElement from "../getElement.js";
 
 function getDefaultSkyBoxUrl(suffix) {
-  return buildModuleUrl(`Assets/Textures/SkyBox/tycho2t3_80_${suffix}.jpg`);
+  return buildModuleUrl(
+    "Assets/Textures/SkyBox/tycho2t3_80_" + suffix + ".jpg"
+  );
 }
 
 function startRenderLoop(widget) {
   widget._renderLoopRunning = true;
 
-  let lastFrameTime = 0;
+  var lastFrameTime = 0;
   function render(frameTime) {
     if (widget.isDestroyed()) {
       return;
@@ -36,14 +38,14 @@ function startRenderLoop(widget) {
 
     if (widget._useDefaultRenderLoop) {
       try {
-        const targetFrameRate = widget._targetFrameRate;
+        var targetFrameRate = widget._targetFrameRate;
         if (!defined(targetFrameRate)) {
           widget.resize();
           widget.render();
           requestAnimationFrame(render);
         } else {
-          const interval = 1000.0 / targetFrameRate;
-          const delta = frameTime - lastFrameTime;
+          var interval = 1000.0 / targetFrameRate;
+          var delta = frameTime - lastFrameTime;
 
           if (delta > interval) {
             widget.resize();
@@ -56,7 +58,7 @@ function startRenderLoop(widget) {
         widget._useDefaultRenderLoop = false;
         widget._renderLoopRunning = false;
         if (widget._showRenderLoopErrors) {
-          const title =
+          var title =
             "An error occurred while rendering.  Rendering has stopped.";
           widget.showErrorPanel(title, undefined, error);
         }
@@ -70,7 +72,7 @@ function startRenderLoop(widget) {
 }
 
 function configurePixelRatio(widget) {
-  let pixelRatio = widget._useBrowserRecommendedResolution
+  var pixelRatio = widget._useBrowserRecommendedResolution
     ? 1.0
     : window.devicePixelRatio;
   pixelRatio *= widget._resolutionScale;
@@ -82,10 +84,10 @@ function configurePixelRatio(widget) {
 }
 
 function configureCanvasSize(widget) {
-  const canvas = widget._canvas;
-  let width = canvas.clientWidth;
-  let height = canvas.clientHeight;
-  const pixelRatio = configurePixelRatio(widget);
+  var canvas = widget._canvas;
+  var width = canvas.clientWidth;
+  var height = canvas.clientHeight;
+  var pixelRatio = configurePixelRatio(widget);
 
   widget._canvasClientWidth = width;
   widget._canvasClientHeight = height;
@@ -101,11 +103,11 @@ function configureCanvasSize(widget) {
 }
 
 function configureCameraFrustum(widget) {
-  const canvas = widget._canvas;
-  const width = canvas.width;
-  const height = canvas.height;
+  var canvas = widget._canvas;
+  var width = canvas.width;
+  var height = canvas.height;
   if (width !== 0 && height !== 0) {
-    const frustum = widget._scene.camera.frustum;
+    var frustum = widget._scene.camera.frustum;
     if (defined(frustum.aspectRatio)) {
       frustum.aspectRatio = width / height;
     } else {
@@ -146,7 +148,6 @@ function configureCameraFrustum(widget) {
  * @param {MapMode2D} [options.mapMode2D=MapMode2D.INFINITE_SCROLL] Determines if the 2D map is rotatable or can be scrolled infinitely in the horizontal direction.
  * @param {Boolean} [options.requestRenderMode=false] If true, rendering a frame will only occur when needed as determined by changes within the scene. Enabling improves performance of the application, but requires using {@link Scene#requestRender} to render a new frame explicitly in this mode. This will be necessary in many cases after making changes to the scene in other parts of the API. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  * @param {Number} [options.maximumRenderTimeChange=0.0] If requestRenderMode is true, this value defines the maximum change in simulation time allowed before a render is requested. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
- * @param {Number} [options.msaaSamples=1] If provided, this value controls the rate of multisample antialiasing. Typical multisampling rates are 2, 4, and sometimes 8 samples per pixel. Higher sampling rates of MSAA may impact performance in exchange for improved visual quality. This value only applies to WebGL2 contexts that support multisample render targets.
  *
  * @exception {DeveloperError} Element with id "container" does not exist in the document.
  *
@@ -157,10 +158,10 @@ function configureCameraFrustum(widget) {
  * // and in the body, include: <div id="cesiumContainer"></div>
  *
  * //Widget with no terrain and default Bing Maps imagery provider.
- * const widget = new Cesium.CesiumWidget('cesiumContainer');
+ * var widget = new Cesium.CesiumWidget('cesiumContainer');
  *
  * //Widget with ion imagery and Cesium World Terrain.
- * const widget2 = new Cesium.CesiumWidget('cesiumContainer', {
+ * var widget = new Cesium.CesiumWidget('cesiumContainer', {
  *     imageryProvider : Cesium.createWorldImagery(),
  *     terrainProvider : Cesium.createWorldTerrain(),
  *     skyBox : new Cesium.SkyBox({
@@ -190,12 +191,12 @@ function CesiumWidget(container, options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
   //Configure the widget DOM elements
-  const element = document.createElement("div");
+  var element = document.createElement("div");
   element.className = "cesium-widget";
   container.appendChild(element);
 
-  const canvas = document.createElement("canvas");
-  const supportsImageRenderingPixelated = FeatureDetection.supportsImageRenderingPixelated();
+  var canvas = document.createElement("canvas");
+  var supportsImageRenderingPixelated = FeatureDetection.supportsImageRenderingPixelated();
   this._supportsImageRenderingPixelated = supportsImageRenderingPixelated;
   if (supportsImageRenderingPixelated) {
     canvas.style.imageRendering = FeatureDetection.imageRenderingValue();
@@ -222,21 +223,21 @@ function CesiumWidget(container, options) {
 
   element.appendChild(canvas);
 
-  const innerCreditContainer = document.createElement("div");
+  var innerCreditContainer = document.createElement("div");
   innerCreditContainer.className = "cesium-widget-credits";
 
-  const creditContainer = defined(options.creditContainer)
+  var creditContainer = defined(options.creditContainer)
     ? getElement(options.creditContainer)
     : element;
   creditContainer.appendChild(innerCreditContainer);
 
-  const creditViewport = defined(options.creditViewport)
+  var creditViewport = defined(options.creditViewport)
     ? getElement(options.creditViewport)
     : element;
 
-  const showRenderLoopErrors = defaultValue(options.showRenderLoopErrors, true);
+  var showRenderLoopErrors = defaultValue(options.showRenderLoopErrors, true);
 
-  const useBrowserRecommendedResolution = defaultValue(
+  var useBrowserRecommendedResolution = defaultValue(
     options.useBrowserRecommendedResolution,
     true
   );
@@ -261,7 +262,7 @@ function CesiumWidget(container, options) {
   configureCanvasSize(this);
 
   try {
-    const scene = new Scene({
+    var scene = new Scene({
       canvas: canvas,
       contextOptions: options.contextOptions,
       creditContainer: innerCreditContainer,
@@ -273,8 +274,6 @@ function CesiumWidget(container, options) {
       mapMode2D: options.mapMode2D,
       requestRenderMode: options.requestRenderMode,
       maximumRenderTimeChange: options.maximumRenderTimeChange,
-      depthPlaneEllipsoidOffset: options.depthPlaneEllipsoidOffset,
-      msaaSamples: options.msaaSamples,
     });
     this._scene = scene;
 
@@ -283,12 +282,12 @@ function CesiumWidget(container, options) {
     configurePixelRatio(this);
     configureCameraFrustum(this);
 
-    const ellipsoid = defaultValue(
+    var ellipsoid = defaultValue(
       scene.mapProjection.ellipsoid,
       Ellipsoid.WGS84
     );
 
-    let globe = options.globe;
+    var globe = options.globe;
     if (!defined(globe)) {
       globe = new Globe(ellipsoid);
     }
@@ -300,7 +299,7 @@ function CesiumWidget(container, options) {
       );
     }
 
-    let skyBox = options.skyBox;
+    var skyBox = options.skyBox;
     if (!defined(skyBox)) {
       skyBox = new SkyBox({
         sources: {
@@ -320,7 +319,7 @@ function CesiumWidget(container, options) {
     }
 
     // Blue sky, and the glow around the Earth's limb.
-    let skyAtmosphere = options.skyAtmosphere;
+    var skyAtmosphere = options.skyAtmosphere;
     if (!defined(skyAtmosphere)) {
       skyAtmosphere = new SkyAtmosphere(ellipsoid);
     }
@@ -329,7 +328,7 @@ function CesiumWidget(container, options) {
     }
 
     //Set the base imagery layer
-    let imageryProvider =
+    var imageryProvider =
       options.globe === false ? false : options.imageryProvider;
     if (!defined(imageryProvider)) {
       imageryProvider = createWorldImagery();
@@ -364,12 +363,12 @@ function CesiumWidget(container, options) {
     this._targetFrameRate = undefined;
     this.targetFrameRate = options.targetFrameRate;
 
-    const that = this;
+    var that = this;
     this._onRenderError = function (scene, error) {
       that._useDefaultRenderLoop = false;
       that._renderLoopRunning = false;
       if (that._showRenderLoopErrors) {
-        const title =
+        var title =
           "An error occurred while rendering.  Rendering has stopped.";
         that.showErrorPanel(title, undefined, error);
       }
@@ -377,8 +376,8 @@ function CesiumWidget(container, options) {
     scene.renderError.addEventListener(this._onRenderError);
   } catch (error) {
     if (showRenderLoopErrors) {
-      const title = "Error constructing CesiumWidget.";
-      const message =
+      var title = "Error constructing CesiumWidget.";
+      var message =
         'Visit <a href="http://get.webgl.org">http://get.webgl.org</a> to verify that your web browser and hardware support WebGL.  Consider trying a different web browser or updating your video drivers.  Detailed error information is below:';
       this.showErrorPanel(title, message, error);
     }
@@ -637,43 +636,41 @@ Object.defineProperties(CesiumWidget.prototype, {
  * @param {String} [error] The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
  */
 CesiumWidget.prototype.showErrorPanel = function (title, message, error) {
-  const element = this._element;
-  const overlay = document.createElement("div");
+  var element = this._element;
+  var overlay = document.createElement("div");
   overlay.className = "cesium-widget-errorPanel";
 
-  const content = document.createElement("div");
+  var content = document.createElement("div");
   content.className = "cesium-widget-errorPanel-content";
   overlay.appendChild(content);
 
-  const errorHeader = document.createElement("div");
+  var errorHeader = document.createElement("div");
   errorHeader.className = "cesium-widget-errorPanel-header";
   errorHeader.appendChild(document.createTextNode(title));
   content.appendChild(errorHeader);
 
-  const errorPanelScroller = document.createElement("div");
+  var errorPanelScroller = document.createElement("div");
   errorPanelScroller.className = "cesium-widget-errorPanel-scroll";
   content.appendChild(errorPanelScroller);
   function resizeCallback() {
-    errorPanelScroller.style.maxHeight = `${Math.max(
-      Math.round(element.clientHeight * 0.9 - 100),
-      30
-    )}px`;
+    errorPanelScroller.style.maxHeight =
+      Math.max(Math.round(element.clientHeight * 0.9 - 100), 30) + "px";
   }
   resizeCallback();
   if (defined(window.addEventListener)) {
     window.addEventListener("resize", resizeCallback, false);
   }
 
-  const hasMessage = defined(message);
-  const hasError = defined(error);
+  var hasMessage = defined(message);
+  var hasError = defined(error);
 
   if (hasMessage || hasError) {
-    const errorMessage = document.createElement("div");
+    var errorMessage = document.createElement("div");
     errorMessage.className = "cesium-widget-errorPanel-message";
     errorPanelScroller.appendChild(errorMessage);
 
     if (hasError) {
-      let errorDetails = formatError(error);
+      var errorDetails = formatError(error);
       if (!hasMessage) {
         if (typeof error === "string") {
           error = new Error(error);
@@ -688,14 +685,14 @@ CesiumWidget.prototype.showErrorPanel = function (title, message, error) {
 
       //IE8 does not have a console object unless the dev tools are open.
       if (typeof console !== "undefined") {
-        console.error(`${title}\n${message}\n${errorDetails}`);
+        console.error(title + "\n" + message + "\n" + errorDetails);
       }
 
-      const errorMessageDetails = document.createElement("div");
+      var errorMessageDetails = document.createElement("div");
       errorMessageDetails.className =
         "cesium-widget-errorPanel-message-details collapsed";
 
-      const moreDetails = document.createElement("span");
+      var moreDetails = document.createElement("span");
       moreDetails.className = "cesium-widget-errorPanel-more-details";
       moreDetails.appendChild(document.createTextNode("See more..."));
       errorMessageDetails.appendChild(moreDetails);
@@ -712,14 +709,14 @@ CesiumWidget.prototype.showErrorPanel = function (title, message, error) {
       errorPanelScroller.appendChild(errorMessageDetails);
     }
 
-    errorMessage.innerHTML = `<p>${message}</p>`;
+    errorMessage.innerHTML = "<p>" + message + "</p>";
   }
 
-  const buttonPanel = document.createElement("div");
+  var buttonPanel = document.createElement("div");
   buttonPanel.className = "cesium-widget-errorPanel-buttonPanel";
   content.appendChild(buttonPanel);
 
-  const okButton = document.createElement("button");
+  var okButton = document.createElement("button");
   okButton.setAttribute("type", "button");
   okButton.className = "cesium-button";
   okButton.appendChild(document.createTextNode("OK"));
@@ -762,7 +759,7 @@ CesiumWidget.prototype.destroy = function () {
  * <code>useDefaultRenderLoop</code> is set to false.
  */
 CesiumWidget.prototype.resize = function () {
-  const canvas = this._canvas;
+  var canvas = this._canvas;
   if (
     !this._forceResize &&
     this._canvasClientWidth === canvas.clientWidth &&
@@ -786,7 +783,7 @@ CesiumWidget.prototype.resize = function () {
 CesiumWidget.prototype.render = function () {
   if (this._canRender) {
     this._scene.initializeFrame();
-    const currentTime = this._clock.tick();
+    var currentTime = this._clock.tick();
     this._scene.render(currentTime);
   } else {
     this._clock.tick();

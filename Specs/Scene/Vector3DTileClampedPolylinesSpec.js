@@ -17,14 +17,14 @@ import createScene from "../createScene.js";
 describe(
   "Scene/Vector3DTileClampedPolylines",
   function () {
-    let scene;
-    let rectangle;
-    let polylines;
+    var scene;
+    var rectangle;
+    var polylines;
 
-    const ellipsoid = Ellipsoid.WGS84;
+    var ellipsoid = Ellipsoid.WGS84;
 
-    let depthRectanglePrimitive;
-    const vectorPolylines =
+    var depthRectanglePrimitive;
+    var vectorPolylines =
       "./Data/Cesium3DTiles/Vector/VectorTilePolylines/tileset.json";
 
     beforeAll(function () {
@@ -41,12 +41,12 @@ describe(
     }
 
     MockGlobePrimitive.prototype.update = function (frameState) {
-      const commandList = frameState.commandList;
-      const startLength = commandList.length;
+      var commandList = frameState.commandList;
+      var startLength = commandList.length;
       this._primitive.update(frameState);
 
-      for (let i = startLength; i < commandList.length; ++i) {
-        const command = commandList[i];
+      for (var i = startLength; i < commandList.length; ++i) {
+        var command = commandList[i];
         command.pass = this.pass;
       }
     };
@@ -62,10 +62,10 @@ describe(
 
     beforeEach(function () {
       rectangle = Rectangle.fromDegrees(-40.0, -40.0, 40.0, 40.0);
-      const depthpolylineColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var depthpolylineColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(0.0, 0.0, 1.0, 1.0)
       );
-      const primitive = new Primitive({
+      var primitive = new Primitive({
         geometryInstances: new GeometryInstance({
           geometry: new RectangleGeometry({
             ellipsoid: ellipsoid,

@@ -28,12 +28,6 @@ describe("Core/ComponentDatatype", function () {
     );
   });
 
-  it("fromTypedArray throws if array is not a valid typed array", function () {
-    expect(function () {
-      ComponentDatatype.fromTypedArray([]);
-    }).toThrowDeveloperError();
-  });
-
   it("validate works", function () {
     expect(ComponentDatatype.validate(ComponentDatatype.BYTE)).toBe(true);
     expect(ComponentDatatype.validate(ComponentDatatype.UNSIGNED_BYTE)).toBe(
@@ -54,7 +48,7 @@ describe("Core/ComponentDatatype", function () {
   });
 
   it("createTypedArray works with size", function () {
-    let typedArray = ComponentDatatype.createTypedArray(
+    var typedArray = ComponentDatatype.createTypedArray(
       ComponentDatatype.BYTE,
       0
     );
@@ -103,8 +97,8 @@ describe("Core/ComponentDatatype", function () {
   });
 
   it("createTypedArray works with values", function () {
-    const values = [34, 12, 4, 1];
-    let typedArray = ComponentDatatype.createTypedArray(
+    var values = [34, 12, 4, 1];
+    var typedArray = ComponentDatatype.createTypedArray(
       ComponentDatatype.BYTE,
       values
     );
@@ -170,7 +164,7 @@ describe("Core/ComponentDatatype", function () {
   });
 
   it("createArrayBufferView works", function () {
-    const buffer = new ArrayBuffer(100);
+    var buffer = new ArrayBuffer(100);
     expect(
       ComponentDatatype.createArrayBufferView(
         ComponentDatatype.BYTE,
@@ -250,14 +244,14 @@ describe("Core/ComponentDatatype", function () {
   });
 
   it("createArrayBufferView throws without type", function () {
-    const buffer = new ArrayBuffer(100);
+    var buffer = new ArrayBuffer(100);
     expect(function () {
       ComponentDatatype.createTypedArray(undefined, buffer, 0, 1);
     }).toThrowDeveloperError();
   });
 
   it("createArrayBufferView throws with invalid type", function () {
-    const buffer = new ArrayBuffer(100);
+    var buffer = new ArrayBuffer(100);
     expect(function () {
       ComponentDatatype.createTypedArray({}, buffer, 0, 1);
     }).toThrowDeveloperError();

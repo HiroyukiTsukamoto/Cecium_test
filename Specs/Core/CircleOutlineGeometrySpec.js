@@ -31,7 +31,7 @@ describe("Core/CircleOutlineGeometry", function () {
   });
 
   it("computes positions", function () {
-    const m = CircleOutlineGeometry.createGeometry(
+    var m = CircleOutlineGeometry.createGeometry(
       new CircleOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -46,7 +46,7 @@ describe("Core/CircleOutlineGeometry", function () {
   });
 
   it("computes positions extruded", function () {
-    const m = CircleOutlineGeometry.createGeometry(
+    var m = CircleOutlineGeometry.createGeometry(
       new CircleOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -61,7 +61,7 @@ describe("Core/CircleOutlineGeometry", function () {
   });
 
   it("computes positions extruded, no lines between top and bottom", function () {
-    const m = CircleOutlineGeometry.createGeometry(
+    var m = CircleOutlineGeometry.createGeometry(
       new CircleOutlineGeometry({
         ellipsoid: Ellipsoid.WGS84,
         center: Cartesian3.fromDegrees(0, 0),
@@ -77,25 +77,25 @@ describe("Core/CircleOutlineGeometry", function () {
   });
 
   it("undefined is returned if radius is equal to or less than zero", function () {
-    const circleOutline0 = new CircleOutlineGeometry({
+    var circleOutline0 = new CircleOutlineGeometry({
       center: Cartesian3.fromDegrees(-75.59777, 40.03883),
       radius: 0.0,
     });
-    const circleOutline1 = new CircleOutlineGeometry({
+    var circleOutline1 = new CircleOutlineGeometry({
       center: Cartesian3.fromDegrees(-75.59777, 40.03883),
       radius: -10.0,
     });
 
-    const geometry0 = CircleOutlineGeometry.createGeometry(circleOutline0);
-    const geometry1 = CircleOutlineGeometry.createGeometry(circleOutline1);
+    var geometry0 = CircleOutlineGeometry.createGeometry(circleOutline0);
+    var geometry1 = CircleOutlineGeometry.createGeometry(circleOutline1);
 
     expect(geometry0).toBeUndefined();
     expect(geometry1).toBeUndefined();
   });
 
-  const center = new Cartesian3(8, 9, 10);
-  const ellipsoid = new Ellipsoid(11, 12, 13);
-  let packableInstance = new CircleOutlineGeometry({
+  var center = new Cartesian3(8, 9, 10);
+  var ellipsoid = new Ellipsoid(11, 12, 13);
+  var packableInstance = new CircleOutlineGeometry({
     ellipsoid: ellipsoid,
     center: center,
     granularity: 1,
@@ -104,7 +104,7 @@ describe("Core/CircleOutlineGeometry", function () {
     height: 5,
     extrudedHeight: 7,
   });
-  let packedInstance = [
+  var packedInstance = [
     center.x,
     center.y,
     center.z,

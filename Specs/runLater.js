@@ -1,9 +1,10 @@
-import { defaultValue, defer } from "../Source/Cesium.js";
+import { defaultValue } from "../Source/Cesium.js";
+import { when } from "../Source/Cesium.js";
 
 function runLater(functionToRunLater, milliseconds) {
   milliseconds = defaultValue(milliseconds, 0);
 
-  const deferred = defer();
+  var deferred = when.defer();
   setTimeout(function () {
     try {
       deferred.resolve(functionToRunLater());

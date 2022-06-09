@@ -7,7 +7,7 @@ import { PerspectiveFrustum } from "../../Source/Cesium.js";
 import createPackableSpecs from "../createPackableSpecs.js";
 
 describe("Core/PerspectiveFrustum", function () {
-  let frustum, planes;
+  var frustum, planes;
 
   beforeEach(function () {
     frustum = new PerspectiveFrustum();
@@ -23,7 +23,7 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("constructs", function () {
-    const options = {
+    var options = {
       fov: 1.0,
       aspectRatio: 2.0,
       near: 3.0,
@@ -31,7 +31,7 @@ describe("Core/PerspectiveFrustum", function () {
       xOffset: 5.0,
       yOffset: 6.0,
     };
-    const f = new PerspectiveFrustum(options);
+    var f = new PerspectiveFrustum(options);
     expect(f.fov).toEqual(options.fov);
     expect(f.aspectRatio).toEqual(options.aspectRatio);
     expect(f.near).toEqual(options.near);
@@ -41,7 +41,7 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("default constructs", function () {
-    const f = new PerspectiveFrustum();
+    var f = new PerspectiveFrustum();
     expect(f.fov).toBeUndefined();
     expect(f.aspectRatio).toBeUndefined();
     expect(f.near).toEqual(1.0);
@@ -102,48 +102,38 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("get frustum left plane", function () {
-    const leftPlane = planes[0];
-    const expectedResult = new Cartesian4(Math.sqrt(3.0) / 2.0, 0.0, -0.5, 0.0);
+    var leftPlane = planes[0];
+    var expectedResult = new Cartesian4(Math.sqrt(3.0) / 2.0, 0.0, -0.5, 0.0);
     expect(leftPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON14);
   });
 
   it("get frustum right plane", function () {
-    const rightPlane = planes[1];
-    const expectedResult = new Cartesian4(
-      -Math.sqrt(3.0) / 2.0,
-      0.0,
-      -0.5,
-      0.0
-    );
+    var rightPlane = planes[1];
+    var expectedResult = new Cartesian4(-Math.sqrt(3.0) / 2.0, 0.0, -0.5, 0.0);
     expect(rightPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON14);
   });
 
   it("get frustum bottom plane", function () {
-    const bottomPlane = planes[2];
-    const expectedResult = new Cartesian4(0.0, Math.sqrt(3.0) / 2.0, -0.5, 0.0);
+    var bottomPlane = planes[2];
+    var expectedResult = new Cartesian4(0.0, Math.sqrt(3.0) / 2.0, -0.5, 0.0);
     expect(bottomPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON14);
   });
 
   it("get frustum top plane", function () {
-    const topPlane = planes[3];
-    const expectedResult = new Cartesian4(
-      0.0,
-      -Math.sqrt(3.0) / 2.0,
-      -0.5,
-      0.0
-    );
+    var topPlane = planes[3];
+    var expectedResult = new Cartesian4(0.0, -Math.sqrt(3.0) / 2.0, -0.5, 0.0);
     expect(topPlane).toEqualEpsilon(expectedResult, CesiumMath.EPSILON14);
   });
 
   it("get frustum near plane", function () {
-    const nearPlane = planes[4];
-    const expectedResult = new Cartesian4(0.0, 0.0, -1.0, -1.0);
+    var nearPlane = planes[4];
+    var expectedResult = new Cartesian4(0.0, 0.0, -1.0, -1.0);
     expect(nearPlane).toEqual(expectedResult);
   });
 
   it("get frustum far plane", function () {
-    const farPlane = planes[5];
-    const expectedResult = new Cartesian4(0.0, 0.0, 1.0, 2.0);
+    var farPlane = planes[5];
+    var expectedResult = new Cartesian4(0.0, 0.0, 1.0, 2.0);
     expect(farPlane).toEqual(expectedResult);
   });
 
@@ -152,8 +142,8 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("get perspective projection matrix", function () {
-    const projectionMatrix = frustum.projectionMatrix;
-    const expected = Matrix4.computePerspectiveFieldOfView(
+    var projectionMatrix = frustum.projectionMatrix;
+    var expected = Matrix4.computePerspectiveFieldOfView(
       frustum.fovy,
       frustum.aspectRatio,
       frustum.near,
@@ -164,13 +154,13 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("get infinite perspective matrix", function () {
-    const top = frustum.near * Math.tan(0.5 * frustum.fovy);
-    const bottom = -top;
-    const right = frustum.aspectRatio * top;
-    const left = -right;
-    const near = frustum.near;
+    var top = frustum.near * Math.tan(0.5 * frustum.fovy);
+    var bottom = -top;
+    var right = frustum.aspectRatio * top;
+    var left = -right;
+    var near = frustum.near;
 
-    const expected = Matrix4.computeInfinitePerspectiveOffCenter(
+    var expected = Matrix4.computeInfinitePerspectiveOffCenter(
       left,
       right,
       bottom,
@@ -236,17 +226,17 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("get pixel dimensions", function () {
-    const dimensions = new Cartesian2(1.0, 1.0);
-    const pixelRatio = 1.0;
-    const distance = 1.0;
-    const pixelSize = frustum.getPixelDimensions(
+    var dimensions = new Cartesian2(1.0, 1.0);
+    var pixelRatio = 1.0;
+    var distance = 1.0;
+    var pixelSize = frustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
       pixelRatio,
       new Cartesian2()
     );
-    const expected = frustum._offCenterFrustum.getPixelDimensions(
+    var expected = frustum._offCenterFrustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
@@ -258,17 +248,17 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("get pixel dimensions with pixel ratio", function () {
-    const dimensions = new Cartesian2(1.0, 1.0);
-    const pixelRatio = 2.0;
-    const distance = 1.0;
-    const pixelSize = frustum.getPixelDimensions(
+    var dimensions = new Cartesian2(1.0, 1.0);
+    var pixelRatio = 2.0;
+    var distance = 1.0;
+    var pixelSize = frustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
       pixelRatio,
       new Cartesian2()
     );
-    const expected = frustum._offCenterFrustum.getPixelDimensions(
+    var expected = frustum._offCenterFrustum.getPixelDimensions(
       dimensions.x,
       dimensions.y,
       distance,
@@ -280,7 +270,7 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("equals", function () {
-    const frustum2 = new PerspectiveFrustum();
+    var frustum2 = new PerspectiveFrustum();
     frustum2.near = 1.0;
     frustum2.far = 2.0;
     frustum2.fov = Math.PI / 3.0;
@@ -289,21 +279,21 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("equals epsilon", function () {
-    const frustum2 = new PerspectiveFrustum();
+    var frustum2 = new PerspectiveFrustum();
     frustum2.near = 1.0;
     frustum2.far = 2.0;
     frustum2.fov = Math.PI / 3.0;
     frustum2.aspectRatio = 1.0;
     expect(frustum.equalsEpsilon(frustum2, CesiumMath.EPSILON7)).toEqual(true);
 
-    const frustum3 = new PerspectiveFrustum();
+    var frustum3 = new PerspectiveFrustum();
     frustum3.near = 1.01;
     frustum3.far = 2.01;
     frustum3.fov = Math.PI / 3.0 + 0.01;
     frustum3.aspectRatio = 1.01;
     expect(frustum.equalsEpsilon(frustum3, CesiumMath.EPSILON1)).toEqual(true);
 
-    const frustum4 = new PerspectiveFrustum();
+    var frustum4 = new PerspectiveFrustum();
     frustum4.near = 1.0;
     frustum4.far = 2.0;
     frustum4.fov = Math.PI / 3.0;
@@ -316,20 +306,20 @@ describe("Core/PerspectiveFrustum", function () {
   });
 
   it("throws with undefined frustum parameters", function () {
-    const frustum = new PerspectiveFrustum();
+    var frustum = new PerspectiveFrustum();
     expect(function () {
       return frustum.infiniteProjectionMatrix;
     }).toThrowDeveloperError();
   });
 
   it("clone", function () {
-    const frustum2 = frustum.clone();
+    var frustum2 = frustum.clone();
     expect(frustum).toEqual(frustum2);
   });
 
   it("clone with result parameter", function () {
-    const result = new PerspectiveFrustum();
-    const frustum2 = frustum.clone(result);
+    var result = new PerspectiveFrustum();
+    var frustum2 = frustum.clone(result);
     expect(frustum2).toBe(result);
     expect(frustum).toEqual(frustum2);
   });

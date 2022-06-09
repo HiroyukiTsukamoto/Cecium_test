@@ -9,6 +9,7 @@ import { ImageryProvider } from "../../Source/Cesium.js";
 import { ImageryState } from "../../Source/Cesium.js";
 import { SingleTileImageryProvider } from "../../Source/Cesium.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Scene/SingleTileImageryProvider", function () {
   afterEach(function () {
@@ -21,7 +22,7 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("resolves readyPromise", function () {
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: "Data/Images/Red16x16.png",
     });
 
@@ -32,11 +33,11 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("resolves readyPromise with Resource", function () {
-    const resource = new Resource({
+    var resource = new Resource({
       url: "Data/Images/Red16x16.png",
     });
 
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: resource,
     });
 
@@ -47,7 +48,7 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("rejects readyPromise on error", function () {
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: "invalid.image.url",
     });
 
@@ -55,14 +56,14 @@ describe("Scene/SingleTileImageryProvider", function () {
       .then(function () {
         fail("should not resolve");
       })
-      .catch(function (e) {
+      .otherwise(function (e) {
         expect(provider.ready).toBe(false);
         expect(e.message).toContain(provider.url);
       });
   });
 
   it("returns valid value for hasAlphaChannel", function () {
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: "Data/Images/Red16x16.png",
     });
 
@@ -74,10 +75,10 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("properties are gettable", function () {
-    const url = "Data/Images/Red16x16.png";
-    const rectangle = new Rectangle(0.1, 0.2, 0.3, 0.4);
-    const credit = "hi";
-    const provider = new SingleTileImageryProvider({
+    var url = "Data/Images/Red16x16.png";
+    var rectangle = new Rectangle(0.1, 0.2, 0.3, 0.4);
+    var credit = "hi";
+    var provider = new SingleTileImageryProvider({
       url: url,
       rectangle: rectangle,
       credit: credit,
@@ -107,8 +108,8 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("can use a custom ellipsoid", function () {
-    const ellipsoid = new Ellipsoid(1, 2, 3);
-    const provider = new SingleTileImageryProvider({
+    var ellipsoid = new Ellipsoid(1, 2, 3);
+    var provider = new SingleTileImageryProvider({
       url: "Data/Images/Red16x16.png",
       ellipsoid: ellipsoid,
     });
@@ -121,14 +122,14 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("requests the single image immediately upon construction", function () {
-    const imageUrl = "Data/Images/Red16x16.png";
+    var imageUrl = "Data/Images/Red16x16.png";
 
     spyOn(Resource._Implementations, "createImage").and.callFake(function (
       request,
       crossOrigin,
       deferred
     ) {
-      const url = request.url;
+      var url = request.url;
       expect(url).toEqual(imageUrl);
       Resource._DefaultImplementations.createImage(
         request,
@@ -137,7 +138,7 @@ describe("Scene/SingleTileImageryProvider", function () {
       );
     });
 
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: imageUrl,
     });
 
@@ -146,16 +147,14 @@ describe("Scene/SingleTileImageryProvider", function () {
     return pollToPromise(function () {
       return provider.ready;
     }).then(function () {
-      return Promise.resolve(provider.requestImage(0, 0, 0)).then(function (
-        image
-      ) {
+      return when(provider.requestImage(0, 0, 0), function (image) {
         expect(image).toBeImageOrImageBitmap();
       });
     });
   });
 
   it("turns the supplied credit into a logo", function () {
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: "Data/Images/Red16x16.png",
     });
 
@@ -164,7 +163,7 @@ describe("Scene/SingleTileImageryProvider", function () {
     }).then(function () {
       expect(provider.credit).toBeUndefined();
 
-      const providerWithCredit = new SingleTileImageryProvider({
+      var providerWithCredit = new SingleTileImageryProvider({
         url: "Data/Images/Red16x16.png",
         credit: "Thanks to our awesome made up source of this imagery!",
       });
@@ -178,13 +177,13 @@ describe("Scene/SingleTileImageryProvider", function () {
   });
 
   it("raises error event when image cannot be loaded", function () {
-    const provider = new SingleTileImageryProvider({
+    var provider = new SingleTileImageryProvider({
       url: "made/up/url",
     });
 
-    const layer = new ImageryLayer(provider);
+    var layer = new ImageryLayer(provider);
 
-    let tries = 0;
+    var tries = 0;
     provider.errorEvent.addEventListener(function (error) {
       expect(error.timesRetried).toEqual(tries);
       ++tries;
@@ -216,7 +215,7 @@ describe("Scene/SingleTileImageryProvider", function () {
     return pollToPromise(function () {
       return provider.ready;
     }).then(function () {
-      const imagery = new Imagery(layer, 0, 0, 0);
+      var imagery = new Imagery(layer, 0, 0, 0);
       imagery.addReference();
       layer._requestImagery(imagery);
 

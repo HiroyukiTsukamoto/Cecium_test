@@ -13,9 +13,10 @@ import { ImageryProvider } from "../../Source/Cesium.js";
 import { ImageryState } from "../../Source/Cesium.js";
 import pollToPromise from "../pollToPromise.js";
 import { Uri } from "../../Source/Cesium.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Scene/BingMapsImageryProvider", function () {
-  let supportsImageBitmapOptions;
+  var supportsImageBitmapOptions;
   beforeAll(function () {
     // This suite spies on requests. Resource.supportsImageBitmapOptions needs to make a request to a data URI.
     // We run it here to avoid interfering with the tests.
@@ -98,7 +99,7 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   function createFakeMetadataResponse(mapStyle) {
-    let stylePrefix = "a";
+    var stylePrefix = "a";
     switch (mapStyle) {
       case BingMapsStyle.AERIAL_WITH_LABELS:
         stylePrefix = "h";
@@ -121,7 +122,10 @@ describe("Scene/BingMapsImageryProvider", function () {
               __type:
                 "ImageryMetadata:http://schemas.microsoft.com/search/local/ws/rest/v1",
               imageHeight: 256,
-              imageUrl: `http://ecn.{subdomain}.tiles.virtualearth.net.fake.invalid/tiles/${stylePrefix}{quadkey}.jpeg?g=3031&mkt={culture}`,
+              imageUrl:
+                "http://ecn.{subdomain}.tiles.virtualearth.net.fake.invalid/tiles/" +
+                stylePrefix +
+                "{quadkey}.jpeg?g=3031&mkt={culture}",
               imageUrlSubdomains: ["t0", "t1", "t2", "t3"],
               imageWidth: 256,
               imageryProviders: [
@@ -171,21 +175,21 @@ describe("Scene/BingMapsImageryProvider", function () {
   }
 
   function installFakeMetadataRequest(url, mapStyle, proxy) {
-    const baseUri = new Uri(appendForwardSlash(url));
-    const expectedUri = new Uri(
-      `REST/v1/Imagery/Metadata/${mapStyle}`
+    var baseUri = new Uri(appendForwardSlash(url));
+    var expectedUri = new Uri(
+      "REST/v1/Imagery/Metadata/" + mapStyle
     ).absoluteTo(baseUri);
 
     Resource._Implementations.loadAndExecuteScript = function (
       url,
       functionName
     ) {
-      let uri = new Uri(url);
+      var uri = new Uri(url);
       if (proxy) {
         uri = new Uri(decodeURIComponent(uri.query()));
       }
 
-      const query = queryToObject(uri.query());
+      var query = queryToObject(uri.query());
       expect(query.jsonp).toBeDefined();
       expect(query.incl).toEqual("ImageryProviders");
       expect(query.key).toBeDefined();
@@ -205,7 +209,7 @@ describe("Scene/BingMapsImageryProvider", function () {
       crossOrigin,
       deferred
     ) {
-      const url = request.url;
+      var url = request.url;
       if (/^blob:/.test(url) || supportsImageBitmapOptions) {
         // If ImageBitmap is supported, we expect a loadWithXhr request to fetch it as a blob.
         Resource._DefaultImplementations.createImage(
@@ -218,15 +222,15 @@ describe("Scene/BingMapsImageryProvider", function () {
         );
       } else {
         if (defined(expectedUrl)) {
-          let uri = new Uri(url);
+          var uri = new Uri(url);
           if (proxy) {
             uri = new Uri(decodeURIComponent(uri.query()));
           }
 
-          const query = queryToObject(uri.query());
+          var query = queryToObject(uri.query());
           uri.query("");
           expect(uri.toString()).toEqual(expectedUrl);
-          for (const param in expectedParams) {
+          for (var param in expectedParams) {
             if (expectedParams.hasOwnProperty(param)) {
               expect(query[param]).toEqual(expectedParams[param]);
             }
@@ -251,15 +255,15 @@ describe("Scene/BingMapsImageryProvider", function () {
       overrideMimeType
     ) {
       if (defined(expectedUrl)) {
-        let uri = new Uri(url);
+        var uri = new Uri(url);
         if (proxy) {
           uri = new Uri(decodeURIComponent(uri.query()));
         }
 
-        const query = queryToObject(uri.query());
+        var query = queryToObject(uri.query());
         uri.query("");
         expect(uri.toString()).toEqual(expectedUrl);
-        for (const param in expectedParams) {
+        for (var param in expectedParams) {
           if (expectedParams.hasOwnProperty(param)) {
             expect(query[param]).toEqual(expectedParams[param]);
           }
@@ -279,13 +283,13 @@ describe("Scene/BingMapsImageryProvider", function () {
   }
 
   it("resolves readyPromise", function () {
-    const url = "http://fake.fake.invalid";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://fake.fake.invalid";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       key: "",
       mapStyle: mapStyle,
@@ -298,18 +302,18 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("Uses cached metadata result", function () {
-    const url = "http://fake.fake.invalid";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://fake.fake.invalid";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "",
     });
-    let provider2;
-    let provider3;
+    var provider2;
+    var provider3;
 
     return provider.readyPromise
       .then(function (result) {
@@ -351,13 +355,13 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("resolves readyPromise with a path", function () {
-    const url = "http://fake.fake.invalid/some/subdirectory";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://fake.fake.invalid/some/subdirectory";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "",
@@ -370,13 +374,13 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("resolves readyPromise with a path ending with a slash", function () {
-    const url = "http://fake.fake.invalid/some/subdirectory/";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://fake.fake.invalid/some/subdirectory/";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "",
@@ -389,17 +393,17 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("resolves readyPromise with Resource", function () {
-    const url = "http://fake.fake.invalid";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://fake.fake.invalid";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const resource = new Resource({
+    var resource = new Resource({
       url: url,
     });
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: resource,
       mapStyle: mapStyle,
       key: "",
@@ -412,8 +416,8 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("rejects readyPromise on error", function () {
-    const url = "http://host.invalid";
-    const provider = new BingMapsImageryProvider({
+    var url = "http://host.invalid";
+    var provider = new BingMapsImageryProvider({
       url: url,
       key: "",
     });
@@ -422,20 +426,20 @@ describe("Scene/BingMapsImageryProvider", function () {
       .then(function () {
         fail("should not resolve");
       })
-      .catch(function (e) {
+      .otherwise(function (e) {
         expect(provider.ready).toBe(false);
         expect(e.message).toContain(url);
       });
   });
 
   it("returns valid value for hasAlphaChannel", function () {
-    const url = "http://fake.fake.invalid";
-    const mapStyle = BingMapsStyle.AERIAL;
+    var url = "http://fake.fake.invalid";
+    var mapStyle = BingMapsStyle.AERIAL;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "",
@@ -449,13 +453,13 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("can provide a root tile", function () {
-    const url = "http://fake.fake.invalid";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://fake.fake.invalid";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "fake Key",
@@ -495,15 +499,15 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("sets correct culture in tile requests", function () {
-    const url = "http://fake.fake.invalid";
-    const mapStyle = BingMapsStyle.AERIAL_WITH_LABELS;
+    var url = "http://fake.fake.invalid";
+    var mapStyle = BingMapsStyle.AERIAL_WITH_LABELS;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const culture = "ja-jp";
+    var culture = "ja-jp";
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       culture: culture,
@@ -530,44 +534,42 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("raises error on invalid url", function () {
-    const url = "http://host.invalid";
-    const provider = new BingMapsImageryProvider({
+    var url = "http://host.invalid";
+    var provider = new BingMapsImageryProvider({
       url: url,
       key: "",
     });
 
-    let errorEventRaised = false;
+    var errorEventRaised = false;
     provider.errorEvent.addEventListener(function (error) {
       expect(error.message).toContain(url);
       errorEventRaised = true;
     });
 
-    return provider.readyPromise
-      .then(function () {
-        fail();
-      })
-      .catch(function () {
-        expect(provider.ready).toEqual(false);
-        expect(errorEventRaised).toEqual(true);
-      });
+    return pollToPromise(function () {
+      return provider.ready || errorEventRaised;
+    }).then(function () {
+      expect(provider.ready).toEqual(false);
+      expect(errorEventRaised).toEqual(true);
+    });
   });
 
   it("raises error event when image cannot be loaded", function () {
-    const url = "http://foo.bar.invalid";
-    const mapStyle = BingMapsStyle.ROAD;
+    var url = "http://foo.bar.invalid";
+    var mapStyle = BingMapsStyle.ROAD;
 
     installFakeMetadataRequest(url, mapStyle);
     installFakeImageRequest();
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "",
     });
 
-    const layer = new ImageryLayer(provider);
+    var layer = new ImageryLayer(provider);
 
-    let tries = 0;
+    var tries = 0;
     provider.errorEvent.addEventListener(function (error) {
       expect(error.timesRetried).toEqual(tries);
       ++tries;
@@ -584,7 +586,7 @@ describe("Scene/BingMapsImageryProvider", function () {
       crossOrigin,
       deferred
     ) {
-      const url = request.url;
+      var url = request.url;
       if (/^blob:/.test(url)) {
         // load blob url normally
         Resource._DefaultImplementations.createImage(
@@ -637,7 +639,7 @@ describe("Scene/BingMapsImageryProvider", function () {
     return pollToPromise(function () {
       return provider.ready;
     }).then(function () {
-      const imagery = new Imagery(layer, 0, 0, 0);
+      var imagery = new Imagery(layer, 0, 0, 0);
       imagery.addReference();
       layer._requestImagery(imagery);
       RequestScheduler.update();
@@ -653,30 +655,30 @@ describe("Scene/BingMapsImageryProvider", function () {
   });
 
   it("correctly handles empty tiles", function () {
-    const url = "http://foo.bar.invalid";
-    const mapStyle = BingMapsStyle.ROAD_ON_DEMAND;
+    var url = "http://foo.bar.invalid";
+    var mapStyle = BingMapsStyle.ROAD_ON_DEMAND;
 
     installFakeMetadataRequest(url, mapStyle);
 
-    const provider = new BingMapsImageryProvider({
+    var provider = new BingMapsImageryProvider({
       url: url,
       mapStyle: mapStyle,
       key: "",
     });
 
-    const layer = new ImageryLayer(provider);
+    var layer = new ImageryLayer(provider);
 
     // Fake ImageryProvider.loadImage's expected output in the case of an empty tile
-    spyOn(ImageryProvider, "loadImage").and.callFake(function () {
-      const e = new Error();
-      e.blob = { size: 0 };
-      return Promise.reject(e);
-    });
+    var e = new Error();
+    e.blob = { size: 0 };
+    var errorPromise = when.reject(e);
+
+    spyOn(ImageryProvider, "loadImage").and.returnValue(errorPromise);
 
     return pollToPromise(function () {
       return provider.ready;
     }).then(function () {
-      const imagery = new Imagery(layer, 0, 0, 0);
+      var imagery = new Imagery(layer, 0, 0, 0);
       imagery.addReference();
       layer._requestImagery(imagery);
       RequestScheduler.update();

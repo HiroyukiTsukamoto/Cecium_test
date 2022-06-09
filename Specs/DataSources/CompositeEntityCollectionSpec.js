@@ -27,27 +27,27 @@ describe("DataSources/CompositeEntityCollection", function () {
   };
 
   it("constructor has expected defaults", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(composite.collectionChanged).toBeDefined();
     expect(composite.getCollectionsLength()).toEqual(0);
     expect(composite.values.length).toEqual(0);
   });
 
   it("constructor with owner", function () {
-    const composite = new CompositeEntityCollection();
-    const child = new CompositeEntityCollection(undefined, composite);
+    var composite = new CompositeEntityCollection();
+    var child = new CompositeEntityCollection(undefined, composite);
 
     expect(child.owner).toEqual(composite);
   });
 
   it("addCollection/removeCollection works", function () {
-    const entityCollection = new EntityCollection();
+    var entityCollection = new EntityCollection();
     entityCollection.add(new Entity());
 
-    const entityCollection2 = new EntityCollection();
+    var entityCollection2 = new EntityCollection();
     entityCollection2.add(new Entity());
 
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
     expect(composite.getCollectionsLength()).toEqual(1);
     expect(composite.values.length).toEqual(1);
@@ -67,11 +67,11 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("addCollection works with index", function () {
-    const entityCollection = new EntityCollection();
-    const entityCollection2 = new EntityCollection();
-    const entityCollection3 = new EntityCollection();
+    var entityCollection = new EntityCollection();
+    var entityCollection2 = new EntityCollection();
+    var entityCollection3 = new EntityCollection();
 
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
     composite.addCollection(entityCollection3);
 
@@ -82,28 +82,28 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("contains returns true if in collection", function () {
-    const entityCollection = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var entityCollection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
-    const entity = entityCollection.getOrCreateEntity("asd");
+    var entity = entityCollection.getOrCreateEntity("asd");
     expect(entityCollection.contains(entity)).toBe(true);
   });
 
   it("contains returns false if not in collection", function () {
-    const entityCollection = new CompositeEntityCollection();
+    var entityCollection = new CompositeEntityCollection();
     expect(entityCollection.contains(new Entity())).toBe(false);
   });
 
   it("contains throws with undefined Entity", function () {
-    const entityCollection = new CompositeEntityCollection();
+    var entityCollection = new CompositeEntityCollection();
     expect(function () {
       entityCollection.contains(undefined);
     }).toThrowDeveloperError();
   });
 
   it("containsCollection works", function () {
-    const entityCollection = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var entityCollection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
 
     expect(composite.containsCollection(entityCollection)).toEqual(false);
     composite.addCollection(entityCollection);
@@ -111,9 +111,9 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("indexOfCollection works", function () {
-    const entityCollection = new EntityCollection();
-    const entityCollection2 = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var entityCollection = new EntityCollection();
+    var entityCollection2 = new EntityCollection();
+    var composite = new CompositeEntityCollection();
 
     expect(composite.indexOfCollection(entityCollection)).toEqual(-1);
 
@@ -129,9 +129,9 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("getCollection works", function () {
-    const entityCollection = new EntityCollection();
-    const entityCollection2 = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var entityCollection = new EntityCollection();
+    var entityCollection2 = new EntityCollection();
+    var composite = new CompositeEntityCollection();
 
     composite.addCollection(entityCollection);
     composite.addCollection(entityCollection2);
@@ -142,10 +142,10 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("raise/lower collection works", function () {
-    const entityCollection = new EntityCollection();
-    const entityCollection2 = new EntityCollection();
-    const entityCollection3 = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var entityCollection = new EntityCollection();
+    var entityCollection2 = new EntityCollection();
+    var entityCollection3 = new EntityCollection();
+    var composite = new CompositeEntityCollection();
 
     composite.addCollection(entityCollection);
     composite.addCollection(entityCollection2);
@@ -177,11 +177,11 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("add/remove works", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entityCollection = new EntityCollection();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entityCollection = new EntityCollection();
 
-    const composite = new CompositeEntityCollection([entityCollection]);
+    var composite = new CompositeEntityCollection([entityCollection]);
 
     entityCollection.add(entity);
     expect(composite.values.length).toEqual(1);
@@ -197,12 +197,12 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("add/remove raises expected events", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entityCollection = new EntityCollection();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entityCollection = new EntityCollection();
 
-    const composite = new CompositeEntityCollection([entityCollection]);
-    const listener = new CollectionListener();
+    var composite = new CompositeEntityCollection([entityCollection]);
+    var listener = new CollectionListener();
     composite.collectionChanged.addEventListener(
       listener.onCollectionChanged,
       listener
@@ -239,14 +239,14 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("suspended add/remove raises expected events", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entity3 = new Entity();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entity3 = new Entity();
 
-    const entityCollection = new EntityCollection();
+    var entityCollection = new EntityCollection();
 
-    const composite = new CompositeEntityCollection([entityCollection]);
-    const listener = new CollectionListener();
+    var composite = new CompositeEntityCollection([entityCollection]);
+    var listener = new CollectionListener();
     composite.collectionChanged.addEventListener(
       listener.onCollectionChanged,
       listener
@@ -287,11 +287,11 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("removeAllCollections works", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entityCollection = new EntityCollection();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entityCollection = new EntityCollection();
 
-    const composite = new CompositeEntityCollection([entityCollection]);
+    var composite = new CompositeEntityCollection([entityCollection]);
 
     entityCollection.add(entity);
     entityCollection.add(entity2);
@@ -300,12 +300,12 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("removeAllCollections raises expected events", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entityCollection = new EntityCollection();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entityCollection = new EntityCollection();
 
-    const listener = new CollectionListener();
-    const composite = new CompositeEntityCollection([entityCollection]);
+    var listener = new CollectionListener();
+    var composite = new CompositeEntityCollection([entityCollection]);
 
     entityCollection.add(entity);
     entityCollection.add(entity2);
@@ -332,12 +332,12 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("suspended removeAllCollections raises expected events", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entityCollection = new EntityCollection();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entityCollection = new EntityCollection();
 
-    const listener = new CollectionListener();
-    const composite = new CompositeEntityCollection([entityCollection]);
+    var listener = new CollectionListener();
+    var composite = new CompositeEntityCollection([entityCollection]);
 
     entityCollection.add(entity);
     entityCollection.add(entity2);
@@ -370,39 +370,39 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("getById works", function () {
-    const entity = new Entity();
-    const entity2 = new Entity();
-    const entityCollection = new EntityCollection();
+    var entity = new Entity();
+    var entity2 = new Entity();
+    var entityCollection = new EntityCollection();
 
     entityCollection.add(entity);
     entityCollection.add(entity2);
 
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
     expect(composite.getById(entity.id).id).toEqual(entity.id);
     expect(composite.getById(entity2.id).id).toEqual(entity2.id);
   });
 
   it("getById returns undefined for non-existent object", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(composite.getById("123")).toBeUndefined();
   });
 
   it("computeAvailability returns infinite with no data.", function () {
-    const entityCollection = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var entityCollection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
-    const availability = composite.computeAvailability();
+    var availability = composite.computeAvailability();
     expect(availability.start).toEqual(Iso8601.MINIMUM_VALUE);
     expect(availability.stop).toEqual(Iso8601.MAXIMUM_VALUE);
   });
 
   it("computeAvailability returns intersection of collections.", function () {
-    const entityCollection = new EntityCollection();
+    var entityCollection = new EntityCollection();
 
-    const entity = entityCollection.getOrCreateEntity("1");
-    const entity2 = entityCollection.getOrCreateEntity("2");
-    const entity3 = entityCollection.getOrCreateEntity("3");
+    var entity = entityCollection.getOrCreateEntity("1");
+    var entity2 = entityCollection.getOrCreateEntity("2");
+    var entity3 = entityCollection.getOrCreateEntity("3");
 
     entity.availability = new TimeIntervalCollection();
     entity.availability.addInterval(
@@ -418,19 +418,19 @@ describe("DataSources/CompositeEntityCollection", function () {
     );
     entity3.availability = undefined;
 
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
-    const availability = composite.computeAvailability();
+    var availability = composite.computeAvailability();
     expect(availability.start).toEqual(JulianDate.fromIso8601("2012-08-01"));
     expect(availability.stop).toEqual(JulianDate.fromIso8601("2012-08-06"));
   });
 
   it("computeAvailability works if only start or stop time is infinite.", function () {
-    const entityCollection = new EntityCollection();
+    var entityCollection = new EntityCollection();
 
-    const entity = entityCollection.getOrCreateEntity("1");
-    const entity2 = entityCollection.getOrCreateEntity("2");
-    const entity3 = entityCollection.getOrCreateEntity("3");
+    var entity = entityCollection.getOrCreateEntity("1");
+    var entity2 = entityCollection.getOrCreateEntity("2");
+    var entity3 = entityCollection.getOrCreateEntity("3");
 
     entity.availability = new TimeIntervalCollection();
     entity.availability.addInterval(
@@ -446,19 +446,19 @@ describe("DataSources/CompositeEntityCollection", function () {
     );
     entity3.availability = undefined;
 
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(entityCollection);
-    const availability = composite.computeAvailability();
+    var availability = composite.computeAvailability();
     expect(availability.start).toEqual(JulianDate.fromIso8601("2012-08-01"));
     expect(availability.stop).toEqual(JulianDate.fromIso8601("2012-08-06"));
   });
 
   it("coarse property compositing works", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
 
-    const collection1 = new EntityCollection();
-    const collection2 = new EntityCollection();
-    const collection3 = new EntityCollection();
+    var collection1 = new EntityCollection();
+    var collection2 = new EntityCollection();
+    var collection3 = new EntityCollection();
 
     //Add collections in reverse order to lower numbers of priority
     composite.addCollection(collection3);
@@ -466,20 +466,20 @@ describe("DataSources/CompositeEntityCollection", function () {
     composite.addCollection(collection1);
 
     //Start with an object in the middle with defined position and orientation
-    const entity2 = new Entity();
+    var entity2 = new Entity();
     collection2.add(entity2);
     entity2.position = new CompositePositionProperty();
     entity2.orientation = new CompositeProperty();
 
     //Initial composite should match both properties
-    const compositeObject = composite.getById(entity2.id);
+    var compositeObject = composite.getById(entity2.id);
     expect(compositeObject).toBeDefined();
     expect(composite.values.length).toEqual(1);
     expect(compositeObject.position).toBe(entity2.position);
     expect(compositeObject.orientation).toBe(entity2.orientation);
 
     //Add a lower-priority object with position and viewFrom.
-    const entity3 = new Entity({
+    var entity3 = new Entity({
       id: entity2.id,
     });
     collection3.add(entity3);
@@ -494,7 +494,7 @@ describe("DataSources/CompositeEntityCollection", function () {
     expect(compositeObject.viewFrom).toBe(entity3.viewFrom);
 
     //Add a higher priority object with position
-    const entity1 = new Entity({
+    var entity1 = new Entity({
       id: entity2.id,
     });
     collection1.add(entity1);
@@ -509,35 +509,35 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("sub-property compositing works", function () {
-    const id = "test";
-    const collection1 = new EntityCollection();
-    const entity1 = new Entity({
+    var id = "test";
+    var collection1 = new EntityCollection();
+    var entity1 = new Entity({
       id: id,
     });
     entity1.billboard = new BillboardGraphics();
     collection1.add(entity1);
 
-    const collection2 = new EntityCollection();
-    const entity2 = new Entity({
+    var collection2 = new EntityCollection();
+    var entity2 = new Entity({
       id: id,
     });
     entity2.billboard = new BillboardGraphics();
     collection2.add(entity2);
 
-    const collection3 = new EntityCollection();
-    const entity3 = new Entity({
+    var collection3 = new EntityCollection();
+    var entity3 = new Entity({
       id: id,
     });
     entity3.billboard = new BillboardGraphics();
     collection3.add(entity3);
 
     //Add collections in reverse order to lower numbers of priority
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(collection3);
     composite.addCollection(collection2);
     composite.addCollection(collection1);
 
-    const compositeObject = composite.getById(id);
+    var compositeObject = composite.getById(id);
 
     // Start with an object in the middle with defined billboard
     entity2.billboard.show = new CompositeProperty();
@@ -560,53 +560,53 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("per-entity availability works", function () {
-    const id = "test";
-    const collection1 = new EntityCollection();
-    const availability1 = new TimeIntervalCollection();
+    var id = "test";
+    var collection1 = new EntityCollection();
+    var availability1 = new TimeIntervalCollection();
     availability1.addInterval(
       TimeInterval.fromIso8601({
         iso8601: "2019-01-01/2019-01-04",
       })
     );
-    const entity1 = new Entity({
+    var entity1 = new Entity({
       id: id,
       availability: availability1,
     });
     collection1.add(entity1);
 
-    const collection2 = new EntityCollection();
-    const availability2 = new TimeIntervalCollection();
+    var collection2 = new EntityCollection();
+    var availability2 = new TimeIntervalCollection();
     availability2.addInterval(
       TimeInterval.fromIso8601({
         iso8601: "2019-01-02/2019-01-05",
       })
     );
-    const entity2 = new Entity({
+    var entity2 = new Entity({
       id: id,
       availability: availability2,
     });
     collection2.add(entity2);
 
-    const collection3 = new EntityCollection();
-    const availability3 = new TimeIntervalCollection();
+    var collection3 = new EntityCollection();
+    var availability3 = new TimeIntervalCollection();
     availability3.addInterval(
       TimeInterval.fromIso8601({
         iso8601: "2019-01-03/2019-01-06",
       })
     );
-    const entity3 = new Entity({
+    var entity3 = new Entity({
       id: id,
       availability: availability3,
     });
     collection3.add(entity3);
 
     //Add collections in reverse order to lower numbers of priority
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(collection3);
     composite.addCollection(collection2);
     composite.addCollection(collection1);
 
-    const compositeObject = composite.getById(id);
+    var compositeObject = composite.getById(id);
     expect(compositeObject.availability.start).toEqual(
       JulianDate.fromIso8601("2019-01-01")
     );
@@ -623,8 +623,8 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("works when collection being composited suspends updates", function () {
-    const collection = new EntityCollection();
-    const composite = new CompositeEntityCollection([collection]);
+    var collection = new EntityCollection();
+    var composite = new CompositeEntityCollection([collection]);
 
     collection.suspendEvents();
     collection.getOrCreateEntity("id1");
@@ -640,20 +640,20 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("custom entity properties are properly registed on new composited entity.", function () {
-    const oldValue = "tubelcane";
-    const newValue = "fizzbuzz";
-    const propertyName = "customProperty";
+    var oldValue = "tubelcane";
+    var newValue = "fizzbuzz";
+    var propertyName = "customProperty";
 
-    const collection = new EntityCollection();
-    const e1 = collection.getOrCreateEntity("id1");
+    var collection = new EntityCollection();
+    var e1 = collection.getOrCreateEntity("id1");
     e1.addProperty(propertyName);
     e1[propertyName] = oldValue;
 
-    const composite = new CompositeEntityCollection([collection]);
-    const e1Composite = composite.getById("id1");
+    var composite = new CompositeEntityCollection([collection]);
+    var e1Composite = composite.getById("id1");
     expect(e1Composite[propertyName]).toEqual(e1[propertyName]);
 
-    const listener = jasmine.createSpy("listener");
+    var listener = jasmine.createSpy("listener");
     e1Composite.definitionChanged.addEventListener(listener);
 
     e1[propertyName] = newValue;
@@ -666,22 +666,22 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("custom entity properties are properly registed on existing composited entity.", function () {
-    const oldValue = "tubelcane";
-    const newValue = "fizzbuzz";
-    const propertyName = "customProperty";
+    var oldValue = "tubelcane";
+    var newValue = "fizzbuzz";
+    var propertyName = "customProperty";
 
-    const collection = new EntityCollection();
-    const e1 = collection.getOrCreateEntity("id1");
+    var collection = new EntityCollection();
+    var e1 = collection.getOrCreateEntity("id1");
 
-    const composite = new CompositeEntityCollection([collection]);
+    var composite = new CompositeEntityCollection([collection]);
 
     e1.addProperty(propertyName);
     e1[propertyName] = oldValue;
 
-    const e1Composite = composite.getById("id1");
+    var e1Composite = composite.getById("id1");
     expect(e1Composite[propertyName]).toEqual(e1[propertyName]);
 
-    const listener = jasmine.createSpy("listener");
+    var listener = jasmine.createSpy("listener");
     e1Composite.definitionChanged.addEventListener(listener);
 
     e1[propertyName] = newValue;
@@ -694,11 +694,11 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("can use the same entity collection in multiple composites", function () {
-    const id = "test";
+    var id = "test";
 
     // the entity in collection1 has show === true
-    const collection1 = new EntityCollection();
-    const entity1 = new Entity({
+    var collection1 = new EntityCollection();
+    var entity1 = new Entity({
       id: id,
     });
     entity1.billboard = new BillboardGraphics();
@@ -706,8 +706,8 @@ describe("DataSources/CompositeEntityCollection", function () {
     collection1.add(entity1);
 
     // the entity in collection1 has show === false
-    const collection2 = new EntityCollection();
-    const entity2 = new Entity({
+    var collection2 = new EntityCollection();
+    var entity2 = new Entity({
       id: id,
     });
     entity2.billboard = new BillboardGraphics();
@@ -715,12 +715,12 @@ describe("DataSources/CompositeEntityCollection", function () {
     collection2.add(entity2);
 
     // composite1 has collection1 as higher priority
-    const composite1 = new CompositeEntityCollection();
+    var composite1 = new CompositeEntityCollection();
     composite1.addCollection(collection2);
     composite1.addCollection(collection1);
 
     // composite2 has collection2 as higher priority
-    const composite2 = new CompositeEntityCollection();
+    var composite2 = new CompositeEntityCollection();
     composite2.addCollection(collection1);
     composite2.addCollection(collection2);
 
@@ -757,33 +757,33 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("has entity with link to entity collection", function () {
-    const id = "test";
-    const collection = new EntityCollection();
-    const entity = new Entity({
+    var id = "test";
+    var collection = new EntityCollection();
+    var entity = new Entity({
       id: id,
     });
     collection.add(entity);
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(collection);
-    const compositeEntity = composite.getCollection(0).values[0];
+    var compositeEntity = composite.getCollection(0).values[0];
     expect(compositeEntity.entityCollection).toEqual(collection);
   });
 
   it("suspend events suspends recompositing", function () {
-    const id = "test";
-    const collection1 = new EntityCollection();
-    const entity1 = new Entity({
+    var id = "test";
+    var collection1 = new EntityCollection();
+    var entity1 = new Entity({
       id: id,
     });
     collection1.add(entity1);
 
-    const collection2 = new EntityCollection();
-    const entity2 = new Entity({
+    var collection2 = new EntityCollection();
+    var entity2 = new Entity({
       id: id,
     });
     collection2.add(entity2);
     //Add collections in reverse order to lower numbers of priority
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(collection2);
 
     // suspend events
@@ -791,7 +791,7 @@ describe("DataSources/CompositeEntityCollection", function () {
     composite.addCollection(collection1);
 
     // add a billboard
-    const compositeObject = composite.getById(id);
+    var compositeObject = composite.getById(id);
     entity1.billboard = new BillboardGraphics();
     entity1.billboard.show = new ConstantProperty(false);
     // should be undefined because we haven't recomposited
@@ -803,25 +803,25 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("prevents names from colliding between property events and object events", function () {
-    const id = "test";
-    const collection1 = new EntityCollection();
-    const entity1 = new Entity({
+    var id = "test";
+    var collection1 = new EntityCollection();
+    var entity1 = new Entity({
       id: id,
     });
     collection1.add(entity1);
 
-    const collection2 = new EntityCollection();
-    const entity2 = new Entity({
+    var collection2 = new EntityCollection();
+    var entity2 = new Entity({
       id: id,
     });
     collection2.add(entity2);
 
     //Add collections in reverse order to lower numbers of priority
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     composite.addCollection(collection2);
     composite.addCollection(collection1);
 
-    const compositeObject = composite.getById(id);
+    var compositeObject = composite.getById(id);
 
     // Add a billboard
     entity1.billboard = new BillboardGraphics();
@@ -830,8 +830,8 @@ describe("DataSources/CompositeEntityCollection", function () {
     expect(compositeObject.billboard.show).toBe(entity1.billboard.show);
 
     // Add a new object
-    const newObject = new Entity({
-      id: `${id}billboard`,
+    var newObject = new Entity({
+      id: id + "billboard",
     });
     collection1.add(newObject);
 
@@ -847,104 +847,104 @@ describe("DataSources/CompositeEntityCollection", function () {
   });
 
   it("addCollection throws with undefined collection", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.addCollection(undefined);
     }).toThrowDeveloperError();
   });
 
   it("addCollection throws if negative index", function () {
-    const collection = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var collection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.addCollection(collection, -1);
     }).toThrowDeveloperError();
   });
 
   it("addCollection throws if index greater than length", function () {
-    const collection = new EntityCollection();
-    const composite = new CompositeEntityCollection();
+    var collection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.addCollection(collection, 1);
     }).toThrowDeveloperError();
   });
 
   it("getCollection throws with undefined index", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.getCollection(undefined);
     }).toThrowDeveloperError();
   });
 
   it("raiseCollection throws if collection not in composite", function () {
-    const composite = new CompositeEntityCollection();
-    const collection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
+    var collection = new EntityCollection();
     expect(function () {
       composite.raiseCollection(collection);
     }).toThrowDeveloperError();
   });
 
   it("raiseCollectionToTop throws if collection not in composite", function () {
-    const composite = new CompositeEntityCollection();
-    const collection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
+    var collection = new EntityCollection();
     expect(function () {
       composite.raiseCollectionToTop(collection);
     }).toThrowDeveloperError();
   });
 
   it("lowerCollection throws if collection not in composite", function () {
-    const composite = new CompositeEntityCollection();
-    const collection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
+    var collection = new EntityCollection();
     expect(function () {
       composite.lowerCollection(collection);
     }).toThrowDeveloperError();
   });
 
   it("lowerCollectionToBottom throws if collection not in composite", function () {
-    const composite = new CompositeEntityCollection();
-    const collection = new EntityCollection();
+    var composite = new CompositeEntityCollection();
+    var collection = new EntityCollection();
     expect(function () {
       composite.lowerCollectionToBottom(collection);
     }).toThrowDeveloperError();
   });
 
   it("raiseCollection throws if collection not defined", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.raiseCollection(undefined);
     }).toThrowDeveloperError();
   });
 
   it("raiseCollectionToTop throws if collection not defined", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.raiseCollectionToTop(undefined);
     }).toThrowDeveloperError();
   });
 
   it("lowerCollection throws if collection not defined", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.lowerCollection(undefined);
     }).toThrowDeveloperError();
   });
 
   it("lowerCollectionToBottom throws if collection not defined", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.lowerCollectionToBottom(undefined);
     }).toThrowDeveloperError();
   });
 
   it("resumeEvents throws if no matching suspendEvents", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.resumeEvents();
     }).toThrowDeveloperError();
   });
 
   it("getById throws if no id specified", function () {
-    const composite = new CompositeEntityCollection();
+    var composite = new CompositeEntityCollection();
     expect(function () {
       composite.getById(undefined);
     }).toThrowDeveloperError();

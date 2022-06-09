@@ -5,7 +5,7 @@
  *
  * @see BingMapsImageryProvider
  */
-const BingMapsStyle = {
+var BingMapsStyle = {
   /**
    * Aerial imagery.
    *

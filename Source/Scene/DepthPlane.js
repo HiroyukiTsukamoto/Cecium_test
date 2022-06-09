@@ -17,66 +17,63 @@ import VertexArray from "../Renderer/VertexArray.js";
 import DepthPlaneFS from "../Shaders/DepthPlaneFS.js";
 import DepthPlaneVS from "../Shaders/DepthPlaneVS.js";
 import SceneMode from "./SceneMode.js";
-import defaultValue from "../Core/defaultValue.js";
-import Ellipsoid from "../Core/Ellipsoid.js";
 
 /**
  * @private
  */
-function DepthPlane(depthPlaneEllipsoidOffset) {
+function DepthPlane() {
   this._rs = undefined;
   this._sp = undefined;
   this._va = undefined;
   this._command = undefined;
   this._mode = undefined;
   this._useLogDepth = false;
-  this._ellipsoidOffset = defaultValue(depthPlaneEllipsoidOffset, 0);
 }
 
-const depthQuadScratch = FeatureDetection.supportsTypedArrays()
+var depthQuadScratch = FeatureDetection.supportsTypedArrays()
   ? new Float32Array(12)
   : [];
-const scratchCartesian1 = new Cartesian3();
-const scratchCartesian2 = new Cartesian3();
-const scratchCartesian3 = new Cartesian3();
-const scratchCartesian4 = new Cartesian3();
-const scratchCartesian5 = new Cartesian3();
+var scratchCartesian1 = new Cartesian3();
+var scratchCartesian2 = new Cartesian3();
+var scratchCartesian3 = new Cartesian3();
+var scratchCartesian4 = new Cartesian3();
+var scratchCartesian5 = new Cartesian3();
 
 function computeDepthQuad(ellipsoid, frameState) {
-  const radii = ellipsoid.radii;
-  const camera = frameState.camera;
-  let center, eastOffset, northOffset;
+  var radii = ellipsoid.radii;
+  var camera = frameState.camera;
+  var center, eastOffset, northOffset;
 
   if (camera.frustum instanceof OrthographicFrustum) {
     center = Cartesian3.ZERO;
     eastOffset = camera.rightWC;
     northOffset = camera.upWC;
   } else {
-    const p = camera.positionWC;
+    var p = camera.positionWC;
 
     // Find the corresponding position in the scaled space of the ellipsoid.
-    const q = Cartesian3.multiplyComponents(
+    var q = Cartesian3.multiplyComponents(
       ellipsoid.oneOverRadii,
       p,
       scratchCartesian1
     );
 
-    const qUnit = Cartesian3.normalize(q, scratchCartesian2);
+    var qUnit = Cartesian3.normalize(q, scratchCartesian2);
 
     // Determine the east and north directions at q.
-    const eUnit = Cartesian3.normalize(
+    var eUnit = Cartesian3.normalize(
       Cartesian3.cross(Cartesian3.UNIT_Z, q, scratchCartesian3),
       scratchCartesian3
     );
-    const nUnit = Cartesian3.normalize(
+    var nUnit = Cartesian3.normalize(
       Cartesian3.cross(qUnit, eUnit, scratchCartesian4),
       scratchCartesian4
     );
 
-    const qMagnitude = Cartesian3.magnitude(q);
+    var qMagnitude = Cartesian3.magnitude(q);
 
     // Determine the radius of the 'limb' of the ellipsoid.
-    const wMagnitude = Math.sqrt(qMagnitude * qMagnitude - 1.0);
+    var wMagnitude = Math.sqrt(qMagnitude * qMagnitude - 1.0);
 
     // Compute the center and offsets.
     center = Cartesian3.multiplyByScalar(
@@ -84,32 +81,28 @@ function computeDepthQuad(ellipsoid, frameState) {
       1.0 / qMagnitude,
       scratchCartesian1
     );
-    const scalar = wMagnitude / qMagnitude;
+    var scalar = wMagnitude / qMagnitude;
     eastOffset = Cartesian3.multiplyByScalar(eUnit, scalar, scratchCartesian2);
     northOffset = Cartesian3.multiplyByScalar(nUnit, scalar, scratchCartesian3);
   }
 
   // A conservative measure for the longitudes would be to use the min/max longitudes of the bounding frustum.
-  const upperLeft = Cartesian3.add(center, northOffset, scratchCartesian5);
+  var upperLeft = Cartesian3.add(center, northOffset, scratchCartesian5);
   Cartesian3.subtract(upperLeft, eastOffset, upperLeft);
   Cartesian3.multiplyComponents(radii, upperLeft, upperLeft);
   Cartesian3.pack(upperLeft, depthQuadScratch, 0);
 
-  const lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian5);
+  var lowerLeft = Cartesian3.subtract(center, northOffset, scratchCartesian5);
   Cartesian3.subtract(lowerLeft, eastOffset, lowerLeft);
   Cartesian3.multiplyComponents(radii, lowerLeft, lowerLeft);
   Cartesian3.pack(lowerLeft, depthQuadScratch, 3);
 
-  const upperRight = Cartesian3.add(center, northOffset, scratchCartesian5);
+  var upperRight = Cartesian3.add(center, northOffset, scratchCartesian5);
   Cartesian3.add(upperRight, eastOffset, upperRight);
   Cartesian3.multiplyComponents(radii, upperRight, upperRight);
   Cartesian3.pack(upperRight, depthQuadScratch, 6);
 
-  const lowerRight = Cartesian3.subtract(
-    center,
-    northOffset,
-    scratchCartesian5
-  );
+  var lowerRight = Cartesian3.subtract(center, northOffset, scratchCartesian5);
   Cartesian3.add(lowerRight, eastOffset, lowerRight);
   Cartesian3.multiplyComponents(radii, lowerRight, lowerRight);
   Cartesian3.pack(lowerRight, depthQuadScratch, 9);
@@ -123,17 +116,9 @@ DepthPlane.prototype.update = function (frameState) {
     return;
   }
 
-  const context = frameState.context;
-
-  // Allow offsetting the ellipsoid radius to address rendering artefacts below ellipsoid zero elevation.
-  const radii = frameState.mapProjection.ellipsoid.radii;
-  const ellipsoid = new Ellipsoid(
-    radii.x + this._ellipsoidOffset,
-    radii.y + this._ellipsoidOffset,
-    radii.z + this._ellipsoidOffset
-  );
-
-  const useLogDepth = frameState.useLogDepth;
+  var context = frameState.context;
+  var ellipsoid = frameState.mapProjection.ellipsoid;
+  var useLogDepth = frameState.useLogDepth;
 
   if (!defined(this._command)) {
     this._rs = RenderState.fromCache({
@@ -166,14 +151,14 @@ DepthPlane.prototype.update = function (frameState) {
   if (!defined(this._sp) || this._useLogDepth !== useLogDepth) {
     this._useLogDepth = useLogDepth;
 
-    const vs = new ShaderSource({
+    var vs = new ShaderSource({
       sources: [DepthPlaneVS],
     });
-    const fs = new ShaderSource({
+    var fs = new ShaderSource({
       sources: [DepthPlaneFS],
     });
     if (useLogDepth) {
-      const extension =
+      var extension =
         "#ifdef GL_EXT_frag_depth \n" +
         "#extension GL_EXT_frag_depth : enable \n" +
         "#endif \n\n";
@@ -197,11 +182,11 @@ DepthPlane.prototype.update = function (frameState) {
   }
 
   // update depth plane
-  const depthQuad = computeDepthQuad(ellipsoid, frameState);
+  var depthQuad = computeDepthQuad(ellipsoid, frameState);
 
   // depth plane
   if (!defined(this._va)) {
-    const geometry = new Geometry({
+    var geometry = new Geometry({
       attributes: {
         position: new GeometryAttribute({
           componentDatatype: ComponentDatatype.FLOAT,

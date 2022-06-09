@@ -7,8 +7,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/DebugCameraPrimitive",
   function () {
-    let scene;
-    let camera;
+    var scene;
+    var camera;
 
     beforeAll(function () {
       scene = createScene({
@@ -44,7 +44,7 @@ describe(
     });
 
     it("gets the default properties", function () {
-      const p = new DebugCameraPrimitive({
+      var p = new DebugCameraPrimitive({
         camera: camera,
       });
       expect(p.show).toEqual(true);
@@ -53,7 +53,7 @@ describe(
     });
 
     it("constructs with options", function () {
-      const p = new DebugCameraPrimitive({
+      var p = new DebugCameraPrimitive({
         camera: camera,
         frustumSplits: [0.1, 1000.0],
         color: Color.YELLOW,
@@ -86,32 +86,32 @@ describe(
     });
 
     it("updates when underlying camera changes", function () {
-      const p = scene.primitives.add(
+      var p = scene.primitives.add(
         new DebugCameraPrimitive({
           camera: camera,
         })
       );
       scene.renderForSpecs();
-      const primitive = p._outlinePrimitives[0];
+      var primitive = p._outlinePrimitives[0];
       scene.renderForSpecs();
       expect(p._outlinePrimitives[0]).not.toBe(primitive);
     });
 
     it("does not update when updateOnChange is false", function () {
-      const p = scene.primitives.add(
+      var p = scene.primitives.add(
         new DebugCameraPrimitive({
           camera: camera,
           updateOnChange: false,
         })
       );
       scene.renderForSpecs();
-      const primitive = p._primitive;
+      var primitive = p._primitive;
       scene.renderForSpecs();
       expect(p._primitive).toBe(primitive);
     });
 
     it("is picked", function () {
-      const p = scene.primitives.add(
+      var p = scene.primitives.add(
         new DebugCameraPrimitive({
           camera: camera,
           id: "id",
@@ -125,7 +125,7 @@ describe(
     });
 
     it("isDestroyed", function () {
-      const p = scene.primitives.add(
+      var p = scene.primitives.add(
         new DebugCameraPrimitive({
           camera: camera,
         })

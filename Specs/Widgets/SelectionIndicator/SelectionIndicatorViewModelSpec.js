@@ -6,11 +6,11 @@ import { SelectionIndicatorViewModel } from "../../../Source/Cesium.js";
 describe(
   "Widgets/SelectionIndicator/SelectionIndicatorViewModel",
   function () {
-    let scene;
-    const selectionIndicatorElement = document.createElement("div");
+    var scene;
+    var selectionIndicatorElement = document.createElement("div");
     selectionIndicatorElement.style.width = "20px";
     selectionIndicatorElement.style.height = "20px";
-    const container = document.createElement("div");
+    var container = document.createElement("div");
     container.appendChild(selectionIndicatorElement);
     beforeAll(function () {
       scene = createScene();
@@ -21,7 +21,7 @@ describe(
     });
 
     it("constructor sets expected values", function () {
-      const viewModel = new SelectionIndicatorViewModel(
+      var viewModel = new SelectionIndicatorViewModel(
         scene,
         selectionIndicatorElement,
         container
@@ -56,7 +56,7 @@ describe(
     });
 
     it("can animate selection element", function () {
-      const viewModel = new SelectionIndicatorViewModel(
+      var viewModel = new SelectionIndicatorViewModel(
         scene,
         selectionIndicatorElement,
         container
@@ -67,7 +67,7 @@ describe(
 
     it("can use custom screen space positions", function () {
       document.body.appendChild(container);
-      const viewModel = new SelectionIndicatorViewModel(
+      var viewModel = new SelectionIndicatorViewModel(
         scene,
         selectionIndicatorElement,
         container
@@ -85,7 +85,7 @@ describe(
     });
 
     it("hides the indicator when position is unknown", function () {
-      const viewModel = new SelectionIndicatorViewModel(
+      var viewModel = new SelectionIndicatorViewModel(
         scene,
         selectionIndicatorElement,
         container
@@ -101,7 +101,7 @@ describe(
 
     it("can move the indicator off screen", function () {
       document.body.appendChild(container);
-      const viewModel = new SelectionIndicatorViewModel(
+      var viewModel = new SelectionIndicatorViewModel(
         scene,
         selectionIndicatorElement,
         container

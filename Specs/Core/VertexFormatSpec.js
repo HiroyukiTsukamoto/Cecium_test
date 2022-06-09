@@ -3,22 +3,22 @@ import createPackableSpecs from "../createPackableSpecs.js";
 
 describe("Core/VertexFormat", function () {
   it("clone", function () {
-    const vertexFormat = new VertexFormat({
+    var vertexFormat = new VertexFormat({
       position: true,
       normal: true,
     });
-    const cloned = VertexFormat.clone(vertexFormat);
+    var cloned = VertexFormat.clone(vertexFormat);
     expect(cloned).toBeInstanceOf(VertexFormat);
     expect(cloned).toEqual(vertexFormat);
   });
 
   it("clone uses result parameter if provided", function () {
-    const vertexFormat = new VertexFormat({
+    var vertexFormat = new VertexFormat({
       position: true,
       normal: true,
     });
-    const result = new VertexFormat();
-    const cloned = VertexFormat.clone(vertexFormat, result);
+    var result = new VertexFormat();
+    var cloned = VertexFormat.clone(vertexFormat, result);
     expect(cloned).toBe(result);
     expect(cloned).toEqual(vertexFormat);
   });

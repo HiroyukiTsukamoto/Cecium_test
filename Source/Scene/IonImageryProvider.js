@@ -5,6 +5,7 @@ import DeveloperError from "../Core/DeveloperError.js";
 import Event from "../Core/Event.js";
 import IonResource from "../Core/IonResource.js";
 import RuntimeError from "../Core/RuntimeError.js";
+import when from "../ThirdParty/when.js";
 import ArcGisMapServerImageryProvider from "./ArcGisMapServerImageryProvider.js";
 import BingMapsImageryProvider from "./BingMapsImageryProvider.js";
 import TileMapServiceImageryProvider from "./TileMapServiceImageryProvider.js";
@@ -23,7 +24,7 @@ function createFactory(Type) {
 
 // These values are the list of supported external imagery
 // assets in the Cesium ion beta. They are subject to change.
-const ImageryProviderMapping = {
+var ImageryProviderMapping = {
   ARCGIS_MAPSERVER: createFactory(ArcGisMapServerImageryProvider),
   BING: createFactory(BingMapsImageryProvider),
   GOOGLE_EARTH: createFactory(GoogleEarthEnterpriseMapsProvider),
@@ -59,7 +60,7 @@ const ImageryProviderMapping = {
 function IonImageryProvider(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const assetId = options.assetId;
+  var assetId = options.assetId;
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.number("options.assetId", assetId);
   //>>includeEnd('debug');
@@ -154,19 +155,16 @@ function IonImageryProvider(options) {
   this._tileCredits = undefined;
   this._errorEvent = new Event();
 
-  const that = this;
-  const endpointResource = IonResource._createEndpointResource(
-    assetId,
-    options
-  );
+  var that = this;
+  var endpointResource = IonResource._createEndpointResource(assetId, options);
 
   // A simple cache to avoid making repeated requests to ion for endpoints we've
   // already retrieved. This exists mainly to support Bing caching to reduce
   // world imagery sessions, but provides a small boost of performance in general
   // if constantly reloading assets
-  const cacheKey =
+  var cacheKey =
     options.assetId.toString() + options.accessToken + options.server;
-  let promise = IonImageryProvider._endpointCache[cacheKey];
+  var promise = IonImageryProvider._endpointCache[cacheKey];
   if (!defined(promise)) {
     promise = endpointResource.fetchJson();
     IonImageryProvider._endpointCache[cacheKey] = promise;
@@ -174,24 +172,26 @@ function IonImageryProvider(options) {
 
   this._readyPromise = promise.then(function (endpoint) {
     if (endpoint.type !== "IMAGERY") {
-      return Promise.reject(
-        new RuntimeError(`Cesium ion asset ${assetId} is not an imagery asset.`)
+      return when.reject(
+        new RuntimeError(
+          "Cesium ion asset " + assetId + " is not an imagery asset."
+        )
       );
     }
 
-    let imageryProvider;
-    const externalType = endpoint.externalType;
+    var imageryProvider;
+    var externalType = endpoint.externalType;
     if (!defined(externalType)) {
       imageryProvider = new TileMapServiceImageryProvider({
         url: new IonResource(endpoint, endpointResource),
       });
     } else {
-      const factory = ImageryProviderMapping[externalType];
+      var factory = ImageryProviderMapping[externalType];
 
       if (!defined(factory)) {
-        return Promise.reject(
+        return when.reject(
           new RuntimeError(
-            `Unrecognized Cesium ion imagery type: ${externalType}`
+            "Unrecognized Cesium ion imagery type: " + externalType
           )
         );
       }
@@ -481,7 +481,7 @@ IonImageryProvider.prototype.getTileCredits = function (x, y, level) {
   }
   //>>includeEnd('debug');
 
-  const innerCredits = this._imageryProvider.getTileCredits(x, y, level);
+  var innerCredits = this._imageryProvider.getTileCredits(x, y, level);
   if (!defined(innerCredits)) {
     return this._tileCredits;
   }
@@ -498,8 +498,10 @@ IonImageryProvider.prototype.getTileCredits = function (x, y, level) {
  * @param {Number} y The tile Y coordinate.
  * @param {Number} level The tile level.
  * @param {Request} [request] The request object. Intended for internal use only.
- * @returns {Promise.<ImageryTypes>|undefined} A promise for the image that will resolve when the image is available, or
- *          undefined if there are too many active requests to the server, and the request should be retried later.
+ * @returns {Promise.<HTMLImageElement|HTMLCanvasElement>|undefined} A promise for the image that will resolve when the image is available, or
+ *          undefined if there are too many active requests to the server, and the request
+ *          should be retried later.  The resolved image may be either an
+ *          Image or a Canvas DOM object.
  *
  * @exception {DeveloperError} <code>requestImage</code> must not be called before the imagery provider is ready.
  */

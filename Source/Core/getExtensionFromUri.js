@@ -11,7 +11,7 @@ import DeveloperError from "./DeveloperError.js";
  *
  * @example
  * //extension will be "czml";
- * const extension = Cesium.getExtensionFromUri('/Gallery/simple.czml?value=true&example=false');
+ * var extension = Cesium.getExtensionFromUri('/Gallery/simple.czml?value=true&example=false');
  */
 function getExtensionFromUri(uri) {
   //>>includeStart('debug', pragmas.debug);
@@ -20,10 +20,10 @@ function getExtensionFromUri(uri) {
   }
   //>>includeEnd('debug');
 
-  const uriObject = new Uri(uri);
+  var uriObject = new Uri(uri);
   uriObject.normalize();
-  let path = uriObject.path();
-  let index = path.lastIndexOf("/");
+  var path = uriObject.path();
+  var index = path.lastIndexOf("/");
   if (index !== -1) {
     path = path.substr(index + 1);
   }

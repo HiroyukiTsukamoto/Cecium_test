@@ -26,7 +26,7 @@ Object.defineProperties(TerrainProvider.prototype, {
    * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
    * are passed an instance of {@link TileProviderError}.
    * @memberof TerrainProvider.prototype
-   * @type {Event<TerrainProvider.ErrorEvent>}
+   * @type {Event}
    * @readonly
    */
   errorEvent: {
@@ -114,7 +114,7 @@ Object.defineProperties(TerrainProvider.prototype, {
   },
 });
 
-const regularGridIndicesCache = [];
+var regularGridIndicesCache = [];
 
 /**
  * Gets a list of indices for a triangle mesh representing a regular grid.  Calling
@@ -135,12 +135,12 @@ TerrainProvider.getRegularGridIndices = function (width, height) {
   }
   //>>includeEnd('debug');
 
-  let byWidth = regularGridIndicesCache[width];
+  var byWidth = regularGridIndicesCache[width];
   if (!defined(byWidth)) {
     regularGridIndicesCache[width] = byWidth = [];
   }
 
-  let indices = byWidth[height];
+  var indices = byWidth[height];
   if (!defined(indices)) {
     if (width * height < CesiumMath.SIXTY_FOUR_KILOBYTES) {
       indices = byWidth[height] = new Uint16Array(
@@ -157,7 +157,7 @@ TerrainProvider.getRegularGridIndices = function (width, height) {
   return indices;
 };
 
-const regularGridAndEdgeIndicesCache = [];
+var regularGridAndEdgeIndicesCache = [];
 
 /**
  * @private
@@ -171,20 +171,20 @@ TerrainProvider.getRegularGridIndicesAndEdgeIndices = function (width, height) {
   }
   //>>includeEnd('debug');
 
-  let byWidth = regularGridAndEdgeIndicesCache[width];
+  var byWidth = regularGridAndEdgeIndicesCache[width];
   if (!defined(byWidth)) {
     regularGridAndEdgeIndicesCache[width] = byWidth = [];
   }
 
-  let indicesAndEdges = byWidth[height];
+  var indicesAndEdges = byWidth[height];
   if (!defined(indicesAndEdges)) {
-    const indices = TerrainProvider.getRegularGridIndices(width, height);
+    var indices = TerrainProvider.getRegularGridIndices(width, height);
 
-    const edgeIndices = getEdgeIndices(width, height);
-    const westIndicesSouthToNorth = edgeIndices.westIndicesSouthToNorth;
-    const southIndicesEastToWest = edgeIndices.southIndicesEastToWest;
-    const eastIndicesNorthToSouth = edgeIndices.eastIndicesNorthToSouth;
-    const northIndicesWestToEast = edgeIndices.northIndicesWestToEast;
+    var edgeIndices = getEdgeIndices(width, height);
+    var westIndicesSouthToNorth = edgeIndices.westIndicesSouthToNorth;
+    var southIndicesEastToWest = edgeIndices.southIndicesEastToWest;
+    var eastIndicesNorthToSouth = edgeIndices.eastIndicesNorthToSouth;
+    var northIndicesWestToEast = edgeIndices.northIndicesWestToEast;
 
     indicesAndEdges = byWidth[height] = {
       indices: indices,
@@ -198,7 +198,7 @@ TerrainProvider.getRegularGridIndicesAndEdgeIndices = function (width, height) {
   return indicesAndEdges;
 };
 
-const regularGridAndSkirtAndEdgeIndicesCache = [];
+var regularGridAndSkirtAndEdgeIndicesCache = [];
 
 /**
  * @private
@@ -215,27 +215,27 @@ TerrainProvider.getRegularGridAndSkirtIndicesAndEdgeIndices = function (
   }
   //>>includeEnd('debug');
 
-  let byWidth = regularGridAndSkirtAndEdgeIndicesCache[width];
+  var byWidth = regularGridAndSkirtAndEdgeIndicesCache[width];
   if (!defined(byWidth)) {
     regularGridAndSkirtAndEdgeIndicesCache[width] = byWidth = [];
   }
 
-  let indicesAndEdges = byWidth[height];
+  var indicesAndEdges = byWidth[height];
   if (!defined(indicesAndEdges)) {
-    const gridVertexCount = width * height;
-    const gridIndexCount = (width - 1) * (height - 1) * 6;
-    const edgeVertexCount = width * 2 + height * 2;
-    const edgeIndexCount = Math.max(0, edgeVertexCount - 4) * 6;
-    const vertexCount = gridVertexCount + edgeVertexCount;
-    const indexCount = gridIndexCount + edgeIndexCount;
+    var gridVertexCount = width * height;
+    var gridIndexCount = (width - 1) * (height - 1) * 6;
+    var edgeVertexCount = width * 2 + height * 2;
+    var edgeIndexCount = Math.max(0, edgeVertexCount - 4) * 6;
+    var vertexCount = gridVertexCount + edgeVertexCount;
+    var indexCount = gridIndexCount + edgeIndexCount;
 
-    const edgeIndices = getEdgeIndices(width, height);
-    const westIndicesSouthToNorth = edgeIndices.westIndicesSouthToNorth;
-    const southIndicesEastToWest = edgeIndices.southIndicesEastToWest;
-    const eastIndicesNorthToSouth = edgeIndices.eastIndicesNorthToSouth;
-    const northIndicesWestToEast = edgeIndices.northIndicesWestToEast;
+    var edgeIndices = getEdgeIndices(width, height);
+    var westIndicesSouthToNorth = edgeIndices.westIndicesSouthToNorth;
+    var southIndicesEastToWest = edgeIndices.southIndicesEastToWest;
+    var eastIndicesNorthToSouth = edgeIndices.eastIndicesNorthToSouth;
+    var northIndicesWestToEast = edgeIndices.northIndicesWestToEast;
 
-    const indices = IndexDatatype.createTypedArray(vertexCount, indexCount);
+    var indices = IndexDatatype.createTypedArray(vertexCount, indexCount);
     addRegularGridIndices(width, height, indices, 0);
     TerrainProvider.addSkirtIndices(
       westIndicesSouthToNorth,
@@ -272,7 +272,7 @@ TerrainProvider.addSkirtIndices = function (
   indices,
   offset
 ) {
-  let vertexIndex = vertexCount;
+  var vertexIndex = vertexCount;
   offset = addSkirtIndices(
     westIndicesSouthToNorth,
     vertexIndex,
@@ -298,12 +298,12 @@ TerrainProvider.addSkirtIndices = function (
 };
 
 function getEdgeIndices(width, height) {
-  const westIndicesSouthToNorth = new Array(height);
-  const southIndicesEastToWest = new Array(width);
-  const eastIndicesNorthToSouth = new Array(height);
-  const northIndicesWestToEast = new Array(width);
+  var westIndicesSouthToNorth = new Array(height);
+  var southIndicesEastToWest = new Array(width);
+  var eastIndicesNorthToSouth = new Array(height);
+  var northIndicesWestToEast = new Array(width);
 
-  let i;
+  var i;
   for (i = 0; i < width; ++i) {
     northIndicesWestToEast[i] = i;
     southIndicesEastToWest[i] = width * height - 1 - i;
@@ -323,13 +323,13 @@ function getEdgeIndices(width, height) {
 }
 
 function addRegularGridIndices(width, height, indices, offset) {
-  let index = 0;
-  for (let j = 0; j < height - 1; ++j) {
-    for (let i = 0; i < width - 1; ++i) {
-      const upperLeft = index;
-      const lowerLeft = upperLeft + width;
-      const lowerRight = lowerLeft + 1;
-      const upperRight = upperLeft + 1;
+  var index = 0;
+  for (var j = 0; j < height - 1; ++j) {
+    for (var i = 0; i < width - 1; ++i) {
+      var upperLeft = index;
+      var lowerLeft = upperLeft + width;
+      var lowerRight = lowerLeft + 1;
+      var upperRight = upperLeft + 1;
 
       indices[offset++] = upperLeft;
       indices[offset++] = lowerLeft;
@@ -345,11 +345,11 @@ function addRegularGridIndices(width, height, indices, offset) {
 }
 
 function addSkirtIndices(edgeIndices, vertexIndex, indices, offset) {
-  let previousIndex = edgeIndices[0];
+  var previousIndex = edgeIndices[0];
 
-  const length = edgeIndices.length;
-  for (let i = 1; i < length; ++i) {
-    const index = edgeIndices[i];
+  var length = edgeIndices.length;
+  for (var i = 1; i < length; ++i) {
+    var index = edgeIndices[i];
 
     indices[offset++] = previousIndex;
     indices[offset++] = index;
@@ -451,11 +451,3 @@ TerrainProvider.prototype.getTileDataAvailable =
 TerrainProvider.prototype.loadTileDataAvailability =
   DeveloperError.throwInstantiationError;
 export default TerrainProvider;
-
-/**
- * A function that is called when an error occurs.
- * @callback TerrainProvider.ErrorEvent
- *
- * @this TerrainProvider
- * @param {TileProviderError} err An object holding details about the error that occurred.
- */

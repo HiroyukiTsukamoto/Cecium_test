@@ -4,7 +4,7 @@
  * @enum {Number}
  * @private
  */
-const Tonemapper = {
+var Tonemapper = {
   /**
    * Use the Reinhard tonemapping operator.
    *

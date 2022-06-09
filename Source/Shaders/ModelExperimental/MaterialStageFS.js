@@ -1,15 +1,13 @@
 //This file is automatically rebuilt by the Cesium build process.
-export default "// If the style color is white, it implies the feature has not been styled.\n\
-bool isDefaultStyleColor(vec3 color)\n\
+export default "vec3 SRGBtoLINEAR3(vec3 srgbIn) \n\
 {\n\
-    return all(greaterThan(color, vec3(1.0 - czm_epsilon3)));\n\
+    return pow(srgbIn, vec3(2.2));\n\
 }\n\
 \n\
-vec3 blend(vec3 sourceColor, vec3 styleColor, float styleColorBlend)\n\
+vec4 SRGBtoLINEAR4(vec4 srgbIn) \n\
 {\n\
-    vec3 blendColor = mix(sourceColor, styleColor, styleColorBlend);\n\
-    vec3 color = isDefaultStyleColor(styleColor.rgb) ? sourceColor : blendColor;\n\
-    return color;\n\
+    vec3 linearOut = pow(srgbIn.rgb, vec3(2.2));\n\
+    return vec4(linearOut, srgbIn.a);\n\
 }\n\
 \n\
 vec2 computeTextureTransform(vec2 texCoord, mat3 textureTransform)\n\
@@ -24,7 +22,7 @@ vec3 computeNormal(ProcessedAttributes attributes)\n\
     vec3 ng = attributes.normalEC;\n\
 \n\
     vec3 normal = ng;\n\
-    #if defined(HAS_NORMAL_TEXTURE) && !defined(USE_WIREFRAME)\n\
+    #ifdef HAS_NORMAL_TEXTURE\n\
     vec2 normalTexCoords = TEXCOORD_NORMAL;\n\
         #ifdef HAS_NORMAL_TEXTURE_TRANSFORM\n\
         normalTexCoords = computeTextureTransform(normalTexCoords, u_normalTextureTransform);\n\
@@ -57,7 +55,7 @@ vec3 computeNormal(ProcessedAttributes attributes)\n\
 }\n\
 #endif\n\
 \n\
-void materialStage(inout czm_modelMaterial material, ProcessedAttributes attributes, SelectedFeature feature)\n\
+void materialStage(inout czm_modelMaterial material, ProcessedAttributes attributes)\n\
 {\n\
 \n\
     #ifdef HAS_NORMALS\n\
@@ -73,7 +71,7 @@ void materialStage(inout czm_modelMaterial material, ProcessedAttributes attribu
         baseColorTexCoords = computeTextureTransform(baseColorTexCoords, u_baseColorTextureTransform);\n\
         #endif\n\
 \n\
-    baseColorWithAlpha = czm_srgbToLinear(texture2D(u_baseColorTexture, baseColorTexCoords));\n\
+    baseColorWithAlpha = SRGBtoLINEAR4(texture2D(u_baseColorTexture, baseColorTexCoords));\n\
 \n\
         #ifdef HAS_BASE_COLOR_FACTOR\n\
         baseColorWithAlpha *= u_baseColorFactor;\n\
@@ -83,20 +81,11 @@ void materialStage(inout czm_modelMaterial material, ProcessedAttributes attribu
     #endif\n\
 \n\
     #ifdef HAS_COLOR_0\n\
-    vec4 color = attributes.color_0;\n\
-        // .pnts files store colors in the sRGB color space\n\
-        #ifdef HAS_SRGB_COLOR\n\
-        color = czm_srgbToLinear(color);\n\
-        #endif\n\
-    baseColorWithAlpha *= color;\n\
+    baseColorWithAlpha *= attributes.color_0;\n\
     #endif\n\
 \n\
     material.diffuse = baseColorWithAlpha.rgb;\n\
     material.alpha = baseColorWithAlpha.a;\n\
-\n\
-    #ifdef USE_CPU_STYLING\n\
-    material.diffuse = blend(material.diffuse, feature.color.rgb, model_colorBlend);\n\
-    #endif\n\
 \n\
     #ifdef HAS_OCCLUSION_TEXTURE\n\
     vec2 occlusionTexCoords = TEXCOORD_OCCLUSION;\n\
@@ -112,7 +101,7 @@ void materialStage(inout czm_modelMaterial material, ProcessedAttributes attribu
         emissiveTexCoords = computeTextureTransform(emissiveTexCoords, u_emissiveTextureTransform);\n\
         #endif\n\
 \n\
-    vec3 emissive = czm_srgbToLinear(texture2D(u_emissiveTexture, emissiveTexCoords).rgb);\n\
+    vec3 emissive = SRGBtoLINEAR3(texture2D(u_emissiveTexture, emissiveTexCoords).rgb);\n\
         #ifdef HAS_EMISSIVE_FACTOR\n\
         emissive *= u_emissiveFactor;\n\
         #endif\n\
@@ -128,7 +117,7 @@ void materialStage(inout czm_modelMaterial material, ProcessedAttributes attribu
           specularGlossinessTexCoords = computeTextureTransform(specularGlossinessTexCoords, u_specularGlossinessTextureTransform);\n\
           #endif\n\
 \n\
-        vec4 specularGlossiness = czm_srgbToLinear(texture2D(u_specularGlossinessTexture, specularGlossinessTexCoords));\n\
+        vec4 specularGlossiness = SRGBtoLINEAR4(texture2D(u_specularGlossinessTexture, specularGlossinessTexCoords));\n\
         vec3 specular = specularGlossiness.rgb;\n\
         float glossiness = specularGlossiness.a;\n\
             #ifdef HAS_SPECULAR_FACTOR\n\
@@ -158,7 +147,7 @@ void materialStage(inout czm_modelMaterial material, ProcessedAttributes attribu
             diffuseTexCoords = computeTextureTransform(diffuseTexCoords, u_diffuseTextureTransform);\n\
             #endif\n\
 \n\
-        vec4 diffuse = czm_srgbToLinear(texture2D(u_diffuseTexture, diffuseTexCoords));\n\
+        vec4 diffuse = SRGBtoLINEAR4(texture2D(u_diffuseTexture, diffuseTexCoords));\n\
             #ifdef HAS_DIFFUSE_FACTOR\n\
             diffuse *= u_diffuseFactor;\n\
             #endif\n\
@@ -173,9 +162,6 @@ void materialStage(inout czm_modelMaterial material, ProcessedAttributes attribu
       glossiness\n\
     );\n\
     material.diffuse = parameters.diffuseColor;\n\
-    // the specular glossiness extension's alpha overrides anything set\n\
-    // by the base material.\n\
-    material.alpha = diffuse.a;\n\
     material.specular = parameters.f0;\n\
     material.roughness = parameters.roughness;\n\
     #elif defined(LIGHTING_PBR)\n\

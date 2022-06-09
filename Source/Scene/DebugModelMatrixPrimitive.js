@@ -125,7 +125,7 @@ DebugModelMatrixPrimitive.prototype.update = function (frameState) {
       this.modelMatrix[14] = 0.01;
     }
 
-    const x = new GeometryInstance({
+    var x = new GeometryInstance({
       geometry: new PolylineGeometry({
         positions: [Cartesian3.ZERO, Cartesian3.UNIT_X],
         width: this.width,
@@ -141,7 +141,7 @@ DebugModelMatrixPrimitive.prototype.update = function (frameState) {
       id: this.id,
       pickPrimitive: this,
     });
-    const y = new GeometryInstance({
+    var y = new GeometryInstance({
       geometry: new PolylineGeometry({
         positions: [Cartesian3.ZERO, Cartesian3.UNIT_Y],
         width: this.width,
@@ -157,7 +157,7 @@ DebugModelMatrixPrimitive.prototype.update = function (frameState) {
       id: this.id,
       pickPrimitive: this,
     });
-    const z = new GeometryInstance({
+    var z = new GeometryInstance({
       geometry: new PolylineGeometry({
         positions: [Cartesian3.ZERO, Cartesian3.UNIT_Z],
         width: this.width,

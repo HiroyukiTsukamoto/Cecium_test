@@ -23,7 +23,7 @@ describe("Core/BoxOutlineGeometry", function () {
   });
 
   it("constructor creates positions", function () {
-    const m = BoxOutlineGeometry.createGeometry(
+    var m = BoxOutlineGeometry.createGeometry(
       new BoxOutlineGeometry({
         minimum: new Cartesian3(-1, -2, -3),
         maximum: new Cartesian3(1, 2, 3),
@@ -35,7 +35,7 @@ describe("Core/BoxOutlineGeometry", function () {
   });
 
   it("computes offset attribute", function () {
-    const m = BoxOutlineGeometry.createGeometry(
+    var m = BoxOutlineGeometry.createGeometry(
       new BoxOutlineGeometry({
         minimum: new Cartesian3(-1, -2, -3),
         maximum: new Cartesian3(1, 2, 3),
@@ -43,12 +43,12 @@ describe("Core/BoxOutlineGeometry", function () {
       })
     );
 
-    const numVertices = 8;
+    var numVertices = 8;
     expect(m.attributes.position.values.length).toEqual(numVertices * 3);
 
-    const offset = m.attributes.applyOffset.values;
+    var offset = m.attributes.applyOffset.values;
     expect(offset.length).toEqual(numVertices);
-    let expected = new Array(offset.length);
+    var expected = new Array(offset.length);
     expected = arrayFill(expected, 1);
     expect(offset).toEqual(expected);
   });
@@ -68,7 +68,7 @@ describe("Core/BoxOutlineGeometry", function () {
   });
 
   it("fromDimensions", function () {
-    const m = BoxOutlineGeometry.createGeometry(
+    var m = BoxOutlineGeometry.createGeometry(
       BoxOutlineGeometry.fromDimensions({
         dimensions: new Cartesian3(1, 2, 3),
       })
@@ -85,9 +85,9 @@ describe("Core/BoxOutlineGeometry", function () {
   });
 
   it("fromAxisAlignedBoundingBox", function () {
-    const min = new Cartesian3(-1, -2, -3);
-    const max = new Cartesian3(1, 2, 3);
-    const m = BoxOutlineGeometry.fromAxisAlignedBoundingBox(
+    var min = new Cartesian3(-1, -2, -3);
+    var max = new Cartesian3(1, 2, 3);
+    var m = BoxOutlineGeometry.fromAxisAlignedBoundingBox(
       new AxisAlignedBoundingBox(min, max)
     );
     expect(m._min).toEqual(min);
@@ -95,12 +95,12 @@ describe("Core/BoxOutlineGeometry", function () {
   });
 
   it("undefined is returned if min and max are equal", function () {
-    const box = new BoxOutlineGeometry({
+    var box = new BoxOutlineGeometry({
       maximum: new Cartesian3(250000.0, 250000.0, 250000.0),
       minimum: new Cartesian3(250000.0, 250000.0, 250000.0),
     });
 
-    const geometry = BoxOutlineGeometry.createGeometry(box);
+    var geometry = BoxOutlineGeometry.createGeometry(box);
 
     expect(geometry).toBeUndefined();
   });

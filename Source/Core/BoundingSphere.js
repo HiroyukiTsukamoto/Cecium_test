@@ -40,19 +40,19 @@ function BoundingSphere(center, radius) {
   this.radius = defaultValue(radius, 0.0);
 }
 
-const fromPointsXMin = new Cartesian3();
-const fromPointsYMin = new Cartesian3();
-const fromPointsZMin = new Cartesian3();
-const fromPointsXMax = new Cartesian3();
-const fromPointsYMax = new Cartesian3();
-const fromPointsZMax = new Cartesian3();
-const fromPointsCurrentPos = new Cartesian3();
-const fromPointsScratch = new Cartesian3();
-const fromPointsRitterCenter = new Cartesian3();
-const fromPointsMinBoxPt = new Cartesian3();
-const fromPointsMaxBoxPt = new Cartesian3();
-const fromPointsNaiveCenterScratch = new Cartesian3();
-const volumeConstant = (4.0 / 3.0) * CesiumMath.PI;
+var fromPointsXMin = new Cartesian3();
+var fromPointsYMin = new Cartesian3();
+var fromPointsZMin = new Cartesian3();
+var fromPointsXMax = new Cartesian3();
+var fromPointsYMax = new Cartesian3();
+var fromPointsZMax = new Cartesian3();
+var fromPointsCurrentPos = new Cartesian3();
+var fromPointsScratch = new Cartesian3();
+var fromPointsRitterCenter = new Cartesian3();
+var fromPointsMinBoxPt = new Cartesian3();
+var fromPointsMaxBoxPt = new Cartesian3();
+var fromPointsNaiveCenterScratch = new Cartesian3();
+var volumeConstant = (4.0 / 3.0) * CesiumMath.PI;
 
 /**
  * Computes a tight-fitting bounding sphere enclosing a list of 3D Cartesian points.
@@ -76,24 +76,24 @@ BoundingSphere.fromPoints = function (positions, result) {
     return result;
   }
 
-  const currentPos = Cartesian3.clone(positions[0], fromPointsCurrentPos);
+  var currentPos = Cartesian3.clone(positions[0], fromPointsCurrentPos);
 
-  const xMin = Cartesian3.clone(currentPos, fromPointsXMin);
-  const yMin = Cartesian3.clone(currentPos, fromPointsYMin);
-  const zMin = Cartesian3.clone(currentPos, fromPointsZMin);
+  var xMin = Cartesian3.clone(currentPos, fromPointsXMin);
+  var yMin = Cartesian3.clone(currentPos, fromPointsYMin);
+  var zMin = Cartesian3.clone(currentPos, fromPointsZMin);
 
-  const xMax = Cartesian3.clone(currentPos, fromPointsXMax);
-  const yMax = Cartesian3.clone(currentPos, fromPointsYMax);
-  const zMax = Cartesian3.clone(currentPos, fromPointsZMax);
+  var xMax = Cartesian3.clone(currentPos, fromPointsXMax);
+  var yMax = Cartesian3.clone(currentPos, fromPointsYMax);
+  var zMax = Cartesian3.clone(currentPos, fromPointsZMax);
 
-  const numPositions = positions.length;
-  let i;
+  var numPositions = positions.length;
+  var i;
   for (i = 1; i < numPositions; i++) {
     Cartesian3.clone(positions[i], currentPos);
 
-    const x = currentPos.x;
-    const y = currentPos.y;
-    const z = currentPos.z;
+    var x = currentPos.x;
+    var y = currentPos.y;
+    var z = currentPos.z;
 
     // Store points containing the the smallest and largest components
     if (x < xMin.x) {
@@ -122,20 +122,20 @@ BoundingSphere.fromPoints = function (positions, result) {
   }
 
   // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-  const xSpan = Cartesian3.magnitudeSquared(
+  var xSpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(xMax, xMin, fromPointsScratch)
   );
-  const ySpan = Cartesian3.magnitudeSquared(
+  var ySpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(yMax, yMin, fromPointsScratch)
   );
-  const zSpan = Cartesian3.magnitudeSquared(
+  var zSpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(zMax, zMin, fromPointsScratch)
   );
 
   // Set the diameter endpoints to the largest span.
-  let diameter1 = xMin;
-  let diameter2 = xMax;
-  let maxSpan = xSpan;
+  var diameter1 = xMin;
+  var diameter2 = xMax;
+  var maxSpan = xSpan;
   if (ySpan > maxSpan) {
     maxSpan = ySpan;
     diameter1 = yMin;
@@ -148,41 +148,41 @@ BoundingSphere.fromPoints = function (positions, result) {
   }
 
   // Calculate the center of the initial sphere found by Ritter's algorithm
-  const ritterCenter = fromPointsRitterCenter;
+  var ritterCenter = fromPointsRitterCenter;
   ritterCenter.x = (diameter1.x + diameter2.x) * 0.5;
   ritterCenter.y = (diameter1.y + diameter2.y) * 0.5;
   ritterCenter.z = (diameter1.z + diameter2.z) * 0.5;
 
   // Calculate the radius of the initial sphere found by Ritter's algorithm
-  let radiusSquared = Cartesian3.magnitudeSquared(
+  var radiusSquared = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(diameter2, ritterCenter, fromPointsScratch)
   );
-  let ritterRadius = Math.sqrt(radiusSquared);
+  var ritterRadius = Math.sqrt(radiusSquared);
 
   // Find the center of the sphere found using the Naive method.
-  const minBoxPt = fromPointsMinBoxPt;
+  var minBoxPt = fromPointsMinBoxPt;
   minBoxPt.x = xMin.x;
   minBoxPt.y = yMin.y;
   minBoxPt.z = zMin.z;
 
-  const maxBoxPt = fromPointsMaxBoxPt;
+  var maxBoxPt = fromPointsMaxBoxPt;
   maxBoxPt.x = xMax.x;
   maxBoxPt.y = yMax.y;
   maxBoxPt.z = zMax.z;
 
-  const naiveCenter = Cartesian3.midpoint(
+  var naiveCenter = Cartesian3.midpoint(
     minBoxPt,
     maxBoxPt,
     fromPointsNaiveCenterScratch
   );
 
   // Begin 2nd pass to find naive radius and modify the ritter sphere.
-  let naiveRadius = 0;
+  var naiveRadius = 0;
   for (i = 0; i < numPositions; i++) {
     Cartesian3.clone(positions[i], currentPos);
 
     // Find the furthest point from the naive center to calculate the naive radius.
-    const r = Cartesian3.magnitude(
+    var r = Cartesian3.magnitude(
       Cartesian3.subtract(currentPos, naiveCenter, fromPointsScratch)
     );
     if (r > naiveRadius) {
@@ -190,16 +190,16 @@ BoundingSphere.fromPoints = function (positions, result) {
     }
 
     // Make adjustments to the Ritter Sphere to include all points.
-    const oldCenterToPointSquared = Cartesian3.magnitudeSquared(
+    var oldCenterToPointSquared = Cartesian3.magnitudeSquared(
       Cartesian3.subtract(currentPos, ritterCenter, fromPointsScratch)
     );
     if (oldCenterToPointSquared > radiusSquared) {
-      const oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
+      var oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
       // Calculate new radius to include the point that lies outside
       ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5;
       radiusSquared = ritterRadius * ritterRadius;
       // Calculate center of new Ritter sphere
-      const oldToNew = oldCenterToPoint - ritterRadius;
+      var oldToNew = oldCenterToPoint - ritterRadius;
       ritterCenter.x =
         (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) /
         oldCenterToPoint;
@@ -223,11 +223,11 @@ BoundingSphere.fromPoints = function (positions, result) {
   return result;
 };
 
-const defaultProjection = new GeographicProjection();
-const fromRectangle2DLowerLeft = new Cartesian3();
-const fromRectangle2DUpperRight = new Cartesian3();
-const fromRectangle2DSouthwest = new Cartographic();
-const fromRectangle2DNortheast = new Cartographic();
+var defaultProjection = new GeographicProjection();
+var fromRectangle2DLowerLeft = new Cartesian3();
+var fromRectangle2DUpperRight = new Cartesian3();
+var fromRectangle2DSouthwest = new Cartographic();
+var fromRectangle2DNortheast = new Cartographic();
 
 /**
  * Computes a bounding sphere from a rectangle projected in 2D.
@@ -282,29 +282,29 @@ BoundingSphere.fromRectangleWithHeights2D = function (
   Rectangle.northeast(rectangle, fromRectangle2DNortheast);
   fromRectangle2DNortheast.height = maximumHeight;
 
-  const lowerLeft = projection.project(
+  var lowerLeft = projection.project(
     fromRectangle2DSouthwest,
     fromRectangle2DLowerLeft
   );
-  const upperRight = projection.project(
+  var upperRight = projection.project(
     fromRectangle2DNortheast,
     fromRectangle2DUpperRight
   );
 
-  const width = upperRight.x - lowerLeft.x;
-  const height = upperRight.y - lowerLeft.y;
-  const elevation = upperRight.z - lowerLeft.z;
+  var width = upperRight.x - lowerLeft.x;
+  var height = upperRight.y - lowerLeft.y;
+  var elevation = upperRight.z - lowerLeft.z;
 
   result.radius =
     Math.sqrt(width * width + height * height + elevation * elevation) * 0.5;
-  const center = result.center;
+  var center = result.center;
   center.x = lowerLeft.x + width * 0.5;
   center.y = lowerLeft.y + height * 0.5;
   center.z = lowerLeft.z + elevation * 0.5;
   return result;
 };
 
-const fromRectangle3DScratch = [];
+var fromRectangle3DScratch = [];
 
 /**
  * Computes a bounding sphere from a rectangle in 3D. The bounding sphere is created using a subsample of points
@@ -335,7 +335,7 @@ BoundingSphere.fromRectangle3D = function (
     return result;
   }
 
-  const positions = Rectangle.subsample(
+  var positions = Rectangle.subsample(
     rectangle,
     ellipsoid,
     surfaceHeight,
@@ -368,11 +368,11 @@ BoundingSphere.fromRectangle3D = function (
  * // Compute the bounding sphere from 3 positions, each specified relative to a center.
  * // In addition to the X, Y, and Z coordinates, the points array contains two additional
  * // elements per point which are ignored for the purpose of computing the bounding sphere.
- * const center = new Cesium.Cartesian3(1.0, 2.0, 3.0);
- * const points = [1.0, 2.0, 3.0, 0.1, 0.2,
+ * var center = new Cesium.Cartesian3(1.0, 2.0, 3.0);
+ * var points = [1.0, 2.0, 3.0, 0.1, 0.2,
  *               4.0, 5.0, 6.0, 0.1, 0.2,
  *               7.0, 8.0, 9.0, 0.1, 0.2];
- * const sphere = Cesium.BoundingSphere.fromVertices(points, center, 5);
+ * var sphere = Cesium.BoundingSphere.fromVertices(points, center, 5);
  *
  * @see {@link http://blogs.agi.com/insight3d/index.php/2008/02/04/a-bounding/|Bounding Sphere computation article}
  */
@@ -395,25 +395,25 @@ BoundingSphere.fromVertices = function (positions, center, stride, result) {
   Check.typeOf.number.greaterThanOrEquals("stride", stride, 3);
   //>>includeEnd('debug');
 
-  const currentPos = fromPointsCurrentPos;
+  var currentPos = fromPointsCurrentPos;
   currentPos.x = positions[0] + center.x;
   currentPos.y = positions[1] + center.y;
   currentPos.z = positions[2] + center.z;
 
-  const xMin = Cartesian3.clone(currentPos, fromPointsXMin);
-  const yMin = Cartesian3.clone(currentPos, fromPointsYMin);
-  const zMin = Cartesian3.clone(currentPos, fromPointsZMin);
+  var xMin = Cartesian3.clone(currentPos, fromPointsXMin);
+  var yMin = Cartesian3.clone(currentPos, fromPointsYMin);
+  var zMin = Cartesian3.clone(currentPos, fromPointsZMin);
 
-  const xMax = Cartesian3.clone(currentPos, fromPointsXMax);
-  const yMax = Cartesian3.clone(currentPos, fromPointsYMax);
-  const zMax = Cartesian3.clone(currentPos, fromPointsZMax);
+  var xMax = Cartesian3.clone(currentPos, fromPointsXMax);
+  var yMax = Cartesian3.clone(currentPos, fromPointsYMax);
+  var zMax = Cartesian3.clone(currentPos, fromPointsZMax);
 
-  const numElements = positions.length;
-  let i;
+  var numElements = positions.length;
+  var i;
   for (i = 0; i < numElements; i += stride) {
-    const x = positions[i] + center.x;
-    const y = positions[i + 1] + center.y;
-    const z = positions[i + 2] + center.z;
+    var x = positions[i] + center.x;
+    var y = positions[i + 1] + center.y;
+    var z = positions[i + 2] + center.z;
 
     currentPos.x = x;
     currentPos.y = y;
@@ -446,20 +446,20 @@ BoundingSphere.fromVertices = function (positions, center, stride, result) {
   }
 
   // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-  const xSpan = Cartesian3.magnitudeSquared(
+  var xSpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(xMax, xMin, fromPointsScratch)
   );
-  const ySpan = Cartesian3.magnitudeSquared(
+  var ySpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(yMax, yMin, fromPointsScratch)
   );
-  const zSpan = Cartesian3.magnitudeSquared(
+  var zSpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(zMax, zMin, fromPointsScratch)
   );
 
   // Set the diameter endpoints to the largest span.
-  let diameter1 = xMin;
-  let diameter2 = xMax;
-  let maxSpan = xSpan;
+  var diameter1 = xMin;
+  var diameter2 = xMax;
+  var maxSpan = xSpan;
   if (ySpan > maxSpan) {
     maxSpan = ySpan;
     diameter1 = yMin;
@@ -472,43 +472,43 @@ BoundingSphere.fromVertices = function (positions, center, stride, result) {
   }
 
   // Calculate the center of the initial sphere found by Ritter's algorithm
-  const ritterCenter = fromPointsRitterCenter;
+  var ritterCenter = fromPointsRitterCenter;
   ritterCenter.x = (diameter1.x + diameter2.x) * 0.5;
   ritterCenter.y = (diameter1.y + diameter2.y) * 0.5;
   ritterCenter.z = (diameter1.z + diameter2.z) * 0.5;
 
   // Calculate the radius of the initial sphere found by Ritter's algorithm
-  let radiusSquared = Cartesian3.magnitudeSquared(
+  var radiusSquared = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(diameter2, ritterCenter, fromPointsScratch)
   );
-  let ritterRadius = Math.sqrt(radiusSquared);
+  var ritterRadius = Math.sqrt(radiusSquared);
 
   // Find the center of the sphere found using the Naive method.
-  const minBoxPt = fromPointsMinBoxPt;
+  var minBoxPt = fromPointsMinBoxPt;
   minBoxPt.x = xMin.x;
   minBoxPt.y = yMin.y;
   minBoxPt.z = zMin.z;
 
-  const maxBoxPt = fromPointsMaxBoxPt;
+  var maxBoxPt = fromPointsMaxBoxPt;
   maxBoxPt.x = xMax.x;
   maxBoxPt.y = yMax.y;
   maxBoxPt.z = zMax.z;
 
-  const naiveCenter = Cartesian3.midpoint(
+  var naiveCenter = Cartesian3.midpoint(
     minBoxPt,
     maxBoxPt,
     fromPointsNaiveCenterScratch
   );
 
   // Begin 2nd pass to find naive radius and modify the ritter sphere.
-  let naiveRadius = 0;
+  var naiveRadius = 0;
   for (i = 0; i < numElements; i += stride) {
     currentPos.x = positions[i] + center.x;
     currentPos.y = positions[i + 1] + center.y;
     currentPos.z = positions[i + 2] + center.z;
 
     // Find the furthest point from the naive center to calculate the naive radius.
-    const r = Cartesian3.magnitude(
+    var r = Cartesian3.magnitude(
       Cartesian3.subtract(currentPos, naiveCenter, fromPointsScratch)
     );
     if (r > naiveRadius) {
@@ -516,16 +516,16 @@ BoundingSphere.fromVertices = function (positions, center, stride, result) {
     }
 
     // Make adjustments to the Ritter Sphere to include all points.
-    const oldCenterToPointSquared = Cartesian3.magnitudeSquared(
+    var oldCenterToPointSquared = Cartesian3.magnitudeSquared(
       Cartesian3.subtract(currentPos, ritterCenter, fromPointsScratch)
     );
     if (oldCenterToPointSquared > radiusSquared) {
-      const oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
+      var oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
       // Calculate new radius to include the point that lies outside
       ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5;
       radiusSquared = ritterRadius * ritterRadius;
       // Calculate center of new Ritter sphere
-      const oldToNew = oldCenterToPoint - ritterRadius;
+      var oldToNew = oldCenterToPoint - ritterRadius;
       ritterCenter.x =
         (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) /
         oldCenterToPoint;
@@ -584,25 +584,25 @@ BoundingSphere.fromEncodedCartesianVertices = function (
     return result;
   }
 
-  const currentPos = fromPointsCurrentPos;
+  var currentPos = fromPointsCurrentPos;
   currentPos.x = positionsHigh[0] + positionsLow[0];
   currentPos.y = positionsHigh[1] + positionsLow[1];
   currentPos.z = positionsHigh[2] + positionsLow[2];
 
-  const xMin = Cartesian3.clone(currentPos, fromPointsXMin);
-  const yMin = Cartesian3.clone(currentPos, fromPointsYMin);
-  const zMin = Cartesian3.clone(currentPos, fromPointsZMin);
+  var xMin = Cartesian3.clone(currentPos, fromPointsXMin);
+  var yMin = Cartesian3.clone(currentPos, fromPointsYMin);
+  var zMin = Cartesian3.clone(currentPos, fromPointsZMin);
 
-  const xMax = Cartesian3.clone(currentPos, fromPointsXMax);
-  const yMax = Cartesian3.clone(currentPos, fromPointsYMax);
-  const zMax = Cartesian3.clone(currentPos, fromPointsZMax);
+  var xMax = Cartesian3.clone(currentPos, fromPointsXMax);
+  var yMax = Cartesian3.clone(currentPos, fromPointsYMax);
+  var zMax = Cartesian3.clone(currentPos, fromPointsZMax);
 
-  const numElements = positionsHigh.length;
-  let i;
+  var numElements = positionsHigh.length;
+  var i;
   for (i = 0; i < numElements; i += 3) {
-    const x = positionsHigh[i] + positionsLow[i];
-    const y = positionsHigh[i + 1] + positionsLow[i + 1];
-    const z = positionsHigh[i + 2] + positionsLow[i + 2];
+    var x = positionsHigh[i] + positionsLow[i];
+    var y = positionsHigh[i + 1] + positionsLow[i + 1];
+    var z = positionsHigh[i + 2] + positionsLow[i + 2];
 
     currentPos.x = x;
     currentPos.y = y;
@@ -635,20 +635,20 @@ BoundingSphere.fromEncodedCartesianVertices = function (
   }
 
   // Compute x-, y-, and z-spans (Squared distances b/n each component's min. and max.).
-  const xSpan = Cartesian3.magnitudeSquared(
+  var xSpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(xMax, xMin, fromPointsScratch)
   );
-  const ySpan = Cartesian3.magnitudeSquared(
+  var ySpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(yMax, yMin, fromPointsScratch)
   );
-  const zSpan = Cartesian3.magnitudeSquared(
+  var zSpan = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(zMax, zMin, fromPointsScratch)
   );
 
   // Set the diameter endpoints to the largest span.
-  let diameter1 = xMin;
-  let diameter2 = xMax;
-  let maxSpan = xSpan;
+  var diameter1 = xMin;
+  var diameter2 = xMax;
+  var maxSpan = xSpan;
   if (ySpan > maxSpan) {
     maxSpan = ySpan;
     diameter1 = yMin;
@@ -661,43 +661,43 @@ BoundingSphere.fromEncodedCartesianVertices = function (
   }
 
   // Calculate the center of the initial sphere found by Ritter's algorithm
-  const ritterCenter = fromPointsRitterCenter;
+  var ritterCenter = fromPointsRitterCenter;
   ritterCenter.x = (diameter1.x + diameter2.x) * 0.5;
   ritterCenter.y = (diameter1.y + diameter2.y) * 0.5;
   ritterCenter.z = (diameter1.z + diameter2.z) * 0.5;
 
   // Calculate the radius of the initial sphere found by Ritter's algorithm
-  let radiusSquared = Cartesian3.magnitudeSquared(
+  var radiusSquared = Cartesian3.magnitudeSquared(
     Cartesian3.subtract(diameter2, ritterCenter, fromPointsScratch)
   );
-  let ritterRadius = Math.sqrt(radiusSquared);
+  var ritterRadius = Math.sqrt(radiusSquared);
 
   // Find the center of the sphere found using the Naive method.
-  const minBoxPt = fromPointsMinBoxPt;
+  var minBoxPt = fromPointsMinBoxPt;
   minBoxPt.x = xMin.x;
   minBoxPt.y = yMin.y;
   minBoxPt.z = zMin.z;
 
-  const maxBoxPt = fromPointsMaxBoxPt;
+  var maxBoxPt = fromPointsMaxBoxPt;
   maxBoxPt.x = xMax.x;
   maxBoxPt.y = yMax.y;
   maxBoxPt.z = zMax.z;
 
-  const naiveCenter = Cartesian3.midpoint(
+  var naiveCenter = Cartesian3.midpoint(
     minBoxPt,
     maxBoxPt,
     fromPointsNaiveCenterScratch
   );
 
   // Begin 2nd pass to find naive radius and modify the ritter sphere.
-  let naiveRadius = 0;
+  var naiveRadius = 0;
   for (i = 0; i < numElements; i += 3) {
     currentPos.x = positionsHigh[i] + positionsLow[i];
     currentPos.y = positionsHigh[i + 1] + positionsLow[i + 1];
     currentPos.z = positionsHigh[i + 2] + positionsLow[i + 2];
 
     // Find the furthest point from the naive center to calculate the naive radius.
-    const r = Cartesian3.magnitude(
+    var r = Cartesian3.magnitude(
       Cartesian3.subtract(currentPos, naiveCenter, fromPointsScratch)
     );
     if (r > naiveRadius) {
@@ -705,16 +705,16 @@ BoundingSphere.fromEncodedCartesianVertices = function (
     }
 
     // Make adjustments to the Ritter Sphere to include all points.
-    const oldCenterToPointSquared = Cartesian3.magnitudeSquared(
+    var oldCenterToPointSquared = Cartesian3.magnitudeSquared(
       Cartesian3.subtract(currentPos, ritterCenter, fromPointsScratch)
     );
     if (oldCenterToPointSquared > radiusSquared) {
-      const oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
+      var oldCenterToPoint = Math.sqrt(oldCenterToPointSquared);
       // Calculate new radius to include the point that lies outside
       ritterRadius = (ritterRadius + oldCenterToPoint) * 0.5;
       radiusSquared = ritterRadius * ritterRadius;
       // Calculate center of new Ritter sphere
-      const oldToNew = oldCenterToPoint - ritterRadius;
+      var oldToNew = oldCenterToPoint - ritterRadius;
       ritterCenter.x =
         (ritterRadius * ritterCenter.x + oldToNew * currentPos.x) /
         oldCenterToPoint;
@@ -740,7 +740,7 @@ BoundingSphere.fromEncodedCartesianVertices = function (
 
 /**
  * Computes a bounding sphere from the corner points of an axis-aligned bounding box.  The sphere
- * tightly and fully encompasses the box.
+ * tighly and fully encompases the box.
  *
  * @param {Cartesian3} [corner] The minimum height over the rectangle.
  * @param {Cartesian3} [oppositeCorner] The maximum height over the rectangle.
@@ -749,7 +749,7 @@ BoundingSphere.fromEncodedCartesianVertices = function (
  *
  * @example
  * // Create a bounding sphere around the unit cube
- * const sphere = Cesium.BoundingSphere.fromCornerPoints(new Cesium.Cartesian3(-0.5, -0.5, -0.5), new Cesium.Cartesian3(0.5, 0.5, 0.5));
+ * var sphere = Cesium.BoundingSphere.fromCornerPoints(new Cesium.Cartesian3(-0.5, -0.5, -0.5), new Cesium.Cartesian3(0.5, 0.5, 0.5));
  */
 BoundingSphere.fromCornerPoints = function (corner, oppositeCorner, result) {
   //>>includeStart('debug', pragmas.debug);
@@ -761,7 +761,7 @@ BoundingSphere.fromCornerPoints = function (corner, oppositeCorner, result) {
     result = new BoundingSphere();
   }
 
-  const center = Cartesian3.midpoint(corner, oppositeCorner, result.center);
+  var center = Cartesian3.midpoint(corner, oppositeCorner, result.center);
   result.radius = Cartesian3.distance(center, oppositeCorner);
   return result;
 };
@@ -774,7 +774,7 @@ BoundingSphere.fromCornerPoints = function (corner, oppositeCorner, result) {
  * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
  *
  * @example
- * const boundingSphere = Cesium.BoundingSphere.fromEllipsoid(ellipsoid);
+ * var boundingSphere = Cesium.BoundingSphere.fromEllipsoid(ellipsoid);
  */
 BoundingSphere.fromEllipsoid = function (ellipsoid, result) {
   //>>includeStart('debug', pragmas.debug);
@@ -790,7 +790,7 @@ BoundingSphere.fromEllipsoid = function (ellipsoid, result) {
   return result;
 };
 
-const fromBoundingSpheresScratch = new Cartesian3();
+var fromBoundingSpheresScratch = new Cartesian3();
 
 /**
  * Computes a tight-fitting bounding sphere enclosing the provided array of bounding spheres.
@@ -810,7 +810,7 @@ BoundingSphere.fromBoundingSpheres = function (boundingSpheres, result) {
     return result;
   }
 
-  const length = boundingSpheres.length;
+  var length = boundingSpheres.length;
   if (length === 1) {
     return BoundingSphere.clone(boundingSpheres[0], result);
   }
@@ -819,18 +819,18 @@ BoundingSphere.fromBoundingSpheres = function (boundingSpheres, result) {
     return BoundingSphere.union(boundingSpheres[0], boundingSpheres[1], result);
   }
 
-  const positions = [];
-  let i;
+  var positions = [];
+  var i;
   for (i = 0; i < length; i++) {
     positions.push(boundingSpheres[i].center);
   }
 
   result = BoundingSphere.fromPoints(positions, result);
 
-  const center = result.center;
-  let radius = result.radius;
+  var center = result.center;
+  var radius = result.radius;
   for (i = 0; i < length; i++) {
-    const tmp = boundingSpheres[i];
+    var tmp = boundingSpheres[i];
     radius = Math.max(
       radius,
       Cartesian3.distance(center, tmp.center, fromBoundingSpheresScratch) +
@@ -842,9 +842,9 @@ BoundingSphere.fromBoundingSpheres = function (boundingSpheres, result) {
   return result;
 };
 
-const fromOrientedBoundingBoxScratchU = new Cartesian3();
-const fromOrientedBoundingBoxScratchV = new Cartesian3();
-const fromOrientedBoundingBoxScratchW = new Cartesian3();
+var fromOrientedBoundingBoxScratchU = new Cartesian3();
+var fromOrientedBoundingBoxScratchV = new Cartesian3();
+var fromOrientedBoundingBoxScratchW = new Cartesian3();
 
 /**
  * Computes a tight-fitting bounding sphere enclosing the provided oriented bounding box.
@@ -865,50 +865,16 @@ BoundingSphere.fromOrientedBoundingBox = function (
     result = new BoundingSphere();
   }
 
-  const halfAxes = orientedBoundingBox.halfAxes;
-  const u = Matrix3.getColumn(halfAxes, 0, fromOrientedBoundingBoxScratchU);
-  const v = Matrix3.getColumn(halfAxes, 1, fromOrientedBoundingBoxScratchV);
-  const w = Matrix3.getColumn(halfAxes, 2, fromOrientedBoundingBoxScratchW);
+  var halfAxes = orientedBoundingBox.halfAxes;
+  var u = Matrix3.getColumn(halfAxes, 0, fromOrientedBoundingBoxScratchU);
+  var v = Matrix3.getColumn(halfAxes, 1, fromOrientedBoundingBoxScratchV);
+  var w = Matrix3.getColumn(halfAxes, 2, fromOrientedBoundingBoxScratchW);
 
   Cartesian3.add(u, v, u);
   Cartesian3.add(u, w, u);
 
   result.center = Cartesian3.clone(orientedBoundingBox.center, result.center);
   result.radius = Cartesian3.magnitude(u);
-
-  return result;
-};
-
-const scratchFromTransformationCenter = new Cartesian3();
-const scratchFromTransformationScale = new Cartesian3();
-
-/**
- * Computes a tight-fitting bounding sphere enclosing the provided affine transformation.
- *
- * @param {Matrix4} transformation The affine transformation.
- * @param {BoundingSphere} [result] The object onto which to store the result.
- * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
- */
-BoundingSphere.fromTransformation = function (transformation, result) {
-  //>>includeStart('debug', pragmas.debug);
-  Check.typeOf.object("transformation", transformation);
-  //>>includeEnd('debug');
-
-  if (!defined(result)) {
-    result = new BoundingSphere();
-  }
-
-  const center = Matrix4.getTranslation(
-    transformation,
-    scratchFromTransformationCenter
-  );
-  const scale = Matrix4.getScale(
-    transformation,
-    scratchFromTransformationScale
-  );
-  const radius = 0.5 * Cartesian3.magnitude(scale);
-  result.center = Cartesian3.clone(center, result.center);
-  result.radius = radius;
 
   return result;
 };
@@ -957,7 +923,7 @@ BoundingSphere.pack = function (value, array, startingIndex) {
 
   startingIndex = defaultValue(startingIndex, 0);
 
-  const center = value.center;
+  var center = value.center;
   array[startingIndex++] = center.x;
   array[startingIndex++] = center.y;
   array[startingIndex++] = center.z;
@@ -985,7 +951,7 @@ BoundingSphere.unpack = function (array, startingIndex, result) {
     result = new BoundingSphere();
   }
 
-  const center = result.center;
+  var center = result.center;
   center.x = array[startingIndex++];
   center.y = array[startingIndex++];
   center.z = array[startingIndex++];
@@ -993,8 +959,8 @@ BoundingSphere.unpack = function (array, startingIndex, result) {
   return result;
 };
 
-const unionScratch = new Cartesian3();
-const unionScratchCenter = new Cartesian3();
+var unionScratch = new Cartesian3();
+var unionScratchCenter = new Cartesian3();
 /**
  * Computes a bounding sphere that contains both the left and right bounding spheres.
  *
@@ -1013,17 +979,17 @@ BoundingSphere.union = function (left, right, result) {
     result = new BoundingSphere();
   }
 
-  const leftCenter = left.center;
-  const leftRadius = left.radius;
-  const rightCenter = right.center;
-  const rightRadius = right.radius;
+  var leftCenter = left.center;
+  var leftRadius = left.radius;
+  var rightCenter = right.center;
+  var rightRadius = right.radius;
 
-  const toRightCenter = Cartesian3.subtract(
+  var toRightCenter = Cartesian3.subtract(
     rightCenter,
     leftCenter,
     unionScratch
   );
-  const centerSeparation = Cartesian3.magnitude(toRightCenter);
+  var centerSeparation = Cartesian3.magnitude(toRightCenter);
 
   if (leftRadius >= centerSeparation + rightRadius) {
     // Left sphere wins.
@@ -1038,11 +1004,11 @@ BoundingSphere.union = function (left, right, result) {
   }
 
   // There are two tangent points, one on far side of each sphere.
-  const halfDistanceBetweenTangentPoints =
+  var halfDistanceBetweenTangentPoints =
     (leftRadius + centerSeparation + rightRadius) * 0.5;
 
   // Compute the center point halfway between the two tangent points.
-  const center = Cartesian3.multiplyByScalar(
+  var center = Cartesian3.multiplyByScalar(
     toRightCenter,
     (-leftRadius + halfDistanceBetweenTangentPoints) / centerSeparation,
     unionScratchCenter
@@ -1054,7 +1020,7 @@ BoundingSphere.union = function (left, right, result) {
   return result;
 };
 
-const expandScratch = new Cartesian3();
+var expandScratch = new Cartesian3();
 /**
  * Computes a bounding sphere by enlarging the provided sphere to contain the provided point.
  *
@@ -1071,7 +1037,7 @@ BoundingSphere.expand = function (sphere, point, result) {
 
   result = BoundingSphere.clone(sphere, result);
 
-  const radius = Cartesian3.magnitude(
+  var radius = Cartesian3.magnitude(
     Cartesian3.subtract(point, result.center, expandScratch)
   );
   if (radius > result.radius) {
@@ -1097,10 +1063,10 @@ BoundingSphere.intersectPlane = function (sphere, plane) {
   Check.typeOf.object("plane", plane);
   //>>includeEnd('debug');
 
-  const center = sphere.center;
-  const radius = sphere.radius;
-  const normal = plane.normal;
-  const distanceToPlane = Cartesian3.dot(normal, center) + plane.distance;
+  var center = sphere.center;
+  var radius = sphere.radius;
+  var normal = plane.normal;
+  var distanceToPlane = Cartesian3.dot(normal, center) + plane.distance;
 
   if (distanceToPlane < -radius) {
     // The center point is negative side of the plane normal
@@ -1140,7 +1106,7 @@ BoundingSphere.transform = function (sphere, transform, result) {
   return result;
 };
 
-const distanceSquaredToScratch = new Cartesian3();
+var distanceSquaredToScratch = new Cartesian3();
 
 /**
  * Computes the estimated distance squared from the closest point on a bounding sphere to a point.
@@ -1161,13 +1127,13 @@ BoundingSphere.distanceSquaredTo = function (sphere, cartesian) {
   Check.typeOf.object("cartesian", cartesian);
   //>>includeEnd('debug');
 
-  const diff = Cartesian3.subtract(
+  var diff = Cartesian3.subtract(
     sphere.center,
     cartesian,
     distanceSquaredToScratch
   );
 
-  const distance = Cartesian3.magnitude(diff) - sphere.radius;
+  var distance = Cartesian3.magnitude(diff) - sphere.radius;
   if (distance <= 0.0) {
     return 0.0;
   }
@@ -1186,9 +1152,9 @@ BoundingSphere.distanceSquaredTo = function (sphere, cartesian) {
  * @returns {BoundingSphere} The modified result parameter or a new BoundingSphere instance if none was provided.
  *
  * @example
- * const modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid);
- * const boundingSphere = new Cesium.BoundingSphere();
- * const newBoundingSphere = Cesium.BoundingSphere.transformWithoutScale(boundingSphere, modelMatrix);
+ * var modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid);
+ * var boundingSphere = new Cesium.BoundingSphere();
+ * var newBoundingSphere = Cesium.BoundingSphere.transformWithoutScale(boundingSphere, modelMatrix);
  */
 BoundingSphere.transformWithoutScale = function (sphere, transform, result) {
   //>>includeStart('debug', pragmas.debug);
@@ -1210,7 +1176,7 @@ BoundingSphere.transformWithoutScale = function (sphere, transform, result) {
   return result;
 };
 
-const scratchCartesian3 = new Cartesian3();
+var scratchCartesian3 = new Cartesian3();
 /**
  * The distances calculated by the vector from the center of the bounding sphere to position projected onto direction
  * plus/minus the radius of the bounding sphere.
@@ -1240,30 +1206,30 @@ BoundingSphere.computePlaneDistances = function (
     result = new Interval();
   }
 
-  const toCenter = Cartesian3.subtract(
+  var toCenter = Cartesian3.subtract(
     sphere.center,
     position,
     scratchCartesian3
   );
-  const mag = Cartesian3.dot(direction, toCenter);
+  var mag = Cartesian3.dot(direction, toCenter);
 
   result.start = mag - sphere.radius;
   result.stop = mag + sphere.radius;
   return result;
 };
 
-const projectTo2DNormalScratch = new Cartesian3();
-const projectTo2DEastScratch = new Cartesian3();
-const projectTo2DNorthScratch = new Cartesian3();
-const projectTo2DWestScratch = new Cartesian3();
-const projectTo2DSouthScratch = new Cartesian3();
-const projectTo2DCartographicScratch = new Cartographic();
-const projectTo2DPositionsScratch = new Array(8);
-for (let n = 0; n < 8; ++n) {
+var projectTo2DNormalScratch = new Cartesian3();
+var projectTo2DEastScratch = new Cartesian3();
+var projectTo2DNorthScratch = new Cartesian3();
+var projectTo2DWestScratch = new Cartesian3();
+var projectTo2DSouthScratch = new Cartesian3();
+var projectTo2DCartographicScratch = new Cartographic();
+var projectTo2DPositionsScratch = new Array(8);
+for (var n = 0; n < 8; ++n) {
   projectTo2DPositionsScratch[n] = new Cartesian3();
 }
 
-const projectTo2DProjection = new GeographicProjection();
+var projectTo2DProjection = new GeographicProjection();
 /**
  * Creates a bounding sphere in 2D from a bounding sphere in 3D world coordinates.
  *
@@ -1279,11 +1245,11 @@ BoundingSphere.projectTo2D = function (sphere, projection, result) {
 
   projection = defaultValue(projection, projectTo2DProjection);
 
-  const ellipsoid = projection.ellipsoid;
-  let center = sphere.center;
-  const radius = sphere.radius;
+  var ellipsoid = projection.ellipsoid;
+  var center = sphere.center;
+  var radius = sphere.radius;
 
-  let normal;
+  var normal;
   if (Cartesian3.equals(center, Cartesian3.ZERO)) {
     // Bounding sphere is at the center. The geodetic surface normal is not
     // defined here so pick the x-axis as a fallback.
@@ -1291,26 +1257,26 @@ BoundingSphere.projectTo2D = function (sphere, projection, result) {
   } else {
     normal = ellipsoid.geodeticSurfaceNormal(center, projectTo2DNormalScratch);
   }
-  const east = Cartesian3.cross(
+  var east = Cartesian3.cross(
     Cartesian3.UNIT_Z,
     normal,
     projectTo2DEastScratch
   );
   Cartesian3.normalize(east, east);
-  const north = Cartesian3.cross(normal, east, projectTo2DNorthScratch);
+  var north = Cartesian3.cross(normal, east, projectTo2DNorthScratch);
   Cartesian3.normalize(north, north);
 
   Cartesian3.multiplyByScalar(normal, radius, normal);
   Cartesian3.multiplyByScalar(north, radius, north);
   Cartesian3.multiplyByScalar(east, radius, east);
 
-  const south = Cartesian3.negate(north, projectTo2DSouthScratch);
-  const west = Cartesian3.negate(east, projectTo2DWestScratch);
+  var south = Cartesian3.negate(north, projectTo2DSouthScratch);
+  var west = Cartesian3.negate(east, projectTo2DWestScratch);
 
-  const positions = projectTo2DPositionsScratch;
+  var positions = projectTo2DPositionsScratch;
 
   // top NE corner
-  let corner = positions[0];
+  var corner = positions[0];
   Cartesian3.add(normal, north, corner);
   Cartesian3.add(corner, east, corner);
 
@@ -1351,11 +1317,11 @@ BoundingSphere.projectTo2D = function (sphere, projection, result) {
   Cartesian3.add(normal, south, corner);
   Cartesian3.add(corner, east, corner);
 
-  const length = positions.length;
-  for (let i = 0; i < length; ++i) {
-    const position = positions[i];
+  var length = positions.length;
+  for (var i = 0; i < length; ++i) {
+    var position = positions[i];
     Cartesian3.add(center, position, position);
-    const cartographic = ellipsoid.cartesianToCartographic(
+    var cartographic = ellipsoid.cartesianToCartographic(
       position,
       projectTo2DCartographicScratch
     );
@@ -1366,9 +1332,9 @@ BoundingSphere.projectTo2D = function (sphere, projection, result) {
 
   // swizzle center components
   center = result.center;
-  const x = center.x;
-  const y = center.y;
-  const z = center.z;
+  var x = center.x;
+  var y = center.y;
+  var z = center.z;
   center.x = z;
   center.y = x;
   center.z = y;
@@ -1499,7 +1465,7 @@ BoundingSphere.prototype.clone = function (result) {
  * @returns {Number} The radius of the BoundingSphere.
  */
 BoundingSphere.prototype.volume = function () {
-  const radius = this.radius;
+  var radius = this.radius;
   return volumeConstant * radius * radius * radius;
 };
 export default BoundingSphere;

@@ -23,33 +23,31 @@ import pollToPromise from "../pollToPromise.js";
 import { addDefaults } from "../../Source/Cesium.js";
 import { parseGlb } from "../../Source/Cesium.js";
 import { updateVersion } from "../../Source/Cesium.js";
-import { RuntimeError } from "../../Source/Cesium.js";
 
 describe(
   "Scene/ClassificationModel",
   function () {
-    let scene;
-    let modelMatrix;
-    const centerLongitude = -1.31968;
-    const centerLatitude = 0.698874;
+    var scene;
+    var modelMatrix;
+    var centerLongitude = -1.31968;
+    var centerLatitude = 0.698874;
 
-    const batchedModel = "./Data/Models/Classification/batched.glb";
-    const quantizedModel =
-      "./Data/Models/Classification/batchedQuantization.glb";
+    var batchedModel = "./Data/Models/Classification/batched.glb";
+    var quantizedModel = "./Data/Models/Classification/batchedQuantization.glb";
 
-    let globePrimitive;
-    let tilesetPrimitive;
-    let reusableGlobePrimitive;
-    let reusableTilesetPrimitive;
+    var globePrimitive;
+    var tilesetPrimitive;
+    var reusableGlobePrimitive;
+    var reusableTilesetPrimitive;
 
     function setCamera(longitude, latitude) {
       // One feature is located at the center, point the camera there
-      const center = Cartesian3.fromRadians(longitude, latitude);
+      var center = Cartesian3.fromRadians(longitude, latitude);
       scene.camera.lookAt(center, new HeadingPitchRange(0.0, -1.57, 15.0));
     }
 
     function createPrimitive(rectangle, pass) {
-      let renderState;
+      var renderState;
       if (pass === Pass.CESIUM_3D_TILE) {
         renderState = RenderState.fromCache({
           stencilTest: StencilConstants.setCesium3DTileBit(),
@@ -59,7 +57,7 @@ describe(
           },
         });
       }
-      const depthColorAttribute = ColorGeometryInstanceAttribute.fromColor(
+      var depthColorAttribute = ColorGeometryInstanceAttribute.fromColor(
         new Color(0.0, 0.0, 0.0, 1.0)
       );
       return new Primitive({
@@ -93,12 +91,12 @@ describe(
         return;
       }
 
-      const commandList = frameState.commandList;
-      const startLength = commandList.length;
+      var commandList = frameState.commandList;
+      var startLength = commandList.length;
       this._primitive.update(frameState);
 
-      for (let i = startLength; i < commandList.length; ++i) {
-        const command = commandList[i];
+      for (var i = startLength; i < commandList.length; ++i) {
+        var command = commandList[i];
         command.pass = this._pass;
       }
     };
@@ -114,14 +112,14 @@ describe(
     beforeAll(function () {
       scene = createScene();
 
-      const translation = Ellipsoid.WGS84.geodeticSurfaceNormalCartographic(
+      var translation = Ellipsoid.WGS84.geodeticSurfaceNormalCartographic(
         new Cartographic(centerLongitude, centerLatitude)
       );
       Cartesian3.multiplyByScalar(translation, -5.0, translation);
       modelMatrix = Matrix4.fromTranslation(translation);
 
-      const offset = CesiumMath.toRadians(0.01);
-      const rectangle = new Rectangle(
+      var offset = CesiumMath.toRadians(0.01);
+      var rectangle = new Rectangle(
         centerLongitude - offset,
         centerLatitude - offset,
         centerLongitude + offset,
@@ -184,7 +182,7 @@ describe(
 
     function loadGltf(model) {
       return Resource.fetchArrayBuffer(model).then(function (arrayBuffer) {
-        let gltf = new Uint8Array(arrayBuffer);
+        var gltf = new Uint8Array(arrayBuffer);
         gltf = parseGlb(gltf);
         updateVersion(gltf);
         addDefaults(gltf);
@@ -194,7 +192,7 @@ describe(
 
     function loadClassificationModel(url, classificationType) {
       return Resource.fetchArrayBuffer(url).then(function (arrayBuffer) {
-        const model = scene.primitives.add(
+        var model = scene.primitives.add(
           new ClassificationModel({
             gltf: arrayBuffer,
             classificationType: classificationType,
@@ -202,7 +200,7 @@ describe(
           })
         );
 
-        let ready = false;
+        var ready = false;
         model.readyPromise.then(function () {
           ready = true;
         });
@@ -289,7 +287,7 @@ describe(
           return new ClassificationModel({
             gltf: gltf,
           });
-        }).toThrowError(RuntimeError);
+        }).toThrowRuntimeError();
       });
     });
 
@@ -300,7 +298,7 @@ describe(
           return new ClassificationModel({
             gltf: gltf,
           });
-        }).toThrowError(RuntimeError);
+        }).toThrowRuntimeError();
       });
     });
 
@@ -311,7 +309,7 @@ describe(
           return new ClassificationModel({
             gltf: gltf,
           });
-        }).toThrowError(RuntimeError);
+        }).toThrowRuntimeError();
       });
     });
 
@@ -322,7 +320,7 @@ describe(
           return new ClassificationModel({
             gltf: gltf,
           });
-        }).toThrowError(RuntimeError);
+        }).toThrowRuntimeError();
       });
     });
 
@@ -333,7 +331,7 @@ describe(
           return new ClassificationModel({
             gltf: gltf,
           });
-        }).toThrowError(RuntimeError);
+        }).toThrowRuntimeError();
       });
     });
   },

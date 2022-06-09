@@ -8,8 +8,8 @@ import { viewerDragDropMixin } from "../../../Source/Cesium.js";
 describe(
   "Widgets/Viewer/viewerDragDropMixin",
   function () {
-    let container;
-    let viewer;
+    var container;
+    var viewer;
     beforeEach(function () {
       container = document.createElement("div");
       container.id = "container";
@@ -17,7 +17,7 @@ describe(
       document.body.appendChild(container);
 
       //Impersonate FileReader for drag and drop tests
-      const fakeFileReader = jasmine.createSpyObj("FileReader", ["readAsText"]);
+      var fakeFileReader = jasmine.createSpyObj("FileReader", ["readAsText"]);
       fakeFileReader.readAsText = function (file) {
         if (defined(file.czmlString)) {
           this.onload({
@@ -85,7 +85,7 @@ describe(
       expect(viewer.dropTarget).toBe(container);
     });
 
-    const czml1 = [
+    var czml1 = [
       {
         id: "document",
         version: "1.0",
@@ -98,7 +98,7 @@ describe(
       },
     ];
 
-    const czml2 = [
+    var czml2 = [
       {
         id: "document",
         version: "1.0",
@@ -112,7 +112,7 @@ describe(
     ];
 
     it("handleDrop processes drop event", function () {
-      const mockEvent = {
+      var mockEvent = {
         dataTransfer: {
           files: [
             {
@@ -133,8 +133,8 @@ describe(
       return pollToPromise(function () {
         return viewer.dataSources.length === 1;
       }).then(function () {
-        const dataSource = viewer.dataSources.get(0);
-        const interval = TimeInterval.fromIso8601({
+        var dataSource = viewer.dataSources.get(0);
+        var interval = TimeInterval.fromIso8601({
           iso8601: czml1[0].clock.interval,
         });
         expect(dataSource.entities.getById("test")).toBeDefined();
@@ -144,7 +144,7 @@ describe(
     });
 
     it("handleDrop processes drop event with multiple files", function () {
-      const mockEvent = {
+      var mockEvent = {
         dataTransfer: {
           files: [
             {
@@ -169,12 +169,12 @@ describe(
       return pollToPromise(function () {
         return viewer.dataSources.length === 2;
       }).then(function () {
-        const source1 = viewer.dataSources.get(0);
-        const source2 = viewer.dataSources.get(1);
+        var source1 = viewer.dataSources.get(0);
+        var source2 = viewer.dataSources.get(1);
         expect(source1.entities.getById("test")).toBeDefined();
         expect(source2.entities.getById("test2")).toBeDefined();
         //Interval of first file should be used.
-        const interval = TimeInterval.fromIso8601({
+        var interval = TimeInterval.fromIso8601({
           iso8601: czml1[0].clock.interval,
         });
         expect(source1.clock.startTime).toEqual(interval.start);
@@ -183,7 +183,7 @@ describe(
     });
 
     it("handleDrop obeys clearOnDrop", function () {
-      const mockEvent = {
+      var mockEvent = {
         dataTransfer: {
           files: [
             {
@@ -208,12 +208,12 @@ describe(
       return pollToPromise(function () {
         return viewer.dataSources.length === 2;
       }).then(function () {
-        const source1 = viewer.dataSources.get(0);
-        const source2 = viewer.dataSources.get(1);
+        var source1 = viewer.dataSources.get(0);
+        var source2 = viewer.dataSources.get(1);
         expect(source1.entities.getById("test")).toBeDefined();
         expect(source2.entities.getById("test2")).toBeDefined();
         //Interval of first file should be used.
-        const interval = TimeInterval.fromIso8601({
+        var interval = TimeInterval.fromIso8601({
           iso8601: czml1[0].clock.interval,
         });
         expect(source1.clock.startTime).toEqual(interval.start);
@@ -225,10 +225,10 @@ describe(
         return pollToPromise(function () {
           return viewer.dataSources.length === 4;
         }).then(function () {
-          const source1 = viewer.dataSources.get(0);
-          const source2 = viewer.dataSources.get(1);
-          const source3 = viewer.dataSources.get(2);
-          const source4 = viewer.dataSources.get(3);
+          var source1 = viewer.dataSources.get(0);
+          var source2 = viewer.dataSources.get(1);
+          var source3 = viewer.dataSources.get(2);
+          var source4 = viewer.dataSources.get(3);
 
           expect(source1.entities.getById("test")).toBeDefined();
           expect(source2.entities.getById("test2")).toBeDefined();
@@ -241,12 +241,12 @@ describe(
           return pollToPromise(function () {
             return viewer.dataSources.length === 2;
           }).then(function () {
-            const source1 = viewer.dataSources.get(0);
-            const source2 = viewer.dataSources.get(1);
+            var source1 = viewer.dataSources.get(0);
+            var source2 = viewer.dataSources.get(1);
             expect(source1.entities.getById("test")).toBeDefined();
             expect(source2.entities.getById("test2")).toBeDefined();
             //Interval of first file should be used.
-            const interval = TimeInterval.fromIso8601({
+            var interval = TimeInterval.fromIso8601({
               iso8601: czml1[0].clock.interval,
             });
             expect(source1.clock.startTime).toEqual(interval.start);
@@ -257,7 +257,7 @@ describe(
     });
 
     it("dropError is raised on exception", function () {
-      const mockEvent = {
+      var mockEvent = {
         dataTransfer: {
           files: [
             {
@@ -273,7 +273,7 @@ describe(
       viewer = createViewer(container);
       viewer.extend(viewerDragDropMixin);
 
-      const spyListener = jasmine.createSpy("listener");
+      var spyListener = jasmine.createSpy("listener");
 
       viewer.dropError.addEventListener(spyListener);
       DomEventSimulator.fireMockEvent(viewer._handleDrop, mockEvent);
@@ -292,7 +292,7 @@ describe(
     });
 
     it("dropError is raised FileReader error", function () {
-      const mockEvent = {
+      var mockEvent = {
         dataTransfer: {
           files: [
             {
@@ -308,7 +308,7 @@ describe(
       viewer = createViewer(container);
       viewer.extend(viewerDragDropMixin);
 
-      const spyListener = jasmine.createSpy("listener");
+      var spyListener = jasmine.createSpy("listener");
 
       viewer.dropError.addEventListener(spyListener);
       DomEventSimulator.fireMockEvent(viewer._handleDrop, mockEvent);
@@ -327,7 +327,7 @@ describe(
     });
 
     function MockContainer() {
-      const events = {};
+      var events = {};
       this.events = events;
 
       this.addEventListener = function (name, func, bubble) {
@@ -338,7 +338,7 @@ describe(
       };
 
       this.removeEventListener = function (name, func, bubble) {
-        const subscribed = events[name];
+        var subscribed = events[name];
         expect(subscribed.func).toBe(func);
         expect(subscribed.bubble).toEqual(bubble);
         delete events[name];
@@ -346,7 +346,7 @@ describe(
     }
 
     it("enable/disable subscribes to provided dropTarget.", function () {
-      const dropTarget = new MockContainer();
+      var dropTarget = new MockContainer();
 
       viewer = createViewer(container);
       viewer.extend(viewerDragDropMixin, {
@@ -372,8 +372,8 @@ describe(
     });
 
     it("can set new dropTarget.", function () {
-      const dropTarget1 = new MockContainer();
-      const dropTarget2 = new MockContainer();
+      var dropTarget1 = new MockContainer();
+      var dropTarget2 = new MockContainer();
 
       viewer = createViewer(container);
       viewer.extend(viewerDragDropMixin, {
@@ -398,7 +398,7 @@ describe(
     });
 
     it("can set proxy.", function () {
-      const proxy = {};
+      var proxy = {};
 
       viewer = createViewer(container);
       viewer.extend(viewerDragDropMixin, {

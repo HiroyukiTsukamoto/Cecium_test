@@ -1,9 +1,14 @@
-import { BufferLoader, Resource, ResourceCache } from "../../Source/Cesium.js";
+import {
+  BufferLoader,
+  Resource,
+  ResourceCache,
+  when,
+} from "../../Source/Cesium.js";
 
 describe("Scene/BufferLoader", function () {
-  const typedArray = new Uint8Array([1, 3, 7, 15, 31, 63, 127, 255]);
-  const arrayBuffer = typedArray.buffer;
-  const resource = new Resource({ url: "https://example.com/external.bin" });
+  var typedArray = new Uint8Array([1, 3, 7, 15, 31, 63, 127, 255]);
+  var arrayBuffer = typedArray.buffer;
+  var resource = new Resource({ url: "https://example.com/external.bin" });
 
   afterEach(function () {
     ResourceCache.clearForSpecs();
@@ -28,12 +33,12 @@ describe("Scene/BufferLoader", function () {
   });
 
   it("rejects promise if buffer cannot be fetched", function () {
-    const error = new Error("404 Not Found");
-    spyOn(Resource.prototype, "fetchArrayBuffer").and.callFake(function () {
-      return Promise.reject(error);
-    });
+    var error = new Error("404 Not Found");
+    spyOn(Resource.prototype, "fetchArrayBuffer").and.returnValue(
+      when.reject(error)
+    );
 
-    const bufferLoader = new BufferLoader({
+    var bufferLoader = new BufferLoader({
       resource: resource,
     });
 
@@ -43,7 +48,7 @@ describe("Scene/BufferLoader", function () {
       .then(function (bufferLoader) {
         fail();
       })
-      .catch(function (runtimeError) {
+      .otherwise(function (runtimeError) {
         expect(runtimeError.message).toBe(
           "Failed to load external buffer: https://example.com/external.bin\n404 Not Found"
         );
@@ -51,7 +56,7 @@ describe("Scene/BufferLoader", function () {
   });
 
   it("loads buffer from typed array", function () {
-    const bufferLoader = new BufferLoader({
+    var bufferLoader = new BufferLoader({
       typedArray: typedArray,
     });
     bufferLoader.load();
@@ -62,12 +67,12 @@ describe("Scene/BufferLoader", function () {
   });
 
   it("loads external buffer", function () {
-    const fetchBuffer = spyOn(
+    var fetchBuffer = spyOn(
       Resource.prototype,
       "fetchArrayBuffer"
-    ).and.returnValue(Promise.resolve(arrayBuffer));
+    ).and.returnValue(when.resolve(arrayBuffer));
 
-    const bufferLoader = new BufferLoader({
+    var bufferLoader = new BufferLoader({
       resource: resource,
     });
 
@@ -81,10 +86,10 @@ describe("Scene/BufferLoader", function () {
 
   it("destroys buffer", function () {
     spyOn(Resource.prototype, "fetchArrayBuffer").and.returnValue(
-      Promise.resolve(arrayBuffer)
+      when.resolve(arrayBuffer)
     );
 
-    const bufferLoader = new BufferLoader({
+    var bufferLoader = new BufferLoader({
       resource: resource,
     });
 
@@ -102,36 +107,36 @@ describe("Scene/BufferLoader", function () {
     });
   });
 
-  function resolveAfterDestroy(rejectPromise) {
-    const fetchPromise = new Promise(function (resolve, reject) {
-      if (rejectPromise) {
-        reject(new Error());
-      } else {
-        resolve(arrayBuffer);
-      }
-    });
-    spyOn(Resource.prototype, "fetchArrayBuffer").and.returnValue(fetchPromise);
+  function resolveAfterDestroy(reject) {
+    var deferredPromise = when.defer();
+    spyOn(Resource.prototype, "fetchArrayBuffer").and.returnValue(
+      deferredPromise.promise
+    );
 
-    const bufferLoader = new BufferLoader({
+    var bufferLoader = new BufferLoader({
       resource: resource,
     });
 
     expect(bufferLoader.typedArray).not.toBeDefined();
 
-    const loadPromise = bufferLoader.load();
+    bufferLoader.load();
     bufferLoader.destroy();
 
-    return loadPromise.finally(function () {
-      expect(bufferLoader.typedArray).not.toBeDefined();
-      expect(bufferLoader.isDestroyed()).toBe(true);
-    });
+    if (reject) {
+      deferredPromise.reject(new Error());
+    } else {
+      deferredPromise.resolve(arrayBuffer);
+    }
+
+    expect(bufferLoader.typedArray).not.toBeDefined();
+    expect(bufferLoader.isDestroyed()).toBe(true);
   }
 
   it("handles resolving uri after destroy", function () {
-    return resolveAfterDestroy(false);
+    resolveAfterDestroy(false);
   });
 
   it("handles rejecting uri after destroy", function () {
-    return resolveAfterDestroy(true);
+    resolveAfterDestroy(true);
   });
 });

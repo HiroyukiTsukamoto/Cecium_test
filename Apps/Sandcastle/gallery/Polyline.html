@@ -32,12 +32,12 @@
     <div id="loadingOverlay"><h1>Loading...</h1></div>
     <div id="toolbar"></div>
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer");
+        var viewer = new Cesium.Viewer("cesiumContainer");
 
-        const redLine = viewer.entities.add({
+        var redLine = viewer.entities.add({
           name: "Red line on terrain",
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArray([-75, 35, -125, 35]),
@@ -47,7 +47,7 @@
           },
         });
 
-        const greenRhumbLine = viewer.entities.add({
+        var greenRhumbLine = viewer.entities.add({
           name: "Green rhumb line",
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArray([-75, 35, -125, 35]),
@@ -57,7 +57,7 @@
           },
         });
 
-        const glowingLine = viewer.entities.add({
+        var glowingLine = viewer.entities.add({
           name: "Glowing blue line on the surface",
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArray([-75, 37, -125, 37]),
@@ -70,7 +70,7 @@
           },
         });
 
-        const orangeOutlined = viewer.entities.add({
+        var orangeOutlined = viewer.entities.add({
           name:
             "Orange line with black outline at height and following the surface",
           polyline: {
@@ -91,7 +91,7 @@
           },
         });
 
-        const purpleArrow = viewer.entities.add({
+        var purpleArrow = viewer.entities.add({
           name: "Purple straight arrow at height",
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArrayHeights([
@@ -110,7 +110,7 @@
           },
         });
 
-        const dashedLine = viewer.entities.add({
+        var dashedLine = viewer.entities.add({
           name: "Blue dashed line",
           polyline: {
             positions: Cesium.Cartesian3.fromDegreesArrayHeights([
@@ -131,10 +131,10 @@
         viewer.zoomTo(viewer.entities);
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

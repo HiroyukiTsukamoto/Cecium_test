@@ -5,49 +5,12 @@ import {
   ImplicitTileset,
   MetadataSchema,
   Resource,
-  RuntimeError,
 } from "../../Source/Cesium.js";
 
 describe("Scene/ImplicitTileset", function () {
-  const contentUriPattern = "https://example.com/{level}/{x}/{y}.b3dm";
-  const subtreeUriPattern = "https://example.com/{level}/{x}/{y}.subtree";
-  const implicitTilingJson = {
-    subdivisionScheme: "QUADTREE",
-    subtreeLevels: 3,
-    availableLevels: 5,
-    subtrees: {
-      uri: subtreeUriPattern,
-    },
-  };
-
-  const implicitTilingJsonLegacy = {
-    subdivisionScheme: "QUADTREE",
-    subtreeLevels: 3,
-    maximumLevel: 4,
-    subtrees: {
-      uri: subtreeUriPattern,
-    },
-  };
-
-  const implicitTileJson = {
-    geometricError: 500,
-    refine: "ADD",
-    boundingVolume: {
-      region: [0, 0, Math.PI / 24, Math.PI / 24, 0, 1000.0],
-    },
-    content: {
-      uri: contentUriPattern,
-      extras: {
-        author: "Cesium",
-      },
-    },
-    implicitTiling: implicitTilingJson,
-    extras: {
-      creationDate: "2021-02-22",
-    },
-  };
-
-  const implicitTileLegacyJson = {
+  var contentUriPattern = "https://example.com/{level}/{x}/{y}.b3dm";
+  var subtreeUriPattern = "https://example.com/{level}/{x}/{y}.subtree";
+  var implicitTileJson = {
     geometricError: 500,
     refine: "ADD",
     boundingVolume: {
@@ -60,27 +23,33 @@ describe("Scene/ImplicitTileset", function () {
       },
     },
     extensions: {
-      "3DTILES_implicit_tiling": implicitTilingJsonLegacy,
+      "3DTILES_implicit_tiling": {
+        subdivisionScheme: "QUADTREE",
+        subtreeLevels: 3,
+        maximumLevel: 4,
+        subtrees: {
+          uri: subtreeUriPattern,
+        },
+      },
     },
     extras: {
       creationDate: "2021-02-22",
     },
   };
-
-  const baseResource = new Resource("https://example.com/tileset.json");
-  const contentUriTemplate = new Resource(contentUriPattern);
-  const subtreeUriTemplate = new Resource(subtreeUriPattern);
+  var baseResource = new Resource("https://example.com/tileset.json");
+  var contentUriTemplate = new Resource(contentUriPattern);
+  var subtreeUriTemplate = new Resource(subtreeUriPattern);
 
   it("gathers information from both tile JSON and extension", function () {
-    let metadataSchema; // intentionally left undefined
-    const implicitTileset = new ImplicitTileset(
+    var metadataSchema; // intentionally left undefined
+    var implicitTileset = new ImplicitTileset(
       baseResource,
       implicitTileJson,
       metadataSchema
     );
     expect(implicitTileset.metadataSchema).toBeUndefined();
     expect(implicitTileset.subtreeLevels).toEqual(3);
-    expect(implicitTileset.availableLevels).toEqual(5);
+    expect(implicitTileset.maximumLevel).toEqual(4);
     expect(implicitTileset.subdivisionScheme).toEqual(
       ImplicitSubdivisionScheme.QUADTREE
     );
@@ -94,40 +63,39 @@ describe("Scene/ImplicitTileset", function () {
   });
 
   it("stores a template of the tile JSON structure", function () {
-    let metadataSchema; // intentionally left undefined
-    const implicitTileset = new ImplicitTileset(
+    var metadataSchema; // intentionally left undefined
+    var implicitTileset = new ImplicitTileset(
       baseResource,
       implicitTileJson,
       metadataSchema
     );
-    const deep = true;
-    const expected = clone(implicitTileJson, deep);
+    var deep = true;
+    var expected = clone(implicitTileJson, deep);
     delete expected.content;
-    delete expected.implicitTiling;
+    delete expected.extensions;
     expect(implicitTileset.tileHeader).toEqual(expected);
   });
 
   it("tileHeader stores additional extensions", function () {
-    const deep = true;
-    const withExtensions = clone(implicitTileJson, deep);
-    withExtensions.extensions = {};
+    var deep = true;
+    var withExtensions = clone(implicitTileJson, deep);
     withExtensions.extensions["3DTILES_extension"] = {};
 
-    let metadataSchema; // intentionally left undefined
-    const implicitTileset = new ImplicitTileset(
+    var metadataSchema; // intentionally left undefined
+    var implicitTileset = new ImplicitTileset(
       baseResource,
       withExtensions,
       metadataSchema
     );
-    const expected = clone(withExtensions, deep);
+    var expected = clone(withExtensions, deep);
     delete expected.content;
-    delete expected.implicitTiling;
+    delete expected.extensions["3DTILES_implicit_tiling"];
     expect(implicitTileset.tileHeader).toEqual(expected);
   });
 
   it("stores a template of the tile content structure", function () {
-    let metadataSchema; // intentionally left undefined
-    const implicitTileset = new ImplicitTileset(
+    var metadataSchema; // intentionally left undefined
+    var implicitTileset = new ImplicitTileset(
       baseResource,
       implicitTileJson,
       metadataSchema
@@ -136,10 +104,10 @@ describe("Scene/ImplicitTileset", function () {
   });
 
   it("allows undefined content URI", function () {
-    const noContentJson = clone(implicitTileJson);
+    var noContentJson = clone(implicitTileJson);
     delete noContentJson.content;
-    let metadataSchema; // intentionally left undefined
-    const implicitTileset = new ImplicitTileset(
+    var metadataSchema; // intentionally left undefined
+    var implicitTileset = new ImplicitTileset(
       baseResource,
       noContentJson,
       metadataSchema
@@ -148,7 +116,7 @@ describe("Scene/ImplicitTileset", function () {
   });
 
   it("accepts tilesets with 3DTILES_bounding_volume_S2", function () {
-    const tileJson = clone(implicitTileLegacyJson, true);
+    var tileJson = clone(implicitTileJson, true);
     tileJson.boundingVolume = {
       extensions: {
         "3DTILES_bounding_volume_S2": {
@@ -158,16 +126,16 @@ describe("Scene/ImplicitTileset", function () {
         },
       },
     };
-    const tileJsonS2 =
+    var tileJsonS2 =
       tileJson.boundingVolume.extensions["3DTILES_bounding_volume_S2"];
 
-    let metadataSchema;
-    const implicitTileset = new ImplicitTileset(
+    var metadataSchema;
+    var implicitTileset = new ImplicitTileset(
       baseResource,
       tileJson,
       metadataSchema
     );
-    const implicitTilesetS2 =
+    var implicitTilesetS2 =
       implicitTileset.boundingVolume.extensions["3DTILES_bounding_volume_S2"];
     expect(implicitTilesetS2.token).toEqual(tileJsonS2.token);
     expect(implicitTilesetS2.minimumHeight).toEqual(tileJsonS2.minimumHeight);
@@ -175,202 +143,23 @@ describe("Scene/ImplicitTileset", function () {
   });
 
   it("rejects bounding spheres", function () {
-    const sphereJson = {
+    var sphereJson = {
       boundingVolume: {
         sphere: [0, 0, 0, 100],
       },
     };
-    const tileJson = combine(sphereJson, implicitTileJson);
-    let metadataSchema; // intentionally left undefined
+    var tileJson = combine(sphereJson, implicitTileJson);
+    var metadataSchema; // intentionally left undefined
     expect(function () {
       return new ImplicitTileset(baseResource, tileJson, metadataSchema);
-    }).toThrowError(RuntimeError);
-  });
-
-  describe("3DTILES_implicit_tiling", function () {
-    it("gathers information from both tile JSON and extension (legacy)", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        implicitTileLegacyJson,
-        metadataSchema
-      );
-      expect(implicitTileset.metadataSchema).toBeUndefined();
-      expect(implicitTileset.subtreeLevels).toEqual(3);
-      expect(implicitTileset.availableLevels).toEqual(5);
-      expect(implicitTileset.subdivisionScheme).toEqual(
-        ImplicitSubdivisionScheme.QUADTREE
-      );
-      expect(implicitTileset.boundingVolume).toEqual(
-        implicitTileJson.boundingVolume
-      );
-      expect(implicitTileset.refine).toEqual(implicitTileJson.refine);
-      expect(implicitTileset.geometricError).toEqual(500);
-      expect(implicitTileset.contentUriTemplates).toEqual([contentUriTemplate]);
-      expect(implicitTileset.subtreeUriTemplate).toEqual(subtreeUriTemplate);
-    });
-
-    it("supports maximumLevel parameter in tile JSON (legacy)", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        implicitTileLegacyJson,
-        metadataSchema
-      );
-      expect(implicitTileset.availableLevels).toEqual(5);
-    });
-
-    it("stores a template of the tile JSON structure (legacy)", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        implicitTileLegacyJson,
-        metadataSchema
-      );
-      const deep = true;
-      const expected = clone(implicitTileLegacyJson, deep);
-      delete expected.content;
-      delete expected.extensions;
-      expect(implicitTileset.tileHeader).toEqual(expected);
-    });
-
-    it("tileHeader stores additional extensions (legacy)", function () {
-      const deep = true;
-      const withExtensions = clone(implicitTileLegacyJson, deep);
-      withExtensions.extensions["3DTILES_extension"] = {};
-
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        withExtensions,
-        metadataSchema
-      );
-      const expected = clone(withExtensions, deep);
-      delete expected.content;
-      delete expected.extensions["3DTILES_implicit_tiling"];
-      expect(implicitTileset.tileHeader).toEqual(expected);
-    });
-
-    it("stores a template of the tile content structure (legacy)", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        implicitTileLegacyJson,
-        metadataSchema
-      );
-      expect(implicitTileset.contentHeaders[0]).toEqual(
-        implicitTileJson.content
-      );
-    });
-
-    it("allows undefined content URI (legacy)", function () {
-      const noContentJson = clone(implicitTileLegacyJson);
-      delete noContentJson.content;
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        noContentJson,
-        metadataSchema
-      );
-      expect(implicitTileset.contentUriTemplates).toEqual([]);
-    });
-
-    it("rejects bounding spheres (legacy)", function () {
-      const sphereJson = {
-        boundingVolume: {
-          sphere: [0, 0, 0, 100],
-        },
-      };
-      const tileJson = combine(sphereJson, implicitTileLegacyJson);
-      let metadataSchema; // intentionally left undefined
-      expect(function () {
-        return new ImplicitTileset(baseResource, tileJson, metadataSchema);
-      }).toThrowError(RuntimeError);
-    });
-  });
-
-  const b3dmPattern = "https://example.com/{level}/{x}/{y}.b3dm";
-  const pntsPattern = "https://example.com/{level}/{x}/{y}.pnts";
-  const gltfPattern = "https://example.com/{level}/{x}/{y}.gltf";
-
-  describe("multiple contents", function () {
-    const multipleContentTile = {
-      geometricError: 500,
-      refine: "ADD",
-      boundingVolume: {
-        region: [0, 0, Math.PI / 24, Math.PI / 24, 0, 1000.0],
-      },
-      implicitTiling: {
-        subdivisionScheme: "QUADTREE",
-        subtreeLevels: 3,
-        availableLevels: 5,
-        subtrees: {
-          uri: subtreeUriPattern,
-        },
-      },
-      contents: [
-        {
-          uri: b3dmPattern,
-        },
-        {
-          uri: pntsPattern,
-        },
-        {
-          uri: gltfPattern,
-        },
-      ],
-    };
-
-    it("gathers content URIs from contents array", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        multipleContentTile,
-        metadataSchema
-      );
-      expect(implicitTileset.contentUriTemplates).toEqual([
-        new Resource({ url: b3dmPattern }),
-        new Resource({ url: pntsPattern }),
-        new Resource({ url: gltfPattern }),
-      ]);
-    });
-
-    it("stores content JSON for every tile", function () {
-      const deep = true;
-      const withProperties = clone(multipleContentTile, deep);
-      const extension = { "3DTILES_extension": {} };
-      const boundingBox = { box: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1] };
-      const contents = withProperties.contents;
-      let i;
-      for (i = 0; i < contents.length; i++) {
-        contents[i].boundingVolume = boundingBox;
-        contents[i].extensions = extension;
-      }
-
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        withProperties,
-        metadataSchema
-      );
-      for (i = 0; i < implicitTileset.contentHeaders.length; i++) {
-        expect(implicitTileset.contentHeaders[i]).toEqual(contents[i]);
-      }
-    });
-
-    it("template tileHeader does not store multiple contents extension", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
-        baseResource,
-        multipleContentTile,
-        metadataSchema
-      );
-      expect(implicitTileset.tileHeader.extensions).not.toBeDefined();
-    });
+    }).toThrowRuntimeError();
   });
 
   describe("3DTILES_multiple_contents", function () {
-    const multipleContentLegacyTile = {
+    var b3dmPattern = "https://example.com/{level}/{x}/{y}.b3dm";
+    var pntsPattern = "https://example.com/{level}/{x}/{y}.pnts";
+    var gltfPattern = "https://example.com/{level}/{x}/{y}.gltf";
+    var multipleContentTile = {
       geometricError: 500,
       refine: "ADD",
       boundingVolume: {
@@ -380,13 +169,13 @@ describe("Scene/ImplicitTileset", function () {
         "3DTILES_implicit_tiling": {
           subdivisionScheme: "QUADTREE",
           subtreeLevels: 3,
-          availableLevels: 5,
+          maximumLevel: 4,
           subtrees: {
             uri: subtreeUriPattern,
           },
         },
         "3DTILES_multiple_contents": {
-          contents: [
+          content: [
             {
               uri: b3dmPattern,
             },
@@ -401,11 +190,11 @@ describe("Scene/ImplicitTileset", function () {
       },
     };
 
-    it("gathers content URIs from multiple contents extension (legacy)", function () {
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
+    it("gathers content URIs from multiple contents extension", function () {
+      var metadataSchema; // intentionally left undefined
+      var implicitTileset = new ImplicitTileset(
         baseResource,
-        multipleContentLegacyTile,
+        multipleContentTile,
         metadataSchema
       );
       expect(implicitTileset.contentUriTemplates).toEqual([
@@ -415,21 +204,21 @@ describe("Scene/ImplicitTileset", function () {
       ]);
     });
 
-    it("stores content JSON for every tile (legacy)", function () {
-      const deep = true;
-      const withProperties = clone(multipleContentLegacyTile, deep);
-      const extension = { "3DTILES_extension": {} };
-      const boundingBox = { box: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1] };
-      const contents =
-        withProperties.extensions["3DTILES_multiple_contents"].contents;
-      let i;
+    it("stores content JSON for every tile", function () {
+      var deep = true;
+      var withProperties = clone(multipleContentTile, deep);
+      var extension = { "3DTILES_extension": {} };
+      var boundingBox = { box: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1] };
+      var contents =
+        withProperties.extensions["3DTILES_multiple_contents"].content;
+      var i;
       for (i = 0; i < contents.length; i++) {
         contents[i].boundingVolume = boundingBox;
         contents[i].extensions = extension;
       }
 
-      let metadataSchema; // intentionally left undefined
-      const implicitTileset = new ImplicitTileset(
+      var metadataSchema; // intentionally left undefined
+      var implicitTileset = new ImplicitTileset(
         baseResource,
         withProperties,
         metadataSchema
@@ -438,26 +227,35 @@ describe("Scene/ImplicitTileset", function () {
         expect(implicitTileset.contentHeaders[i]).toEqual(contents[i]);
       }
     });
+
+    it("template tileHeader does not store multiple contents extension", function () {
+      var metadataSchema; // intentionally left undefined
+      var implicitTileset = new ImplicitTileset(
+        baseResource,
+        multipleContentTile,
+        metadataSchema
+      );
+      expect(implicitTileset.tileHeader.extensions).not.toBeDefined();
+    });
   });
 
-  describe("metadata", function () {
+  describe("3DTILES_metadata", function () {
     it("stores metadataSchema", function () {
-      const schema = {
+      var schema = {
         classes: {
           tile: {
             properties: {
               buildingCount: {
-                type: "SCALAR",
-                componentType: "UINT16",
+                type: "UINT16",
               },
             },
           },
         },
       };
 
-      const metadataSchema = new MetadataSchema(schema);
+      var metadataSchema = new MetadataSchema(schema);
 
-      const implicitTileset = new ImplicitTileset(
+      var implicitTileset = new ImplicitTileset(
         baseResource,
         implicitTileJson,
         metadataSchema

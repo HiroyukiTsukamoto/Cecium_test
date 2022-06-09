@@ -1,36 +1,38 @@
-import { defaultValue, getTimestamp } from "../Source/Cesium.js";
+import { defaultValue } from "../Source/Cesium.js";
+import { getTimestamp } from "../Source/Cesium.js";
+import { when } from "../Source/Cesium.js";
 
 function pollToPromise(f, options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
 
-  const pollInterval = defaultValue(options.pollInterval, 1);
-  const timeout = defaultValue(options.timeout, 5000);
+  var pollInterval = defaultValue(options.pollInterval, 1);
+  var timeout = defaultValue(options.timeout, 5000);
 
-  return new Promise(function (resolve, reject) {
-    const startTimestamp = getTimestamp();
-    const endTimestamp = startTimestamp + timeout;
+  var deferred = when.defer();
 
-    function poller() {
-      let result = false;
-      try {
-        result = f();
-      } catch (e) {
-        reject(e);
-        return;
-      }
+  var startTimestamp = getTimestamp();
+  var endTimestamp = startTimestamp + timeout;
 
-      if (result) {
-        resolve();
-      } else if (getTimestamp() > endTimestamp) {
-        reject(
-          new Error(`Timeout - function did not complete within ${timeout}ms`)
-        );
-      } else {
-        setTimeout(poller, pollInterval);
-      }
+  function poller() {
+    var result = false;
+    try {
+      result = f();
+    } catch (e) {
+      deferred.reject(e);
+      return;
     }
 
-    poller();
-  });
+    if (result) {
+      deferred.resolve();
+    } else if (getTimestamp() > endTimestamp) {
+      deferred.reject();
+    } else {
+      setTimeout(poller, pollInterval);
+    }
+  }
+
+  poller();
+
+  return deferred.promise;
 }
 export default pollToPromise;

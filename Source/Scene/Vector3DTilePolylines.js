@@ -21,6 +21,7 @@ import ShaderSource from "../Renderer/ShaderSource.js";
 import VertexArray from "../Renderer/VertexArray.js";
 import PolylineCommon from "../Shaders/PolylineCommon.js";
 import Vector3DTilePolylinesVS from "../Shaders/Vector3DTilePolylinesVS.js";
+import when from "../ThirdParty/when.js";
 import BlendingState from "./BlendingState.js";
 import Cesium3DTileFeature from "./Cesium3DTileFeature.js";
 
@@ -88,8 +89,7 @@ function Vector3DTilePolylines(options) {
   this._geometryByteLength = 0;
 
   this._ready = false;
-  this._update = function (polylines, frameState) {};
-  this._readyPromise = initialize(this);
+  this._readyPromise = when.defer();
 
   this._verticesPromise = undefined;
 }
@@ -131,26 +131,26 @@ Object.defineProperties(Vector3DTilePolylines.prototype, {
    */
   readyPromise: {
     get: function () {
-      return this._readyPromise;
+      return this._readyPromise.promise;
     },
   },
 });
 
 function packBuffer(polylines) {
-  const rectangle = polylines._rectangle;
-  const minimumHeight = polylines._minimumHeight;
-  const maximumHeight = polylines._maximumHeight;
-  const ellipsoid = polylines._ellipsoid;
-  const center = polylines._center;
+  var rectangle = polylines._rectangle;
+  var minimumHeight = polylines._minimumHeight;
+  var maximumHeight = polylines._maximumHeight;
+  var ellipsoid = polylines._ellipsoid;
+  var center = polylines._center;
 
-  const packedLength =
+  var packedLength =
     2 +
     Rectangle.packedLength +
     Ellipsoid.packedLength +
     Cartesian3.packedLength;
-  const packedBuffer = new Float64Array(packedLength);
+  var packedBuffer = new Float64Array(packedLength);
 
-  let offset = 0;
+  var offset = 0;
   packedBuffer[offset++] = minimumHeight;
   packedBuffer[offset++] = maximumHeight;
 
@@ -165,11 +165,11 @@ function packBuffer(polylines) {
   return packedBuffer;
 }
 
-const createVerticesTaskProcessor = new TaskProcessor(
+var createVerticesTaskProcessor = new TaskProcessor(
   "createVectorTilePolylines",
   5
 );
-const attributeLocations = {
+var attributeLocations = {
   previousPosition: 0,
   currentPosition: 1,
   nextPosition: 2,
@@ -183,12 +183,12 @@ function createVertexArray(polylines, context) {
   }
 
   if (!defined(polylines._verticesPromise)) {
-    let positions = polylines._positions;
-    let widths = polylines._widths;
-    let counts = polylines._counts;
-    let batchIds = polylines._transferrableBatchIds;
+    var positions = polylines._positions;
+    var widths = polylines._widths;
+    var counts = polylines._counts;
+    var batchIds = polylines._transferrableBatchIds;
 
-    let packedBuffer = polylines._packedBuffer;
+    var packedBuffer = polylines._packedBuffer;
 
     if (!defined(packedBuffer)) {
       // Copy because they may be the views on the same buffer.
@@ -203,14 +203,14 @@ function createVertexArray(polylines, context) {
       packedBuffer = polylines._packedBuffer = packBuffer(polylines);
     }
 
-    const transferrableObjects = [
+    var transferrableObjects = [
       positions.buffer,
       widths.buffer,
       counts.buffer,
       batchIds.buffer,
       packedBuffer.buffer,
     ];
-    const parameters = {
+    var parameters = {
       positions: positions.buffer,
       widths: widths.buffer,
       counts: counts.buffer,
@@ -219,7 +219,7 @@ function createVertexArray(polylines, context) {
       keepDecodedPositions: polylines._keepDecodedPositions,
     };
 
-    const verticesPromise = (polylines._verticesPromise = createVerticesTaskProcessor.scheduleTask(
+    var verticesPromise = (polylines._verticesPromise = createVerticesTaskProcessor.scheduleTask(
       parameters,
       transferrableObjects
     ));
@@ -228,41 +228,47 @@ function createVertexArray(polylines, context) {
       return;
     }
 
-    return verticesPromise.then(function (result) {
-      if (polylines._keepDecodedPositions) {
-        polylines._decodedPositions = new Float64Array(result.decodedPositions);
-        polylines._decodedPositionOffsets = new Uint32Array(
-          result.decodedPositionOffsets
+    when(verticesPromise)
+      .then(function (result) {
+        if (polylines._keepDecodedPositions) {
+          polylines._decodedPositions = new Float64Array(
+            result.decodedPositions
+          );
+          polylines._decodedPositionOffsets = new Uint32Array(
+            result.decodedPositionOffsets
+          );
+        }
+
+        polylines._currentPositions = new Float32Array(result.currentPositions);
+        polylines._previousPositions = new Float32Array(
+          result.previousPositions
         );
-      }
+        polylines._nextPositions = new Float32Array(result.nextPositions);
+        polylines._expandAndWidth = new Float32Array(result.expandAndWidth);
+        polylines._vertexBatchIds = new Uint16Array(result.batchIds);
 
-      polylines._currentPositions = new Float32Array(result.currentPositions);
-      polylines._previousPositions = new Float32Array(result.previousPositions);
-      polylines._nextPositions = new Float32Array(result.nextPositions);
-      polylines._expandAndWidth = new Float32Array(result.expandAndWidth);
-      polylines._vertexBatchIds = new Uint16Array(result.batchIds);
+        var indexDatatype = result.indexDatatype;
+        polylines._indices =
+          indexDatatype === IndexDatatype.UNSIGNED_SHORT
+            ? new Uint16Array(result.indices)
+            : new Uint32Array(result.indices);
 
-      const indexDatatype = result.indexDatatype;
-      polylines._indices =
-        indexDatatype === IndexDatatype.UNSIGNED_SHORT
-          ? new Uint16Array(result.indices)
-          : new Uint32Array(result.indices);
-
-      polylines._ready = true;
-    });
+        polylines._ready = true;
+      })
+      .otherwise(function (error) {
+        polylines._readyPromise.reject(error);
+      });
   }
-}
 
-function finishVertexArray(polylines, context) {
   if (polylines._ready && !defined(polylines._va)) {
-    const curPositions = polylines._currentPositions;
-    const prevPositions = polylines._previousPositions;
-    const nextPositions = polylines._nextPositions;
-    const expandAndWidth = polylines._expandAndWidth;
-    const vertexBatchIds = polylines._vertexBatchIds;
-    const indices = polylines._indices;
+    var curPositions = polylines._currentPositions;
+    var prevPositions = polylines._previousPositions;
+    var nextPositions = polylines._nextPositions;
+    var expandAndWidth = polylines._expandAndWidth;
+    var vertexBatchIds = polylines._vertexBatchIds;
+    var indices = polylines._indices;
 
-    let byteLength =
+    var byteLength =
       prevPositions.byteLength +
       curPositions.byteLength +
       nextPositions.byteLength;
@@ -273,33 +279,33 @@ function finishVertexArray(polylines, context) {
     polylines._trianglesLength = indices.length / 3;
     polylines._geometryByteLength = byteLength;
 
-    const prevPositionBuffer = Buffer.createVertexBuffer({
+    var prevPositionBuffer = Buffer.createVertexBuffer({
       context: context,
       typedArray: prevPositions,
       usage: BufferUsage.STATIC_DRAW,
     });
-    const curPositionBuffer = Buffer.createVertexBuffer({
+    var curPositionBuffer = Buffer.createVertexBuffer({
       context: context,
       typedArray: curPositions,
       usage: BufferUsage.STATIC_DRAW,
     });
-    const nextPositionBuffer = Buffer.createVertexBuffer({
+    var nextPositionBuffer = Buffer.createVertexBuffer({
       context: context,
       typedArray: nextPositions,
       usage: BufferUsage.STATIC_DRAW,
     });
-    const expandAndWidthBuffer = Buffer.createVertexBuffer({
+    var expandAndWidthBuffer = Buffer.createVertexBuffer({
       context: context,
       typedArray: expandAndWidth,
       usage: BufferUsage.STATIC_DRAW,
     });
-    const idBuffer = Buffer.createVertexBuffer({
+    var idBuffer = Buffer.createVertexBuffer({
       context: context,
       typedArray: vertexBatchIds,
       usage: BufferUsage.STATIC_DRAW,
     });
 
-    const indexBuffer = Buffer.createIndexBuffer({
+    var indexBuffer = Buffer.createIndexBuffer({
       context: context,
       typedArray: indices,
       usage: BufferUsage.STATIC_DRAW,
@@ -309,7 +315,7 @@ function finishVertexArray(polylines, context) {
           : IndexDatatype.UNSIGNED_INT,
     });
 
-    const vertexAttributes = [
+    var vertexAttributes = [
       {
         index: attributeLocations.previousPosition,
         vertexBuffer: prevPositionBuffer,
@@ -366,11 +372,13 @@ function finishVertexArray(polylines, context) {
     polylines._expandAndWidth = undefined;
     polylines._vertexBatchIds = undefined;
     polylines._indices = undefined;
+
+    polylines._readyPromise.resolve();
   }
 }
 
-const modifiedModelViewScratch = new Matrix4();
-const rtcScratch = new Cartesian3();
+var modifiedModelViewScratch = new Matrix4();
+var rtcScratch = new Cartesian3();
 
 function createUniformMap(primitive, context) {
   if (defined(primitive._uniformMap)) {
@@ -379,7 +387,7 @@ function createUniformMap(primitive, context) {
 
   primitive._uniformMap = {
     u_modifiedModelView: function () {
-      const viewMatrix = context.uniformState.view;
+      var viewMatrix = context.uniformState.view;
       Matrix4.clone(viewMatrix, modifiedModelViewScratch);
       Matrix4.multiplyByPoint(
         modifiedModelViewScratch,
@@ -404,7 +412,7 @@ function createRenderStates(primitive) {
     return;
   }
 
-  const polygonOffset = {
+  var polygonOffset = {
     enabled: true,
     factor: -5.0,
     units: -5.0,
@@ -420,7 +428,7 @@ function createRenderStates(primitive) {
   });
 }
 
-const PolylineFS =
+var PolylineFS =
   "uniform vec4 u_highlightColor; \n" +
   "void main()\n" +
   "{\n" +
@@ -432,27 +440,27 @@ function createShaders(primitive, context) {
     return;
   }
 
-  const batchTable = primitive._batchTable;
+  var batchTable = primitive._batchTable;
 
-  const vsSource = batchTable.getVertexShaderCallback(
+  var vsSource = batchTable.getVertexShaderCallback(
     false,
     "a_batchId",
     undefined
   )(Vector3DTilePolylinesVS);
-  const fsSource = batchTable.getFragmentShaderCallback(
+  var fsSource = batchTable.getFragmentShaderCallback(
     false,
     undefined,
     false
   )(PolylineFS);
 
-  const vs = new ShaderSource({
+  var vs = new ShaderSource({
     defines: [
       "VECTOR_TILE",
       !FeatureDetection.isInternetExplorer() ? "CLIP_POLYLINE" : "",
     ],
     sources: [PolylineCommon, vsSource],
   });
-  const fs = new ShaderSource({
+  var fs = new ShaderSource({
     defines: ["VECTOR_TILE"],
     sources: [fsSource],
   });
@@ -467,7 +475,7 @@ function createShaders(primitive, context) {
 
 function queueCommands(primitive, frameState) {
   if (!defined(primitive._command)) {
-    const uniformMap = primitive._batchTable.getUniformMapCallback()(
+    var uniformMap = primitive._batchTable.getUniformMapCallback()(
       primitive._uniformMap
     );
     primitive._command = new DrawCommand({
@@ -486,19 +494,19 @@ function queueCommands(primitive, frameState) {
 }
 
 Vector3DTilePolylines.getPolylinePositions = function (polylines, batchId) {
-  const batchIds = polylines._batchIds;
-  const positions = polylines._decodedPositions;
-  const offsets = polylines._decodedPositionOffsets;
+  var batchIds = polylines._batchIds;
+  var positions = polylines._decodedPositions;
+  var offsets = polylines._decodedPositionOffsets;
 
   if (!defined(batchIds) || !defined(positions)) {
     return undefined;
   }
 
-  let i;
-  let j;
-  const polylinesLength = batchIds.length;
-  let positionsLength = 0;
-  let resultCounter = 0;
+  var i;
+  var j;
+  var polylinesLength = batchIds.length;
+  var positionsLength = 0;
+  var resultCounter = 0;
 
   for (i = 0; i < polylinesLength; ++i) {
     if (batchIds[i] === batchId) {
@@ -510,14 +518,14 @@ Vector3DTilePolylines.getPolylinePositions = function (polylines, batchId) {
     return undefined;
   }
 
-  const results = new Float64Array(positionsLength * 3);
+  var results = new Float64Array(positionsLength * 3);
 
   for (i = 0; i < polylinesLength; ++i) {
     if (batchIds[i] === batchId) {
-      const offset = offsets[i];
-      const count = offsets[i + 1] - offset;
+      var offset = offsets[i];
+      var count = offsets[i + 1] - offset;
       for (j = 0; j < count; ++j) {
-        const decodedOffset = (offset + j) * 3;
+        var decodedOffset = (offset + j) * 3;
         results[resultCounter++] = positions[decodedOffset];
         results[resultCounter++] = positions[decodedOffset + 1];
         results[resultCounter++] = positions[decodedOffset + 2];
@@ -544,10 +552,10 @@ Vector3DTilePolylines.prototype.getPositions = function (batchId) {
  * @param {Cesium3DTileFeature[]} features An array of features where the polygon features will be placed.
  */
 Vector3DTilePolylines.prototype.createFeatures = function (content, features) {
-  const batchIds = this._batchIds;
-  const length = batchIds.length;
-  for (let i = 0; i < length; ++i) {
-    const batchId = batchIds[i];
+  var batchIds = this._batchIds;
+  var length = batchIds.length;
+  for (var i = 0; i < length; ++i) {
+    var batchId = batchIds[i];
     features[batchId] = new Cesium3DTileFeature(content, batchId);
   }
 };
@@ -563,21 +571,21 @@ Vector3DTilePolylines.prototype.applyDebugSettings = function (enabled, color) {
 };
 
 function clearStyle(polygons, features) {
-  const batchIds = polygons._batchIds;
-  const length = batchIds.length;
-  for (let i = 0; i < length; ++i) {
-    const batchId = batchIds[i];
-    const feature = features[batchId];
+  var batchIds = polygons._batchIds;
+  var length = batchIds.length;
+  for (var i = 0; i < length; ++i) {
+    var batchId = batchIds[i];
+    var feature = features[batchId];
 
     feature.show = true;
     feature.color = Color.WHITE;
   }
 }
 
-const scratchColor = new Color();
+var scratchColor = new Color();
 
-const DEFAULT_COLOR_VALUE = Color.WHITE;
-const DEFAULT_SHOW_VALUE = true;
+var DEFAULT_COLOR_VALUE = Color.WHITE;
+var DEFAULT_SHOW_VALUE = true;
 
 /**
  * Apply a style to the content.
@@ -591,11 +599,11 @@ Vector3DTilePolylines.prototype.applyStyle = function (style, features) {
     return;
   }
 
-  const batchIds = this._batchIds;
-  const length = batchIds.length;
-  for (let i = 0; i < length; ++i) {
-    const batchId = batchIds[i];
-    const feature = features[batchId];
+  var batchIds = this._batchIds;
+  var length = batchIds.length;
+  for (var i = 0; i < length; ++i) {
+    var batchId = batchIds[i];
+    var feature = features[batchId];
 
     feature.color = defined(style.color)
       ? style.color.evaluateColor(feature, scratchColor)
@@ -606,45 +614,27 @@ Vector3DTilePolylines.prototype.applyStyle = function (style, features) {
   }
 };
 
-function initialize(polylines) {
-  return new Promise(function (resolve, reject) {
-    polylines._update = function (polylines, frameState) {
-      const context = frameState.context;
-      const promise = createVertexArray(polylines, context);
-      createUniformMap(polylines, context);
-      createShaders(polylines, context);
-      createRenderStates(polylines);
-
-      if (polylines._ready) {
-        const passes = frameState.passes;
-        if (passes.render || passes.pick) {
-          queueCommands(polylines, frameState);
-        }
-      }
-
-      if (!defined(promise)) {
-        return;
-      }
-
-      promise
-        .then(function () {
-          finishVertexArray(polylines, context);
-          resolve();
-        })
-        .catch(function (e) {
-          reject(e);
-        });
-    };
-  });
-}
-
 /**
  * Updates the batches and queues the commands for rendering.
  *
  * @param {FrameState} frameState The current frame state.
  */
 Vector3DTilePolylines.prototype.update = function (frameState) {
-  this._update(this, frameState);
+  var context = frameState.context;
+
+  createVertexArray(this, context);
+  createUniformMap(this, context);
+  createShaders(this, context);
+  createRenderStates(this);
+
+  if (!this._ready) {
+    return;
+  }
+
+  var passes = frameState.passes;
+  if (passes.render || passes.pick) {
+    queueCommands(this, frameState);
+  }
 };
 
 /**

@@ -2,13 +2,19 @@ import { ShaderStruct } from "../../Source/Cesium.js";
 
 describe("Renderer/ShaderStruct", function () {
   it("constructs", function () {
-    const struct = new ShaderStruct("TestStruct");
+    var struct = new ShaderStruct("TestStruct");
     expect(struct.name).toEqual("TestStruct");
     expect(struct.fields).toEqual([]);
   });
 
+  it("constructor throws for undefined name", function () {
+    expect(function () {
+      return new ShaderStruct(undefined);
+    }).toThrowDeveloperError();
+  });
+
   it("addField adds fields", function () {
-    const struct = new ShaderStruct("TestStruct");
+    var struct = new ShaderStruct("TestStruct");
     struct.addField("vec3", "positionMC");
     struct.addField("float", "weights[4]");
     struct.addField("OtherStruct", "complex");
@@ -19,8 +25,22 @@ describe("Renderer/ShaderStruct", function () {
     ]);
   });
 
+  it("addField throws for undefined type", function () {
+    var struct = new ShaderStruct("TestStruct");
+    expect(function () {
+      return struct.addField(undefined, "positionMC");
+    }).toThrowDeveloperError();
+  });
+
+  it("addField throws for undefined identifier", function () {
+    var struct = new ShaderStruct("TestStruct");
+    expect(function () {
+      return struct.addField("vec3", undefined);
+    }).toThrowDeveloperError();
+  });
+
   it("generateGlslLines generates a struct definition", function () {
-    const struct = new ShaderStruct("TestStruct");
+    var struct = new ShaderStruct("TestStruct");
     struct.addField("vec3", "positionMC");
     struct.addField("float", "weights[4]");
     struct.addField("OtherStruct", "complex");
@@ -35,7 +55,7 @@ describe("Renderer/ShaderStruct", function () {
   });
 
   it("generateGlslLines pads an empty struct definition", function () {
-    const struct = new ShaderStruct("Nothing");
+    var struct = new ShaderStruct("Nothing");
     expect(struct.generateGlslLines()).toEqual([
       "struct Nothing",
       "{",

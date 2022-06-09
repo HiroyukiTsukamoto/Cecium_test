@@ -3,7 +3,7 @@
  *
  * @enum {Number}
  */
-const RequestType = {
+var RequestType = {
   /**
    * Terrain request.
    *

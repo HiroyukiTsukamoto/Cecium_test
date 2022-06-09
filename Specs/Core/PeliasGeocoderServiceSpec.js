@@ -2,6 +2,7 @@ import { Cartesian3 } from "../../Source/Cesium.js";
 import { GeocodeType } from "../../Source/Cesium.js";
 import { PeliasGeocoderService } from "../../Source/Cesium.js";
 import { Resource } from "../../Source/Cesium.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Core/PeliasGeocoderService", function () {
   it("constructor throws without url", function () {
@@ -11,10 +12,10 @@ describe("Core/PeliasGeocoderService", function () {
   });
 
   it("returns geocoder results", function () {
-    const service = new PeliasGeocoderService("http://test.invalid/v1/");
+    var service = new PeliasGeocoderService("http://test.invalid/v1/");
 
-    const query = "some query";
-    const data = {
+    var query = "some query";
+    var data = {
       features: [
         {
           type: "Feature",
@@ -28,9 +29,7 @@ describe("Core/PeliasGeocoderService", function () {
         },
       ],
     };
-    spyOn(Resource.prototype, "fetchJson").and.returnValue(
-      Promise.resolve(data)
-    );
+    spyOn(Resource.prototype, "fetchJson").and.returnValue(when.resolve(data));
 
     return service.geocode(query).then(function (results) {
       expect(results.length).toEqual(1);
@@ -40,13 +39,11 @@ describe("Core/PeliasGeocoderService", function () {
   });
 
   it("returns no geocoder results if Pelias has no results", function () {
-    const service = new PeliasGeocoderService("http://test.invalid/v1/");
+    var service = new PeliasGeocoderService("http://test.invalid/v1/");
 
-    const query = "some query";
-    const data = { features: [] };
-    spyOn(Resource.prototype, "fetchJson").and.returnValue(
-      Promise.resolve(data)
-    );
+    var query = "some query";
+    var data = { features: [] };
+    spyOn(Resource.prototype, "fetchJson").and.returnValue(when.resolve(data));
 
     return service.geocode(query).then(function (results) {
       expect(results.length).toEqual(0);
@@ -54,14 +51,12 @@ describe("Core/PeliasGeocoderService", function () {
   });
 
   it("calls search endpoint if specified", function () {
-    const service = new PeliasGeocoderService("http://test.invalid/v1/");
+    var service = new PeliasGeocoderService("http://test.invalid/v1/");
 
-    const query = "some query";
-    const data = { features: [] };
-    spyOn(Resource.prototype, "fetchJson").and.returnValue(
-      Promise.resolve(data)
-    );
-    const getDerivedResource = spyOn(
+    var query = "some query";
+    var data = { features: [] };
+    spyOn(Resource.prototype, "fetchJson").and.returnValue(when.resolve(data));
+    var getDerivedResource = spyOn(
       service._url,
       "getDerivedResource"
     ).and.callThrough();
@@ -76,14 +71,12 @@ describe("Core/PeliasGeocoderService", function () {
   });
 
   it("calls autocomplete endpoint if specified", function () {
-    const service = new PeliasGeocoderService("http://test.invalid/v1/");
+    var service = new PeliasGeocoderService("http://test.invalid/v1/");
 
-    const query = "some query";
-    const data = { features: [] };
-    spyOn(Resource.prototype, "fetchJson").and.returnValue(
-      Promise.resolve(data)
-    );
-    const getDerivedResource = spyOn(
+    var query = "some query";
+    var data = { features: [] };
+    spyOn(Resource.prototype, "fetchJson").and.returnValue(when.resolve(data));
+    var getDerivedResource = spyOn(
       service._url,
       "getDerivedResource"
     ).and.callThrough();

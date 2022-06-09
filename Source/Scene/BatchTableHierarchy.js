@@ -51,16 +51,16 @@ export default function BatchTableHierarchy(options) {
  * @private
  */
 function initialize(hierarchy, hierarchyJson, binaryBody) {
-  let i;
-  let classId;
-  let binaryAccessor;
+  var i;
+  var classId;
+  var binaryAccessor;
 
-  const instancesLength = hierarchyJson.instancesLength;
-  const classes = hierarchyJson.classes;
-  let classIds = hierarchyJson.classIds;
-  let parentCounts = hierarchyJson.parentCounts;
-  let parentIds = hierarchyJson.parentIds;
-  let parentIdsLength = instancesLength;
+  var instancesLength = hierarchyJson.instancesLength;
+  var classes = hierarchyJson.classes;
+  var classIds = hierarchyJson.classIds;
+  var parentCounts = hierarchyJson.parentCounts;
+  var parentIds = hierarchyJson.parentIds;
+  var parentIdsLength = instancesLength;
 
   if (defined(classIds.byteOffset)) {
     classIds.componentType = defaultValue(
@@ -76,7 +76,7 @@ function initialize(hierarchy, hierarchyJson, binaryBody) {
     );
   }
 
-  let parentIndexes;
+  var parentIndexes;
   if (defined(parentCounts)) {
     if (defined(parentCounts.byteOffset)) {
       parentCounts.componentType = defaultValue(
@@ -113,11 +113,11 @@ function initialize(hierarchy, hierarchyJson, binaryBody) {
     );
   }
 
-  const classesLength = classes.length;
+  var classesLength = classes.length;
   for (i = 0; i < classesLength; ++i) {
-    const classInstancesLength = classes[i].length;
-    const properties = classes[i].instances;
-    const binaryProperties = getBinaryProperties(
+    var classInstancesLength = classes[i].length;
+    var properties = classes[i].instances;
+    var binaryProperties = getBinaryProperties(
       classInstancesLength,
       properties,
       binaryBody
@@ -125,8 +125,8 @@ function initialize(hierarchy, hierarchyJson, binaryBody) {
     classes[i].instances = combine(binaryProperties, properties);
   }
 
-  const classCounts = arrayFill(new Array(classesLength), 0);
-  const classIndexes = new Uint16Array(instancesLength);
+  var classCounts = arrayFill(new Array(classesLength), 0);
+  var classIndexes = new Uint16Array(instancesLength);
   for (i = 0; i < instancesLength; ++i) {
     classId = classIds[i];
     classIndexes[i] = classCounts[classId];
@@ -142,15 +142,15 @@ function initialize(hierarchy, hierarchyJson, binaryBody) {
 }
 
 function getBinaryProperties(featuresLength, properties, binaryBody) {
-  let binaryProperties;
-  for (const name in properties) {
+  var binaryProperties;
+  for (var name in properties) {
     if (properties.hasOwnProperty(name)) {
-      const property = properties[name];
-      const byteOffset = property.byteOffset;
+      var property = properties[name];
+      var byteOffset = property.byteOffset;
       if (defined(byteOffset)) {
         // This is a binary property
-        const componentType = property.componentType;
-        const type = property.type;
+        var componentType = property.componentType;
+        var type = property.type;
         if (!defined(componentType)) {
           throw new RuntimeError("componentType is required.");
         }
@@ -159,14 +159,14 @@ function getBinaryProperties(featuresLength, properties, binaryBody) {
         }
         if (!defined(binaryBody)) {
           throw new RuntimeError(
-            `Property ${name} requires a batch table binary.`
+            "Property " + name + " requires a batch table binary."
           );
         }
 
-        const binaryAccessor = getBinaryAccessor(property);
-        const componentCount = binaryAccessor.componentsPerAttribute;
-        const classType = binaryAccessor.classType;
-        const typedArray = binaryAccessor.createArrayBufferView(
+        var binaryAccessor = getBinaryAccessor(property);
+        var componentCount = binaryAccessor.componentsPerAttribute;
+        var classType = binaryAccessor.classType;
+        var typedArray = binaryAccessor.createArrayBufferView(
           binaryBody.buffer,
           binaryBody.byteOffset + byteOffset,
           featuresLength
@@ -190,25 +190,25 @@ function getBinaryProperties(featuresLength, properties, binaryBody) {
 }
 
 //>>includeStart('debug', pragmas.debug);
-const scratchValidateStack = [];
+var scratchValidateStack = [];
 function validateHierarchy(hierarchy) {
-  const stack = scratchValidateStack;
+  var stack = scratchValidateStack;
   stack.length = 0;
 
-  const classIds = hierarchy._classIds;
-  const instancesLength = classIds.length;
+  var classIds = hierarchy._classIds;
+  var instancesLength = classIds.length;
 
-  for (let i = 0; i < instancesLength; ++i) {
+  for (var i = 0; i < instancesLength; ++i) {
     validateInstance(hierarchy, i, stack);
   }
 }
 
 function validateInstance(hierarchy, instanceIndex, stack) {
-  const parentCounts = hierarchy._parentCounts;
-  const parentIds = hierarchy._parentIds;
-  const parentIndexes = hierarchy._parentIndexes;
-  const classIds = hierarchy._classIds;
-  const instancesLength = classIds.length;
+  var parentCounts = hierarchy._parentCounts;
+  var parentIds = hierarchy._parentIds;
+  var parentIndexes = hierarchy._parentIndexes;
+  var classIds = hierarchy._classIds;
+  var instancesLength = classIds.length;
 
   if (!defined(parentIds)) {
     // No need to validate if there are no parents
@@ -217,7 +217,10 @@ function validateInstance(hierarchy, instanceIndex, stack) {
 
   if (instanceIndex >= instancesLength) {
     throw new DeveloperError(
-      `Parent index ${instanceIndex} exceeds the total number of instances: ${instancesLength}`
+      "Parent index " +
+        instanceIndex +
+        " exceeds the total number of instances: " +
+        instancesLength
     );
   }
   if (stack.indexOf(instanceIndex) > -1) {
@@ -227,12 +230,12 @@ function validateInstance(hierarchy, instanceIndex, stack) {
   }
 
   stack.push(instanceIndex);
-  const parentCount = defined(parentCounts) ? parentCounts[instanceIndex] : 1;
-  const parentIndex = defined(parentCounts)
+  var parentCount = defined(parentCounts) ? parentCounts[instanceIndex] : 1;
+  var parentIndex = defined(parentCounts)
     ? parentIndexes[instanceIndex]
     : instanceIndex;
-  for (let i = 0; i < parentCount; ++i) {
-    const parentId = parentIds[parentIndex + i];
+  for (var i = 0; i < parentCount; ++i) {
+    var parentId = parentIds[parentIndex + i];
     // Stop the traversal when the instance has no parent (its parentId equals itself), else continue the traversal.
     if (parentId !== instanceIndex) {
       validateInstance(hierarchy, parentId, stack);
@@ -243,28 +246,28 @@ function validateInstance(hierarchy, instanceIndex, stack) {
 //>>includeEnd('debug');
 
 // The size of this array equals the maximum instance count among all loaded tiles, which has the potential to be large.
-const scratchVisited = [];
-const scratchStack = [];
-let marker = 0;
+var scratchVisited = [];
+var scratchStack = [];
+var marker = 0;
 function traverseHierarchyMultipleParents(
   hierarchy,
   instanceIndex,
   endConditionCallback
 ) {
-  const classIds = hierarchy._classIds;
-  const parentCounts = hierarchy._parentCounts;
-  const parentIds = hierarchy._parentIds;
-  const parentIndexes = hierarchy._parentIndexes;
-  const instancesLength = classIds.length;
+  var classIds = hierarchy._classIds;
+  var parentCounts = hierarchy._parentCounts;
+  var parentIds = hierarchy._parentIds;
+  var parentIndexes = hierarchy._parentIndexes;
+  var instancesLength = classIds.length;
 
   // Ignore instances that have already been visited. This occurs in diamond inheritance situations.
   // Use a marker value to indicate that an instance has been visited, which increments with each run.
   // This is more efficient than clearing the visited array every time.
-  const visited = scratchVisited;
+  var visited = scratchVisited;
   visited.length = Math.max(visited.length, instancesLength);
-  const visitedMarker = ++marker;
+  var visitedMarker = ++marker;
 
-  const stack = scratchStack;
+  var stack = scratchStack;
   stack.length = 0;
   stack.push(instanceIndex);
 
@@ -275,15 +278,15 @@ function traverseHierarchyMultipleParents(
       continue;
     }
     visited[instanceIndex] = visitedMarker;
-    const result = endConditionCallback(hierarchy, instanceIndex);
+    var result = endConditionCallback(hierarchy, instanceIndex);
     if (defined(result)) {
       // The end condition was met, stop the traversal and return the result
       return result;
     }
-    const parentCount = parentCounts[instanceIndex];
-    const parentIndex = parentIndexes[instanceIndex];
-    for (let i = 0; i < parentCount; ++i) {
-      const parentId = parentIds[parentIndex + i];
+    var parentCount = parentCounts[instanceIndex];
+    var parentIndex = parentIndexes[instanceIndex];
+    for (var i = 0; i < parentCount; ++i) {
+      var parentId = parentIds[parentIndex + i];
       // Stop the traversal when the instance has no parent (its parentId equals itself)
       // else add the parent to the stack to continue the traversal.
       if (parentId !== instanceIndex) {
@@ -298,14 +301,14 @@ function traverseHierarchySingleParent(
   instanceIndex,
   endConditionCallback
 ) {
-  let hasParent = true;
+  var hasParent = true;
   while (hasParent) {
-    const result = endConditionCallback(hierarchy, instanceIndex);
+    var result = endConditionCallback(hierarchy, instanceIndex);
     if (defined(result)) {
       // The end condition was met, stop the traversal and return the result
       return result;
     }
-    const parentId = hierarchy._parentIds[instanceIndex];
+    var parentId = hierarchy._parentIds[instanceIndex];
     hasParent = parentId !== instanceIndex;
     instanceIndex = parentId;
   }
@@ -314,8 +317,8 @@ function traverseHierarchySingleParent(
 function traverseHierarchy(hierarchy, instanceIndex, endConditionCallback) {
   // Traverse over the hierarchy and process each instance with the endConditionCallback.
   // When the endConditionCallback returns a value, the traversal stops and that value is returned.
-  const parentCounts = hierarchy._parentCounts;
-  const parentIds = hierarchy._parentIds;
+  var parentCounts = hierarchy._parentCounts;
+  var parentIds = hierarchy._parentIds;
   if (!defined(parentIds)) {
     return endConditionCallback(hierarchy, instanceIndex);
   } else if (defined(parentCounts)) {
@@ -341,12 +344,12 @@ function traverseHierarchy(hierarchy, instanceIndex, endConditionCallback) {
  * @private
  */
 BatchTableHierarchy.prototype.hasProperty = function (batchId, propertyId) {
-  const result = traverseHierarchy(this, batchId, function (
+  var result = traverseHierarchy(this, batchId, function (
     hierarchy,
     instanceIndex
   ) {
-    const classId = hierarchy._classIds[instanceIndex];
-    const instances = hierarchy._classes[classId].instances;
+    var classId = hierarchy._classIds[instanceIndex];
+    var instances = hierarchy._classes[classId].instances;
     if (defined(instances[propertyId])) {
       return true;
     }
@@ -362,10 +365,10 @@ BatchTableHierarchy.prototype.hasProperty = function (batchId, propertyId) {
  * @private
  */
 BatchTableHierarchy.prototype.propertyExists = function (propertyId) {
-  const classes = this._classes;
-  const classesLength = classes.length;
-  for (let i = 0; i < classesLength; ++i) {
-    const instances = classes[i].instances;
+  var classes = this._classes;
+  var classesLength = classes.length;
+  for (var i = 0; i < classesLength; ++i) {
+    var instances = classes[i].instances;
     if (defined(instances[propertyId])) {
       return true;
     }
@@ -387,9 +390,9 @@ BatchTableHierarchy.prototype.getPropertyIds = function (batchId, results) {
   results.length = 0;
 
   traverseHierarchy(this, batchId, function (hierarchy, instanceIndex) {
-    const classId = hierarchy._classIds[instanceIndex];
-    const instances = hierarchy._classes[classId].instances;
-    for (const name in instances) {
+    var classId = hierarchy._classIds[instanceIndex];
+    var instances = hierarchy._classes[classId].instances;
+    for (var name in instances) {
       if (instances.hasOwnProperty(name)) {
         if (results.indexOf(name) === -1) {
           results.push(name);
@@ -411,10 +414,10 @@ BatchTableHierarchy.prototype.getPropertyIds = function (batchId, results) {
  */
 BatchTableHierarchy.prototype.getProperty = function (batchId, propertyId) {
   return traverseHierarchy(this, batchId, function (hierarchy, instanceIndex) {
-    const classId = hierarchy._classIds[instanceIndex];
-    const instanceClass = hierarchy._classes[classId];
-    const indexInClass = hierarchy._classIndexes[instanceIndex];
-    const propertyValues = instanceClass.instances[propertyId];
+    var classId = hierarchy._classIds[instanceIndex];
+    var instanceClass = hierarchy._classes[classId];
+    var indexInClass = hierarchy._classIndexes[instanceIndex];
+    var propertyValues = instanceClass.instances[propertyId];
     if (defined(propertyValues)) {
       if (defined(propertyValues.typedArray)) {
         return getBinaryProperty(propertyValues, indexInClass);
@@ -425,8 +428,8 @@ BatchTableHierarchy.prototype.getProperty = function (batchId, propertyId) {
 };
 
 function getBinaryProperty(binaryProperty, index) {
-  const typedArray = binaryProperty.typedArray;
-  const componentCount = binaryProperty.componentCount;
+  var typedArray = binaryProperty.typedArray;
+  var componentCount = binaryProperty.componentCount;
   if (componentCount === 1) {
     return typedArray[index];
   }
@@ -450,19 +453,19 @@ BatchTableHierarchy.prototype.setProperty = function (
   propertyId,
   value
 ) {
-  const result = traverseHierarchy(this, batchId, function (
+  var result = traverseHierarchy(this, batchId, function (
     hierarchy,
     instanceIndex
   ) {
-    const classId = hierarchy._classIds[instanceIndex];
-    const instanceClass = hierarchy._classes[classId];
-    const indexInClass = hierarchy._classIndexes[instanceIndex];
-    const propertyValues = instanceClass.instances[propertyId];
+    var classId = hierarchy._classIds[instanceIndex];
+    var instanceClass = hierarchy._classes[classId];
+    var indexInClass = hierarchy._classIndexes[instanceIndex];
+    var propertyValues = instanceClass.instances[propertyId];
     if (defined(propertyValues)) {
       //>>includeStart('debug', pragmas.debug);
       if (instanceIndex !== batchId) {
         throw new DeveloperError(
-          `Inherited property "${propertyId}" is read-only.`
+          'Inherited property "' + propertyId + '" is read-only.'
         );
       }
       //>>includeEnd('debug');
@@ -478,8 +481,8 @@ BatchTableHierarchy.prototype.setProperty = function (
 };
 
 function setBinaryProperty(binaryProperty, index, value) {
-  const typedArray = binaryProperty.typedArray;
-  const componentCount = binaryProperty.componentCount;
+  var typedArray = binaryProperty.typedArray;
+  var componentCount = binaryProperty.componentCount;
   if (componentCount === 1) {
     typedArray[index] = value;
   } else {
@@ -498,12 +501,12 @@ function setBinaryProperty(binaryProperty, index, value) {
 BatchTableHierarchy.prototype.isClass = function (batchId, className) {
   // PERFORMANCE_IDEA : cache results in the ancestor classes to speed up this check if this area becomes a hotspot
   // PERFORMANCE_IDEA : treat class names as integers for faster comparisons
-  const result = traverseHierarchy(this, batchId, function (
+  var result = traverseHierarchy(this, batchId, function (
     hierarchy,
     instanceIndex
   ) {
-    const classId = hierarchy._classIds[instanceIndex];
-    const instanceClass = hierarchy._classes[classId];
+    var classId = hierarchy._classIds[instanceIndex];
+    var instanceClass = hierarchy._classes[classId];
     if (instanceClass.name === className) {
       return true;
     }
@@ -518,7 +521,7 @@ BatchTableHierarchy.prototype.isClass = function (batchId, className) {
  * @return {String} The name of the class this feature belongs to
  */
 BatchTableHierarchy.prototype.getClassName = function (batchId) {
-  const classId = this._classIds[batchId];
-  const instanceClass = this._classes[classId];
+  var classId = this._classIds[batchId];
+  var instanceClass = this._classes[classId];
   return instanceClass.name;
 };

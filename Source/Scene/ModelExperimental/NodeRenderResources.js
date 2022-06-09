@@ -1,5 +1,4 @@
 import Check from "../../Core/Check.js";
-import clone from "../../Core/clone.js";
 
 /**
  * A model is made up of one or more nodes in the scene graph. Some details
@@ -42,42 +41,17 @@ export default function NodeRenderResources(modelRenderResources, runtimeNode) {
   this.shaderBuilder = modelRenderResources.shaderBuilder.clone();
 
   /**
-   * A dictionary mapping uniform name to functions that return the uniform
-   * values. Inherited from the model render resources.
-   *
-   * @type {Object.<String, Function>}
-   *
-   * @readonly
-   *
-   * @private
-   */
-  this.uniformMap = clone(modelRenderResources.uniformMap);
-
-  /**
-   * Options for configuring the alpha stage such as pass and alpha mode. Inherited from the model
+   * The ID of the feature table to use for picking and styling. Inherited from the model
    * render resources.
    *
-   * @type {ModelAlphaOptions}
+   * @type {String}
    * @readonly
    *
    * @private
    */
-  this.alphaOptions = clone(modelRenderResources.alphaOptions);
+  this.featureTableId = modelRenderResources.featureTableId;
 
-  /**
-   * An object storing options for creating a {@link RenderState}.
-   * The pipeline stages simply set the options, the render state is created
-   * when the {@link DrawCommand} is constructed. Inherited from the model
-   * render resources.
-   *
-   * @type {Object}
-   * @readonly
-   *
-   * @private
-   */
-  this.renderStateOptions = clone(modelRenderResources.renderStateOptions);
-
-  // Other properties.
+  // other properties
   /**
    * A reference to the runtime node
    *
@@ -87,7 +61,14 @@ export default function NodeRenderResources(modelRenderResources, runtimeNode) {
    * @private
    */
   this.runtimeNode = runtimeNode;
-
+  /**
+   * The computed model matrix for this node.
+   *
+   * @type {Matrix4}
+   *
+   * @private
+   */
+  this.modelMatrix = runtimeNode.modelMatrix;
   /**
    * An array of objects describing vertex attributes that will eventually
    * be used to create a {@link VertexArray} for the draw command. Attributes
@@ -112,7 +93,7 @@ export default function NodeRenderResources(modelRenderResources, runtimeNode) {
   this.attributeIndex = 1;
 
   /**
-   * The set index to assign to feature ID vertex attribute(s) created from the offset/repeat in the feature ID attribute.
+   * The set index to assign to feature ID vertex attribute(s) created from the constant/divisor in the feature ID attribute.
    *
    * @type {Number}
    * @readonly

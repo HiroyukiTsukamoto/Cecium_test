@@ -4,10 +4,10 @@ import Event from "../Core/Event.js";
 import Property from "./Property.js";
 
 function resolve(that) {
-  let targetProperty = that._targetProperty;
+  var targetProperty = that._targetProperty;
 
   if (!defined(targetProperty)) {
-    let targetEntity = that._targetEntity;
+    var targetEntity = that._targetEntity;
 
     if (!defined(targetEntity)) {
       targetEntity = that._targetCollection.getById(that._targetId);
@@ -27,10 +27,10 @@ function resolve(that) {
     }
 
     // walk the list of property names and resolve properties
-    const targetPropertyNames = that._targetPropertyNames;
+    var targetPropertyNames = that._targetPropertyNames;
     targetProperty = that._targetEntity;
     for (
-      let i = 0, len = targetPropertyNames.length;
+      var i = 0, len = targetPropertyNames.length;
       i < len && defined(targetProperty);
       ++i
     ) {
@@ -55,33 +55,33 @@ function resolve(that) {
  * @param {String[]} targetPropertyNames The names of the property on the target entity which we will use.
  *
  * @example
- * const collection = new Cesium.EntityCollection();
+ * var collection = new Cesium.EntityCollection();
  *
  * //Create a new entity and assign a billboard scale.
- * const object1 = new Cesium.Entity({id:'object1'});
+ * var object1 = new Cesium.Entity({id:'object1'});
  * object1.billboard = new Cesium.BillboardGraphics();
  * object1.billboard.scale = new Cesium.ConstantProperty(2.0);
  * collection.add(object1);
  *
  * //Create a second entity and reference the scale from the first one.
- * const object2 = new Cesium.Entity({id:'object2'});
+ * var object2 = new Cesium.Entity({id:'object2'});
  * object2.model = new Cesium.ModelGraphics();
  * object2.model.scale = new Cesium.ReferenceProperty(collection, 'object1', ['billboard', 'scale']);
  * collection.add(object2);
  *
  * //Create a third object, but use the fromString helper function.
- * const object3 = new Cesium.Entity({id:'object3'});
+ * var object3 = new Cesium.Entity({id:'object3'});
  * object3.billboard = new Cesium.BillboardGraphics();
  * object3.billboard.scale = Cesium.ReferenceProperty.fromString(collection, 'object1#billboard.scale');
  * collection.add(object3);
  *
  * //You can refer to an entity with a # or . in id and property names by escaping them.
- * const object4 = new Cesium.Entity({id:'#object.4'});
+ * var object4 = new Cesium.Entity({id:'#object.4'});
  * object4.billboard = new Cesium.BillboardGraphics();
  * object4.billboard.scale = new Cesium.ConstantProperty(2.0);
  * collection.add(object4);
  *
- * const object5 = new Cesium.Entity({id:'object5'});
+ * var object5 = new Cesium.Entity({id:'object5'});
  * object5.billboard = new Cesium.BillboardGraphics();
  * object5.billboard.scale = Cesium.ReferenceProperty.fromString(collection, '\\#object\\.4#billboard.scale');
  * collection.add(object5);
@@ -97,8 +97,8 @@ function ReferenceProperty(targetCollection, targetId, targetPropertyNames) {
   if (!defined(targetPropertyNames) || targetPropertyNames.length === 0) {
     throw new DeveloperError("targetPropertyNames is required.");
   }
-  for (let i = 0; i < targetPropertyNames.length; i++) {
-    const item = targetPropertyNames[i];
+  for (var i = 0; i < targetPropertyNames.length; i++) {
+    var item = targetPropertyNames[i];
     if (!defined(item) || item === "") {
       throw new DeveloperError("reference contains invalid properties.");
     }
@@ -151,7 +151,7 @@ Object.defineProperties(ReferenceProperty.prototype, {
    */
   referenceFrame: {
     get: function () {
-      const target = resolve(this);
+      var target = resolve(this);
       return defined(target) ? target.referenceFrame : undefined;
     },
   },
@@ -224,14 +224,14 @@ ReferenceProperty.fromString = function (targetCollection, referenceString) {
   }
   //>>includeEnd('debug');
 
-  let identifier;
-  const values = [];
+  var identifier;
+  var values = [];
 
-  let inIdentifier = true;
-  let isEscaped = false;
-  let token = "";
-  for (let i = 0; i < referenceString.length; ++i) {
-    const c = referenceString.charAt(i);
+  var inIdentifier = true;
+  var isEscaped = false;
+  var token = "";
+  for (var i = 0; i < referenceString.length; ++i) {
+    var c = referenceString.charAt(i);
 
     if (isEscaped) {
       token += c;
@@ -262,7 +262,7 @@ ReferenceProperty.fromString = function (targetCollection, referenceString) {
  * @returns {Object} The modified result parameter or a new instance if the result parameter was not supplied.
  */
 ReferenceProperty.prototype.getValue = function (time, result) {
-  const target = resolve(this);
+  var target = resolve(this);
   return defined(target) ? target.getValue(time, result) : undefined;
 };
 
@@ -280,7 +280,7 @@ ReferenceProperty.prototype.getValueInReferenceFrame = function (
   referenceFrame,
   result
 ) {
-  const target = resolve(this);
+  var target = resolve(this);
   return defined(target)
     ? target.getValueInReferenceFrame(time, referenceFrame, result)
     : undefined;
@@ -294,7 +294,7 @@ ReferenceProperty.prototype.getValueInReferenceFrame = function (
  * @returns {String} The type of material.
  */
 ReferenceProperty.prototype.getType = function (time) {
-  const target = resolve(this);
+  var target = resolve(this);
   return defined(target) ? target.getType(time) : undefined;
 };
 
@@ -310,8 +310,8 @@ ReferenceProperty.prototype.equals = function (other) {
     return true;
   }
 
-  const names = this._targetPropertyNames;
-  const otherNames = other._targetPropertyNames;
+  var names = this._targetPropertyNames;
+  var otherNames = other._targetPropertyNames;
 
   if (
     this._targetCollection !== other._targetCollection || //
@@ -321,8 +321,8 @@ ReferenceProperty.prototype.equals = function (other) {
     return false;
   }
 
-  const length = this._targetPropertyNames.length;
-  for (let i = 0; i < length; i++) {
+  var length = this._targetPropertyNames.length;
+  for (var i = 0; i < length; i++) {
     if (names[i] !== otherNames[i]) {
       return false;
     }
@@ -348,7 +348,7 @@ ReferenceProperty.prototype._onCollectionChanged = function (
   added,
   removed
 ) {
-  let targetEntity = this._targetEntity;
+  var targetEntity = this._targetEntity;
   if (defined(targetEntity) && removed.indexOf(targetEntity) !== -1) {
     targetEntity.definitionChanged.removeEventListener(
       ReferenceProperty.prototype._onTargetEntityDefinitionChanged,

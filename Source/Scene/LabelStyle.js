@@ -5,7 +5,7 @@
  *
  * @see Label#style
  */
-const LabelStyle = {
+var LabelStyle = {
   /**
    * Fill the text of the label, but do not outline.
    *

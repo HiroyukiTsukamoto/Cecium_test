@@ -5,8 +5,8 @@ if (typeof self === "undefined") {
 }
 
 self.onmessage = function (event) {
-  const array = event.data.array;
-  const postMessage = self.webkitPostMessage || self.postMessage;
+  var array = event.data.array;
+  var postMessage = self.webkitPostMessage || self.postMessage;
 
   try {
     // transfer the test array back to the caller

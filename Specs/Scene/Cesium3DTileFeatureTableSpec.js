@@ -3,19 +3,16 @@ import { Cesium3DTileFeatureTable } from "../../Source/Cesium.js";
 
 describe("Scene/Cesium3DTileFeatureTable", function () {
   it("loads from JSON", function () {
-    const featureTable = new Cesium3DTileFeatureTable({
+    var featureTable = new Cesium3DTileFeatureTable({
       TEST: [0, 1, 2, 3, 4, 5],
     });
     featureTable.featuresLength = 3;
-
-    expect(featureTable.hasProperty("TEST")).toBe(true);
-
-    const all = featureTable.getGlobalProperty(
+    var all = featureTable.getGlobalProperty(
       "TEST",
       ComponentDatatype.UNSIGNED_BYTE
     );
     expect(all).toEqual([0, 1, 2, 3, 4, 5]);
-    const feature = featureTable.getProperty(
+    var feature = featureTable.getProperty(
       "TEST",
       ComponentDatatype.UNSIGNED_BYTE,
       2,
@@ -23,7 +20,7 @@ describe("Scene/Cesium3DTileFeatureTable", function () {
       new Array(2)
     );
     expect(feature).toEqual([2, 3]);
-    const properties = featureTable.getPropertyArray(
+    var properties = featureTable.getPropertyArray(
       "TEST",
       ComponentDatatype.UNSIGNED_BYTE,
       2
@@ -32,7 +29,7 @@ describe("Scene/Cesium3DTileFeatureTable", function () {
   });
 
   it("loads from binary", function () {
-    const featureTable = new Cesium3DTileFeatureTable(
+    var featureTable = new Cesium3DTileFeatureTable(
       {
         TEST: {
           byteOffset: 4,
@@ -41,16 +38,13 @@ describe("Scene/Cesium3DTileFeatureTable", function () {
       new Uint8Array([0, 0, 0, 0, 0, 1, 2, 3, 4, 5])
     );
     featureTable.featuresLength = 3;
-
-    expect(featureTable.hasProperty("TEST")).toBe(true);
-
-    const all = featureTable.getGlobalProperty(
+    var all = featureTable.getGlobalProperty(
       "TEST",
       ComponentDatatype.UNSIGNED_BYTE,
       6
     );
     expect(all).toEqual([0, 1, 2, 3, 4, 5]);
-    const feature = featureTable.getProperty(
+    var feature = featureTable.getProperty(
       "TEST",
       ComponentDatatype.UNSIGNED_BYTE,
       2,
@@ -58,7 +52,7 @@ describe("Scene/Cesium3DTileFeatureTable", function () {
       new Array(2)
     );
     expect(feature).toEqual([2, 3]);
-    const properties = featureTable.getPropertyArray(
+    var properties = featureTable.getPropertyArray(
       "TEST",
       ComponentDatatype.UNSIGNED_BYTE,
       2

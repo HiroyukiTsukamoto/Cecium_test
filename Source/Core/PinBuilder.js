@@ -85,7 +85,7 @@ PinBuilder.prototype.fromMakiIconId = function (id, color, size) {
   }
   //>>includeEnd('debug');
   return createPin(
-    buildModuleUrl(`Assets/Textures/maki/${encodeURIComponent(id)}.png`),
+    buildModuleUrl("Assets/Textures/maki/" + encodeURIComponent(id) + ".png"),
     undefined,
     color,
     size,
@@ -118,7 +118,7 @@ PinBuilder.prototype.fromText = function (text, color, size) {
   return createPin(undefined, text, color, size, this._cache);
 };
 
-const colorScratch = new Color();
+var colorScratch = new Color();
 
 //This function (except for the 3 commented lines) was auto-generated from an online tool,
 //http://www.professorcloud.com/svg-to-canvas/, using Assets/Textures/pin.svg as input.
@@ -156,9 +156,9 @@ function drawPin(context2D, color, size) {
 //values are used.
 function drawIcon(context2D, image, size) {
   //Size is the largest image that looks good inside of pin box.
-  const imageSize = size / 2.5;
-  let sizeX = imageSize;
-  let sizeY = imageSize;
+  var imageSize = size / 2.5;
+  var sizeX = imageSize;
+  var sizeY = imageSize;
 
   if (image.width > image.height) {
     sizeY = imageSize * (image.height / image.width);
@@ -167,8 +167,8 @@ function drawIcon(context2D, image, size) {
   }
 
   //x and y are the center of the pin box
-  const x = Math.round((size - sizeX) / 2);
-  const y = Math.round((7 / 24) * size - sizeY / 2);
+  var x = Math.round((size - sizeX) / 2);
+  var y = Math.round((7 / 24) * size - sizeY / 2);
 
   context2D.globalCompositeOperation = "destination-out";
   context2D.drawImage(image, x - 1, y, sizeX, sizeY);
@@ -188,32 +188,32 @@ function drawIcon(context2D, image, size) {
   context2D.fillRect(x - 1, y - 2, sizeX + 2, sizeY + 2);
 }
 
-const stringifyScratch = new Array(4);
+var stringifyScratch = new Array(4);
 function createPin(url, label, color, size, cache) {
   //Use the parameters as a unique ID for caching.
   stringifyScratch[0] = url;
   stringifyScratch[1] = label;
   stringifyScratch[2] = color;
   stringifyScratch[3] = size;
-  const id = JSON.stringify(stringifyScratch);
+  var id = JSON.stringify(stringifyScratch);
 
-  const item = cache[id];
+  var item = cache[id];
   if (defined(item)) {
     return item;
   }
 
-  const canvas = document.createElement("canvas");
+  var canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
 
-  const context2D = canvas.getContext("2d");
+  var context2D = canvas.getContext("2d");
   drawPin(context2D, color, size);
 
   if (defined(url)) {
-    const resource = Resource.createIfNeeded(url);
+    var resource = Resource.createIfNeeded(url);
 
     //If we have an image url, load it and then stamp the pin.
-    const promise = resource.fetchImage().then(function (image) {
+    var promise = resource.fetchImage().then(function (image) {
       drawIcon(context2D, image, size);
       cache[id] = canvas;
       return canvas;
@@ -222,8 +222,8 @@ function createPin(url, label, color, size, cache) {
     return promise;
   } else if (defined(label)) {
     //If we have a label, write it to a canvas and then stamp the pin.
-    const image = writeTextToCanvas(label, {
-      font: `bold ${size}px sans-serif`,
+    var image = writeTextToCanvas(label, {
+      font: "bold " + size + "px sans-serif",
     });
     drawIcon(context2D, image, size);
   }

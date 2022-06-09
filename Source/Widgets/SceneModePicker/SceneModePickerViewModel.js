@@ -24,9 +24,9 @@ function SceneModePickerViewModel(scene, duration) {
 
   this._scene = scene;
 
-  const that = this;
+  var that = this;
 
-  const morphStart = function (transitioner, oldMode, newMode, isMorphing) {
+  var morphStart = function (transitioner, oldMode, newMode, isMorphing) {
     that.sceneMode = newMode;
     that.dropDownVisible = false;
   };
@@ -84,7 +84,7 @@ function SceneModePickerViewModel(scene, duration) {
    */
   this.selectedTooltip = undefined;
   knockout.defineProperty(this, "selectedTooltip", function () {
-    const mode = that.sceneMode;
+    var mode = that.sceneMode;
     if (mode === SceneMode.SCENE2D) {
       return that.tooltip2D;
     }

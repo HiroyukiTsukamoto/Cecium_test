@@ -1,8 +1,8 @@
 /* This file is automatically rebuilt by the Cesium build process. */
-define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelpers-3aae1032-f55dc0c4', './createTaskProcessorWorker'], (function (RuntimeError, defaultValue, _commonjsHelpers3aae1032, createTaskProcessorWorker) { 'use strict';
+define(['./RuntimeError-4fdc4459', './when-8166c7dd', './createTaskProcessorWorker'], (function (RuntimeError, when, createTaskProcessorWorker) { 'use strict';
 
-  const compressedMagic$1 = 0x7468dead;
-  const compressedMagicSwap$1 = 0xadde6874;
+  var compressedMagic$1 = 0x7468dead;
+  var compressedMagicSwap$1 = 0xadde6874;
 
   /**
    * Decodes data that is received from the Google Earth Enterprise server.
@@ -22,28 +22,28 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
     RuntimeError.Check.typeOf.object("data", data);
     //>>includeEnd('debug');
 
-    const keyLength = key.byteLength;
+    var keyLength = key.byteLength;
     if (keyLength === 0 || keyLength % 4 !== 0) {
       throw new RuntimeError.RuntimeError(
         "The length of key must be greater than 0 and a multiple of 4."
       );
     }
 
-    const dataView = new DataView(data);
-    const magic = dataView.getUint32(0, true);
+    var dataView = new DataView(data);
+    var magic = dataView.getUint32(0, true);
     if (magic === compressedMagic$1 || magic === compressedMagicSwap$1) {
       // Occasionally packets don't come back encoded, so just return
       return data;
     }
 
-    const keyView = new DataView(key);
+    var keyView = new DataView(key);
 
-    let dp = 0;
-    const dpend = data.byteLength;
-    const dpend64 = dpend - (dpend % 8);
-    const kpend = keyLength;
-    let kp;
-    let off = 8;
+    var dp = 0;
+    var dpend = data.byteLength;
+    var dpend64 = dpend - (dpend % 8);
+    var kpend = keyLength;
+    var kp;
+    var off = 8;
 
     // This algorithm is intentionally asymmetric to make it more difficult to
     // guess. Security through obscurity. :-(
@@ -99,11 +99,11 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
   }
 
   // Bitmask for checking tile properties
-  const childrenBitmasks = [0x01, 0x02, 0x04, 0x08];
-  const anyChildBitmask = 0x0f;
-  const cacheFlagBitmask = 0x10; // True if there is a child subtree
-  const imageBitmask = 0x40;
-  const terrainBitmask = 0x80;
+  var childrenBitmasks = [0x01, 0x02, 0x04, 0x08];
+  var anyChildBitmask = 0x0f;
+  var cacheFlagBitmask = 0x10; // True if there is a child subtree
+  var imageBitmask = 0x40;
+  var terrainBitmask = 0x80;
 
   /**
    * Contains information about each tile from a Google Earth Enterprise server
@@ -143,7 +143,7 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
    * @returns {GoogleEarthEnterpriseTileInformation} The modified result parameter or a new GoogleEarthEnterpriseTileInformation instance if none was provided.
    */
   GoogleEarthEnterpriseTileInformation.clone = function (info, result) {
-    if (!defaultValue.defined(result)) {
+    if (!when.defined(result)) {
       result = new GoogleEarthEnterpriseTileInformation(
         info._bits,
         info.cnodeVersion,
@@ -233,7 +233,7 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
 
   /* This file is automatically rebuilt by the Cesium build process. */
 
-  var common = _commonjsHelpers3aae1032.createCommonjsModule(function (module, exports) {
+  var common = when.createCommonjsModule(function (module, exports) {
 
 
   var TYPED_OK =  (typeof Uint8Array !== 'undefined') &&
@@ -3510,11 +3510,11 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
   };
 
   // Datatype sizes
-  const sizeOfUint16 = Uint16Array.BYTES_PER_ELEMENT;
-  const sizeOfInt32 = Int32Array.BYTES_PER_ELEMENT;
-  const sizeOfUint32 = Uint32Array.BYTES_PER_ELEMENT;
+  var sizeOfUint16 = Uint16Array.BYTES_PER_ELEMENT;
+  var sizeOfInt32 = Int32Array.BYTES_PER_ELEMENT;
+  var sizeOfUint32 = Uint32Array.BYTES_PER_ELEMENT;
 
-  const Types = {
+  var Types = {
     METADATA: 0,
     TERRAIN: 1,
     DBROOT: 2,
@@ -3531,13 +3531,13 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
   };
 
   function decodeGoogleEarthEnterprisePacket(parameters, transferableObjects) {
-    const type = Types.fromString(parameters.type);
-    let buffer = parameters.buffer;
+    var type = Types.fromString(parameters.type);
+    var buffer = parameters.buffer;
     decodeGoogleEarthEnterpriseData(parameters.key, buffer);
 
-    const uncompressedTerrain = uncompressPacket(buffer);
+    var uncompressedTerrain = uncompressPacket(buffer);
     buffer = uncompressedTerrain.buffer;
-    const length = uncompressedTerrain.length;
+    var length = uncompressedTerrain.length;
 
     switch (type) {
       case Types.METADATA:
@@ -3552,25 +3552,25 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
     }
   }
 
-  const qtMagic = 32301;
+  var qtMagic = 32301;
 
   function processMetadata(buffer, totalSize, quadKey) {
-    const dv = new DataView(buffer);
-    let offset = 0;
-    const magic = dv.getUint32(offset, true);
+    var dv = new DataView(buffer);
+    var offset = 0;
+    var magic = dv.getUint32(offset, true);
     offset += sizeOfUint32;
     if (magic !== qtMagic) {
       throw new RuntimeError.RuntimeError("Invalid magic");
     }
 
-    const dataTypeId = dv.getUint32(offset, true);
+    var dataTypeId = dv.getUint32(offset, true);
     offset += sizeOfUint32;
     if (dataTypeId !== 1) {
       throw new RuntimeError.RuntimeError("Invalid data type. Must be 1 for QuadTreePacket");
     }
 
     // Tile format version
-    const quadVersion = dv.getUint32(offset, true);
+    var quadVersion = dv.getUint32(offset, true);
     offset += sizeOfUint32;
     if (quadVersion !== 2) {
       throw new RuntimeError.RuntimeError(
@@ -3578,22 +3578,22 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
       );
     }
 
-    const numInstances = dv.getInt32(offset, true);
+    var numInstances = dv.getInt32(offset, true);
     offset += sizeOfInt32;
 
-    const dataInstanceSize = dv.getInt32(offset, true);
+    var dataInstanceSize = dv.getInt32(offset, true);
     offset += sizeOfInt32;
     if (dataInstanceSize !== 32) {
       throw new RuntimeError.RuntimeError("Invalid instance size.");
     }
 
-    const dataBufferOffset = dv.getInt32(offset, true);
+    var dataBufferOffset = dv.getInt32(offset, true);
     offset += sizeOfInt32;
 
-    const dataBufferSize = dv.getInt32(offset, true);
+    var dataBufferSize = dv.getInt32(offset, true);
     offset += sizeOfInt32;
 
-    const metaBufferSize = dv.getInt32(offset, true);
+    var metaBufferSize = dv.getInt32(offset, true);
     offset += sizeOfInt32;
 
     // Offset from beginning of packet (instances + current offset)
@@ -3607,20 +3607,20 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
     }
 
     // Read all the instances
-    const instances = [];
-    for (let i = 0; i < numInstances; ++i) {
-      const bitfield = dv.getUint8(offset);
+    var instances = [];
+    for (var i = 0; i < numInstances; ++i) {
+      var bitfield = dv.getUint8(offset);
       ++offset;
 
       ++offset; // 2 byte align
 
-      const cnodeVersion = dv.getUint16(offset, true);
+      var cnodeVersion = dv.getUint16(offset, true);
       offset += sizeOfUint16;
 
-      const imageVersion = dv.getUint16(offset, true);
+      var imageVersion = dv.getUint16(offset, true);
       offset += sizeOfUint16;
 
-      const terrainVersion = dv.getUint16(offset, true);
+      var terrainVersion = dv.getUint16(offset, true);
       offset += sizeOfUint16;
 
       // Number of channels stored in the dataBuffer
@@ -3637,8 +3637,8 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
       offset += 8; // Ignore image neighbors for now
 
       // Data providers
-      const imageProvider = dv.getUint8(offset++);
-      const terrainProvider = dv.getUint8(offset++);
+      var imageProvider = dv.getUint8(offset++);
+      var terrainProvider = dv.getUint8(offset++);
       offset += sizeOfUint16; // 4 byte align
 
       instances.push(
@@ -3653,11 +3653,11 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
       );
     }
 
-    const tileInfo = [];
-    let index = 0;
+    var tileInfo = [];
+    var index = 0;
 
     function populateTiles(parentKey, parent, level) {
-      let isLeaf = false;
+      var isLeaf = false;
       if (level === 4) {
         if (parent.hasSubtree()) {
           return; // We have a subtree, so just return
@@ -3665,8 +3665,8 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
 
         isLeaf = true; // No subtree, so set all children to null
       }
-      for (let i = 0; i < 4; ++i) {
-        const childKey = parentKey + i.toString();
+      for (var i = 0; i < 4; ++i) {
+        var childKey = parentKey + i.toString();
         if (isLeaf) {
           // No subtree so set all children to null
           tileInfo[childKey] = null;
@@ -3681,7 +3681,7 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
               return;
             }
 
-            const instance = instances[index++];
+            var instance = instances[index++];
             tileInfo[childKey] = instance;
             populateTiles(childKey, instance, level + 1);
           }
@@ -3689,8 +3689,8 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
       }
     }
 
-    let level = 0;
-    const root = instances[index++];
+    var level = 0;
+    var root = instances[index++];
     if (quadKey === "") {
       // Root tile has data at its root and one less level
       ++level;
@@ -3703,20 +3703,20 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
     return tileInfo;
   }
 
-  const numMeshesPerPacket = 5;
-  const numSubMeshesPerMesh = 4;
+  var numMeshesPerPacket = 5;
+  var numSubMeshesPerMesh = 4;
 
   // Each terrain packet will have 5 meshes - each containg 4 sub-meshes:
   //    1 even level mesh and its 4 odd level children.
   // Any remaining bytes after the 20 sub-meshes contains water surface meshes,
   // which are ignored.
   function processTerrain(buffer, totalSize, transferableObjects) {
-    const dv = new DataView(buffer);
+    var dv = new DataView(buffer);
 
     // Find the sub-meshes.
-    const advanceMesh = function (pos) {
-      for (let sub = 0; sub < numSubMeshesPerMesh; ++sub) {
-        const size = dv.getUint32(pos, true);
+    var advanceMesh = function (pos) {
+      for (var sub = 0; sub < numSubMeshesPerMesh; ++sub) {
+        var size = dv.getUint32(pos, true);
         pos += sizeOfUint32;
         pos += size;
         if (pos > totalSize) {
@@ -3726,12 +3726,12 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
       return pos;
     };
 
-    let offset = 0;
-    const terrainMeshes = [];
+    var offset = 0;
+    var terrainMeshes = [];
     while (terrainMeshes.length < numMeshesPerPacket) {
-      const start = offset;
+      var start = offset;
       offset = advanceMesh(offset);
-      const mesh = buffer.slice(start, offset);
+      var mesh = buffer.slice(start, offset);
       transferableObjects.push(mesh);
       terrainMeshes.push(mesh);
     }
@@ -3739,8 +3739,8 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
     return terrainMeshes;
   }
 
-  const compressedMagic = 0x7468dead;
-  const compressedMagicSwap = 0xadde6874;
+  var compressedMagic = 0x7468dead;
+  var compressedMagicSwap = 0xadde6874;
 
   function uncompressPacket(data) {
     // The layout of this decoded data is
@@ -3749,20 +3749,20 @@ define(['./RuntimeError-c581ca93', './defaultValue-94c3e563', './_commonjsHelper
     // [GZipped chunk of Size bytes]
 
     // Pullout magic and verify we have the correct data
-    const dv = new DataView(data);
-    let offset = 0;
-    const magic = dv.getUint32(offset, true);
+    var dv = new DataView(data);
+    var offset = 0;
+    var magic = dv.getUint32(offset, true);
     offset += sizeOfUint32;
     if (magic !== compressedMagic && magic !== compressedMagicSwap) {
       throw new RuntimeError.RuntimeError("Invalid magic");
     }
 
     // Get the size of the compressed buffer - the endianness depends on which magic was used
-    const size = dv.getUint32(offset, magic === compressedMagic);
+    var size = dv.getUint32(offset, magic === compressedMagic);
     offset += sizeOfUint32;
 
-    const compressedPacket = new Uint8Array(data, offset);
-    const uncompressedPacket = inflate_1.inflate(compressedPacket);
+    var compressedPacket = new Uint8Array(data, offset);
+    var uncompressedPacket = inflate_1.inflate(compressedPacket);
 
     if (uncompressedPacket.length !== size) {
       throw new RuntimeError.RuntimeError("Size of packet doesn't match header");

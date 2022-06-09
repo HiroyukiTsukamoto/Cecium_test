@@ -10,7 +10,7 @@ import Cesium3DTileRefine from "./Cesium3DTileRefine.js";
  */
 function Cesium3DTilesetMostDetailedTraversal() {}
 
-const traversal = {
+var traversal = {
   stack: new ManagedArray(),
   stackMaximumLength: 0,
 };
@@ -23,16 +23,16 @@ Cesium3DTilesetMostDetailedTraversal.selectTiles = function (
   tileset._requestedTiles.length = 0;
   tileset._hasMixedContent = false;
 
-  let ready = true;
+  var ready = true;
 
-  const root = tileset.root;
+  var root = tileset.root;
   root.updateVisibility(frameState);
 
   if (!isVisible(root)) {
     return ready;
   }
 
-  const stack = traversal.stack;
+  var stack = traversal.stack;
   stack.push(tileset.root);
 
   while (stack.length > 0) {
@@ -41,10 +41,10 @@ Cesium3DTilesetMostDetailedTraversal.selectTiles = function (
       stack.length
     );
 
-    const tile = stack.pop();
-    const add = tile.refine === Cesium3DTileRefine.ADD;
-    const replace = tile.refine === Cesium3DTileRefine.REPLACE;
-    const traverse = canTraverse(tileset, tile);
+    var tile = stack.pop();
+    var add = tile.refine === Cesium3DTileRefine.ADD;
+    var replace = tile.refine === Cesium3DTileRefine.REPLACE;
+    var traverse = canTraverse(tileset, tile);
 
     if (traverse) {
       updateAndPushChildren(tileset, tile, stack, frameState);
@@ -101,11 +101,11 @@ function canTraverse(tileset, tile) {
 }
 
 function updateAndPushChildren(tileset, tile, stack, frameState) {
-  const children = tile.children;
-  const length = children.length;
+  var children = tile.children;
+  var length = children.length;
 
-  for (let i = 0; i < length; ++i) {
-    const child = children[i];
+  for (var i = 0; i < length; ++i) {
+    var child = children[i];
     child.updateVisibility(frameState);
     if (isVisible(child)) {
       stack.push(child);

@@ -1,15 +1,15 @@
 import { Event } from "../../Source/Cesium.js";
 
 describe("Core/Event", function () {
-  let event;
-  let spyListener;
+  var event;
+  var spyListener;
   beforeEach(function () {
     event = new Event();
     spyListener = jasmine.createSpy("listener");
   });
 
   it("works with no scope", function () {
-    const someValue = 123;
+    var someValue = 123;
 
     event.addEventListener(spyListener);
     event.raiseEvent(someValue);
@@ -25,8 +25,8 @@ describe("Core/Event", function () {
   });
 
   it("works with scope", function () {
-    const someValue = 123;
-    const scope = {};
+    var someValue = 123;
+    var scope = {};
 
     event.addEventListener(spyListener, scope);
     event.raiseEvent(someValue);
@@ -43,13 +43,13 @@ describe("Core/Event", function () {
   });
 
   it("can remove from within a callback", function () {
-    const doNothing = function (evt) {};
+    var doNothing = function (evt) {};
 
-    const removeEventCb = function (evt) {
+    var removeEventCb = function (evt) {
       event.removeEventListener(removeEventCb);
     };
 
-    const doNothing2 = function (evt) {};
+    var doNothing2 = function (evt) {};
 
     event.addEventListener(doNothing);
     event.addEventListener(removeEventCb);
@@ -63,23 +63,23 @@ describe("Core/Event", function () {
   });
 
   it("can remove multiple listeners within a callback", function () {
-    const removeEvent0 = event.addEventListener(function () {
+    var removeEvent0 = event.addEventListener(function () {
       removeEvent0();
     });
     event.addEventListener(function () {});
-    const removeEvent2 = event.addEventListener(function () {
+    var removeEvent2 = event.addEventListener(function () {
       removeEvent2();
     });
     event.addEventListener(function () {});
-    const removeEvent4 = event.addEventListener(function () {
+    var removeEvent4 = event.addEventListener(function () {
       removeEvent4();
     });
     event.addEventListener(function () {});
-    const removeEvent6 = event.addEventListener(function () {
+    var removeEvent6 = event.addEventListener(function () {
       removeEvent6();
     });
     event.addEventListener(function () {});
-    const removeEvent8 = event.addEventListener(function () {
+    var removeEvent8 = event.addEventListener(function () {
       removeEvent8();
     });
     event.addEventListener(function () {});
@@ -92,7 +92,7 @@ describe("Core/Event", function () {
   });
 
   it("addEventListener and removeEventListener works with same function of different scopes", function () {
-    const Scope = function () {
+    var Scope = function () {
       this.timesCalled = 0;
     };
 
@@ -100,8 +100,8 @@ describe("Core/Event", function () {
       this.timesCalled++;
     };
 
-    const scope1 = new Scope();
-    const scope2 = new Scope();
+    var scope1 = new Scope();
+    var scope2 = new Scope();
 
     event.addEventListener(Scope.prototype.myCallback, scope1);
     event.addEventListener(Scope.prototype.myCallback, scope2);
@@ -122,9 +122,9 @@ describe("Core/Event", function () {
   });
 
   it("numberOfListeners returns the correct number", function () {
-    const callback1 = function () {};
+    var callback1 = function () {};
 
-    const callback2 = function () {};
+    var callback2 = function () {};
 
     expect(event.numberOfListeners).toEqual(0);
 
@@ -139,7 +139,7 @@ describe("Core/Event", function () {
   });
 
   it("removeEventListener indicates if the listener is registered with the event", function () {
-    const callback = function () {};
+    var callback = function () {};
 
     event.addEventListener(callback);
     expect(event.numberOfListeners).toEqual(1);
@@ -151,8 +151,8 @@ describe("Core/Event", function () {
   });
 
   it("removeEventListener does not remove a registered listener of a different scope", function () {
-    const myFunc = function () {};
-    const scope = {};
+    var myFunc = function () {};
+    var scope = {};
     event.addEventListener(myFunc, scope);
     expect(event.removeEventListener(myFunc)).toEqual(false);
   });
@@ -162,9 +162,9 @@ describe("Core/Event", function () {
   });
 
   it("addEventListener returns a function allowing removal", function () {
-    const someValue = 123;
+    var someValue = 123;
 
-    const remove = event.addEventListener(spyListener);
+    var remove = event.addEventListener(spyListener);
     event.raiseEvent(someValue);
 
     expect(spyListener).toHaveBeenCalledWith(someValue);
@@ -177,10 +177,10 @@ describe("Core/Event", function () {
   });
 
   it("addEventListener with scope returns a function allowing removal", function () {
-    const someValue = 123;
-    const scope = {};
+    var someValue = 123;
+    var scope = {};
 
-    const remove = event.addEventListener(spyListener, scope);
+    var remove = event.addEventListener(spyListener, scope);
     event.raiseEvent(someValue);
 
     expect(spyListener).toHaveBeenCalledWith(someValue);

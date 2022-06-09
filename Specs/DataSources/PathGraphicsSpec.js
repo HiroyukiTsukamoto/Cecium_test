@@ -6,7 +6,7 @@ import { PathGraphics } from "../../Source/Cesium.js";
 
 describe("DataSources/PathGraphics", function () {
   it("creates expected instance from raw assignment and construction", function () {
-    const options = {
+    var options = {
       material: Color.RED,
       width: 1,
       show: false,
@@ -16,7 +16,7 @@ describe("DataSources/PathGraphics", function () {
       distanceDisplayCondition: new DistanceDisplayCondition(10.0, 20.0),
     };
 
-    const path = new PathGraphics(options);
+    var path = new PathGraphics(options);
     expect(path.material).toBeInstanceOf(ColorMaterialProperty);
     expect(path.width).toBeInstanceOf(ConstantProperty);
     expect(path.show).toBeInstanceOf(ConstantProperty);
@@ -37,7 +37,7 @@ describe("DataSources/PathGraphics", function () {
   });
 
   it("merge assigns unassigned properties", function () {
-    const source = new PathGraphics();
+    var source = new PathGraphics();
     source.material = new ColorMaterialProperty();
     source.width = new ConstantProperty(1);
     source.show = new ConstantProperty(true);
@@ -48,7 +48,7 @@ describe("DataSources/PathGraphics", function () {
       new DistanceDisplayCondition(10.0, 20.0)
     );
 
-    const target = new PathGraphics();
+    var target = new PathGraphics();
     target.merge(source);
     expect(target.material).toBe(source.material);
     expect(target.width).toBe(source.width);
@@ -62,7 +62,7 @@ describe("DataSources/PathGraphics", function () {
   });
 
   it("merge does not assign assigned properties", function () {
-    const source = new PathGraphics();
+    var source = new PathGraphics();
     source.material = new ColorMaterialProperty();
     source.width = new ConstantProperty(1);
     source.show = new ConstantProperty(true);
@@ -73,17 +73,17 @@ describe("DataSources/PathGraphics", function () {
       new DistanceDisplayCondition()
     );
 
-    const color = new ColorMaterialProperty();
-    const width = new ConstantProperty(1);
-    const show = new ConstantProperty(true);
-    const leadTime = new ConstantProperty(1);
-    const trailTime = new ConstantProperty(1);
-    const resolution = new ConstantProperty(1);
-    const distanceDisplayCondition = new ConstantProperty(
+    var color = new ColorMaterialProperty();
+    var width = new ConstantProperty(1);
+    var show = new ConstantProperty(true);
+    var leadTime = new ConstantProperty(1);
+    var trailTime = new ConstantProperty(1);
+    var resolution = new ConstantProperty(1);
+    var distanceDisplayCondition = new ConstantProperty(
       new DistanceDisplayCondition()
     );
 
-    const target = new PathGraphics();
+    var target = new PathGraphics();
     target.material = color;
     target.width = width;
     target.show = show;
@@ -103,7 +103,7 @@ describe("DataSources/PathGraphics", function () {
   });
 
   it("clone works", function () {
-    const source = new PathGraphics();
+    var source = new PathGraphics();
     source.material = new ColorMaterialProperty();
     source.width = new ConstantProperty(1);
     source.show = new ConstantProperty(true);
@@ -114,7 +114,7 @@ describe("DataSources/PathGraphics", function () {
       new DistanceDisplayCondition()
     );
 
-    const result = source.clone();
+    var result = source.clone();
     expect(result.material).toBe(source.material);
     expect(result.width).toBe(source.width);
     expect(result.show).toBe(source.show);
@@ -127,7 +127,7 @@ describe("DataSources/PathGraphics", function () {
   });
 
   it("merge throws if source undefined", function () {
-    const target = new PathGraphics();
+    var target = new PathGraphics();
     expect(function () {
       target.merge(undefined);
     }).toThrowDeveloperError();

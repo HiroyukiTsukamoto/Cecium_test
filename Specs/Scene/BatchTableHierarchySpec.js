@@ -1,11 +1,7 @@
-import {
-  BatchTableHierarchy,
-  Cartesian2,
-  RuntimeError,
-} from "../../Source/Cesium.js";
+import { BatchTableHierarchy, Cartesian2 } from "../../Source/Cesium.js";
 
 describe("Scene/BatchTableHierarchy", function () {
-  const hierarchyExtension = {
+  var hierarchyExtension = {
     classes: [
       {
         name: "Wall",
@@ -37,7 +33,7 @@ describe("Scene/BatchTableHierarchy", function () {
     parentIds: [6, 6, 10, 11, 7, 11, 7, 8, 8, 10, 10, 9],
   };
 
-  const binaryHierarchy = {
+  var binaryHierarchy = {
     classes: [
       {
         name: "Box",
@@ -67,7 +63,7 @@ describe("Scene/BatchTableHierarchy", function () {
     classIds: [0, 1, 0, 0],
     parentIds: [1, 1, 2, 3],
   };
-  const binaryHierarchyBody = new Uint8Array([1, 2, 3, 0, 1, 0, 1, 2, 3, 2]);
+  var binaryHierarchyBody = new Uint8Array([1, 2, 3, 0, 1, 0, 1, 2, 3, 2]);
 
   it("throws without extension", function () {
     expect(function () {
@@ -78,7 +74,7 @@ describe("Scene/BatchTableHierarchy", function () {
   });
 
   it("throws for invalid binary property", function () {
-    const missingType = {
+    var missingType = {
       classes: [
         {
           name: "Resources",
@@ -98,17 +94,17 @@ describe("Scene/BatchTableHierarchy", function () {
     };
 
     // Using 16 bits because this is the default size
-    const foodUnits = new Uint16Array([10, 20]);
-    const binaryBody = new Uint8Array(foodUnits.buffer);
+    var foodUnits = new Uint16Array([10, 20]);
+    var binaryBody = new Uint8Array(foodUnits.buffer);
 
     expect(function () {
       return new BatchTableHierarchy({
         extension: missingType,
         binaryBody: binaryBody,
       });
-    }).toThrowError(RuntimeError);
+    }).toThrowRuntimeError();
 
-    const missingComponentType = {
+    var missingComponentType = {
       classes: [
         {
           name: "Resources",
@@ -132,11 +128,11 @@ describe("Scene/BatchTableHierarchy", function () {
         extension: missingComponentType,
         binaryBody: binaryBody,
       });
-    }).toThrowError(RuntimeError);
+    }).toThrowRuntimeError();
   });
 
   it("throws if binaryBody is needed and not provided", function () {
-    const hierarchyExtension = {
+    var hierarchyExtension = {
       classes: [
         {
           name: "Resources",
@@ -160,46 +156,46 @@ describe("Scene/BatchTableHierarchy", function () {
       return new BatchTableHierarchy({
         extension: hierarchyExtension,
       });
-    }).toThrowError(RuntimeError);
+    }).toThrowRuntimeError();
   });
 
   it("hasProperty returns true if the feature has this property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.hasProperty(0, "color")).toBe(true);
   });
 
   it("hasProperty returns false if the feature does not have this property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.hasProperty(0, "height")).toBe(false);
   });
 
   it("hasProperty returns false if the feature does not inherit this property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.hasProperty(6, "color")).toBe(false);
   });
 
   it("propertyExists returns true if any feature has this property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.propertyExists("color")).toBe(true);
   });
 
   it("propertyExists returns false if no features have this property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.propertyExists("other")).toBe(false);
   });
 
   it("getProperty returns property value", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.getProperty(0, "color")).toBe("white");
@@ -210,14 +206,14 @@ describe("Scene/BatchTableHierarchy", function () {
   });
 
   it("getProperty returns undefined for unknown property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.getProperty(0, "occupancy")).not.toBeDefined();
   });
 
   it("getProperty works with binary properties", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: binaryHierarchy,
       binaryBody: binaryHierarchyBody,
     });
@@ -245,7 +241,7 @@ describe("Scene/BatchTableHierarchy", function () {
   });
 
   it("setProperty throws when trying to set an inherited property", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(function () {
@@ -254,14 +250,14 @@ describe("Scene/BatchTableHierarchy", function () {
   });
 
   it("setProperty returns false when property does not exist", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.setProperty(0, "occupancy", 100)).toBe(false);
   });
 
   it("setProperty sets property value", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: hierarchyExtension,
     });
     expect(hierarchy.getProperty(0, "color")).toBe("white");
@@ -270,7 +266,7 @@ describe("Scene/BatchTableHierarchy", function () {
   });
 
   it("setProperty works with binary values", function () {
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: binaryHierarchy,
       binaryBody: binaryHierarchyBody,
     });
@@ -282,7 +278,7 @@ describe("Scene/BatchTableHierarchy", function () {
     expect(hierarchy.getProperty(2, "coordinates")).toEqual(
       new Cartesian2(1, 2)
     );
-    const position = new Cartesian2(5, 5);
+    var position = new Cartesian2(5, 5);
     expect(hierarchy.setProperty(2, "coordinates", position)).toBe(true);
     expect(hierarchy.getProperty(2, "coordinates")).toEqual(position);
   });
@@ -293,7 +289,7 @@ describe("Scene/BatchTableHierarchy", function () {
     //  door0    door1
     //     \      /
     //      window0
-    const extension = {
+    var extension = {
       instancesLength: 4,
       classIds: [0, 1, 1, 2],
       parentCounts: [2, 1, 1, 0],
@@ -323,7 +319,7 @@ describe("Scene/BatchTableHierarchy", function () {
       ],
     };
 
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: extension,
     });
 
@@ -342,7 +338,7 @@ describe("Scene/BatchTableHierarchy", function () {
     //    door0  door1    /
     //        \    |     /
     //           window0
-    const extension = {
+    var extension = {
       instancesLength: 4,
       classIds: [0, 1, 1, 2, 3],
       parentCounts: [3, 1, 2, 1, 0],
@@ -379,7 +375,7 @@ describe("Scene/BatchTableHierarchy", function () {
       ],
     };
 
-    const hierarchy = new BatchTableHierarchy({
+    var hierarchy = new BatchTableHierarchy({
       extension: extension,
     });
     expect(hierarchy.getPropertyIds(0).sort()).toEqual([
@@ -395,7 +391,7 @@ describe("Scene/BatchTableHierarchy", function () {
   // Circular dependencies are only caught in debug builds.
   it("throws if hierarchy has a circular dependency", function () {
     // window0 -> door0 -> building0 -> window0
-    const extension = {
+    var extension = {
       instancesLength: 3,
       classIds: [0, 1, 2],
       parentIds: [1, 2, 0],
@@ -433,7 +429,7 @@ describe("Scene/BatchTableHierarchy", function () {
 
   it("throws if hierarchy has a circular dependency (2)", function () {
     // window0 -> door0 -> building0 -> window1 -> door0
-    const extension = {
+    var extension = {
       instancesLength: 4,
       classIds: [0, 1, 2, 0],
       parentIds: [1, 2, 3, 1],
@@ -470,7 +466,7 @@ describe("Scene/BatchTableHierarchy", function () {
   });
 
   it("throws if an instance's parentId exceeds instancesLength", function () {
-    const extension = {
+    var extension = {
       instancesLength: 2,
       classIds: [0, 1],
       parentIds: [1, 2],

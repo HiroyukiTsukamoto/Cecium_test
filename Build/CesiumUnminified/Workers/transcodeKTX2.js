@@ -21,7 +21,7 @@
  * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
  */
 
-define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-508b9636', './createTaskProcessorWorker'], (function (defaultValue, RuntimeError, WebGLConstants, createTaskProcessorWorker) { 'use strict';
+define(['./when-4bbc8319', './RuntimeError-346a3079', './WebGLConstants-1c8239cc', './createTaskProcessorWorker'], (function (when, RuntimeError, WebGLConstants, createTaskProcessorWorker) { 'use strict';
 
   /**
    * The data type of a pixel.
@@ -29,7 +29,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
    * @enum {Number}
    * @see PostProcessStage
    */
-  const PixelDatatype = {
+  var PixelDatatype = {
     UNSIGNED_BYTE: WebGLConstants.WebGLConstants.UNSIGNED_BYTE,
     UNSIGNED_SHORT: WebGLConstants.WebGLConstants.UNSIGNED_SHORT,
     UNSIGNED_INT: WebGLConstants.WebGLConstants.UNSIGNED_INT,
@@ -125,7 +125,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
    *
    * @enum {Number}
    */
-  const PixelFormat = {
+  var PixelFormat = {
     /**
      * A pixel format containing a depth value.
      *
@@ -481,7 +481,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
     width,
     height
   ) {
-    let componentsLength = PixelFormat.componentsLength(pixelFormat);
+    var componentsLength = PixelFormat.componentsLength(pixelFormat);
     if (PixelDatatype$1.isPacked(pixelDatatype)) {
       componentsLength = 1;
     }
@@ -494,7 +494,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
    * @private
    */
   PixelFormat.alignmentInBytes = function (pixelFormat, pixelDatatype, width) {
-    const mod =
+    var mod =
       PixelFormat.textureSizeInBytes(pixelFormat, pixelDatatype, width, 1) % 4;
     return mod === 0 ? 4 : mod === 2 ? 2 : 1;
   };
@@ -508,8 +508,8 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
     width,
     height
   ) {
-    let constructor;
-    const sizeInBytes = PixelDatatype$1.sizeInBytes(pixelDatatype);
+    var constructor;
+    var sizeInBytes = PixelDatatype$1.sizeInBytes(pixelDatatype);
     if (sizeInBytes === Uint8Array.BYTES_PER_ELEMENT) {
       constructor = Uint8Array;
     } else if (sizeInBytes === Uint16Array.BYTES_PER_ELEMENT) {
@@ -523,7 +523,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
       constructor = Uint32Array;
     }
 
-    const size = PixelFormat.componentsLength(pixelFormat) * width * height;
+    var size = PixelFormat.componentsLength(pixelFormat) * width * height;
     return new constructor(size);
   };
 
@@ -540,18 +540,18 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
     if (height === 1) {
       return bufferView;
     }
-    const flipped = PixelFormat.createTypedArray(
+    var flipped = PixelFormat.createTypedArray(
       pixelFormat,
       pixelDatatype,
       width,
       height
     );
-    const numberOfComponents = PixelFormat.componentsLength(pixelFormat);
-    const textureWidth = width * numberOfComponents;
-    for (let i = 0; i < height; ++i) {
-      const row = i * width * numberOfComponents;
-      const flippedRow = (height - i - 1) * width * numberOfComponents;
-      for (let j = 0; j < textureWidth; ++j) {
+    var numberOfComponents = PixelFormat.componentsLength(pixelFormat);
+    var textureWidth = width * numberOfComponents;
+    for (var i = 0; i < height; ++i) {
+      var row = i * width * numberOfComponents;
+      var flippedRow = (height - i - 1) * width * numberOfComponents;
+      for (var j = 0; j < textureWidth; ++j) {
         flipped[flippedRow + j] = bufferView[row + j];
       }
     }
@@ -619,7 +619,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
    * @enum {Number}
    * @private
    */
-  const VulkanConstants = {
+  var VulkanConstants = {
     VK_FORMAT_UNDEFINED: 0,
     VK_FORMAT_R4G4_UNORM_PACK8: 1,
     VK_FORMAT_R4G4B4A4_UNORM_PACK16: 2,
@@ -903,7 +903,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
 
   /* global require */
 
-  const faceOrder = [
+  var faceOrder = [
     "positiveX",
     "negativeX",
     "positiveY",
@@ -913,18 +913,18 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
   ];
 
   // Flags
-  const colorModelETC1S = 163;
-  const colorModelUASTC = 166;
+  var colorModelETC1S = 163;
+  var colorModelUASTC = 166;
 
-  let transcoderModule;
+  var transcoderModule;
   function transcode(parameters, transferableObjects) {
     //>>includeStart('debug', pragmas.debug);
     RuntimeError.Check.typeOf.object("transcoderModule", transcoderModule);
     //>>includeEnd('debug');
 
-    const data = parameters.ktx2Buffer;
-    const supportedTargetFormats = parameters.supportedTargetFormats;
-    let header;
+    var data = parameters.ktx2Buffer;
+    var supportedTargetFormats = parameters.supportedTargetFormats;
+    var header;
     try {
       header = p(data);
     } catch (e) {
@@ -939,8 +939,8 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
       throw new RuntimeError.RuntimeError("KTX2 3D textures are unsupported.");
     }
 
-    const dfd = header.dataFormatDescriptor[0];
-    const result = new Array(header.levelCount);
+    var dfd = header.dataFormatDescriptor[0];
+    var result = new Array(header.levelCount);
 
     if (
       header.vkFormat === 0x0 &&
@@ -965,11 +965,11 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
 
   // Parser for uncompressed
   function parseUncompressed(header, result) {
-    const internalFormat =
+    var internalFormat =
       header.vkFormat === VulkanConstants$1.VK_FORMAT_R8G8B8_SRGB
         ? PixelFormat$1.RGB
         : PixelFormat$1.RGBA;
-    let datatype;
+    var datatype;
     if (header.vkFormat === VulkanConstants$1.VK_FORMAT_R8G8B8A8_UNORM) {
       datatype = PixelDatatype$1.UNSIGNED_BYTE;
     } else if (
@@ -982,22 +982,22 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
       datatype = PixelDatatype$1.FLOAT;
     }
 
-    for (let i = 0; i < header.levels.length; ++i) {
-      const level = {};
+    for (var i = 0; i < header.levels.length; ++i) {
+      var level = {};
       result[i] = level;
-      const levelBuffer = header.levels[i].levelData;
+      var levelBuffer = header.levels[i].levelData;
 
-      const width = header.pixelWidth >> i;
-      const height = header.pixelHeight >> i;
-      const faceLength =
+      var width = header.pixelWidth >> i;
+      var height = header.pixelHeight >> i;
+      var faceLength =
         width * height * PixelFormat$1.componentsLength(internalFormat);
 
-      for (let j = 0; j < header.faceCount; ++j) {
+      for (var j = 0; j < header.faceCount; ++j) {
         // multiply levelBuffer.byteOffset by the size in bytes of the pixel data type
-        const faceByteOffset =
+        var faceByteOffset =
           levelBuffer.byteOffset + faceLength * header.typeSize * j;
-        let faceView;
-        if (!defaultValue.defined(datatype) || PixelDatatype$1.sizeInBytes(datatype) === 1) {
+        var faceView;
+        if (!when.defined(datatype) || PixelDatatype$1.sizeInBytes(datatype) === 1) {
           faceView = new Uint8Array(
             levelBuffer.buffer,
             faceByteOffset,
@@ -1036,11 +1036,11 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
     transferableObjects,
     result
   ) {
-    const ktx2File = new transcoderModule.KTX2File(data);
-    let width = ktx2File.getWidth();
-    let height = ktx2File.getHeight();
-    const levels = ktx2File.getLevels();
-    const hasAlpha = ktx2File.getHasAlpha();
+    var ktx2File = new transcoderModule.KTX2File(data);
+    var width = ktx2File.getWidth();
+    var height = ktx2File.getHeight();
+    var levels = ktx2File.getLevels();
+    var hasAlpha = ktx2File.getHasAlpha();
 
     if (!(width > 0) || !(height > 0) || !(levels > 0)) {
       ktx2File.close();
@@ -1048,9 +1048,9 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
       throw new RuntimeError.RuntimeError("Invalid KTX2 file");
     }
 
-    let internalFormat, transcoderFormat;
-    const dfd = header.dataFormatDescriptor[0];
-    const BasisFormat = transcoderModule.transcoder_texture_format;
+    var internalFormat, transcoderFormat;
+    var dfd = header.dataFormatDescriptor[0];
+    var BasisFormat = transcoderModule.transcoder_texture_format;
 
     // Determine target format based on platform support
     if (dfd.colorModel === colorModelETC1S) {
@@ -1129,8 +1129,8 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
       throw new RuntimeError.RuntimeError("startTranscoding() failed");
     }
 
-    for (let i = 0; i < header.levels.length; ++i) {
-      const level = {};
+    for (var i = 0; i < header.levels.length; ++i) {
+      var level = {};
       result[i] = level;
       width = header.pixelWidth >> i;
       height = header.pixelHeight >> i;
@@ -1138,15 +1138,15 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
       // Since supercompressed cubemaps are unsupported, this function
       // does not iterate over KTX2 faces and assumes faceCount = 1.
 
-      const dstSize = ktx2File.getImageTranscodedSizeInBytes(
+      var dstSize = ktx2File.getImageTranscodedSizeInBytes(
         i, // level index
         0, // layer index
         0, // face index
         transcoderFormat.value
       );
-      const dst = new Uint8Array(dstSize);
+      var dst = new Uint8Array(dstSize);
 
-      const transcoded = ktx2File.transcodeImage(
+      var transcoded = ktx2File.transcodeImage(
         dst,
         i, // level index
         0, // layer index
@@ -1157,7 +1157,7 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
         -1 // channel1
       );
 
-      if (!defaultValue.defined(transcoded)) {
+      if (!when.defined(transcoded)) {
         throw new RuntimeError.RuntimeError("transcodeImage() failed.");
       }
 
@@ -1185,15 +1185,15 @@ define(['./defaultValue-81eec7ed', './RuntimeError-8952249c', './WebGLConstants-
   }
 
   function transcodeKTX2(event) {
-    const data = event.data;
+    var data = event.data;
 
     // Expect the first message to be to load a web assembly module
-    const wasmConfig = data.webAssemblyConfig;
-    if (defaultValue.defined(wasmConfig)) {
+    var wasmConfig = data.webAssemblyConfig;
+    if (when.defined(wasmConfig)) {
       // Require and compile WebAssembly module, or use fallback if not supported
       return require([wasmConfig.modulePath], function (mscBasisTranscoder) {
-        if (defaultValue.defined(wasmConfig.wasmBinaryFile)) {
-          if (!defaultValue.defined(mscBasisTranscoder)) {
+        if (when.defined(wasmConfig.wasmBinaryFile)) {
+          if (!when.defined(mscBasisTranscoder)) {
             mscBasisTranscoder = self.MSC_TRANSCODER;
           }
 

@@ -21,10 +21,10 @@
  * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
  */
 
-define(['./Matrix2-e0921750', './defaultValue-81eec7ed', './EllipseGeometry-6864f22f', './RuntimeError-8952249c', './ComponentDatatype-0f8fc942', './WebGLConstants-508b9636', './GeometryOffsetAttribute-2bff0974', './Transforms-1e6de713', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './EllipseGeometryLibrary-4f06caae', './GeometryAttribute-09cd5be5', './GeometryAttributes-32b29525', './GeometryInstance-4161c0b6', './GeometryPipeline-c1f01949', './AttributeCompression-a65cf082', './EncodedCartesian3-4e052475', './IndexDatatype-2261ba8d', './IntersectionTests-b9a7d403', './Plane-e7da25b6', './VertexFormat-7df34ea5'], (function (Matrix2, defaultValue, EllipseGeometry, RuntimeError, ComponentDatatype, WebGLConstants, GeometryOffsetAttribute, Transforms, _commonjsHelpers3aae1032, combine, EllipseGeometryLibrary, GeometryAttribute, GeometryAttributes, GeometryInstance, GeometryPipeline, AttributeCompression, EncodedCartesian3, IndexDatatype, IntersectionTests, Plane, VertexFormat) { 'use strict';
+define(['./Matrix2-32d4a9a0', './when-4bbc8319', './EllipseGeometry-e89c21ae', './RuntimeError-346a3079', './ComponentDatatype-f194c48b', './WebGLConstants-1c8239cc', './GeometryOffsetAttribute-6a692b56', './Transforms-b4151f9c', './combine-83860057', './EllipseGeometryLibrary-20e51de1', './GeometryAttribute-900e07ee', './GeometryAttributes-7827a6c2', './GeometryInstance-33236890', './GeometryPipeline-2b535815', './AttributeCompression-0091b79f', './EncodedCartesian3-2c726105', './IndexDatatype-ee69f1fd', './IntersectionTests-4c2a8ace', './Plane-87991fdc', './VertexFormat-f9c1a155'], (function (Matrix2, when, EllipseGeometry, RuntimeError, ComponentDatatype, WebGLConstants, GeometryOffsetAttribute, Transforms, combine, EllipseGeometryLibrary, GeometryAttribute, GeometryAttributes, GeometryInstance, GeometryPipeline, AttributeCompression, EncodedCartesian3, IndexDatatype, IntersectionTests, Plane, VertexFormat) { 'use strict';
 
   function createEllipseGeometry(ellipseGeometry, offset) {
-    if (defaultValue.defined(offset)) {
+    if (when.defined(offset)) {
       ellipseGeometry = EllipseGeometry.EllipseGeometry.unpack(ellipseGeometry, offset);
     }
     ellipseGeometry._center = Matrix2.Cartesian3.clone(ellipseGeometry._center);

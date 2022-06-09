@@ -13,11 +13,11 @@ function TimelineTrack(interval, pixelHeight, color, backgroundColor) {
 }
 
 TimelineTrack.prototype.render = function (context, renderState) {
-  const startInterval = this.interval.start;
-  const stopInterval = this.interval.stop;
+  var startInterval = this.interval.start;
+  var stopInterval = this.interval.stop;
 
-  const spanStart = renderState.startJulian;
-  const spanStop = JulianDate.addSeconds(
+  var spanStart = renderState.startJulian;
+  var spanStop = JulianDate.addSeconds(
     renderState.startJulian,
     renderState.duration,
     new JulianDate()
@@ -35,10 +35,10 @@ TimelineTrack.prototype.render = function (context, renderState) {
     JulianDate.greaterThanOrEquals(stopInterval, spanStart)
   ) {
     //The track only takes up some of the visible span, compute that span.
-    let x;
-    let start, stop;
+    var x;
+    var start, stop;
     for (x = 0; x < renderState.timeBarWidth; ++x) {
-      const currentTime = JulianDate.addSeconds(
+      var currentTime = JulianDate.addSeconds(
         renderState.startJulian,
         (x / renderState.timeBarWidth) * renderState.duration,
         new JulianDate()

@@ -3,10 +3,11 @@ import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Event from "../Core/Event.js";
 import GeographicTilingScheme from "../Core/GeographicTilingScheme.js";
+import when from "../ThirdParty/when.js";
 
-const defaultColor = new Color(1.0, 1.0, 1.0, 0.4);
-const defaultGlowColor = new Color(0.0, 1.0, 0.0, 0.05);
-const defaultBackgroundColor = new Color(0.0, 0.5, 0.0, 0.2);
+var defaultColor = new Color(1.0, 1.0, 1.0, 0.4);
+var defaultGlowColor = new Color(0.0, 1.0, 0.0, 0.05);
+var defaultBackgroundColor = new Color(0.0, 0.5, 0.0, 0.2);
 
 /**
  * @typedef {Object} GridImageryProvider.ConstructorOptions
@@ -148,7 +149,7 @@ function GridImageryProvider(options) {
   // We only need a single canvas since all tiles will be the same
   this._canvas = this._createGridCanvas();
 
-  this._readyPromise = Promise.resolve(true);
+  this._readyPromise = when.resolve(true);
 }
 
 Object.defineProperties(GridImageryProvider.prototype, {
@@ -329,11 +330,11 @@ Object.defineProperties(GridImageryProvider.prototype, {
  * Draws a grid of lines into a canvas.
  */
 GridImageryProvider.prototype._drawGrid = function (context) {
-  const minPixel = 0;
-  const maxPixel = this._canvasSize;
-  for (let x = 0; x <= this._cells; ++x) {
-    const nx = x / this._cells;
-    const val = 1 + nx * (maxPixel - 1);
+  var minPixel = 0;
+  var maxPixel = this._canvasSize;
+  for (var x = 0; x <= this._cells; ++x) {
+    var nx = x / this._cells;
+    var val = 1 + nx * (maxPixel - 1);
 
     context.moveTo(val, minPixel);
     context.lineTo(val, maxPixel);
@@ -347,21 +348,21 @@ GridImageryProvider.prototype._drawGrid = function (context) {
  * Render a grid into a canvas with background and glow
  */
 GridImageryProvider.prototype._createGridCanvas = function () {
-  const canvas = document.createElement("canvas");
+  var canvas = document.createElement("canvas");
   canvas.width = this._canvasSize;
   canvas.height = this._canvasSize;
-  const minPixel = 0;
-  const maxPixel = this._canvasSize;
+  var minPixel = 0;
+  var maxPixel = this._canvasSize;
 
-  const context = canvas.getContext("2d");
+  var context = canvas.getContext("2d");
 
   // Fill the background
-  const cssBackgroundColor = this._backgroundColor.toCssColorString();
+  var cssBackgroundColor = this._backgroundColor.toCssColorString();
   context.fillStyle = cssBackgroundColor;
   context.fillRect(minPixel, minPixel, maxPixel, maxPixel);
 
   // Glow for grid lines
-  const cssGlowColor = this._glowColor.toCssColorString();
+  var cssGlowColor = this._glowColor.toCssColorString();
   context.strokeStyle = cssGlowColor;
   // Wide
   context.lineWidth = this._glowWidth;
@@ -373,7 +374,7 @@ GridImageryProvider.prototype._createGridCanvas = function () {
   this._drawGrid(context);
 
   // Grid lines
-  const cssColor = this._color.toCssColorString();
+  var cssColor = this._color.toCssColorString();
   // Border
   context.strokeStyle = cssColor;
   context.lineWidth = 2;
@@ -407,10 +408,13 @@ GridImageryProvider.prototype.getTileCredits = function (x, y, level) {
  * @param {Number} y The tile Y coordinate.
  * @param {Number} level The tile level.
  * @param {Request} [request] The request object. Intended for internal use only.
- * @returns {Promise.<HTMLCanvasElement>} The resolved image as a Canvas DOM object.
+ * @returns {Promise.<HTMLImageElement|HTMLCanvasElement>|undefined} A promise for the image that will resolve when the image is available, or
+ *          undefined if there are too many active requests to the server, and the request
+ *          should be retried later.  The resolved image may be either an
+ *          Image or a Canvas DOM object.
  */
 GridImageryProvider.prototype.requestImage = function (x, y, level, request) {
-  return Promise.resolve(this._canvas);
+  return this._canvas;
 };
 
 /**
@@ -422,7 +426,10 @@ GridImageryProvider.prototype.requestImage = function (x, y, level, request) {
  * @param {Number} level The tile level.
  * @param {Number} longitude The longitude at which to pick features.
  * @param {Number} latitude  The latitude at which to pick features.
- * @return {undefined} Undefined since picking is not supported.
+ * @return {Promise.<ImageryLayerFeatureInfo[]>|undefined} A promise for the picked features that will resolve when the asynchronous
+ *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
+ *                   instances.  The array may be empty if no features are found at the given location.
+ *                   It may also be undefined if picking is not supported.
  */
 GridImageryProvider.prototype.pickFeatures = function (
   x,

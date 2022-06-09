@@ -123,14 +123,14 @@ QuadtreeTile.createLevelZeroTiles = function (tilingScheme) {
   }
   //>>includeEnd('debug');
 
-  const numberOfLevelZeroTilesX = tilingScheme.getNumberOfXTilesAtLevel(0);
-  const numberOfLevelZeroTilesY = tilingScheme.getNumberOfYTilesAtLevel(0);
+  var numberOfLevelZeroTilesX = tilingScheme.getNumberOfXTilesAtLevel(0);
+  var numberOfLevelZeroTilesY = tilingScheme.getNumberOfYTilesAtLevel(0);
 
-  const result = new Array(numberOfLevelZeroTilesX * numberOfLevelZeroTilesY);
+  var result = new Array(numberOfLevelZeroTilesX * numberOfLevelZeroTilesY);
 
-  let index = 0;
-  for (let y = 0; y < numberOfLevelZeroTilesY; ++y) {
-    for (let x = 0; x < numberOfLevelZeroTilesX; ++x) {
+  var index = 0;
+  for (var y = 0; y < numberOfLevelZeroTilesY; ++y) {
+    for (var x = 0; x < numberOfLevelZeroTilesX; ++x) {
       result[index++] = new QuadtreeTile({
         tilingScheme: tilingScheme,
         x: x,
@@ -148,11 +148,11 @@ QuadtreeTile.prototype._updateCustomData = function (
   added,
   removed
 ) {
-  let customData = this.customData;
+  var customData = this.customData;
 
-  let i;
-  let data;
-  let rectangle;
+  var i;
+  var data;
+  var rectangle;
 
   if (defined(added) && defined(removed)) {
     customData = customData.filter(function (value) {
@@ -171,12 +171,12 @@ QuadtreeTile.prototype._updateCustomData = function (
     this._frameUpdated = frameNumber;
   } else {
     // interior or leaf tile, update from parent
-    const parent = this._parent;
+    var parent = this._parent;
     if (defined(parent) && this._frameUpdated !== parent._frameUpdated) {
       customData.length = 0;
 
       rectangle = this._rectangle;
-      const parentCustomData = parent.customData;
+      var parentCustomData = parent.customData;
       for (i = 0; i < parentCustomData.length; ++i) {
         data = parentCustomData[i];
         if (Rectangle.contains(rectangle, data.positionCartographic)) {
@@ -390,7 +390,7 @@ Object.defineProperties(QuadtreeTile.prototype, {
    */
   eligibleForUnloading: {
     get: function () {
-      let result = true;
+      var result = true;
 
       if (defined(this.data)) {
         result = this.data.eligibleForUnloading;
@@ -405,7 +405,7 @@ Object.defineProperties(QuadtreeTile.prototype, {
 });
 
 QuadtreeTile.prototype.findLevelZeroTile = function (levelZeroTiles, x, y) {
-  const xTiles = this.tilingScheme.getNumberOfXTilesAtLevel(0);
+  var xTiles = this.tilingScheme.getNumberOfXTilesAtLevel(0);
   if (x < 0) {
     x += xTiles;
   } else if (x >= xTiles) {
@@ -422,7 +422,7 @@ QuadtreeTile.prototype.findLevelZeroTile = function (levelZeroTiles, x, y) {
 };
 
 QuadtreeTile.prototype.findTileToWest = function (levelZeroTiles) {
-  const parent = this.parent;
+  var parent = this.parent;
   if (parent === undefined) {
     return this.findLevelZeroTile(levelZeroTiles, this.x - 1, this.y);
   }
@@ -433,7 +433,7 @@ QuadtreeTile.prototype.findTileToWest = function (levelZeroTiles) {
     return parent.northwestChild;
   }
 
-  const westOfParent = parent.findTileToWest(levelZeroTiles);
+  var westOfParent = parent.findTileToWest(levelZeroTiles);
   if (westOfParent === undefined) {
     return undefined;
   } else if (parent.southwestChild === this) {
@@ -443,7 +443,7 @@ QuadtreeTile.prototype.findTileToWest = function (levelZeroTiles) {
 };
 
 QuadtreeTile.prototype.findTileToEast = function (levelZeroTiles) {
-  const parent = this.parent;
+  var parent = this.parent;
   if (parent === undefined) {
     return this.findLevelZeroTile(levelZeroTiles, this.x + 1, this.y);
   }
@@ -454,7 +454,7 @@ QuadtreeTile.prototype.findTileToEast = function (levelZeroTiles) {
     return parent.northeastChild;
   }
 
-  const eastOfParent = parent.findTileToEast(levelZeroTiles);
+  var eastOfParent = parent.findTileToEast(levelZeroTiles);
   if (eastOfParent === undefined) {
     return undefined;
   } else if (parent.southeastChild === this) {
@@ -464,7 +464,7 @@ QuadtreeTile.prototype.findTileToEast = function (levelZeroTiles) {
 };
 
 QuadtreeTile.prototype.findTileToSouth = function (levelZeroTiles) {
-  const parent = this.parent;
+  var parent = this.parent;
   if (parent === undefined) {
     return this.findLevelZeroTile(levelZeroTiles, this.x, this.y + 1);
   }
@@ -475,7 +475,7 @@ QuadtreeTile.prototype.findTileToSouth = function (levelZeroTiles) {
     return parent.southeastChild;
   }
 
-  const southOfParent = parent.findTileToSouth(levelZeroTiles);
+  var southOfParent = parent.findTileToSouth(levelZeroTiles);
   if (southOfParent === undefined) {
     return undefined;
   } else if (parent.southwestChild === this) {
@@ -485,7 +485,7 @@ QuadtreeTile.prototype.findTileToSouth = function (levelZeroTiles) {
 };
 
 QuadtreeTile.prototype.findTileToNorth = function (levelZeroTiles) {
-  const parent = this.parent;
+  var parent = this.parent;
   if (parent === undefined) {
     return this.findLevelZeroTile(levelZeroTiles, this.x, this.y - 1);
   }
@@ -496,7 +496,7 @@ QuadtreeTile.prototype.findTileToNorth = function (levelZeroTiles) {
     return parent.northeastChild;
   }
 
-  const northOfParent = parent.findTileToNorth(levelZeroTiles);
+  var northOfParent = parent.findTileToNorth(levelZeroTiles);
   if (northOfParent === undefined) {
     return undefined;
   } else if (parent.northwestChild === this) {

@@ -1,15 +1,15 @@
-import defer from "./defer.js";
+import when from "../ThirdParty/when.js";
 
 /**
  * @private
  */
 function loadAndExecuteScript(url) {
-  const deferred = defer();
-  const script = document.createElement("script");
+  var deferred = when.defer();
+  var script = document.createElement("script");
   script.async = true;
   script.src = url;
 
-  const head = document.getElementsByTagName("head")[0];
+  var head = document.getElementsByTagName("head")[0];
   script.onload = function () {
     script.onload = undefined;
     head.removeChild(script);

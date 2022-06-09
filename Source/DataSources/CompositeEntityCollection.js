@@ -5,15 +5,15 @@ import CesiumMath from "../Core/Math.js";
 import Entity from "./Entity.js";
 import EntityCollection from "./EntityCollection.js";
 
-const entityOptionsScratch = {
+var entityOptionsScratch = {
   id: undefined,
 };
-const entityIdScratch = new Array(2);
+var entityIdScratch = new Array(2);
 
 function clean(entity) {
-  const propertyNames = entity.propertyNames;
-  const propertyNamesLength = propertyNames.length;
-  for (let i = 0; i < propertyNamesLength; i++) {
+  var propertyNames = entity.propertyNames;
+  var propertyNamesLength = propertyNames.length;
+  for (var i = 0; i < propertyNamesLength; i++) {
     entity[propertyNames[i]] = undefined;
   }
   entity._name = undefined;
@@ -34,7 +34,7 @@ function subscribeToEntity(that, eventHash, collectionId, entity) {
 function unsubscribeFromEntity(that, eventHash, collectionId, entity) {
   entityIdScratch[0] = collectionId;
   entityIdScratch[1] = entity.id;
-  const id = JSON.stringify(entityIdScratch);
+  var id = JSON.stringify(entityIdScratch);
   eventHash[id]();
   eventHash[id] = undefined;
 }
@@ -45,21 +45,21 @@ function recomposite(that) {
     return;
   }
 
-  const collections = that._collections;
-  const collectionsLength = collections.length;
+  var collections = that._collections;
+  var collectionsLength = collections.length;
 
-  const collectionsCopy = that._collectionsCopy;
-  const collectionsCopyLength = collectionsCopy.length;
+  var collectionsCopy = that._collectionsCopy;
+  var collectionsCopyLength = collectionsCopy.length;
 
-  let i;
-  let entity;
-  let entities;
-  let iEntities;
-  let collection;
-  const composite = that._composite;
-  const newEntities = new EntityCollection(that);
-  const eventHash = that._eventHash;
-  let collectionId;
+  var i;
+  var entity;
+  var entities;
+  var iEntities;
+  var collection;
+  var composite = that._composite;
+  var newEntities = new EntityCollection(that);
+  var eventHash = that._eventHash;
+  var collectionId;
 
   for (i = 0; i < collectionsCopyLength; i++) {
     collection = collectionsCopy[i];
@@ -89,7 +89,7 @@ function recomposite(that) {
       entity = entities[iEntities];
       subscribeToEntity(that, eventHash, collectionId, entity);
 
-      let compositeEntity = newEntities.getById(entity.id);
+      var compositeEntity = newEntities.getById(entity.id);
       if (!defined(compositeEntity)) {
         compositeEntity = composite.getById(entity.id);
         if (!defined(compositeEntity)) {
@@ -107,7 +107,7 @@ function recomposite(that) {
 
   composite.suspendEvents();
   composite.removeAll();
-  const newEntitiesArray = newEntities.values;
+  var newEntitiesArray = newEntities.values;
   for (i = 0; i < newEntitiesArray.length; i++) {
     composite.add(newEntitiesArray[i]);
   }
@@ -202,7 +202,7 @@ CompositeEntityCollection.prototype.addCollection = function (
   collection,
   index
 ) {
-  const hasIndex = defined(index);
+  var hasIndex = defined(index);
   //>>includeStart('debug', pragmas.debug);
   if (!defined(collection)) {
     throw new DeveloperError("collection is required.");
@@ -236,7 +236,7 @@ CompositeEntityCollection.prototype.addCollection = function (
  *                    false if the collection was not in the composite.
  */
 CompositeEntityCollection.prototype.removeCollection = function (collection) {
-  const index = this._collections.indexOf(collection);
+  var index = this._collections.indexOf(collection);
   if (index !== -1) {
     this._collections.splice(index, 1);
     recomposite(this);
@@ -312,7 +312,7 @@ function getCollectionIndex(collections, collection) {
   }
   //>>includeEnd('debug');
 
-  const index = collections.indexOf(collection);
+  var index = collections.indexOf(collection);
 
   //>>includeStart('debug', pragmas.debug);
   if (index === -1) {
@@ -324,7 +324,7 @@ function getCollectionIndex(collections, collection) {
 }
 
 function swapCollections(composite, i, j) {
-  const arr = composite._collections;
+  var arr = composite._collections;
   i = CesiumMath.clamp(i, 0, arr.length - 1);
   j = CesiumMath.clamp(j, 0, arr.length - 1);
 
@@ -332,7 +332,7 @@ function swapCollections(composite, i, j) {
     return;
   }
 
-  const temp = arr[i];
+  var temp = arr[i];
   arr[i] = arr[j];
   arr[j] = temp;
 
@@ -347,7 +347,7 @@ function swapCollections(composite, i, j) {
  * @exception {DeveloperError} collection is not in this composite.
  */
 CompositeEntityCollection.prototype.raiseCollection = function (collection) {
-  const index = getCollectionIndex(this._collections, collection);
+  var index = getCollectionIndex(this._collections, collection);
   swapCollections(this, index, index + 1);
 };
 
@@ -359,7 +359,7 @@ CompositeEntityCollection.prototype.raiseCollection = function (collection) {
  * @exception {DeveloperError} collection is not in this composite.
  */
 CompositeEntityCollection.prototype.lowerCollection = function (collection) {
-  const index = getCollectionIndex(this._collections, collection);
+  var index = getCollectionIndex(this._collections, collection);
   swapCollections(this, index, index - 1);
 };
 
@@ -373,7 +373,7 @@ CompositeEntityCollection.prototype.lowerCollection = function (collection) {
 CompositeEntityCollection.prototype.raiseCollectionToTop = function (
   collection
 ) {
-  const index = getCollectionIndex(this._collections, collection);
+  var index = getCollectionIndex(this._collections, collection);
   if (index === this._collections.length - 1) {
     return;
   }
@@ -393,7 +393,7 @@ CompositeEntityCollection.prototype.raiseCollectionToTop = function (
 CompositeEntityCollection.prototype.lowerCollectionToBottom = function (
   collection
 ) {
-  const index = getCollectionIndex(this._collections, collection);
+  var index = getCollectionIndex(this._collections, collection);
   if (index === 0) {
     return;
   }
@@ -474,23 +474,23 @@ CompositeEntityCollection.prototype._onCollectionChanged = function (
   added,
   removed
 ) {
-  const collections = this._collectionsCopy;
-  const collectionsLength = collections.length;
-  const composite = this._composite;
+  var collections = this._collectionsCopy;
+  var collectionsLength = collections.length;
+  var composite = this._composite;
   composite.suspendEvents();
 
-  let i;
-  let q;
-  let entity;
-  let compositeEntity;
-  const removedLength = removed.length;
-  const eventHash = this._eventHash;
-  const collectionId = collection.id;
+  var i;
+  var q;
+  var entity;
+  var compositeEntity;
+  var removedLength = removed.length;
+  var eventHash = this._eventHash;
+  var collectionId = collection.id;
   for (i = 0; i < removedLength; i++) {
-    const removedEntity = removed[i];
+    var removedEntity = removed[i];
     unsubscribeFromEntity(this, eventHash, collectionId, removedEntity);
 
-    const removedId = removedEntity.id;
+    var removedId = removedEntity.id;
     //Check if the removed entity exists in any of the remaining collections
     //If so, we clean and remerge it.
     for (q = collectionsLength - 1; q >= 0; q--) {
@@ -511,12 +511,12 @@ CompositeEntityCollection.prototype._onCollectionChanged = function (
     compositeEntity = undefined;
   }
 
-  const addedLength = added.length;
+  var addedLength = added.length;
   for (i = 0; i < addedLength; i++) {
-    const addedEntity = added[i];
+    var addedEntity = added[i];
     subscribeToEntity(this, eventHash, collectionId, addedEntity);
 
-    const addedId = addedEntity.id;
+    var addedId = addedEntity.id;
     //We know the added entity exists in at least one collection,
     //but we need to check all collections and re-merge in order
     //to maintain the priority of properties.
@@ -548,20 +548,20 @@ CompositeEntityCollection.prototype._onDefinitionChanged = function (
   newValue,
   oldValue
 ) {
-  const collections = this._collections;
-  const composite = this._composite;
+  var collections = this._collections;
+  var composite = this._composite;
 
-  const collectionsLength = collections.length;
-  const id = entity.id;
-  const compositeEntity = composite.getById(id);
-  let compositeProperty = compositeEntity[propertyName];
-  const newProperty = !defined(compositeProperty);
+  var collectionsLength = collections.length;
+  var id = entity.id;
+  var compositeEntity = composite.getById(id);
+  var compositeProperty = compositeEntity[propertyName];
+  var newProperty = !defined(compositeProperty);
 
-  let firstTime = true;
-  for (let q = collectionsLength - 1; q >= 0; q--) {
-    const innerEntity = collections[q].getById(entity.id);
+  var firstTime = true;
+  for (var q = collectionsLength - 1; q >= 0; q--) {
+    var innerEntity = collections[q].getById(entity.id);
     if (defined(innerEntity)) {
-      const property = innerEntity[propertyName];
+      var property = innerEntity[propertyName];
       if (defined(property)) {
         if (firstTime) {
           firstTime = false;

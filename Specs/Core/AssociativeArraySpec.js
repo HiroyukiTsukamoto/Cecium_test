@@ -2,13 +2,13 @@ import { AssociativeArray } from "../../Source/Cesium.js";
 
 describe("Core/AssociativeArray", function () {
   it("constructor has expected default values", function () {
-    const associativeArray = new AssociativeArray();
+    var associativeArray = new AssociativeArray();
     expect(associativeArray.length).toEqual(0);
     expect(associativeArray.values).toEqual([]);
   });
 
   it("can manipulate values", function () {
-    const associativeArray = new AssociativeArray();
+    var associativeArray = new AssociativeArray();
 
     expect(associativeArray.contains("key1")).toEqual(false);
 
@@ -25,7 +25,7 @@ describe("Core/AssociativeArray", function () {
     expect(associativeArray.contains("key2")).toEqual(true);
     expect(associativeArray.contains("key3")).toEqual(true);
 
-    const values = associativeArray.values;
+    var values = associativeArray.values;
     expect(values).toContain(1);
     expect(values).toContain(2);
     expect(values).toContain(3);
@@ -55,21 +55,21 @@ describe("Core/AssociativeArray", function () {
   });
 
   it("set throws with undefined key", function () {
-    const associativeArray = new AssociativeArray();
+    var associativeArray = new AssociativeArray();
     expect(function () {
       associativeArray.set(undefined, 1);
     }).toThrowDeveloperError();
   });
 
   it("get throws with undefined key", function () {
-    const associativeArray = new AssociativeArray();
+    var associativeArray = new AssociativeArray();
     expect(function () {
       associativeArray.get(undefined);
     }).toThrowDeveloperError();
   });
 
   it("remove returns false with undefined key", function () {
-    const associativeArray = new AssociativeArray();
+    var associativeArray = new AssociativeArray();
     expect(associativeArray.remove(undefined)).toBe(false);
   });
 });

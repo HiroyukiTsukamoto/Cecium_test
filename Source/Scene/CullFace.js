@@ -5,7 +5,7 @@ import WebGLConstants from "../Core/WebGLConstants.js";
  *
  * @enum {Number}
  */
-const CullFace = {
+var CullFace = {
   /**
    * Front-facing triangles are culled.
    *

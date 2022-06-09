@@ -3,7 +3,7 @@
  * @enum {Number}
  * @private
  */
-const BoundingSphereState = {
+var BoundingSphereState = {
   /**
    * The BoundingSphere has been computed.
    * @type BoundingSphereState

@@ -12,7 +12,6 @@ import { Ellipsoid } from "../../Source/Cesium.js";
 import { Event } from "../../Source/Cesium.js";
 import { FeatureDetection } from "../../Source/Cesium.js";
 import { HeadingPitchRange } from "../../Source/Cesium.js";
-import { ImageBasedLighting } from "../../Source/Cesium.js";
 import { JulianDate } from "../../Source/Cesium.js";
 import { Math as CesiumMath } from "../../Source/Cesium.js";
 import { Matrix3 } from "../../Source/Cesium.js";
@@ -34,139 +33,131 @@ import { HeightReference } from "../../Source/Cesium.js";
 import { Model } from "../../Source/Cesium.js";
 import { ModelAnimationLoop } from "../../Source/Cesium.js";
 import { DepthFunction } from "../../Source/Cesium.js";
-import { RuntimeError } from "../../Source/Cesium.js";
 import createScene from "../createScene.js";
 import pollToPromise from "../pollToPromise.js";
+import { when } from "../../Source/Cesium.js";
 import ModelOutlineLoader from "../../Source/Scene/ModelOutlineLoader.js";
 
 describe(
   "Scene/Model",
   function () {
-    const boxUrl = "./Data/Models/Box/CesiumBoxTest.gltf";
-    const boxNoTechniqueUrl =
-      "./Data/Models/Box/CesiumBoxTest-NoTechnique.gltf";
-    const boxWithCreditsUrl =
-      "./Data/Models/Box/CesiumBoxTest-WithCopyright.gltf";
-    const boxNoIndicesUrl = "./Data/Models/Box-NoIndices/box-noindices.gltf";
-    const texturedBoxUrl =
+    var boxUrl = "./Data/Models/Box/CesiumBoxTest.gltf";
+    var boxNoTechniqueUrl = "./Data/Models/Box/CesiumBoxTest-NoTechnique.gltf";
+    var boxNoIndicesUrl = "./Data/Models/Box-NoIndices/box-noindices.gltf";
+    var texturedBoxUrl =
       "./Data/Models/Box-Textured/CesiumTexturedBoxTest.gltf";
-    const texturedBoxSeparateUrl =
+    var texturedBoxSeparateUrl =
       "./Data/Models/Box-Textured-Separate/CesiumTexturedBoxTest.gltf";
-    const texturedBoxBasePathUrl =
+    var texturedBoxBasePathUrl =
       "./Data/Models/Box-Textured-BasePath/CesiumTexturedBoxTest.gltf";
-    const texturedBoxKTX2Url =
+    var texturedBoxKTX2Url =
       "./Data/Models/Box-Textured-KTX2-Basis/CesiumTexturedBoxTest.gltf";
-    const texturedBoxKTX2MipmapUrl =
+    var texturedBoxKTX2MipmapUrl =
       "./Data/Models/Box-Textured-KTX2-Mipmap/CheckerboardTexturedBoxTest.gltf";
-    const texturedBoxCustomUrl =
+    var texturedBoxCustomUrl =
       "./Data/Models/Box-Textured-Custom/CesiumTexturedBoxTest.gltf";
-    const texturedBoxKhrBinaryUrl =
+    var texturedBoxKhrBinaryUrl =
       "./Data/Models/Box-Textured-Binary/CesiumTexturedBoxTest.glb";
-    const texturedBoxTextureTransformUrl =
+    var texturedBoxTextureTransformUrl =
       "./Data/Models/Box-Texture-Transform/CesiumTexturedBoxTest.gltf";
-    const texturedBoxWebpUrl =
+    var texturedBoxWebpUrl =
       "./Data/Models/Box-Textured-Webp/CesiumBoxWebp.gltf";
-    const boxRtcUrl = "./Data/Models/Box-RTC/Box.gltf";
-    const boxEcefUrl = "./Data/Models/Box-ECEF/ecef.gltf";
-    const boxWithUnusedMaterial =
-      "./Data/Models/BoxWithUnusedMaterial/Box.gltf";
-    const boxArticulationsUrl =
+    var boxRtcUrl = "./Data/Models/Box-RTC/Box.gltf";
+    var boxEcefUrl = "./Data/Models/Box-ECEF/ecef.gltf";
+    var boxWithUnusedMaterial = "./Data/Models/BoxWithUnusedMaterial/Box.gltf";
+    var boxArticulationsUrl =
       "./Data/Models/Box-Articulations/Box-Articulations.gltf";
 
-    const cesiumAirUrl = "./Data/Models/CesiumAir/Cesium_Air.gltf";
-    const cesiumAir_0_8Url = "./Data/Models/CesiumAir/Cesium_Air_0_8.gltf";
-    const animBoxesUrl =
-      "./Data/Models/anim-test-1-boxes/anim-test-1-boxes.gltf";
-    const riggedFigureUrl =
+    var cesiumAirUrl = "./Data/Models/CesiumAir/Cesium_Air.gltf";
+    var cesiumAir_0_8Url = "./Data/Models/CesiumAir/Cesium_Air_0_8.gltf";
+    var animBoxesUrl = "./Data/Models/anim-test-1-boxes/anim-test-1-boxes.gltf";
+    var riggedFigureUrl =
       "./Data/Models/rigged-figure-test/rigged-figure-test.gltf";
-    const riggedSimpleUrl = "./Data/Models/rigged-simple/rigged-simple.gltf";
-    const boxConstantUrl = "./Data/Models/MaterialsCommon/BoxConstant.gltf";
-    const boxLambertUrl = "./Data/Models/MaterialsCommon/BoxLambert.gltf";
-    const boxBlinnUrl = "./Data/Models/MaterialsCommon/BoxBlinn.gltf";
-    const boxPhongUrl = "./Data/Models/MaterialsCommon/BoxPhong.gltf";
-    const boxNoLightUrl = "./Data/Models/MaterialsCommon/BoxNoLight.gltf";
-    const boxAmbientLightUrl =
+    var riggedSimpleUrl = "./Data/Models/rigged-simple/rigged-simple.gltf";
+    var boxConstantUrl = "./Data/Models/MaterialsCommon/BoxConstant.gltf";
+    var boxLambertUrl = "./Data/Models/MaterialsCommon/BoxLambert.gltf";
+    var boxBlinnUrl = "./Data/Models/MaterialsCommon/BoxBlinn.gltf";
+    var boxPhongUrl = "./Data/Models/MaterialsCommon/BoxPhong.gltf";
+    var boxNoLightUrl = "./Data/Models/MaterialsCommon/BoxNoLight.gltf";
+    var boxAmbientLightUrl =
       "./Data/Models/MaterialsCommon/BoxAmbientLight.gltf";
-    const boxDirectionalLightUrl =
+    var boxDirectionalLightUrl =
       "./Data/Models/MaterialsCommon/BoxDirectionalLight.gltf";
-    const boxPointLightUrl = "./Data/Models/MaterialsCommon/BoxPointLight.gltf";
-    const boxSpotLightUrl = "./Data/Models/MaterialsCommon/BoxSpotLight.gltf";
-    const boxTransparentUrl =
-      "./Data/Models/MaterialsCommon/BoxTransparent.gltf";
-    const boxColorUrl = "./Data/Models/Box-Color/Box-Color.gltf";
-    const boxUint32Indices =
+    var boxPointLightUrl = "./Data/Models/MaterialsCommon/BoxPointLight.gltf";
+    var boxSpotLightUrl = "./Data/Models/MaterialsCommon/BoxSpotLight.gltf";
+    var boxTransparentUrl = "./Data/Models/MaterialsCommon/BoxTransparent.gltf";
+    var boxColorUrl = "./Data/Models/Box-Color/Box-Color.gltf";
+    var boxUint32Indices =
       "./Data/Models/Box-Uint32Indices/Box-Uint32Indices.gltf";
-    const boxQuantizedUrl =
+    var boxQuantizedUrl =
       "./Data/Models/WEB3DQuantizedAttributes/Box-Quantized.gltf";
-    const boxColorQuantizedUrl =
+    var boxColorQuantizedUrl =
       "./Data/Models/WEB3DQuantizedAttributes/Box-Color-Quantized.gltf";
-    const boxScalarQuantizedUrl =
+    var boxScalarQuantizedUrl =
       "./Data/Models/WEB3DQuantizedAttributes/Box-Scalar-Quantized.gltf";
-    const milkTruckQuantizedUrl =
+    var milkTruckQuantizedUrl =
       "./Data/Models/WEB3DQuantizedAttributes/CesiumMilkTruck-Quantized.gltf";
-    const milkTruckQuantizedMismatchUrl =
+    var milkTruckQuantizedMismatchUrl =
       "./Data/Models/WEB3DQuantizedAttributes/CesiumMilkTruck-Mismatch-Quantized.gltf";
-    const duckQuantizedUrl =
+    var duckQuantizedUrl =
       "./Data/Models/WEB3DQuantizedAttributes/Duck-Quantized.gltf";
-    const riggedSimpleQuantizedUrl =
+    var riggedSimpleQuantizedUrl =
       "./Data/Models/WEB3DQuantizedAttributes/RiggedSimple-Quantized.gltf";
-    const CesiumManUrl = "./Data/Models/MaterialsCommon/Cesium_Man.gltf";
-    const interpolationTestUrl =
+    var CesiumManUrl = "./Data/Models/MaterialsCommon/Cesium_Man.gltf";
+    var interpolationTestUrl =
       "./Data/Models/InterpolationTest/InterpolationTest.glb";
 
-    const boomBoxUrl = "./Data/Models/PBR/BoomBox/BoomBox.gltf";
-    const boomBoxPbrSpecularGlossinessUrl =
+    var boomBoxUrl = "./Data/Models/PBR/BoomBox/BoomBox.gltf";
+    var boomBoxPbrSpecularGlossinessUrl =
       "./Data/Models/PBR/BoomBoxSpecularGlossiness/BoomBox.gltf";
-    const boomBoxPbrSpecularGlossinessDefaultsUrl =
+    var boomBoxPbrSpecularGlossinessDefaultsUrl =
       "./Data/Models/PBR/BoomBoxSpecularGlossiness/BoomBox-Default.gltf";
-    const boomBoxPbrSpecularGlossinessNoTextureUrl =
+    var boomBoxPbrSpecularGlossinessNoTextureUrl =
       "./Data/Models/PBR/BoomBoxSpecularGlossiness/BoomBox-NoTexture.gltf";
-    const boxPbrUrl = "./Data/Models/PBR/Box/Box.gltf";
-    const boxPbrUnlitUrl = "./Data/Models/PBR/BoxUnlit/BoxUnlit.gltf";
-    const boxAnimatedPbrUrl = "./Data/Models/PBR/BoxAnimated/BoxAnimated.gltf";
-    const boxInterleavedPbrUrl =
+    var boxPbrUrl = "./Data/Models/PBR/Box/Box.gltf";
+    var boxPbrUnlitUrl = "./Data/Models/PBR/BoxUnlit/BoxUnlit.gltf";
+    var boxAnimatedPbrUrl = "./Data/Models/PBR/BoxAnimated/BoxAnimated.gltf";
+    var boxInterleavedPbrUrl =
       "./Data/Models/PBR/BoxInterleaved/BoxInterleaved.gltf";
-    const riggedSimplePbrUrl =
-      "./Data/Models/PBR/RiggedSimple/RiggedSimple.gltf";
-    const animatedMorphCubeUrl =
+    var riggedSimplePbrUrl = "./Data/Models/PBR/RiggedSimple/RiggedSimple.gltf";
+    var animatedMorphCubeUrl =
       "./Data/Models/PBR/AnimatedMorphCube/AnimatedMorphCube.gltf";
-    const twoSidedPlaneUrl =
-      "./Data/Models/PBR/TwoSidedPlane/TwoSidedPlane.gltf";
-    const vertexColorTestUrl =
+    var twoSidedPlaneUrl = "./Data/Models/PBR/TwoSidedPlane/TwoSidedPlane.gltf";
+    var vertexColorTestUrl =
       "./Data/Models/PBR/VertexColorTest/VertexColorTest.gltf";
-    const emissiveUrl = "./Data/Models/PBR/BoxEmissive/BoxEmissive.gltf";
-    const dracoCompressedModelUrl =
+    var emissiveUrl = "./Data/Models/PBR/BoxEmissive/BoxEmissive.gltf";
+    var dracoCompressedModelUrl =
       "./Data/Models/DracoCompression/CesiumMilkTruck/CesiumMilkTruck.gltf";
-    const dracoCompressedModelWithAnimationUrl =
+    var dracoCompressedModelWithAnimationUrl =
       "./Data/Models/DracoCompression/CesiumMan/CesiumMan.gltf";
-    const dracoCompressedModelWithLinesUrl =
+    var dracoCompressedModelWithLinesUrl =
       "./Data/Models/DracoCompression/BoxWithLines/BoxWithLines.gltf";
-    const dracoBoxVertexColorsRGBUrl =
+    var dracoBoxVertexColorsRGBUrl =
       "./Data/Models/DracoCompression/BoxVertexColorsDracoRGB.gltf";
-    const dracoBoxVertexColorsRGBAUrl =
+    var dracoBoxVertexColorsRGBAUrl =
       "./Data/Models/DracoCompression/BoxVertexColorsDracoRGBA.gltf";
-    const multiUvTestUrl = "./Data/Models/MultiUVTest/MultiUVTest.glb";
+    var multiUvTestUrl = "./Data/Models/MultiUVTest/MultiUVTest.glb";
 
-    const boxGltf2Url = "./Data/Models/Box-Gltf-2/Box.gltf";
-    const boxGltf2WithTechniquesUrl =
+    var boxGltf2Url = "./Data/Models/Box-Gltf-2/Box.gltf";
+    var boxGltf2WithTechniquesUrl =
       "./Data/Models/Box-Gltf-2-Techniques/Box.gltf";
 
-    const boxBackFaceCullingUrl =
+    var boxBackFaceCullingUrl =
       "./Data/Models/Box-Back-Face-Culling/Box-Back-Face-Culling.gltf";
 
-    let texturedBoxModel;
-    let cesiumAirModel;
-    let animBoxesModel;
-    let riggedFigureModel;
+    var texturedBoxModel;
+    var cesiumAirModel;
+    var animBoxesModel;
+    var riggedFigureModel;
 
-    let scene;
-    let primitives;
+    var scene;
+    var primitives;
 
     beforeAll(function () {
       scene = createScene();
       primitives = scene.primitives;
 
-      const modelPromises = [];
+      var modelPromises = [];
       modelPromises.push(
         loadModel(texturedBoxUrl).then(function (model) {
           texturedBoxModel = model;
@@ -195,7 +186,7 @@ describe(
       );
       modelPromises.push(FeatureDetection.supportsWebP.initialize());
 
-      return Promise.all(modelPromises);
+      return when.all(modelPromises);
     });
 
     afterAll(function () {
@@ -205,7 +196,7 @@ describe(
     beforeEach(function () {
       scene.morphTo3D(0.0);
 
-      const camera = scene.camera;
+      var camera = scene.camera;
       camera.frustum = new PerspectiveFrustum();
       camera.frustum.aspectRatio =
         scene.drawingBufferWidth / scene.drawingBufferHeight;
@@ -216,15 +207,14 @@ describe(
       model.zoomTo = function (zoom) {
         zoom = defaultValue(zoom, 4.0);
 
-        const camera = scene.camera;
-        const center = Matrix4.multiplyByPoint(
+        var camera = scene.camera;
+        var center = Matrix4.multiplyByPoint(
           model.modelMatrix,
-          model.boundingSphereInternal.center,
+          model.boundingSphere.center,
           new Cartesian3()
         );
-        const r =
-          zoom *
-          Math.max(model.boundingSphereInternal.radius, camera.frustum.near);
+        var r =
+          zoom * Math.max(model.boundingSphere.radius, camera.frustum.near);
         camera.lookAt(center, new HeadingPitchRange(0.0, 0.0, r));
       };
     }
@@ -239,7 +229,7 @@ describe(
         show: false,
       });
 
-      const model = primitives.add(Model.fromGltf(options));
+      var model = primitives.add(Model.fromGltf(options));
       addZoomTo(model);
 
       return pollToPromise(
@@ -253,8 +243,8 @@ describe(
         .then(function () {
           return model;
         })
-        .catch(function () {
-          return Promise.reject(model);
+        .otherwise(function () {
+          return when.reject(model);
         });
     }
 
@@ -268,7 +258,7 @@ describe(
         show: defaultValue(options.show, false),
       });
 
-      const model = primitives.add(new Model(options));
+      var model = primitives.add(new Model(options));
       addZoomTo(model);
 
       return pollToPromise(
@@ -320,12 +310,12 @@ describe(
     });
 
     it("sets model properties", function () {
-      const modelMatrix = Transforms.eastNorthUpToFixedFrame(
+      var modelMatrix = Transforms.eastNorthUpToFixedFrame(
         Cartesian3.fromDegrees(0.0, 0.0, 100.0)
       );
 
-      expect(texturedBoxModel.gltfInternal).toBeDefined();
-      expect(texturedBoxModel.basePathInternal).toEqual(
+      expect(texturedBoxModel.gltf).toBeDefined();
+      expect(texturedBoxModel.basePath).toEqual(
         "./Data/Models/Box-Textured/CesiumTexturedBoxTest.gltf"
       );
       expect(texturedBoxModel.show).toEqual(false);
@@ -352,39 +342,38 @@ describe(
       expect(texturedBoxModel.colorBlendMode).toEqual(ColorBlendMode.HIGHLIGHT);
       expect(texturedBoxModel.colorBlendAmount).toEqual(0.5);
       expect(texturedBoxModel.credit).toBeUndefined();
-      expect(texturedBoxModel.showCreditsOnScreen).toBe(false);
     });
 
     it("preserves query string in url", function () {
-      const params = "?param1=1&param2=2";
-      const url = texturedBoxUrl + params;
-      const model = Model.fromGltf({
+      var params = "?param1=1&param2=2";
+      var url = texturedBoxUrl + params;
+      var model = Model.fromGltf({
         url: url,
       });
-      expect(model.basePathInternal).toEndWith(params);
+      expect(model.basePath).toEndWith(params);
     });
 
     it("fromGltf takes a base path", function () {
-      const url = texturedBoxBasePathUrl;
-      const basePath = "./Data/Models/Box-Textured-Separate/";
-      const model = Model.fromGltf({
+      var url = texturedBoxBasePathUrl;
+      var basePath = "./Data/Models/Box-Textured-Separate/";
+      var model = Model.fromGltf({
         url: url,
         basePath: basePath,
       });
-      expect(model.basePathInternal).toEndWith(basePath);
+      expect(model.basePath).toEndWith(basePath);
       expect(model._cacheKey).toEndWith(basePath);
     });
 
     it("fromGltf takes Resource as url and basePath parameters", function () {
       spyOn(Resource._Implementations, "loadWithXhr").and.callThrough();
 
-      const url = new Resource({
+      var url = new Resource({
         url: texturedBoxUrl,
       });
-      const basePath = new Resource({
+      var basePath = new Resource({
         url: "./Data/Models/Box-Textured-Separate/",
       });
-      const model = Model.fromGltf({
+      var model = Model.fromGltf({
         url: url,
         basePath: basePath,
       });
@@ -395,142 +384,12 @@ describe(
     });
 
     it("fromGltf takes a credit", function () {
-      const url = texturedBoxBasePathUrl;
-      const model = Model.fromGltf({
+      var url = texturedBoxBasePathUrl;
+      var model = Model.fromGltf({
         url: url,
         credit: "This is my model credit",
       });
       expect(model.credit).toBeInstanceOf(Credit);
-    });
-
-    it("fromGltf sets showCreditsOnScreen", function () {
-      const url = boxWithCreditsUrl;
-      const model = Model.fromGltf({
-        url: url,
-        showCreditsOnScreen: true,
-      });
-      expect(model.showCreditsOnScreen).toBe(true);
-    });
-
-    describe("copyrights", function () {
-      let copyrightModel;
-
-      afterEach(function () {
-        primitives.remove(copyrightModel);
-      });
-
-      it("gets copyrights from gltf", function () {
-        return loadModel(boxWithCreditsUrl).then(function (model) {
-          copyrightModel = model;
-          const credits = model._gltfCredits;
-          const length = credits.length;
-          expect(length).toBe(3);
-          for (let i = 0; i < length; i++) {
-            expect(credits[i]).toBeInstanceOf(Credit);
-          }
-        });
-      });
-
-      it("shows gltf copyrights in lightbox", function () {
-        return loadModel(boxWithCreditsUrl, {
-          showCreditsOnScreen: false,
-        }).then(function (model) {
-          copyrightModel = model;
-          const expectedCredits = [
-            "First Source",
-            "Second Source",
-            "Third Source",
-          ];
-
-          scene.renderForSpecs();
-          const creditDisplay = scene.frameState.creditDisplay;
-          const lightboxCredits =
-            creditDisplay._currentFrameCredits.lightboxCredits.values;
-          const screenCredits =
-            creditDisplay._currentFrameCredits.screenCredits.values;
-
-          const length = lightboxCredits.length;
-          expect(length).toEqual(expectedCredits.length);
-          for (let i = 0; i < length; i++) {
-            expect(lightboxCredits[i].credit.html).toEqual(expectedCredits[i]);
-          }
-          expect(screenCredits.length).toBe(0);
-        });
-      });
-
-      it("shows gltf copyrights on screen", function () {
-        return loadModel(boxWithCreditsUrl, {
-          showCreditsOnScreen: true,
-        }).then(function (model) {
-          copyrightModel = model;
-          const expectedCredits = [
-            "First Source",
-            "Second Source",
-            "Third Source",
-          ];
-
-          scene.renderForSpecs();
-          const creditDisplay = scene.frameState.creditDisplay;
-          const lightboxCredits =
-            creditDisplay._currentFrameCredits.lightboxCredits.values;
-          const screenCredits =
-            creditDisplay._currentFrameCredits.screenCredits.values;
-
-          const length = screenCredits.length;
-          expect(length).toEqual(screenCredits.length);
-          for (let i = 0; i < length; i++) {
-            expect(screenCredits[i].credit.html).toEqual(expectedCredits[i]);
-          }
-          expect(lightboxCredits.length).toBe(0);
-        });
-      });
-
-      it("toggles showing credits on screen", function () {
-        return loadModel(boxWithCreditsUrl, {
-          credit: "Sample Credit",
-          showCreditsOnScreen: false,
-        }).then(function (model) {
-          copyrightModel = model;
-          const expectedCredits = [
-            "Sample Credit",
-            "First Source",
-            "Second Source",
-            "Third Source",
-          ];
-
-          scene.renderForSpecs();
-          const creditDisplay = scene.frameState.creditDisplay;
-          const lightboxCredits =
-            creditDisplay._currentFrameCredits.lightboxCredits.values;
-          const screenCredits =
-            creditDisplay._currentFrameCredits.screenCredits.values;
-
-          let length = lightboxCredits.length;
-          expect(length).toEqual(expectedCredits.length);
-          for (let i = 0; i < length; i++) {
-            expect(lightboxCredits[i].credit.html).toEqual(expectedCredits[i]);
-          }
-          expect(screenCredits.length).toBe(0);
-
-          model.showCreditsOnScreen = true;
-          scene.renderForSpecs();
-          length = screenCredits.length;
-          expect(length).toEqual(expectedCredits.length);
-          for (let i = 0; i < length; i++) {
-            expect(screenCredits[i].credit.html).toEqual(expectedCredits[i]);
-          }
-          expect(lightboxCredits.length).toBe(0);
-
-          model.showCreditsOnScreen = false;
-          scene.renderForSpecs();
-          length = lightboxCredits.length;
-          expect(length).toEqual(expectedCredits.length);
-          for (let i = 0; i < length; i++) {
-            expect(lightboxCredits[i].credit.html).toEqual(expectedCredits[i]);
-          }
-          expect(screenCredits.length).toBe(0);
-        });
-      });
     });
 
     it("renders", function () {
@@ -548,7 +407,7 @@ describe(
     });
 
     it("renders in 2D over the IDL", function () {
-      return Promise.resolve(loadModel(texturedBoxUrl)).then(function (model) {
+      return when(loadModel(texturedBoxUrl)).then(function (model) {
         model.modelMatrix = Transforms.eastNorthUpToFixedFrame(
           Cartesian3.fromDegrees(180.0, 0.0, 100.0)
         );
@@ -602,8 +461,8 @@ describe(
     });
 
     it("does not render during morph", function () {
-      const commandList = scene.frameState.commandList;
-      const model = texturedBoxModel;
+      var commandList = scene.frameState.commandList;
+      var model = texturedBoxModel;
       model.show = true;
       model.cull = false;
       expect(model.ready).toBe(true);
@@ -728,7 +587,7 @@ describe(
     it("rejects readyPromise on error", function () {
       return Resource.fetchJson(boomBoxUrl).then(function (gltf) {
         gltf.images[0].uri = "invalid.png";
-        const model = primitives.add(
+        var model = primitives.add(
           new Model({
             gltf: gltf,
           })
@@ -740,7 +599,7 @@ describe(
           .then(function (model) {
             fail("should not resolve");
           })
-          .catch(function (error) {
+          .otherwise(function (error) {
             expect(model.ready).toEqual(false);
             primitives.remove(model);
           });
@@ -749,9 +608,7 @@ describe(
 
     it("renders from glTF", function () {
       // Simulate using procedural glTF as opposed to loading it from a file
-      return loadModelJson(texturedBoxModel.gltfInternal).then(function (
-        model
-      ) {
+      return loadModelJson(texturedBoxModel.gltf).then(function (model) {
         verifyRender(model);
         primitives.remove(model);
       });
@@ -761,10 +618,8 @@ describe(
       spyOn(RenderState, "fromCache").and.callThrough();
 
       // Simulate using procedural glTF as opposed to loading it from a file
-      return loadModelJson(texturedBoxModel.gltfInternal).then(function (
-        model
-      ) {
-        const rs = {
+      return loadModelJson(texturedBoxModel.gltf).then(function (model) {
+        var rs = {
           cull: {
             enabled: true,
           },
@@ -803,9 +658,9 @@ describe(
       texturedBoxModel.zoomTo();
       scene.renderForSpecs();
 
-      const commands = texturedBoxModel._nodeCommands;
-      const length = commands.length;
-      for (let i = 0; i < length; ++i) {
+      var commands = texturedBoxModel._nodeCommands;
+      var length = commands.length;
+      for (var i = 0; i < length; ++i) {
         expect(commands[i].command.primitiveType).toEqual(PrimitiveType.LINES);
       }
 
@@ -816,12 +671,12 @@ describe(
     it("renders with distance display condition", function () {
       expect(scene).toRender([0, 0, 0, 255]);
 
-      const center = Matrix4.getTranslation(
+      var center = Matrix4.getTranslation(
         texturedBoxModel.modelMatrix,
         new Cartesian3()
       );
-      const near = 10.0;
-      const far = 100.0;
+      var near = 10.0;
+      var far = 100.0;
 
       texturedBoxModel.show = true;
       texturedBoxModel.distanceDisplayCondition = new DistanceDisplayCondition(
@@ -829,8 +684,8 @@ describe(
         far
       );
 
-      const frameState = scene.frameState;
-      const commands = frameState.commandList;
+      var frameState = scene.frameState;
+      var commands = frameState.commandList;
 
       frameState.camera.lookAt(
         center,
@@ -864,7 +719,106 @@ describe(
       texturedBoxModel.distanceDisplayCondition = undefined;
     });
 
-    it("distanceDisplayCondition throws when near >= far", function () {
+    it("renders with spherical harmonics", function () {
+      if (!scene.highDynamicRangeSupported) {
+        return;
+      }
+
+      return loadModel(boomBoxUrl).then(function (m) {
+        m.scale = 20.0; // Source model is very small, so scale up a bit
+
+        var L00 = new Cartesian3(
+          0.692622075009195,
+          0.4543516001819,
+          0.36910172299235
+        ); // L00, irradiance, pre-scaled base
+        var L1_1 = new Cartesian3(
+          0.289407068366422,
+          0.16789310162658,
+          0.106174907004792
+        ); // L1-1, irradiance, pre-scaled base
+        var L10 = new Cartesian3(
+          -0.591502034778913,
+          -0.28152432317119,
+          0.124647554708491
+        ); // L10, irradiance, pre-scaled base
+        var L11 = new Cartesian3(
+          0.34945458117126,
+          0.163273486841657,
+          -0.03095643545207
+        ); // L11, irradiance, pre-scaled base
+        var L2_2 = new Cartesian3(
+          0.22171176447426,
+          0.11771991868122,
+          0.031381053430064
+        ); // L2-2, irradiance, pre-scaled base
+        var L2_1 = new Cartesian3(
+          -0.348955284677868,
+          -0.187256994042823,
+          -0.026299717727617
+        ); // L2-1, irradiance, pre-scaled base
+        var L20 = new Cartesian3(
+          0.119982671127227,
+          0.076784552175028,
+          0.055517838847755
+        ); // L20, irradiance, pre-scaled base
+        var L21 = new Cartesian3(
+          -0.545546043202299,
+          -0.279787444030397,
+          -0.086854000285261
+        ); // L21, irradiance, pre-scaled base
+        var L22 = new Cartesian3(
+          0.160417569726332,
+          0.120896423762313,
+          0.121102528320197
+        ); // L22, irradiance, pre-scaled base
+        m.sphericalHarmonicCoefficients = [
+          L00,
+          L1_1,
+          L10,
+          L11,
+          L2_2,
+          L2_1,
+          L20,
+          L21,
+          L22,
+        ];
+
+        scene.highDynamicRange = true;
+        verifyRender(m);
+        primitives.remove(m);
+        scene.highDynamicRange = false;
+      });
+    });
+
+    it("renders with specular environment map", function () {
+      if (!scene.highDynamicRangeSupported) {
+        return;
+      }
+
+      return loadModel(boomBoxUrl).then(function (m) {
+        m.scale = 20.0; // Source model is very small, so scale up a bit
+        m.specularEnvironmentMaps =
+          "./Data/EnvironmentMap/kiara_6_afternoon_2k_ibl.ktx2";
+
+        return pollToPromise(function () {
+          scene.highDynamicRange = true;
+          scene.render();
+          scene.highDynamicRange = false;
+          return (
+            defined(m._specularEnvironmentMapAtlas) &&
+            m._specularEnvironmentMapAtlas.ready
+          );
+        }).then(function () {
+          scene.highDynamicRange = true;
+          verifyRender(m);
+          primitives.remove(m);
+          scene.highDynamicRange = false;
+        });
+      });
+    });
+
+    it("distanceDisplayCondition throws when ner >= far", function () {
       expect(function () {
         texturedBoxModel.distanceDisplayCondition = new DistanceDisplayCondition(
           100.0,
@@ -874,7 +828,7 @@ describe(
     });
 
     it("getNode throws when model is not loaded", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.getNode("gltf-node-name");
       }).toThrowDeveloperError();
@@ -893,7 +847,7 @@ describe(
     });
 
     it("getNode returns a node", function () {
-      const node = texturedBoxModel.getNode("Mesh");
+      var node = texturedBoxModel.getNode("Mesh");
       expect(node).toBeDefined();
       expect(node.name).toEqual("Mesh");
       expect(node.id).toEqual(0);
@@ -912,7 +866,7 @@ describe(
     });
 
     it("getMesh throws when model is not loaded", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.getMesh("gltf-mesh-name");
       }).toThrowDeveloperError();
@@ -931,7 +885,7 @@ describe(
     });
 
     it("getMesh returns a mesh", function () {
-      const mesh = texturedBoxModel.getMesh("Mesh");
+      var mesh = texturedBoxModel.getMesh("Mesh");
       expect(mesh).toBeDefined();
       expect(mesh.name).toEqual("Mesh");
       expect(mesh.id).toEqual(0);
@@ -939,7 +893,7 @@ describe(
     });
 
     it("getMaterial throws when model is not loaded", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.getMaterial("gltf-material-name");
       }).toThrowDeveloperError();
@@ -958,55 +912,55 @@ describe(
     });
 
     it("getMaterial returns a material", function () {
-      const material = texturedBoxModel.getMaterial("Texture");
+      var material = texturedBoxModel.getMaterial("Texture");
       expect(material).toBeDefined();
       expect(material.name).toEqual("Texture");
       expect(material.id).toEqual(0);
     });
 
     it("ModelMaterial.setValue throws when name is not provided", function () {
-      const material = texturedBoxModel.getMaterial("Texture");
+      var material = texturedBoxModel.getMaterial("Texture");
       expect(function () {
         material.setValue();
       }).toThrowDeveloperError();
     });
 
     it("ModelMaterial.setValue sets a scalar uniform value", function () {
-      const material = texturedBoxModel.getMaterial("Texture");
+      var material = texturedBoxModel.getMaterial("Texture");
       material.setValue("shininess", 12.34);
       expect(material.getValue("shininess")).toEqual(12.34);
     });
 
     it("ModelMaterial.setValue sets a Cartesian4 uniform value", function () {
-      const material = texturedBoxModel.getMaterial("Texture");
-      const specular = new Cartesian4(0.25, 0.5, 0.75, 1.0);
+      var material = texturedBoxModel.getMaterial("Texture");
+      var specular = new Cartesian4(0.25, 0.5, 0.75, 1.0);
       material.setValue("specular", specular);
       expect(material.getValue("specular")).toEqual(specular);
     });
 
     it("ModelMaterial.getValue throws when name is not provided", function () {
-      const material = texturedBoxModel.getMaterial("Texture");
+      var material = texturedBoxModel.getMaterial("Texture");
       expect(function () {
         material.getValue();
       }).toThrowDeveloperError();
     });
 
     it("ModelMaterial.getValue returns undefined when uniform value does not exist", function () {
-      const material = texturedBoxModel.getMaterial("Texture");
+      var material = texturedBoxModel.getMaterial("Texture");
       expect(
         material.getValue("name-of-parameter-that-does-not-exist")
       ).not.toBeDefined();
     });
 
     it("boundingSphere throws when model is not loaded", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
-        return m.boundingSphereInternal;
+        return m.boundingSphere;
       }).toThrowDeveloperError();
     });
 
     it("boundingSphere returns the bounding sphere", function () {
-      const boundingSphere = texturedBoxModel.boundingSphereInternal;
+      var boundingSphere = texturedBoxModel.boundingSphere;
       expect(boundingSphere.center).toEqualEpsilon(
         new Cartesian3(0.0, 0.0, 0.0),
         CesiumMath.EPSILON3
@@ -1015,10 +969,10 @@ describe(
     });
 
     it("boundingSphere returns the bounding sphere when scale property is set", function () {
-      const originalScale = texturedBoxModel.scale;
+      var originalScale = texturedBoxModel.scale;
       texturedBoxModel.scale = 10;
 
-      const boundingSphere = texturedBoxModel.boundingSphereInternal;
+      var boundingSphere = texturedBoxModel.boundingSphere;
       expect(boundingSphere.center).toEqualEpsilon(
         new Cartesian3(0.0, 0.0, 0.0),
         CesiumMath.EPSILON3
@@ -1029,12 +983,12 @@ describe(
     });
 
     it("boundingSphere returns the bounding sphere when maximumScale is reached", function () {
-      const originalScale = texturedBoxModel.scale;
-      const originalMaximumScale = texturedBoxModel.maximumScale;
+      var originalScale = texturedBoxModel.scale;
+      var originalMaximumScale = texturedBoxModel.maximumScale;
       texturedBoxModel.scale = 20;
       texturedBoxModel.maximumScale = 10;
 
-      const boundingSphere = texturedBoxModel.boundingSphereInternal;
+      var boundingSphere = texturedBoxModel.boundingSphere;
       expect(boundingSphere.center).toEqualEpsilon(
         new Cartesian3(0.0, 0.0, 0.0),
         CesiumMath.EPSILON3
@@ -1046,14 +1000,14 @@ describe(
     });
 
     it("boundingSphere returns the bounding sphere when modelMatrix has non-uniform scale", function () {
-      const originalMatrix = Matrix4.clone(texturedBoxModel.modelMatrix);
+      var originalMatrix = Matrix4.clone(texturedBoxModel.modelMatrix);
       Matrix4.multiplyByScale(
         texturedBoxModel.modelMatrix,
         new Cartesian3(2, 5, 10),
         texturedBoxModel.modelMatrix
       );
 
-      const boundingSphere = texturedBoxModel.boundingSphereInternal;
+      var boundingSphere = texturedBoxModel.boundingSphere;
       expect(boundingSphere.center).toEqualEpsilon(
         new Cartesian3(0.0, 0.0, 0.0),
         CesiumMath.EPSILON3
@@ -1061,18 +1015,6 @@ describe(
       expect(boundingSphere.radius).toEqualEpsilon(8.66, CesiumMath.EPSILON3);
 
       texturedBoxModel.modelMatrix = originalMatrix;
-    });
-
-    it("boundingSphere transforms from z-forward to x-forward (glTF 2.0)", function () {
-      const boundingSphere = riggedFigureModel.boundingSphereInternal;
-      expect(boundingSphere.center).toEqualEpsilon(
-        new Cartesian3(0.0320296511054039, 0, 0.7249599695205688),
-        CesiumMath.EPSILON3
-      );
-      expect(boundingSphere.radius).toEqualEpsilon(
-        0.9484635280120018,
-        CesiumMath.EPSILON3
-      );
     });
 
     it("destroys", function () {
@@ -1085,7 +1027,7 @@ describe(
 
     it("destroys attached ClippingPlaneCollections", function () {
       return loadModel(boxUrl).then(function (model) {
-        const clippingPlanes = new ClippingPlaneCollection({
+        var clippingPlanes = new ClippingPlaneCollection({
           planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
         });
         model.clippingPlanes = clippingPlanes;
@@ -1098,7 +1040,7 @@ describe(
     });
 
     it("throws a DeveloperError when given a ClippingPlaneCollection attached to another Model", function () {
-      let clippingPlanes;
+      var clippingPlanes;
       return loadModel(boxUrl)
         .then(function (model1) {
           clippingPlanes = new ClippingPlaneCollection({
@@ -1116,7 +1058,7 @@ describe(
     });
 
     it("destroys ClippingPlaneCollections that are detached", function () {
-      let clippingPlanes;
+      var clippingPlanes;
       return loadModel(boxUrl).then(function (model1) {
         clippingPlanes = new ClippingPlaneCollection({
           planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
@@ -1137,7 +1079,7 @@ describe(
       return loadModel(boxUrl).then(function (model) {
         model.show = true;
 
-        const clippingPlanes = new ClippingPlaneCollection({
+        var clippingPlanes = new ClippingPlaneCollection({
           planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
           unionClippingRegions: false,
         });
@@ -1175,84 +1117,51 @@ describe(
     it("Throws because of invalid extension", function () {
       return Resource.fetchJson(boxUrl).then(function (gltf) {
         gltf.extensionsRequired = ["NOT_supported_extension"];
-        const model = primitives.add(
+        var model = primitives.add(
           new Model({
             gltf: gltf,
           })
         );
 
-        return pollToPromise(function () {
+        expect(function () {
           scene.renderForSpecs();
-          return model.ready;
-        })
-          .then(function () {
-            fail();
-          })
-          .catch(function (e) {
-            expect(e.message).toBe(
-              "Unsupported glTF Extension: NOT_supported_extension"
-            );
-          })
-          .finally(function () {
-            primitives.remove(model);
-          });
+        }).toThrowRuntimeError();
+        primitives.remove(model);
       });
     });
 
     it("Throws because of invalid extension", function () {
       return Resource.fetchJson(boxUrl).then(function (gltf) {
         gltf.extensionsRequired = ["CESIUM_binary_glTF"];
-        const model = primitives.add(
+        var model = primitives.add(
           new Model({
             gltf: gltf,
           })
         );
 
-        return pollToPromise(function () {
+        expect(function () {
           scene.renderForSpecs();
-          return model.ready;
-        })
-          .then(function () {
-            fail();
-          })
-          .catch(function (e) {
-            expect(e.message).toBe(
-              "Unsupported glTF Extension: CESIUM_binary_glTF"
-            );
-          })
-          .finally(function () {
-            primitives.remove(model);
-          });
+        }).toThrowRuntimeError();
+        primitives.remove(model);
       });
     });
 
     it("Throws for EXT_texture_webp if browser does not support WebP", function () {
-      const supportsWebP = FeatureDetection.supportsWebP._result;
+      var supportsWebP = FeatureDetection.supportsWebP._result;
       FeatureDetection.supportsWebP._result = false;
       return Resource.fetchJson(texturedBoxWebpUrl).then(function (gltf) {
         gltf.extensionsRequired = ["EXT_texture_webp"];
-        const model = primitives.add(
+        var model = primitives.add(
           new Model({
             gltf: gltf,
           })
         );
 
-        return pollToPromise(function () {
+        expect(function () {
           scene.renderForSpecs();
-          return model.ready;
-        })
-          .then(function () {
-            fail();
-          })
-          .catch(function (e) {
-            expect(e.message).toBe(
-              "Loaded model requires WebP but browser does not support it."
-            );
-          })
-          .finally(function () {
-            primitives.remove(model);
-            FeatureDetection.supportsWebP._result = supportsWebP;
-          });
+        }).toThrowRuntimeError();
+        primitives.remove(model);
+        FeatureDetection.supportsWebP._result = supportsWebP;
       });
     });
 
@@ -1261,11 +1170,11 @@ describe(
         minimumPixelSize: 1,
       }).then(function (m) {
         // Verify that the version has been updated
-        expect(m.gltfInternal.asset.version).toEqual("2.0");
+        expect(m.gltf.asset.version).toEqual("2.0");
 
         // Verify that rotation is converted from
         // Axis-Angle (1,0,0,0) to Quaternion (0,0,0,1)
-        const rotation = m.gltfInternal.nodes[2].rotation;
+        var rotation = m.gltf.nodes[2].rotation;
         expect(rotation).toEqual([0.0, 0.0, 0.0, 1.0]);
 
         verifyRender(m);
@@ -1325,10 +1234,10 @@ describe(
         m.setArticulationStage("SampleArticulation SizeZ", 0.6);
         m.applyArticulations();
 
-        const node = m.getNode("Root");
+        var node = m.getNode("Root");
         expect(node.useMatrix).toBe(true);
 
-        const expected = [
+        var expected = [
           0.7147690483240505,
           -0.04340611926232735,
           -0.0749741046529782,
@@ -1413,17 +1322,17 @@ describe(
     });
 
     it("Throws because of an invalid Binary glTF header - magic", function () {
-      const arrayBuffer = new ArrayBuffer(20);
+      var arrayBuffer = new ArrayBuffer(20);
       expect(function () {
         return new Model({
           gltf: arrayBuffer,
         });
-      }).toThrowError(RuntimeError);
+      }).toThrowRuntimeError();
     });
 
     it("Throws because of an invalid Binary glTF header - version", function () {
-      const arrayBuffer = new ArrayBuffer(20);
-      const bytes = new Uint8Array(arrayBuffer);
+      var arrayBuffer = new ArrayBuffer(20);
+      var bytes = new Uint8Array(arrayBuffer);
       bytes[0] = "g".charCodeAt(0);
       bytes[1] = "l".charCodeAt(0);
       bytes[2] = "T".charCodeAt(0);
@@ -1433,7 +1342,7 @@ describe(
         return new Model({
           gltf: arrayBuffer,
         });
-      }).toThrowError(RuntimeError);
+      }).toThrowRuntimeError();
     });
 
     it("renders a model with the CESIUM_RTC extension", function () {
@@ -1441,14 +1350,14 @@ describe(
         modelMatrix: Matrix4.IDENTITY,
         minimumPixelSize: 1,
       }).then(function (m) {
-        const bs = m.boundingSphereInternal;
+        var bs = m.boundingSphere;
         expect(
           bs.center.equalsEpsilon(
             new Cartesian3(6378137.0, 0.0, 0.0),
             CesiumMath.EPSILON14
           )
         );
-        const radius = Math.sqrt(0.5 * 0.5 * 3);
+        var radius = Math.sqrt(0.5 * 0.5 * 3);
         expect(bs.radius).toEqualEpsilon(radius, CesiumMath.EPSILON14);
 
         verifyRender(m);
@@ -1480,7 +1389,7 @@ describe(
       if (!scene.context.supportsBasis) {
         return;
       }
-      const gl = scene.context._gl;
+      var gl = scene.context._gl;
       spyOn(gl, "compressedTexImage2D").and.callThrough();
       return loadModel(texturedBoxKTX2MipmapUrl, {
         incrementallyLoadTextures: false,
@@ -1530,9 +1439,9 @@ describe(
     it("renders cesiumAir with per-node show (root)", function () {
       expect(scene).toRender([0, 0, 0, 255]);
 
-      const commands = cesiumAirModel._nodeCommands;
-      let i;
-      let length;
+      var commands = cesiumAirModel._nodeCommands;
+      var i;
+      var length;
 
       cesiumAirModel.show = true;
       cesiumAirModel.zoomTo();
@@ -1560,12 +1469,12 @@ describe(
       cesiumAirModel.show = true;
       cesiumAirModel.zoomTo();
 
-      const commands = cesiumAirModel._nodeCommands;
-      let i;
-      let length;
+      var commands = cesiumAirModel._nodeCommands;
+      var i;
+      var length;
 
-      let commandsPropFalse = 0;
-      let commandsPropTrue = 0;
+      var commandsPropFalse = 0;
+      var commandsPropTrue = 0;
 
       cesiumAirModel.getNode("Prop").show = false;
       scene.renderForSpecs();
@@ -1614,7 +1523,7 @@ describe(
         return;
       }
 
-      const oldId = cesiumAirModel.id;
+      var oldId = cesiumAirModel.id;
       cesiumAirModel.id = "id";
       cesiumAirModel.show = true;
       cesiumAirModel.zoomTo();
@@ -1641,12 +1550,12 @@ describe(
     });
 
     it("adds and removes all animations", function () {
-      const animations = animBoxesModel.activeAnimations;
+      var animations = animBoxesModel.activeAnimations;
       expect(animations.length).toEqual(0);
 
-      const spyAdd = jasmine.createSpy("listener");
+      var spyAdd = jasmine.createSpy("listener");
       animations.animationAdded.addEventListener(spyAdd);
-      const a = animations.addAll();
+      var a = animations.addAll();
       expect(animations.length).toEqual(2);
       expect(spyAdd.calls.count()).toEqual(2);
       expect(spyAdd.calls.argsFor(0)[0]).toBe(animBoxesModel);
@@ -1660,7 +1569,7 @@ describe(
       expect(animations.contains(a[1])).toEqual(true);
       expect(animations.get(1)).toEqual(a[1]);
 
-      const spyRemove = jasmine.createSpy("listener");
+      var spyRemove = jasmine.createSpy("listener");
       animations.animationRemoved.addEventListener(spyRemove);
       animations.removeAll();
       expect(animations.length).toEqual(0);
@@ -1673,7 +1582,7 @@ describe(
     });
 
     it("addAll throws when model is not loaded", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.activeAnimations.addAll();
       }).toThrowDeveloperError();
@@ -1688,12 +1597,12 @@ describe(
     });
 
     it("adds and removes an animation", function () {
-      const animations = animBoxesModel.activeAnimations;
+      var animations = animBoxesModel.activeAnimations;
       expect(animations.length).toEqual(0);
 
-      const spyAdd = jasmine.createSpy("listener");
+      var spyAdd = jasmine.createSpy("listener");
       animations.animationAdded.addEventListener(spyAdd);
-      const a = animations.add({
+      var a = animations.add({
         name: "animation_1",
       });
       expect(a).toBeDefined();
@@ -1714,7 +1623,7 @@ describe(
       expect(animations.contains(a)).toEqual(true);
       expect(animations.get(0)).toEqual(a);
 
-      const spyRemove = jasmine.createSpy("listener");
+      var spyRemove = jasmine.createSpy("listener");
       animations.animationRemoved.addEventListener(spyRemove);
       expect(animations.remove(a)).toEqual(true);
       expect(animations.remove(a)).toEqual(false);
@@ -1726,12 +1635,12 @@ describe(
     });
 
     it("adds an animation by index", function () {
-      const animations = animBoxesModel.activeAnimations;
+      var animations = animBoxesModel.activeAnimations;
       expect(animations.length).toEqual(0);
 
-      const spyAdd = jasmine.createSpy("listener");
+      var spyAdd = jasmine.createSpy("listener");
       animations.animationAdded.addEventListener(spyAdd);
-      const a = animations.add({
+      var a = animations.add({
         index: 1,
       });
       expect(a).toBeDefined();
@@ -1740,14 +1649,14 @@ describe(
     });
 
     it("add throws when name and index are not defined", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.activeAnimations.add();
       }).toThrowDeveloperError();
     });
 
     it("add throws when index is invalid", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.activeAnimations.add({
           index: -1,
@@ -1761,7 +1670,7 @@ describe(
     });
 
     it("add throws when model is not loaded", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.activeAnimations.add({
           name: "animation_1",
@@ -1787,7 +1696,7 @@ describe(
     });
 
     it("get throws without an index", function () {
-      const m = new Model();
+      var m = new Model();
       expect(function () {
         return m.activeAnimations.get();
       }).toThrowDeveloperError();
@@ -1800,25 +1709,25 @@ describe(
     });
 
     it("raises animation start, update, and stop events when removeOnStop is true", function () {
-      let time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         removeOnStop: true,
       });
 
-      const spyStart = jasmine.createSpy("listener");
+      var spyStart = jasmine.createSpy("listener");
       a.start.addEventListener(spyStart);
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
-      let stopped = false;
+      var stopped = false;
       a.stop.addEventListener(function (model, animation) {
         stopped = true;
       });
-      const spyStop = jasmine.createSpy("listener");
+      var spyStop = jasmine.createSpy("listener");
       a.stop.addEventListener(spyStop);
 
       animBoxesModel.show = true;
@@ -1864,18 +1773,16 @@ describe(
     });
 
     it("animates with a delay", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
 
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         delay: 1.0,
       });
 
-      const spyStart = jasmine.createSpy("listener");
+      var spyStart = jasmine.createSpy("listener");
       a.start.addEventListener(spyStart);
 
       animBoxesModel.show = true;
@@ -1889,21 +1796,19 @@ describe(
     });
 
     it("animates with an explicit stopTime", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const stopTime = JulianDate.fromDate(
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var stopTime = JulianDate.fromDate(
         new Date("January 1, 2014 12:00:01 UTC")
       );
 
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         stopTime: stopTime,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
@@ -1926,116 +1831,18 @@ describe(
       );
       expect(animations.remove(a)).toEqual(true);
       animBoxesModel.show = false;
-    });
-
-    it("animates with an explicit animation time", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      animations.animateWhilePaused = false;
-      let animationTime = 0;
-      const a = animations.add({
-        name: "animation_1",
-        animationTime: function (duration) {
-          return animationTime / duration;
-        },
-      });
-
-      const spyUpdate = jasmine.createSpy("listener");
-      a.update.addEventListener(spyUpdate);
-
-      animBoxesModel.show = true;
-      // triggers an update with localTime 0
-      scene.renderForSpecs(time);
-      animationTime = 0.5;
-      // triggers an update with localTime 0.5
-      scene.renderForSpecs(JulianDate.addSeconds(time, 1.0, new JulianDate()));
-      // should not trigger an update because animationTime didn't change
-      scene.renderForSpecs(JulianDate.addSeconds(time, 2.0, new JulianDate()));
-      animationTime = 1.5;
-      // should not trigger an update because the scene time didn't change
-      scene.renderForSpecs(JulianDate.addSeconds(time, 2.0, new JulianDate()));
-      animationTime = 1.7;
-      // triggers an update with localTime 1.7
-      scene.renderForSpecs(JulianDate.addSeconds(time, 3.0, new JulianDate()));
-
-      expect(spyUpdate.calls.count()).toEqual(3);
-      expect(spyUpdate.calls.argsFor(0)[2]).toEqualEpsilon(
-        0.0,
-        CesiumMath.EPSILON14
-      );
-      expect(spyUpdate.calls.argsFor(1)[2]).toEqualEpsilon(
-        0.5,
-        CesiumMath.EPSILON14
-      );
-      expect(spyUpdate.calls.argsFor(2)[2]).toEqualEpsilon(
-        1.7,
-        CesiumMath.EPSILON14
-      );
-      expect(animations.remove(a)).toEqual(true);
-      animBoxesModel.show = false;
-    });
-
-    it("animates while paused with an explicit animation time", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:01 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      animations.animateWhilePaused = true;
-      let animationTime = 0;
-      const a = animations.add({
-        name: "animation_1",
-        animationTime: function (duration) {
-          return animationTime / duration;
-        },
-      });
-
-      const spyUpdate = jasmine.createSpy("listener");
-      a.update.addEventListener(spyUpdate);
-
-      animBoxesModel.show = true;
-      // update(0)
-      scene.renderForSpecs(time);
-      animationTime = 0.5;
-      // update(0.5)
-      scene.renderForSpecs(time);
-      // no update, because animationTime didn't change
-      scene.renderForSpecs(time);
-      animationTime = 1.7;
-      // update(1.7)
-      scene.renderForSpecs(time);
-
-      expect(spyUpdate.calls.count()).toEqual(3);
-      expect(spyUpdate.calls.argsFor(0)[2]).toEqualEpsilon(
-        0.0,
-        CesiumMath.EPSILON14
-      );
-      expect(spyUpdate.calls.argsFor(1)[2]).toEqualEpsilon(
-        0.5,
-        CesiumMath.EPSILON14
-      );
-      expect(spyUpdate.calls.argsFor(2)[2]).toEqualEpsilon(
-        1.7,
-        CesiumMath.EPSILON14
-      );
-      expect(animations.remove(a)).toEqual(true);
-      animBoxesModel.show = false;
-      animations.animateWhilePaused = false;
     });
 
     it("animates with a multiplier", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         multiplier: 1.5,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
@@ -2061,21 +1868,19 @@ describe(
     });
 
     it("finishes an animation after the stop time", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const stopTime = JulianDate.fromDate(
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var stopTime = JulianDate.fromDate(
         new Date("January 1, 2014 12:00:01 UTC")
       );
 
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         stopTime: stopTime,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
@@ -2101,16 +1906,14 @@ describe(
     });
 
     it("finishes an animation after it runs off the end", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
@@ -2136,21 +1939,19 @@ describe(
     });
 
     it("halts an animation before the start time", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const stopTime = JulianDate.fromDate(
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var stopTime = JulianDate.fromDate(
         new Date("January 1, 2014 12:00:01 UTC")
       );
 
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         stopTime: stopTime,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
@@ -2176,17 +1977,15 @@ describe(
     });
 
     it("animates in reverse", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         reverse: true,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
@@ -2217,21 +2016,19 @@ describe(
     });
 
     it("animates with REPEAT", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         loop: ModelAnimationLoop.REPEAT,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
-      for (let i = 0; i < 8; ++i) {
+      for (var i = 0; i < 8; ++i) {
         scene.renderForSpecs(JulianDate.addSeconds(time, i, new JulianDate()));
       }
 
@@ -2273,21 +2070,19 @@ describe(
     });
 
     it("animates with MIRRORED_REPEAT", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = animBoxesModel.activeAnimations;
-      const a = animations.add({
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = animBoxesModel.activeAnimations;
+      var a = animations.add({
         name: "animation_1",
         startTime: time,
         loop: ModelAnimationLoop.MIRRORED_REPEAT,
       });
 
-      const spyUpdate = jasmine.createSpy("listener");
+      var spyUpdate = jasmine.createSpy("listener");
       a.update.addEventListener(spyUpdate);
 
       animBoxesModel.show = true;
-      for (let i = 0; i < 8; ++i) {
+      for (var i = 0; i < 8; ++i) {
         scene.renderForSpecs(JulianDate.addSeconds(time, i, new JulianDate()));
       }
 
@@ -2332,23 +2127,23 @@ describe(
       return loadModel(animBoxesUrl, {
         scale: 2.0,
       }).then(function (m) {
-        const node = m.getNode("inner_box");
-        const time = JulianDate.fromDate(
+        var node = m.getNode("inner_box");
+        var time = JulianDate.fromDate(
           new Date("January 1, 2014 12:00:00 UTC")
         );
-        const animations = m.activeAnimations;
-        const a = animations.add({
+        var animations = m.activeAnimations;
+        var a = animations.add({
           name: "animation_1",
           startTime: time,
         });
 
         expect(node.matrix).toEqual(Matrix4.IDENTITY);
-        let previousMatrix = Matrix4.clone(node.matrix);
+        var previousMatrix = Matrix4.clone(node.matrix);
 
         m.zoomTo();
 
-        for (let i = 1; i < 4; ++i) {
-          const t = JulianDate.addSeconds(time, i, new JulianDate());
+        for (var i = 1; i < 4; ++i) {
+          var t = JulianDate.addSeconds(time, i, new JulianDate());
           expect({
             scene: scene,
             time: t,
@@ -2371,7 +2166,7 @@ describe(
     });
 
     it("does not animate when there are no animations", function () {
-      const animations = animBoxesModel.activeAnimations;
+      var animations = animBoxesModel.activeAnimations;
       expect(animations.length).toEqual(0);
       expect(animations.update()).toEqual(false);
     });
@@ -2383,21 +2178,21 @@ describe(
 
         return loadModelJson(gltf).then(function (m) {
           m.show = true;
-          const node = m.getNode("inner_box");
-          const time = JulianDate.fromDate(
+          var node = m.getNode("inner_box");
+          var time = JulianDate.fromDate(
             new Date("January 1, 2014 12:00:00 UTC")
           );
-          const animations = m.activeAnimations;
+          var animations = m.activeAnimations;
           animations.add({
             name: "animation_0",
             startTime: time,
           });
 
           expect(node.matrix).toEqual(Matrix4.IDENTITY);
-          const previousMatrix = Matrix4.clone(node.matrix);
+          var previousMatrix = Matrix4.clone(node.matrix);
 
-          for (let i = 1; i < 4; ++i) {
-            const t = JulianDate.addSeconds(time, i, new JulianDate());
+          for (var i = 1; i < 4; ++i) {
+            var t = JulianDate.addSeconds(time, i, new JulianDate());
             scene.renderForSpecs(t);
             expect(node.matrix).toEqual(previousMatrix);
           }
@@ -2408,18 +2203,18 @@ describe(
 
     it("animates with STEP interpolation", function () {
       return loadModel(interpolationTestUrl).then(function (model) {
-        const time = JulianDate.fromDate(
+        var time = JulianDate.fromDate(
           new Date("January 1, 2014 12:00:00 UTC")
         );
 
         model.show = true;
-        const animations = model.activeAnimations;
-        const a = animations.add({
+        var animations = model.activeAnimations;
+        var a = animations.add({
           name: "Step Translation",
           startTime: time,
         });
 
-        const animatedNode = model.getNode("Cube.006");
+        var animatedNode = model.getNode("Cube.006");
 
         scene.renderForSpecs(time);
         expect(animatedNode.matrix[13]).toEqualEpsilon(
@@ -2458,18 +2253,18 @@ describe(
 
     it("animates with LINEAR interpolation", function () {
       return loadModel(interpolationTestUrl).then(function (model) {
-        const time = JulianDate.fromDate(
+        var time = JulianDate.fromDate(
           new Date("January 1, 2014 12:00:00 UTC")
         );
 
         model.show = true;
-        const animations = model.activeAnimations;
-        const a = animations.add({
+        var animations = model.activeAnimations;
+        var a = animations.add({
           name: "Linear Translation",
           startTime: time,
         });
 
-        const animatedNode = model.getNode("Cube.009");
+        var animatedNode = model.getNode("Cube.009");
 
         scene.renderForSpecs(time);
         expect(animatedNode.matrix[13]).toEqualEpsilon(
@@ -2513,18 +2308,16 @@ describe(
     });
 
     it("renders riggedFigure with animation (skinning)", function () {
-      const time = JulianDate.fromDate(
-        new Date("January 1, 2014 12:00:00 UTC")
-      );
-      const animations = riggedFigureModel.activeAnimations;
+      var time = JulianDate.fromDate(new Date("January 1, 2014 12:00:00 UTC"));
+      var animations = riggedFigureModel.activeAnimations;
       animations.addAll({
         startTime: time,
       });
 
       riggedFigureModel.zoomTo();
 
-      for (let i = 0; i < 6; ++i) {
-        const t = JulianDate.addSeconds(time, 0.25 * i, new JulianDate());
+      for (var i = 0; i < 6; ++i) {
+        var t = JulianDate.addSeconds(time, 0.25 * i, new JulianDate());
         expect({
           scene: scene,
           time: t,
@@ -2550,8 +2343,7 @@ describe(
     });
 
     it("should load a model where WebGL shader optimizer removes an attribute (linux)", function () {
-      const url =
-        "./Data/Models/test-shader-optimize/test-shader-optimize.gltf";
+      var url = "./Data/Models/test-shader-optimize/test-shader-optimize.gltf";
       return loadModel(url).then(function (m) {
         expect(m).toBeDefined();
         primitives.remove(m);
@@ -2563,7 +2355,7 @@ describe(
         releaseGltfJson: true,
       }).then(function (m) {
         expect(m.releaseGltfJson).toEqual(true);
-        expect(m.gltfInternal).not.toBeDefined();
+        expect(m.gltf).not.toBeDefined();
 
         verifyRender(m);
         primitives.remove(m);
@@ -2571,13 +2363,13 @@ describe(
     });
 
     it("releaseGltfJson releases glTF JSON when constructed with Model constructor function", function () {
-      return loadModelJson(texturedBoxModel.gltfInternal, {
+      return loadModelJson(texturedBoxModel.gltf, {
         releaseGltfJson: true,
         incrementallyLoadTextures: false,
         asynchronous: true,
       }).then(function (m) {
         expect(m.releaseGltfJson).toEqual(true);
-        expect(m.gltfInternal).not.toBeDefined();
+        expect(m.gltf).not.toBeDefined();
 
         verifyRender(m);
         primitives.remove(m);
@@ -2585,18 +2377,18 @@ describe(
     });
 
     it("Models are cached with fromGltf (1/2)", function () {
-      const key = "a-cache-key";
+      var key = "a-cache-key";
 
       // This cache for this model is initially empty
-      const gltfCache = Model._gltfCache;
+      var gltfCache = Model._gltfCache;
       expect(gltfCache[key]).not.toBeDefined();
 
-      const modelRendererResourceCache =
+      var modelRendererResourceCache =
         scene.context.cache.modelRendererResourceCache;
       expect(modelRendererResourceCache[key]).not.toBeDefined();
 
       // Use a custom cache key to avoid conflicting with previous tests
-      const promise = loadModel(boxUrl, {
+      var promise = loadModel(boxUrl, {
         cacheKey: key,
       });
 
@@ -2606,15 +2398,15 @@ describe(
 
       // This is a cache hit, but the JSON request is still pending.
       // In the test below, the cache hit occurs after the request completes.
-      const promise2 = loadModel(boxUrl, {
+      var promise2 = loadModel(boxUrl, {
         cacheKey: key,
       });
 
       expect(gltfCache[key].count).toEqual(2);
 
-      return Promise.all([promise, promise2]).then(function (models) {
-        const m = models[0];
-        const m2 = models[1];
+      return when.all([promise, promise2], function (models) {
+        var m = models[0];
+        var m2 = models[1];
 
         // Render scene to progressively load the model
         scene.renderForSpecs();
@@ -2640,14 +2432,14 @@ describe(
     });
 
     it("Models are cached with fromGltf (2/2)", function () {
-      const key = "a-cache-key";
+      var key = "a-cache-key";
 
       // This cache for this model is initially empty
-      const gltfCache = Model._gltfCache;
+      var gltfCache = Model._gltfCache;
       expect(gltfCache[key]).not.toBeDefined();
 
       // Use a custom cache key to avoid conflicting with previous tests
-      const promise = loadModel(boxUrl, {
+      var promise = loadModel(boxUrl, {
         cacheKey: key,
       });
 
@@ -2655,49 +2447,46 @@ describe(
       expect(gltfCache[key].count).toEqual(1);
       expect(gltfCache[key].ready).toEqual(false);
 
-      let m;
-      return promise
-        .then(function (model) {
-          // Render scene to progressively load the model
-          scene.renderForSpecs();
+      return promise.then(function (m) {
+        // Render scene to progressively load the model
+        scene.renderForSpecs();
 
-          m = model;
-
-          // Cache hit after JSON request completed.
-          return loadModel(boxUrl, {
-            cacheKey: key,
-          });
-        })
-        .then(function (model) {
-          const m2 = model;
-          expect(gltfCache[key].ready).toEqual(true);
-          expect(gltfCache[key].count).toEqual(2);
-
-          verifyRender(m);
-          verifyRender(m2);
-
-          primitives.remove(m);
-          expect(gltfCache[key].count).toEqual(1);
-
-          primitives.remove(m2);
-          expect(gltfCache[key]).not.toBeDefined();
+        // Cache hit after JSON request completed.
+        var m2;
+        loadModel(boxUrl, {
+          cacheKey: key,
+        }).then(function (model) {
+          m2 = model;
         });
+
+        expect(gltfCache[key].ready).toEqual(true);
+        expect(gltfCache[key].count).toEqual(2);
+
+        verifyRender(m);
+        verifyRender(m2);
+
+        primitives.remove(m);
+        expect(gltfCache[key].count).toEqual(1);
+
+        primitives.remove(m2);
+        expect(gltfCache[key]).not.toBeDefined();
+      });
     });
 
     it("Cache with a custom cacheKey the Model Constructor (1/2)", function () {
-      const key = "a-cache-key";
+      var key = "a-cache-key";
 
       // This cache for this model is initially empty
-      const gltfCache = Model._gltfCache;
+      var gltfCache = Model._gltfCache;
       expect(gltfCache[key]).not.toBeDefined();
 
-      const modelRendererResourceCache =
+      var modelRendererResourceCache =
         scene.context.cache.modelRendererResourceCache;
       expect(modelRendererResourceCache[key]).not.toBeDefined();
 
-      const m = primitives.add(
+      var m = primitives.add(
         new Model({
-          gltf: texturedBoxModel.gltfInternal,
+          gltf: texturedBoxModel.gltf,
           modelMatrix: Transforms.eastNorthUpToFixedFrame(
             Cartesian3.fromDegrees(0.0, 0.0, 100.0)
           ),
@@ -2735,22 +2524,22 @@ describe(
     });
 
     it("Cache with a custom cacheKey when using the Model Constructor (2/2)", function () {
-      const key = "a-cache-key";
-      const key3 = "another-cache-key";
+      var key = "a-cache-key";
+      var key3 = "another-cache-key";
 
       // This cache for these keys is initially empty
-      const gltfCache = Model._gltfCache;
+      var gltfCache = Model._gltfCache;
       expect(gltfCache[key]).not.toBeDefined();
       expect(gltfCache[key3]).not.toBeDefined();
 
-      const modelRendererResourceCache =
+      var modelRendererResourceCache =
         scene.context.cache.modelRendererResourceCache;
       expect(modelRendererResourceCache[key]).not.toBeDefined();
       expect(modelRendererResourceCache[key3]).not.toBeDefined();
 
-      const m = primitives.add(
+      var m = primitives.add(
         new Model({
-          gltf: texturedBoxModel.gltfInternal,
+          gltf: texturedBoxModel.gltf,
           modelMatrix: Transforms.eastNorthUpToFixedFrame(
             Cartesian3.fromDegrees(0.0, 0.0, 100.0)
           ),
@@ -2766,7 +2555,7 @@ describe(
       expect(gltfCache[key].ready).toEqual(true);
 
       // Should be cache hit.  Not need to provide glTF.
-      const m2 = primitives.add(
+      var m2 = primitives.add(
         new Model({
           modelMatrix: Transforms.eastNorthUpToFixedFrame(
             Cartesian3.fromDegrees(0.0, 0.0, 100.0)
@@ -2781,9 +2570,9 @@ describe(
       expect(gltfCache[key].count).toEqual(2);
 
       // Should be cache miss.
-      const m3 = primitives.add(
+      var m3 = primitives.add(
         new Model({
-          gltf: texturedBoxModel.gltfInternal,
+          gltf: texturedBoxModel.gltf,
           modelMatrix: Transforms.eastNorthUpToFixedFrame(
             Cartesian3.fromDegrees(0.0, 0.0, 100.0)
           ),
@@ -2833,49 +2622,41 @@ describe(
     });
 
     it("Loads with incrementallyLoadTextures set to true", function () {
-      let model, loadedColor;
-      return loadModelJson(texturedBoxModel.gltfInternal, {
+      return loadModelJson(texturedBoxModel.gltf, {
         incrementallyLoadTextures: true,
         show: true,
-      })
-        .then(function (m) {
-          // Get the rendered color of the model before textures are loaded
-          m.zoomTo();
-          expect(scene).toRenderAndCall(function (rgba) {
-            expect(rgba).not.toEqual([0, 0, 0, 255]);
-            loadedColor = rgba;
-          });
+      }).then(function (m) {
+        // Get the rendered color of the model before textures are loaded
+        var loadedColor;
 
-          model = m;
-
-          // Render at least once to initialize
-          scene.renderForSpecs();
-        })
-        .then(function () {
-          return pollToPromise(
-            function () {
-              // Render scene to progressively load textures
-              scene.renderForSpecs();
-              // Textures have finished loading
-              return model.pendingTextureLoadsInternal === 0;
-            },
-            { timeout: 10000 }
-          );
-        })
-        .then(function () {
-          scene.renderForSpecs();
-          expect(scene).notToRender(loadedColor);
-          primitives.remove(model);
+        m.zoomTo();
+        expect(scene).toRenderAndCall(function (rgba) {
+          expect(rgba).not.toEqual([0, 0, 0, 255]);
+          loadedColor = rgba;
         });
+
+        return pollToPromise(
+          function () {
+            // Render scene to progressively load textures
+            scene.renderForSpecs();
+            // Textures have finished loading
+            return m.pendingTextureLoads === 0;
+          },
+          { timeout: 10000 }
+        ).then(function () {
+          expect(scene).notToRender(loadedColor);
+          primitives.remove(m);
+        });
+      });
     });
 
     it("Loads with incrementallyLoadTextures set to false", function () {
-      return loadModelJson(texturedBoxModel.gltfInternal, {
+      return loadModelJson(texturedBoxModel.gltf, {
         incrementallyLoadTextures: false,
         show: true,
       }).then(function (m) {
         // Get the rendered color of the model before textures are loaded
-        let loadedColor;
+        var loadedColor;
 
         m.zoomTo();
         expect(scene).toRenderAndCall(function (rgba) {
@@ -2998,15 +2779,15 @@ describe(
     it("loads a glTF with WEB3D_quantized_attributes and accessor.normalized", function () {
       return loadModel(boxQuantizedUrl).then(function (m) {
         verifyRender(m);
-        const gltf = m.gltfInternal;
-        const accessors = gltf.accessors;
-        const normalAccessor = accessors[2];
-        const positionAccessor = accessors[1];
+        var gltf = m.gltf;
+        var accessors = gltf.accessors;
+        var normalAccessor = accessors[2];
+        var positionAccessor = accessors[1];
         normalAccessor.normalized = true;
         positionAccessor.normalized = true;
-        let decodeMatrixArray =
+        var decodeMatrixArray =
           normalAccessor.extensions.WEB3D_quantized_attributes.decodeMatrix;
-        const decodeMatrix = new Matrix4();
+        var decodeMatrix = new Matrix4();
         Matrix4.unpack(decodeMatrixArray, 0, decodeMatrix);
         Matrix4.multiplyByUniformScale(decodeMatrix, 65535.0, decodeMatrix);
         Matrix4.pack(decodeMatrix, decodeMatrixArray);
@@ -3138,13 +2919,13 @@ describe(
     });
 
     function checkDoubleSided(model, doubleSided) {
-      const camera = scene.camera;
-      const center = Matrix4.multiplyByPoint(
+      var camera = scene.camera;
+      var center = Matrix4.multiplyByPoint(
         model.modelMatrix,
-        model.boundingSphereInternal.center,
+        model.boundingSphere.center,
         new Cartesian3()
       );
-      const range = 4.0 * model.boundingSphereInternal.radius;
+      var range = 4.0 * model.boundingSphere.radius;
 
       camera.lookAt(
         center,
@@ -3225,20 +3006,20 @@ describe(
     });
 
     function testBoxSideColors(m) {
-      const rotateX = Matrix3.fromRotationX(CesiumMath.toRadians(90.0));
-      const rotateY = Matrix3.fromRotationY(CesiumMath.toRadians(90.0));
-      const rotateZ = Matrix3.fromRotationZ(CesiumMath.toRadians(90.0));
+      var rotateX = Matrix3.fromRotationX(CesiumMath.toRadians(90.0));
+      var rotateY = Matrix3.fromRotationY(CesiumMath.toRadians(90.0));
+      var rotateZ = Matrix3.fromRotationZ(CesiumMath.toRadians(90.0));
 
       // Each side of the cube should be a different color
-      let oldPixelColor;
+      var oldPixelColor;
 
       expect(scene).toRenderAndCall(function (rgba) {
         expect(rgba).not.toEqual([0, 0, 0, 255]);
         oldPixelColor = rgba;
       });
 
-      for (let i = 0; i < 6; i++) {
-        let rotate = rotateZ;
+      for (var i = 0; i < 6; i++) {
+        var rotate = rotateZ;
         if (i % 3 === 0) {
           rotate = rotateX;
         } else if ((i - 1) % 3 === 0) {
@@ -3267,7 +3048,7 @@ describe(
     });
 
     it("loads a gltf with uint32 indices", function () {
-      const context = scene.context;
+      var context = scene.context;
       if (context._elementIndexUint) {
         return loadModel(boxUint32Indices).then(function (m) {
           verifyRender(m);
@@ -3277,11 +3058,11 @@ describe(
     });
 
     it("throws runtime error when loading a gltf with uint32 indices if OES_element_index_uint is disabled", function () {
-      const context = scene.context;
-      const uint32Supported = context._elementIndexUint;
+      var context = scene.context;
+      var uint32Supported = context._elementIndexUint;
       context._elementIndexUint = false;
 
-      const model = primitives.add(
+      var model = primitives.add(
         Model.fromGltf({
           url: boxUint32Indices,
         })
@@ -3298,7 +3079,7 @@ describe(
         .then(function () {
           fail("should not resolve");
         })
-        .catch(function (e) {
+        .otherwise(function (e) {
           expect(e).toBeDefined();
           primitives.remove(model);
           context._elementIndexUint = uint32Supported;
@@ -3325,8 +3106,8 @@ describe(
 
     it("loads with custom vertex attributes, vertexShader, fragmentShader, and uniform map", function () {
       function vertexShaderLoaded(vs) {
-        const renamedSource = ShaderSource.replaceMain(vs, "czm_old_main");
-        const newMain =
+        var renamedSource = ShaderSource.replaceMain(vs, "czm_old_main");
+        var newMain =
           "attribute vec4 a_color;\n" +
           "varying vec4 v_color;\n" +
           "void main()\n" +
@@ -3334,7 +3115,7 @@ describe(
           "    czm_old_main();\n" +
           "    v_color = a_color;\n" +
           "}";
-        return `${renamedSource}\n${newMain}`;
+        return renamedSource + "\n" + newMain;
       }
 
       function fragmentShaderLoaded(fs) {
@@ -3356,7 +3137,7 @@ describe(
         });
       }
 
-      const precreatedAttributes = {
+      var precreatedAttributes = {
         a_color: {
           index: 0, // updated in Model
           componentsPerAttribute: 4,
@@ -3364,7 +3145,7 @@ describe(
         },
       };
 
-      const options = {
+      var options = {
         show: true,
         precreatedAttributes: precreatedAttributes,
         vertexShaderLoaded: vertexShaderLoaded,
@@ -3372,13 +3153,13 @@ describe(
         uniformMapLoaded: uniformMapLoaded,
       };
 
-      return loadModelJson(texturedBoxModel.gltfInternal, options).then(
-        function (model) {
-          model.zoomTo();
-          expect(scene).toRender([255, 255, 255, 255]);
-          primitives.remove(model);
-        }
-      );
+      return loadModelJson(texturedBoxModel.gltf, options).then(function (
+        model
+      ) {
+        model.zoomTo();
+        expect(scene).toRender([255, 255, 255, 255]);
+        primitives.remove(model);
+      });
     });
 
     it("loads a glTF with KHR_draco_mesh_compression extension", function () {
@@ -3408,8 +3189,8 @@ describe(
     });
 
     it("loads multiple draco models from cache without decoding", function () {
-      let initialModel;
-      const decoder = DracoLoader._getDecoderTaskProcessor();
+      var initialModel;
+      var decoder = DracoLoader._getDecoderTaskProcessor();
       return loadModel(dracoCompressedModelUrl)
         .then(function (m) {
           verifyRender(m);
@@ -3426,78 +3207,36 @@ describe(
     });
 
     it("error decoding a draco compressed glTF causes model loading to fail", function () {
-      let model;
-      const readyPromise = pollToPromise(function () {
-        return DracoLoader._taskProcessorReady;
-      });
-      DracoLoader._getDecoderTaskProcessor();
-      return readyPromise
-        .then(function () {
-          const decoder = DracoLoader._getDecoderTaskProcessor();
-          spyOn(decoder, "scheduleTask").and.callFake(function () {
-            return Promise.reject({ message: "my error" });
+      var decoder = DracoLoader._getDecoderTaskProcessor();
+      spyOn(decoder, "scheduleTask").and.returnValue(
+        when.reject({ message: "my error" })
+      );
+
+      var model = primitives.add(
+        Model.fromGltf({
+          url: dracoCompressedModelUrl,
+          dequantizeInShader: false,
+        })
+      );
+
+      return pollToPromise(
+        function () {
+          scene.renderForSpecs();
+          return model._state === 3; // FAILED
+        },
+        { timeout: 10000 }
+      ).then(function () {
+        model.readyPromise
+          .then(function (e) {
+            fail("should not resolve");
+          })
+          .otherwise(function (e) {
+            expect(e).toBeDefined();
+            expect(e.message).toEqual(
+              "Failed to load model: ./Data/Models/DracoCompression/CesiumMilkTruck/CesiumMilkTruck.gltf\nmy error"
+            );
+            primitives.remove(model);
           });
-
-          model = primitives.add(
-            Model.fromGltf({
-              url: dracoCompressedModelUrl,
-              dequantizeInShader: false,
-            })
-          );
-
-          return Promise.all([
-            pollToPromise(
-              function () {
-                scene.renderForSpecs();
-                return model._state === 3; // FAILED
-              },
-              { timeout: 10000 }
-            ),
-            model.readyPromise,
-          ]);
-        })
-        .then(function (e) {
-          fail("should not resolve");
-        })
-        .catch(function (e) {
-          expect(e).toBeDefined();
-          expect(e.message).toEqual(
-            "Failed to load model: ./Data/Models/DracoCompression/CesiumMilkTruck/CesiumMilkTruck.gltf\nmy error"
-          );
-          primitives.remove(model);
-        });
-    });
-
-    it("loads a draco compressed glTF and dequantizes in the shader", function () {
-      return loadModel(dracoCompressedModelUrl, {
-        dequantizeInShader: true,
-      }).then(function (m) {
-        verifyRender(m);
-
-        const atrributeData = m._decodedData["0.primitive.0"].attributes;
-        expect(atrributeData["POSITION"].quantization).toBeDefined();
-        expect(atrributeData["TEXCOORD_0"].quantization).toBeDefined();
-        expect(atrributeData["NORMAL"].quantization).toBeDefined();
-        expect(atrributeData["NORMAL"].quantization.octEncoded).toBe(true);
-
-        primitives.remove(m);
-      });
-    });
-
-    it("loads a draco compressed glTF and dequantizes in the shader, skipping generic attributes", function () {
-      return loadModel(dracoCompressedModelWithAnimationUrl, {
-        dequantizeInShader: true,
-        forwardAxis: Axis.X,
-      }).then(function (m) {
-        verifyRender(m);
-
-        const atrributeData = m._decodedData["0.primitive.0"].attributes;
-        expect(atrributeData["POSITION"].quantization).toBeDefined();
-        expect(atrributeData["TEXCOORD_0"].quantization).toBeDefined();
-        expect(atrributeData["NORMAL"].quantization).toBeDefined();
-        expect(atrributeData["JOINTS_0"].quantization).toBeUndefined();
-
-        primitives.remove(m);
       });
     });
 
@@ -3592,7 +3331,7 @@ describe(
         model.zoomTo();
 
         // Model is originally red
-        let sourceColor;
+        var sourceColor;
         expect(scene).toRenderAndCall(function (rgba) {
           expect(rgba[0]).toBeGreaterThan(0);
           expect(rgba[1]).toEqual(0);
@@ -3648,7 +3387,7 @@ describe(
         // No commands are issued when the alpha is 0.0
         model.color = Color.fromAlpha(Color.LIME, 0.0);
         scene.renderForSpecs();
-        const commands = scene.frameState.commandList;
+        var commands = scene.frameState.commandList;
         expect(commands.length).toBe(0);
 
         primitives.remove(model);
@@ -3675,7 +3414,7 @@ describe(
         model.show = false;
         model.zoomTo(2.0);
 
-        let originalColor;
+        var originalColor;
         expect(scene).toRenderAndCall(function (rgba) {
           originalColor = rgba;
         });
@@ -3697,7 +3436,7 @@ describe(
         model.show = false;
         model.zoomTo(2.0);
 
-        let originalColor;
+        var originalColor;
         expect(scene).toRenderAndCall(function (rgba) {
           originalColor = rgba;
         });
@@ -3719,7 +3458,7 @@ describe(
         model.show = false;
         model.zoomTo(2.0);
 
-        let originalColor;
+        var originalColor;
         expect(scene).toRenderAndCall(function (rgba) {
           originalColor = rgba;
         });
@@ -3746,7 +3485,7 @@ describe(
         model.show = true;
         model.zoomTo();
 
-        const commands = scene.frameState.commandList;
+        var commands = scene.frameState.commandList;
 
         // No silhouette
         model.silhouetteSize = 0.0;
@@ -3851,8 +3590,8 @@ describe(
           expect(commands[3].renderState.stencilTest.enabled).toBe(true);
           expect(commands[3].pass).toBe(Pass.OPAQUE);
 
-          const reference1 = commands[0].renderState.stencilTest.reference;
-          const reference2 = commands[2].renderState.stencilTest.reference;
+          var reference1 = commands[0].renderState.stencilTest.reference;
+          var reference2 = commands[2].renderState.stencilTest.reference;
           expect(reference2).toEqual(reference1 + 1);
 
           primitives.remove(model);
@@ -3861,159 +3600,16 @@ describe(
       });
     });
 
-    it("renders with imageBasedLighting", function () {
+    it("renders with imageBaseLightingFactor", function () {
       return loadModel(boxPbrUrl).then(function (model) {
         model.show = true;
         model.zoomTo();
-
-        const modelIBL = model.imageBasedLighting;
         expect(scene).toRenderAndCall(function (rgba) {
           expect(rgba).not.toEqual([0, 0, 0, 255]);
-
-          const ibl = new ImageBasedLighting({
-            imageBasedLightingFactor: new Cartesian2(0.0, 0.0),
-          });
-          model.imageBasedLighting = ibl;
-          expect(model.imageBasedLighting !== modelIBL);
-          expect(modelIBL.isDestroyed()).toBe(true);
-
-          expect(scene).notToRender(rgba);
-
-          ibl.imageBasedLightingFactor = new Cartesian2(1.0, 1.0);
-          expect(scene).toRender(rgba);
-
-          ibl.destroy();
-          primitives.remove(model);
-        });
-      });
-    });
-
-    it("renders with imageBasedLightingFactor", function () {
-      return loadModel(boxPbrUrl).then(function (model) {
-        model.show = true;
-        model.zoomTo();
-        const ibl = model.imageBasedLighting;
-        expect(scene).toRenderAndCall(function (rgba) {
-          expect(rgba).not.toEqual([0, 0, 0, 255]);
-          ibl.imageBasedLightingFactor = new Cartesian2(0.0, 0.0);
+          model.imageBasedLightingFactor = new Cartesian2(0.0, 0.0);
           expect(scene).notToRender(rgba);
 
           primitives.remove(model);
-        });
-      });
-    });
-
-    it("renders with luminanceAtZenith", function () {
-      return loadModel(boxPbrUrl).then(function (model) {
-        model.show = true;
-        model.zoomTo();
-        const ibl = model.imageBasedLighting;
-        expect(scene).toRenderAndCall(function (rgba) {
-          expect(rgba).not.toEqual([0, 0, 0, 255]);
-          ibl.luminanceAtZenith = 0.0;
-          expect(scene).notToRender(rgba);
-
-          primitives.remove(model);
-        });
-      });
-    });
-
-    it("renders with spherical harmonic coefficients", function () {
-      if (!scene.highDynamicRangeSupported) {
-        return;
-      }
-
-      return loadModel(boomBoxUrl).then(function (model) {
-        model.scale = 20.0; // Source model is very small, so scale up a bit
-        const ibl = model.imageBasedLighting;
-
-        const L00 = new Cartesian3(
-          0.692622075009195,
-          0.4543516001819,
-          0.36910172299235
-        ); // L00, irradiance, pre-scaled base
-        const L1_1 = new Cartesian3(
-          0.289407068366422,
-          0.16789310162658,
-          0.106174907004792
-        ); // L1-1, irradiance, pre-scaled base
-        const L10 = new Cartesian3(
-          -0.591502034778913,
-          -0.28152432317119,
-          0.124647554708491
-        ); // L10, irradiance, pre-scaled base
-        const L11 = new Cartesian3(
-          0.34945458117126,
-          0.163273486841657,
-          -0.03095643545207
-        ); // L11, irradiance, pre-scaled base
-        const L2_2 = new Cartesian3(
-          0.22171176447426,
-          0.11771991868122,
-          0.031381053430064
-        ); // L2-2, irradiance, pre-scaled base
-        const L2_1 = new Cartesian3(
-          -0.348955284677868,
-          -0.187256994042823,
-          -0.026299717727617
-        ); // L2-1, irradiance, pre-scaled base
-        const L20 = new Cartesian3(
-          0.119982671127227,
-          0.076784552175028,
-          0.055517838847755
-        ); // L20, irradiance, pre-scaled base
-        const L21 = new Cartesian3(
-          -0.545546043202299,
-          -0.279787444030397,
-          -0.086854000285261
-        ); // L21, irradiance, pre-scaled base
-        const L22 = new Cartesian3(
-          0.160417569726332,
-          0.120896423762313,
-          0.121102528320197
-        ); // L22, irradiance, pre-scaled base
-        ibl.sphericalHarmonicCoefficients = [
-          L00,
-          L1_1,
-          L10,
-          L11,
-          L2_2,
-          L2_1,
-          L20,
-          L21,
-          L22,
-        ];
-
-        scene.highDynamicRange = true;
-        verifyRender(model);
-        primitives.remove(model);
-        scene.highDynamicRange = false;
-      });
-    });
-
-    it("renders with specular environment map", function () {
-      if (!scene.highDynamicRangeSupported) {
-        return;
-      }
-
-      return loadModel(boomBoxUrl).then(function (model) {
-        model.scale = 20.0; // Source model is very small, so scale up a bit
-
-        const ibl = model.imageBasedLighting;
-        ibl.specularEnvironmentMaps =
-          "./Data/EnvironmentMap/kiara_6_afternoon_2k_ibl.ktx2";
-
-        return pollToPromise(function () {
-          scene.render();
-          return (
-            defined(ibl.specularEnvironmentMapAtlas) &&
-            ibl.specularEnvironmentMapAtlas.ready
-          );
-        }).then(function () {
-          scene.highDynamicRange = true;
-          verifyRender(model);
-          primitives.remove(model);
-          scene.highDynamicRange = false;
         });
       });
     });
@@ -4023,7 +3619,7 @@ describe(
         model.show = true;
         model.zoomTo();
 
-        const sceneArgs = {
+        var sceneArgs = {
           scene: scene,
           time: JulianDate.fromDate(new Date("January 1, 2014 23:00:00 UTC")),
         };
@@ -4032,8 +3628,7 @@ describe(
           expect(rgba).toEqualEpsilon([131, 9, 9, 255], 5);
         });
 
-        const ibl = model.imageBasedLighting;
-        ibl.imageBasedLightingFactor = new Cartesian2(0.0, 0.0);
+        model.imageBasedLightingFactor = new Cartesian2(0.0, 0.0);
         expect(sceneArgs).toRenderAndCall(function (rgba) {
           expect(rgba).toEqualEpsilon([102, 9, 9, 255], 5);
         });
@@ -4052,11 +3647,11 @@ describe(
         model.show = true;
         model.zoomTo();
 
-        const gl = scene.frameState.context._gl;
+        var gl = scene.frameState.context._gl;
         spyOn(gl, "texImage2D").and.callThrough();
 
         scene.renderForSpecs();
-        const callsBeforeClipping = gl.texImage2D.calls.count();
+        var callsBeforeClipping = gl.texImage2D.calls.count();
 
         model.clippingPlanes = new ClippingPlaneCollection({
           planes: [new ClippingPlane(Cartesian3.UNIT_X, 0.0)],
@@ -4078,13 +3673,13 @@ describe(
         model.show = true;
         model.zoomTo();
 
-        let modelColor;
+        var modelColor;
         model.update(scene.frameState);
         expect(scene).toRenderAndCall(function (rgba) {
           modelColor = rgba;
         });
 
-        const plane = new ClippingPlane(Cartesian3.UNIT_X, 0.0);
+        var plane = new ClippingPlane(Cartesian3.UNIT_X, 0.0);
         model.clippingPlanes = new ClippingPlaneCollection({
           planes: [plane],
         });
@@ -4109,13 +3704,13 @@ describe(
         model.show = true;
         model.zoomTo();
 
-        let modelColor;
+        var modelColor;
         model.update(scene.frameState);
         expect(scene).toRenderAndCall(function (rgba) {
           modelColor = rgba;
         });
 
-        const plane = new ClippingPlane(Cartesian3.UNIT_X, 0.0);
+        var plane = new ClippingPlane(Cartesian3.UNIT_X, 0.0);
         model.clippingPlanes = new ClippingPlaneCollection({
           planes: [plane],
           edgeWidth: 5.0,
@@ -4142,7 +3737,7 @@ describe(
         model.show = true;
         model.zoomTo();
 
-        let modelColor;
+        var modelColor;
         model.update(scene.frameState);
         expect(scene).toRenderAndCall(function (rgba) {
           modelColor = rgba;
@@ -4178,9 +3773,9 @@ describe(
 
     it("gets memory usage", function () {
       // Texture is originally 211*211 but is scaled up to 256*256 to support its minification filter and then is mipmapped
-      const expectedTextureMemory = Math.floor(256 * 256 * 4 * (4 / 3));
-      const expectedGeometryMemory = 840;
-      const options = {
+      var expectedTextureMemory = Math.floor(256 * 256 * 4 * (4 / 3));
+      var expectedGeometryMemory = 840;
+      var options = {
         cacheKey: "memory-usage-test",
         incrementallyLoadTextures: false,
       };
@@ -4231,7 +3826,7 @@ describe(
 
     describe("height referenced model", function () {
       function createMockGlobe() {
-        const globe = {
+        var globe = {
           callback: undefined,
           removedCallback: false,
           ellipsoid: Ellipsoid.WGS84,
@@ -4281,7 +3876,7 @@ describe(
 
       it("explicitly constructs a model with height reference", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           scene: scene,
         }).then(function (model) {
@@ -4294,7 +3889,7 @@ describe(
 
       it("set model height reference property", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           scene: scene,
         }).then(function (model) {
           model.heightReference = HeightReference.CLAMP_TO_GROUND;
@@ -4307,7 +3902,7 @@ describe(
 
       it("creating with a height reference creates a height update callback", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
@@ -4319,7 +3914,7 @@ describe(
 
       it("set height reference property creates a height update callback", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
           show: true,
@@ -4336,7 +3931,7 @@ describe(
 
       it("updates the callback when the height reference changes", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
@@ -4361,7 +3956,7 @@ describe(
 
       it("changing the position updates the callback", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
@@ -4369,8 +3964,8 @@ describe(
         }).then(function (model) {
           expect(scene.globe.callback).toBeDefined();
 
-          const matrix = Matrix4.clone(model.modelMatrix);
-          const position = Cartesian3.fromDegrees(-73.0, 40.0);
+          var matrix = Matrix4.clone(model.modelMatrix);
+          var position = Cartesian3.fromDegrees(-73.0, 40.0);
           matrix[12] = position.x;
           matrix[13] = position.y;
           matrix[14] = position.z;
@@ -4387,7 +3982,7 @@ describe(
 
       it("callback updates the position", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
@@ -4397,13 +3992,13 @@ describe(
           scene.renderForSpecs();
 
           scene.globe.callback(Cartesian3.fromDegrees(-72.0, 40.0, 100.0));
-          const matrix = model._clampedModelMatrix;
-          const clampedPosition = new Cartesian3(
+          var matrix = model._clampedModelMatrix;
+          var clampedPosition = new Cartesian3(
             matrix[12],
             matrix[13],
             matrix[14]
           );
-          const cartographic = scene.globe.ellipsoid.cartesianToCartographic(
+          var cartographic = scene.globe.ellipsoid.cartesianToCartographic(
             clampedPosition
           );
           expect(cartographic.height).toEqualEpsilon(
@@ -4417,7 +4012,7 @@ describe(
 
       it("removes the callback on destroy", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
@@ -4434,14 +4029,14 @@ describe(
 
       it("changing the terrain provider", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
         }).then(function (model) {
           expect(model._heightChanged).toBe(false);
 
-          const terrainProvider = new CesiumTerrainProvider({
+          var terrainProvider = new CesiumTerrainProvider({
             url: "made/up/url",
             requestVertexNormals: true,
           });
@@ -4454,11 +4049,11 @@ describe(
 
       it("height reference without a scene rejects", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           show: true,
-        }).catch(function (error) {
+        }).otherwise(function (error) {
           expect(error.message).toEqual(
             "Height reference is not supported without a scene and globe."
           );
@@ -4467,7 +4062,7 @@ describe(
 
       it("changing height reference without a scene throws DeveloperError", function () {
         scene.globe = createMockGlobe();
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           show: true,
         }).then(function (model) {
@@ -4483,12 +4078,12 @@ describe(
 
       it("height reference without a globe rejects", function () {
         scene.globe = undefined;
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           heightReference: HeightReference.CLAMP_TO_GROUND,
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           scene: scene,
           show: true,
-        }).catch(function (error) {
+        }).otherwise(function (error) {
           expect(error.message).toEqual(
             "Height reference is not supported without a scene and globe."
           );
@@ -4497,7 +4092,7 @@ describe(
 
       it("changing height reference without a globe throws DeveloperError", function () {
         scene.globe = undefined;
-        return loadModelJson(texturedBoxModel.gltfInternal, {
+        return loadModelJson(texturedBoxModel.gltf, {
           position: Cartesian3.fromDegrees(-72.0, 40.0),
           show: true,
         }).then(function (model) {

@@ -21,9 +21,9 @@ import VelocityVectorProperty from "./VelocityVectorProperty.js";
  *
  * @example
  * //Create an entity with position and orientation.
- * const position = new Cesium.SampledProperty();
+ * var position = new Cesium.SampledProperty();
  * position.addSamples(...);
- * const entity = viewer.entities.add({
+ * var entity = viewer.entities.add({
  *   position : position,
  *   orientation : new Cesium.VelocityOrientationProperty(position)
  * }));
@@ -36,7 +36,7 @@ function VelocityOrientationProperty(position, ellipsoid) {
 
   this.ellipsoid = defaultValue(ellipsoid, Ellipsoid.WGS84);
 
-  const that = this;
+  var that = this;
   this._velocityVectorProperty.definitionChanged.addEventListener(function () {
     that._definitionChanged.raiseEvent(that);
   });
@@ -92,7 +92,7 @@ Object.defineProperties(VelocityOrientationProperty.prototype, {
       return this._ellipsoid;
     },
     set: function (value) {
-      const oldValue = this._ellipsoid;
+      var oldValue = this._ellipsoid;
       if (oldValue !== value) {
         this._ellipsoid = value;
         this._definitionChanged.raiseEvent(this);
@@ -101,9 +101,9 @@ Object.defineProperties(VelocityOrientationProperty.prototype, {
   },
 });
 
-const positionScratch = new Cartesian3();
-const velocityScratch = new Cartesian3();
-const rotationScratch = new Matrix3();
+var positionScratch = new Cartesian3();
+var velocityScratch = new Cartesian3();
+var rotationScratch = new Matrix3();
 
 /**
  * Gets the value of the property at the provided time.
@@ -113,7 +113,7 @@ const rotationScratch = new Matrix3();
  * @returns {Quaternion} The modified result parameter or a new instance if the result parameter was not supplied.
  */
 VelocityOrientationProperty.prototype.getValue = function (time, result) {
-  const velocity = this._velocityVectorProperty._getValue(
+  var velocity = this._velocityVectorProperty._getValue(
     time,
     velocityScratch,
     positionScratch

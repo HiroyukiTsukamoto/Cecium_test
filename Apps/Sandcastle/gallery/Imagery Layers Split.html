@@ -53,10 +53,10 @@
     <div id="toolbar"></div>
 
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
             url:
               "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
@@ -65,32 +65,32 @@
           infoBox: false,
         });
 
-        const layers = viewer.imageryLayers;
-        const earthAtNight = layers.addImageryProvider(
+        var layers = viewer.imageryLayers;
+        var earthAtNight = layers.addImageryProvider(
           new Cesium.IonImageryProvider({ assetId: 3812 })
         );
-        earthAtNight.splitDirection = Cesium.SplitDirection.LEFT; // Only show to the left of the slider.
+        earthAtNight.splitDirection = Cesium.ImagerySplitDirection.LEFT; // Only show to the left of the slider.
 
         // Sync the position of the slider with the split position
-        const slider = document.getElementById("slider");
-        viewer.scene.splitPosition =
+        var slider = document.getElementById("slider");
+        viewer.scene.imagerySplitPosition =
           slider.offsetLeft / slider.parentElement.offsetWidth;
 
-        const handler = new Cesium.ScreenSpaceEventHandler(slider);
+        var handler = new Cesium.ScreenSpaceEventHandler(slider);
 
-        let moveActive = false;
+        var moveActive = false;
 
         function move(movement) {
           if (!moveActive) {
             return;
           }
 
-          const relativeOffset = movement.endPosition.x;
-          const splitPosition =
+          var relativeOffset = movement.endPosition.x;
+          var splitPosition =
             (slider.offsetLeft + relativeOffset) /
             slider.parentElement.offsetWidth;
-          slider.style.left = `${100.0 * splitPosition}%`;
-          viewer.scene.splitPosition = splitPosition;
+          slider.style.left = 100.0 * splitPosition + "%";
+          viewer.scene.imagerySplitPosition = splitPosition;
         }
 
         handler.setInputAction(function () {
@@ -112,10 +112,10 @@
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

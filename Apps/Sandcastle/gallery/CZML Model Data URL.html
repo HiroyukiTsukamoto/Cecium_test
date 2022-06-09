@@ -30,10 +30,10 @@
     <div id="toolbar"></div>
 
     <script id="cesium_sandcastle_script">
-      window.startup = function (Cesium) {
+      function startup(Cesium) {
         "use strict";
         //Sandcastle_Begin
-        const gltf = {
+        var gltf = {
           accessors: [
             {
               name: "cube_1_0_positions",
@@ -131,11 +131,11 @@
           scenes: [{ nodes: [0] }],
         };
 
-        const encoded = btoa(JSON.stringify(gltf));
+        var encoded = btoa(JSON.stringify(gltf));
 
-        const dataUrl = `data:application/json;charset=utf-8;base64,${encoded}`;
+        var dataUrl = "data:application/json;charset=utf-8;base64," + encoded;
 
-        const czml = [
+        var czml = [
           {
             id: "document",
             name: "CZML Model",
@@ -155,11 +155,11 @@
           },
         ];
 
-        const viewer = new Cesium.Viewer("cesiumContainer", {
+        var viewer = new Cesium.Viewer("cesiumContainer", {
           shouldAnimate: true,
         });
 
-        const dataSourcePromise = viewer.dataSources.add(
+        var dataSourcePromise = viewer.dataSources.add(
           Cesium.CzmlDataSource.load(czml)
         );
 
@@ -167,16 +167,16 @@
           .then(function (dataSource) {
             viewer.trackedEntity = dataSource.entities.getById("cube");
           })
-          .catch(function (error) {
+          .otherwise(function (error) {
             window.alert(error);
           });
 
         //Sandcastle_End
         Sandcastle.finishedLoading();
-      };
+      }
       if (typeof Cesium !== "undefined") {
         window.startupCalled = true;
-        window.startup(Cesium);
+        startup(Cesium);
       }
     </script>
   </body>

@@ -1,7 +1,7 @@
 /**
  * @private
  */
-const GeometryType = {
+var GeometryType = {
   NONE: 0,
   TRIANGLES: 1,
   LINES: 2,

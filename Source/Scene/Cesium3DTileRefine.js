@@ -9,7 +9,7 @@
  *
  * @private
  */
-const Cesium3DTileRefine = {
+var Cesium3DTileRefine = {
   /**
    * Render this tile and, if it doesn't meet the screen space error, also refine to its children.
    *

@@ -1,36 +1,35 @@
 import {
   AttributeType,
-  Axis,
   Cartesian3,
-  CullFace,
+  Math as CesiumMath,
   InstanceAttributeSemantic,
   Matrix4,
   ModelExperimentalUtility,
-  PrimitiveType,
   Quaternion,
+  TranslationRotationScale,
   VertexAttributeSemantic,
 } from "../../../Source/Cesium.js";
 
 describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
   it("getNodeTransform works when node has a matrix", function () {
-    const nodeWithMatrix = {
+    var nodeWithMatrix = {
       matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
     };
 
-    const computedTransform = ModelExperimentalUtility.getNodeTransform(
+    var computedTransform = ModelExperimentalUtility.getNodeTransform(
       nodeWithMatrix
     );
     expect(Matrix4.equals(computedTransform, Matrix4.IDENTITY)).toEqual(true);
   });
 
   it("getNodeTransform works when node has translation, rotation, scale", function () {
-    const nodeWithTRS = {
+    var nodeWithTRS = {
       translation: new Cartesian3(0, 0, 0),
       rotation: new Quaternion(0, 0, 0, 1),
       scale: new Cartesian3(1, 1, 1),
     };
 
-    const computedTransform = ModelExperimentalUtility.getNodeTransform(
+    var computedTransform = ModelExperimentalUtility.getNodeTransform(
       nodeWithTRS
     );
     expect(Matrix4.equals(computedTransform, Matrix4.IDENTITY)).toEqual(true);
@@ -41,7 +40,7 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
   });
 
   it("hasQuantizedAttributes detects quantized attributes", function () {
-    const attributes = [
+    var attributes = [
       {
         semantic: "POSITION",
         max: new Cartesian3(0.5, 0.5, 0.5),
@@ -63,7 +62,7 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
   });
 
   it("getAttributeInfo works for built-in attributes", function () {
-    const attribute = {
+    var attribute = {
       semantic: "POSITION",
       type: AttributeType.VEC3,
       max: new Cartesian3(0.5, 0.5, 0.5),
@@ -81,7 +80,7 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
   });
 
   it("getAttributeInfo works for attributes with a set index", function () {
-    const attribute = {
+    var attribute = {
       semantic: "TEXCOORD",
       setIndex: 0,
       type: AttributeType.VEC2,
@@ -97,25 +96,8 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
     });
   });
 
-  it("getAttributeInfo promotes vertex colors to vec4 for GLSL", function () {
-    const attribute = {
-      semantic: "COLOR",
-      setIndex: 0,
-      type: AttributeType.VEC3,
-    };
-
-    expect(ModelExperimentalUtility.getAttributeInfo(attribute)).toEqual({
-      attribute: attribute,
-      isQuantized: false,
-      variableName: "color_0",
-      hasSemantic: true,
-      glslType: "vec4",
-      quantizedGlslType: undefined,
-    });
-  });
-
   it("getAttributeInfo works for custom attributes", function () {
-    const attribute = {
+    var attribute = {
       name: "_TEMPERATURE",
       type: AttributeType.SCALAR,
     };
@@ -131,7 +113,7 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
   });
 
   it("getAttributeInfo works for quantized attributes", function () {
-    let attribute = {
+    var attribute = {
       semantic: "POSITION",
       type: AttributeType.VEC3,
       max: new Cartesian3(0.5, 0.5, 0.5),
@@ -168,111 +150,72 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
     });
   });
 
-  it("getAttributeInfo handles quantized vertex colors correctly", function () {
-    const attribute = {
-      semantic: "COLOR",
-      setIndex: 0,
-      type: AttributeType.VEC3,
-      quantization: {
-        type: AttributeType.VEC3,
-      },
+  it("createBoundingSphere works", function () {
+    var mockPrimitive = {
+      attributes: [
+        {
+          semantic: "POSITION",
+          max: new Cartesian3(0.5, 0.5, 0.5),
+          min: new Cartesian3(-0.5, -0.5, -0.5),
+        },
+      ],
     };
+    var translation = new Cartesian3(50, 50, 50);
 
-    expect(ModelExperimentalUtility.getAttributeInfo(attribute)).toEqual({
-      attribute: attribute,
-      isQuantized: true,
-      variableName: "color_0",
-      hasSemantic: true,
-      glslType: "vec4",
-      quantizedGlslType: "vec4",
-    });
-  });
-
-  it("getPositionMinMax works", function () {
-    const attributes = [
-      {
-        semantic: "POSITION",
-        max: new Cartesian3(0.5, 0.5, 0.5),
-        min: new Cartesian3(-0.5, -0.5, -0.5),
-      },
-    ];
-    const mockPrimitive = {
-      attributes: attributes,
-    };
-
-    const minMax = ModelExperimentalUtility.getPositionMinMax(mockPrimitive);
-
-    expect(minMax.min).toEqual(attributes[0].min);
-    expect(minMax.max).toEqual(attributes[0].max);
-  });
-
-  it("getPositionMinMax works with instancing", function () {
-    const attributes = [
-      {
-        semantic: "POSITION",
-        max: new Cartesian3(0.5, 0.5, 0.5),
-        min: new Cartesian3(-0.5, -0.5, -0.5),
-      },
-    ];
-    const mockPrimitive = {
-      attributes: attributes,
-    };
-
-    const minMax = ModelExperimentalUtility.getPositionMinMax(
+    var modelMatrix = Matrix4.fromTranslationRotationScale(
+      new TranslationRotationScale(
+        translation,
+        Quaternion.IDENTITY,
+        new Cartesian3(1, 1, 1)
+      )
+    );
+    var boundingSphere = ModelExperimentalUtility.createBoundingSphere(
       mockPrimitive,
-      new Cartesian3(-5, -5, -5),
-      new Cartesian3(5, 5, 5)
+      modelMatrix
     );
 
-    const expectedMin = new Cartesian3(-5.5, -5.5, -5.5);
-    const expectedMax = new Cartesian3(5.5, 5.5, 5.5);
-    expect(minMax.min).toEqual(expectedMin);
-    expect(minMax.max).toEqual(expectedMax);
+    expect(boundingSphere.center).toEqual(translation);
+    expect(boundingSphere.radius).toEqualEpsilon(
+      0.8660254037844386,
+      CesiumMath.EPSILON8
+    );
   });
 
-  it("getAxisCorrectionMatrix works", function () {
-    const expectedYToZMatrix = Axis.Y_UP_TO_Z_UP;
-    const expectedXToZMatrix = Axis.X_UP_TO_Z_UP;
-    const expectedCombinedMatrix = Matrix4.multiplyTransformation(
-      expectedYToZMatrix,
-      Axis.Z_UP_TO_X_UP,
-      new Matrix4()
+  it("createBoundingSphere works with instancing", function () {
+    var mockPrimitive = {
+      attributes: [
+        {
+          semantic: "POSITION",
+          max: new Cartesian3(0.5, 0.5, 0.5),
+          min: new Cartesian3(-0.5, -0.5, -0.5),
+        },
+      ],
+    };
+    var translation = new Cartesian3(50, 50, 50);
+
+    var modelMatrix = Matrix4.fromTranslationRotationScale(
+      new TranslationRotationScale(
+        translation,
+        Quaternion.IDENTITY,
+        new Cartesian3(1, 1, 1)
+      )
+    );
+    var boundingSphere = ModelExperimentalUtility.createBoundingSphere(
+      mockPrimitive,
+      modelMatrix,
+      new Cartesian3(5, 5, 5),
+      new Cartesian3(-5, -5, -5)
     );
 
-    // If already in ECEF, this should return identity
-    let resultMatrix = ModelExperimentalUtility.getAxisCorrectionMatrix(
-      Axis.Z,
-      Axis.X,
-      new Matrix4()
+    expect(boundingSphere.center).toEqual(translation);
+    expect(boundingSphere.radius).toEqualEpsilon(
+      9.526279441628825,
+      CesiumMath.EPSILON8
     );
-    expect(Matrix4.equals(resultMatrix, Matrix4.IDENTITY)).toBe(true);
-
-    // This is the most common case, glTF uses y-up, z-forward
-    resultMatrix = ModelExperimentalUtility.getAxisCorrectionMatrix(
-      Axis.Y,
-      Axis.Z,
-      new Matrix4()
-    );
-    expect(Matrix4.equals(resultMatrix, expectedCombinedMatrix)).toBe(true);
-
-    // Other cases
-    resultMatrix = ModelExperimentalUtility.getAxisCorrectionMatrix(
-      Axis.Y,
-      Axis.X,
-      new Matrix4()
-    );
-    expect(Matrix4.equals(resultMatrix, expectedYToZMatrix)).toBe(true);
-
-    resultMatrix = ModelExperimentalUtility.getAxisCorrectionMatrix(
-      Axis.X,
-      Axis.Y,
-      new Matrix4()
-    );
-    expect(Matrix4.equals(resultMatrix, expectedXToZMatrix)).toBe(true);
   });
 
   it("getAttributeBySemantic works", function () {
-    const nodeIntanceAttributes = {
+    var nodeIntanceAttributes = {
       attributes: [
         { semantic: InstanceAttributeSemantic.TRANSLATION },
         { semantic: InstanceAttributeSemantic.ROTATION },
@@ -312,7 +255,7 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
       )
     ).toBeUndefined();
 
-    const primitiveAttributes = {
+    var primitiveAttributes = {
       attributes: [
         { semantic: VertexAttributeSemantic.POSITION },
         { semantic: VertexAttributeSemantic.NORMAL },
@@ -360,66 +303,5 @@ describe("Scene/ModelExperimental/ModelExperimentalUtility", function () {
         "UNKNOWN"
       )
     ).toBeUndefined();
-  });
-
-  it("getFeatureIdsByLabel gets feature ID sets by label", function () {
-    const featureIds = [{ label: "perVertex" }, { label: "perFace" }];
-
-    expect(
-      ModelExperimentalUtility.getFeatureIdsByLabel(featureIds, "perVertex")
-    ).toBe(featureIds[0]);
-    expect(
-      ModelExperimentalUtility.getFeatureIdsByLabel(featureIds, "perFace")
-    ).toBe(featureIds[1]);
-  });
-
-  it("getFeatureIdsByLabel gets feature ID sets by positional label", function () {
-    const featureIds = [
-      { positionalLabel: "featureId_0" },
-      { positionalLabel: "featureId_1" },
-    ];
-
-    expect(
-      ModelExperimentalUtility.getFeatureIdsByLabel(featureIds, "featureId_0")
-    ).toBe(featureIds[0]);
-    expect(
-      ModelExperimentalUtility.getFeatureIdsByLabel(featureIds, "featureId_1")
-    ).toBe(featureIds[1]);
-  });
-
-  it("getFeatureIdsByLabel returns undefined for unknown label", function () {
-    const featureIds = [{ label: "perVertex" }, { label: "perFace" }];
-
-    expect(
-      ModelExperimentalUtility.getFeatureIdsByLabel(featureIds, "other")
-    ).not.toBeDefined();
-  });
-
-  function expectCullFace(matrix, primitiveType, cullFace) {
-    expect(ModelExperimentalUtility.getCullFace(matrix, primitiveType)).toBe(
-      cullFace
-    );
-  }
-
-  it("getCullFace returns CullFace.BACK when primitiveType is not triangles", function () {
-    const matrix = Matrix4.fromUniformScale(-1.0);
-    expectCullFace(matrix, PrimitiveType.POINTS, CullFace.BACK);
-    expectCullFace(matrix, PrimitiveType.LINES, CullFace.BACK);
-    expectCullFace(matrix, PrimitiveType.LINE_LOOP, CullFace.BACK);
-    expectCullFace(matrix, PrimitiveType.LINE_STRIP, CullFace.BACK);
-  });
-
-  it("getCullFace return CullFace.BACK when determinant is greater than zero", function () {
-    const matrix = Matrix4.IDENTITY;
-    expectCullFace(matrix, PrimitiveType.TRIANGLES, CullFace.BACK);
-    expectCullFace(matrix, PrimitiveType.TRIANGLE_STRIP, CullFace.BACK);
-    expectCullFace(matrix, PrimitiveType.TRIANGLE_FAN, CullFace.BACK);
-  });
-
-  it("getCullFace return CullFace.FRONT when determinant is less than zero", function () {
-    const matrix = Matrix4.fromUniformScale(-1.0);
-    expectCullFace(matrix, PrimitiveType.TRIANGLES, CullFace.FRONT);
-    expectCullFace(matrix, PrimitiveType.TRIANGLE_STRIP, CullFace.FRONT);
-    expectCullFace(matrix, PrimitiveType.TRIANGLE_FAN, CullFace.FRONT);
   });
 });

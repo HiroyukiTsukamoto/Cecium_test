@@ -19,8 +19,8 @@ import createScene from "../createScene.js";
 describe(
   "DataSources/RectangleGeometryUpdater",
   function () {
-    let time;
-    let scene;
+    var time;
+    var scene;
 
     beforeAll(function () {
       scene = createScene();
@@ -37,8 +37,8 @@ describe(
     });
 
     function createBasicRectangle() {
-      const rectangle = new RectangleGraphics();
-      const entity = new Entity();
+      var rectangle = new RectangleGraphics();
+      var entity = new Entity();
       entity.rectangle = rectangle;
       entity.rectangle.coordinates = new ConstantProperty(
         new Rectangle(-1, -1, 1, 1)
@@ -48,14 +48,14 @@ describe(
     }
 
     function createDynamicRectangle() {
-      const entity = createBasicRectangle();
+      var entity = createBasicRectangle();
       entity.rectangle.extrudedHeight = createDynamicProperty(2);
       return entity;
     }
 
     function createBasicRectangleWithoutHeight() {
-      const rectangle = new RectangleGraphics();
-      const entity = new Entity();
+      var rectangle = new RectangleGraphics();
+      var entity = new Entity();
       entity.rectangle = rectangle;
       entity.rectangle.coordinates = new ConstantProperty(
         new Rectangle(0, 0, 1, 1)
@@ -64,22 +64,22 @@ describe(
     }
 
     function createDynamicRectangleWithoutHeight() {
-      const entity = createBasicRectangleWithoutHeight();
+      var entity = createBasicRectangleWithoutHeight();
       entity.rectangle.rotation = createDynamicProperty(2);
       return entity;
     }
 
     it("Properly detects closed geometry.", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
       entity.rectangle.extrudedHeight = new ConstantProperty(1000);
       updater._onEntityPropertyChanged(entity, "rectangle");
       expect(updater.isClosed).toBe(true);
     });
 
     it("A time-varying coordinates causes geometry to be dynamic", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
       entity.rectangle.coordinates = new SampledProperty(Rectangle);
       entity.rectangle.coordinates.addSample(JulianDate.now(), new Rectangle());
       updater._onEntityPropertyChanged(entity, "rectangle");
@@ -88,8 +88,8 @@ describe(
     });
 
     it("A time-varying height causes geometry to be dynamic", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
       entity.rectangle.height = new SampledProperty(Number);
       entity.rectangle.height.addSample(time, 1);
       updater._onEntityPropertyChanged(entity, "rectangle");
@@ -98,8 +98,8 @@ describe(
     });
 
     it("A time-varying extrudedHeight causes geometry to be dynamic", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
       entity.rectangle.extrudedHeight = new SampledProperty(Number);
       entity.rectangle.extrudedHeight.addSample(time, 1);
       updater._onEntityPropertyChanged(entity, "rectangle");
@@ -108,8 +108,8 @@ describe(
     });
 
     it("A time-varying granularity causes geometry to be dynamic", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
       entity.rectangle.granularity = new SampledProperty(Number);
       entity.rectangle.granularity.addSample(time, 1);
       updater._onEntityPropertyChanged(entity, "rectangle");
@@ -118,8 +118,8 @@ describe(
     });
 
     it("A time-varying stRotation causes geometry to be dynamic", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
       entity.rectangle.stRotation = new SampledProperty(Number);
       entity.rectangle.stRotation.addSample(time, 1);
       updater._onEntityPropertyChanged(entity, "rectangle");
@@ -128,7 +128,7 @@ describe(
     });
 
     it("Creates geometry with expected properties", function () {
-      const options = {
+      var options = {
         height: 431,
         extrudedHeight: 123,
         granularity: 0.97,
@@ -136,9 +136,9 @@ describe(
         stRotation: 12,
       };
 
-      const entity = createBasicRectangle();
+      var entity = createBasicRectangle();
 
-      const rectangle = entity.rectangle;
+      var rectangle = entity.rectangle;
       rectangle.outline = true;
       rectangle.rotation = new ConstantProperty(options.rotation);
       rectangle.stRotation = new ConstantProperty(options.stRotation);
@@ -146,10 +146,10 @@ describe(
       rectangle.extrudedHeight = new ConstantProperty(options.extrudedHeight);
       rectangle.granularity = new ConstantProperty(options.granularity);
 
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var updater = new RectangleGeometryUpdater(entity, scene);
 
-      let instance;
-      let geometry;
+      var instance;
+      var geometry;
       instance = updater.createFillGeometryInstance(time);
       geometry = instance.geometry;
       expect(geometry._rotation).toEqual(options.rotation);
@@ -168,7 +168,7 @@ describe(
     });
 
     it("dynamic updater sets properties", function () {
-      const rectangle = new RectangleGraphics();
+      var rectangle = new RectangleGraphics();
       rectangle.coordinates = createDynamicProperty(new Rectangle(0, 0, 1, 1));
       rectangle.show = createDynamicProperty(true);
       rectangle.height = createDynamicProperty(3);
@@ -178,17 +178,17 @@ describe(
       rectangle.granularity = createDynamicProperty(2);
       rectangle.stRotation = createDynamicProperty(1);
 
-      const entity = new Entity();
+      var entity = new Entity();
       entity.rectangle = rectangle;
 
-      const updater = new RectangleGeometryUpdater(entity, scene);
-      const dynamicUpdater = updater.createDynamicUpdater(
+      var updater = new RectangleGeometryUpdater(entity, scene);
+      var dynamicUpdater = updater.createDynamicUpdater(
         new PrimitiveCollection(),
         new PrimitiveCollection()
       );
       dynamicUpdater.update(time);
 
-      const options = dynamicUpdater._options;
+      var options = dynamicUpdater._options;
       expect(options.id).toEqual(entity);
       expect(options.rectangle).toEqual(rectangle.coordinates.getValue());
       expect(options.height).toEqual(rectangle.height.getValue());
@@ -201,9 +201,9 @@ describe(
     });
 
     it("geometryChanged event is raised when expected", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
-      const listener = jasmine.createSpy("listener");
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
+      var listener = jasmine.createSpy("listener");
       updater.geometryChanged.addEventListener(listener);
 
       entity.rectangle.height = new ConstantProperty(82);
@@ -229,8 +229,8 @@ describe(
     });
 
     it("computes center", function () {
-      const entity = createBasicRectangle();
-      const updater = new RectangleGeometryUpdater(entity, scene);
+      var entity = createBasicRectangle();
+      var updater = new RectangleGeometryUpdater(entity, scene);
 
       expect(updater._computeCenter(time)).toEqualEpsilon(
         Cartesian3.fromDegrees(0.0, 0.0),

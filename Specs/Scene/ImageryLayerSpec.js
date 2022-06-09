@@ -25,8 +25,8 @@ import pollToPromise from "../pollToPromise.js";
 describe(
   "Scene/ImageryLayer",
   function () {
-    let scene;
-    let computeEngine;
+    var scene;
+    var computeEngine;
 
     beforeAll(function () {
       scene = createScene();
@@ -93,21 +93,21 @@ describe(
         );
       };
 
-      const discardPolicy = new CustomDiscardPolicy();
+      var discardPolicy = new CustomDiscardPolicy();
 
-      const provider = new WebMapServiceImageryProvider({
+      var provider = new WebMapServiceImageryProvider({
         url: "made/up/url",
         layers: "foo",
         tileDiscardPolicy: discardPolicy,
       });
 
-      const layer = new ImageryLayer(provider);
+      var layer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
         discardPolicy.shouldDiscard = true;
-        const imagery = new Imagery(layer, 0, 0, 0);
+        var imagery = new Imagery(layer, 0, 0, 0);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -200,13 +200,13 @@ describe(
     }
 
     it("reprojects web mercator images when necessary", function () {
-      const provider = createWebMercatorProvider();
-      const layer = new ImageryLayer(provider);
+      var provider = createWebMercatorProvider();
+      var layer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
-        const imagery = new Imagery(layer, 0, 0, 0);
+        var imagery = new Imagery(layer, 0, 0, 0);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -219,7 +219,7 @@ describe(
           return pollToPromise(function () {
             return imagery.state === ImageryState.TEXTURE_LOADED;
           }).then(function () {
-            const textureBeforeReprojection = imagery.textureWebMercator;
+            var textureBeforeReprojection = imagery.textureWebMercator;
             layer._reprojectTexture(scene.frameState, imagery, true);
             layer.queueReprojectionCommands(scene.frameState);
             scene.frameState.commandList[0].execute(computeEngine);
@@ -244,13 +244,13 @@ describe(
     });
 
     it("does not reproject web mercator images when not necessary", function () {
-      const provider = createWebMercatorProvider();
-      const layer = new ImageryLayer(provider);
+      var provider = createWebMercatorProvider();
+      var layer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
-        const imagery = new Imagery(layer, 0, 1, 3);
+        var imagery = new Imagery(layer, 0, 1, 3);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -280,13 +280,13 @@ describe(
     });
 
     it("reprojects web mercator images later if it becomes necessary later", function () {
-      const provider = createWebMercatorProvider();
-      const layer = new ImageryLayer(provider);
+      var provider = createWebMercatorProvider();
+      var layer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
-        const imagery = new Imagery(layer, 0, 1, 3);
+        var imagery = new Imagery(layer, 0, 1, 3);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -299,7 +299,7 @@ describe(
           return pollToPromise(function () {
             return imagery.state === ImageryState.TEXTURE_LOADED;
           }).then(function () {
-            const textureBeforeReprojection = imagery.textureWebMercator;
+            var textureBeforeReprojection = imagery.textureWebMercator;
             layer._reprojectTexture(scene.frameState, imagery, false);
             layer.queueReprojectionCommands(scene.frameState);
             expect(scene.frameState.commandList.length).toBe(0);
@@ -346,7 +346,7 @@ describe(
         );
       };
 
-      const provider = new UrlTemplateImageryProvider({
+      var provider = new UrlTemplateImageryProvider({
         url: "http://example.com/{z}/{x}/{y}.png",
         minimumLevel: 13,
         maximumLevel: 19,
@@ -357,12 +357,12 @@ describe(
           52.50998943590507
         ),
       });
-      const layer = new ImageryLayer(provider);
+      var layer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
-        const imagery = new Imagery(layer, 4400, 2686, 13);
+        var imagery = new Imagery(layer, 4400, 2686, 13);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -399,13 +399,13 @@ describe(
     });
 
     it("cancels reprojection", function () {
-      const provider = createWebMercatorProvider();
-      const layer = new ImageryLayer(provider);
+      var provider = createWebMercatorProvider();
+      var layer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
-        const imagery = new Imagery(layer, 0, 0, 0);
+        var imagery = new Imagery(layer, 0, 0, 0);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -428,12 +428,12 @@ describe(
     });
 
     it("basic properties work as expected", function () {
-      const provider = new SingleTileImageryProvider({
+      var provider = new SingleTileImageryProvider({
         url: "Data/Images/Red16x16.png",
       });
 
-      const rectangle = new Rectangle(0.1, 0.2, 0.3, 0.4);
-      const layer = new ImageryLayer(provider, {
+      var rectangle = new Rectangle(0.1, 0.2, 0.3, 0.4);
+      var layer = new ImageryLayer(provider, {
         rectangle: rectangle,
       });
       expect(layer.rectangle).toEqual(rectangle);
@@ -443,12 +443,12 @@ describe(
     });
 
     it("allows setting texture filter properties", function () {
-      const provider = new SingleTileImageryProvider({
+      var provider = new SingleTileImageryProvider({
         url: "Data/Images/Red16x16.png",
       });
 
       // expect default LINEAR
-      let layer = new ImageryLayer(provider);
+      var layer = new ImageryLayer(provider);
       expect(layer.minificationFilter).toEqual(
         TextureMinificationFilter.LINEAR
       );
@@ -472,7 +472,7 @@ describe(
       return pollToPromise(function () {
         return provider.ready;
       }).then(function () {
-        const imagery = new Imagery(layer, 0, 0, 0);
+        var imagery = new Imagery(layer, 0, 0, 0);
         imagery.addReference();
         layer._requestImagery(imagery);
         RequestScheduler.update();
@@ -481,7 +481,7 @@ describe(
           return imagery.state === ImageryState.RECEIVED;
         }).then(function () {
           layer._createTexture(scene.context, imagery);
-          const sampler = imagery.texture.sampler;
+          var sampler = imagery.texture.sampler;
           expect(sampler.minificationFilter).toEqual(
             TextureMinificationFilter.NEAREST
           );
@@ -495,14 +495,14 @@ describe(
     });
 
     it("uses default texture filter properties of ImageryProvider", function () {
-      const provider = new SingleTileImageryProvider({
+      var provider = new SingleTileImageryProvider({
         url: "Data/Images/Red16x16.png",
       });
 
       provider.defaultMinificationFilter = TextureMinificationFilter.NEAREST;
       provider.defaultMagnificationFilter = TextureMinificationFilter.NEAREST;
 
-      const layer = new ImageryLayer(provider);
+      var layer = new ImageryLayer(provider);
       expect(layer.minificationFilter).toEqual(
         TextureMinificationFilter.NEAREST
       );
@@ -518,13 +518,13 @@ describe(
       // using XHR and then creates a blob URL to pass to an actual Image.  This allows access to much more detailed
       // information, including the status code.
 
-      const provider = new ArcGisMapServerImageryProvider({
+      var provider = new ArcGisMapServerImageryProvider({
         url: "File/That/Does/Not/Exist",
         usePreCachedTilesIfAvailable: false,
         tileDiscardPolicy: new NeverTileDiscardPolicy(),
       });
 
-      let errorRaised = false;
+      var errorRaised = false;
       provider.errorEvent.addEventListener(function (tileProviderError) {
         expect(tileProviderError).toBeDefined();
         expect(tileProviderError.error).toBeDefined();
@@ -532,7 +532,7 @@ describe(
         errorRaised = true;
       });
 
-      const imageryLayer = new ImageryLayer(provider);
+      var imageryLayer = new ImageryLayer(provider);
 
       return pollToPromise(function () {
         return provider.ready;
@@ -547,14 +547,14 @@ describe(
     });
 
     it("getViewableRectangle works", function () {
-      const providerRectangle = Rectangle.fromDegrees(8.2, 61.09, 8.5, 61.7);
-      const provider = new SingleTileImageryProvider({
+      var providerRectangle = Rectangle.fromDegrees(8.2, 61.09, 8.5, 61.7);
+      var provider = new SingleTileImageryProvider({
         url: "Data/Images/Green4x4.png",
         rectangle: providerRectangle,
       });
 
-      const layerRectangle = Rectangle.fromDegrees(7.2, 60.9, 9.0, 61.7);
-      const layer = new ImageryLayer(provider, {
+      var layerRectangle = Rectangle.fromDegrees(7.2, 60.9, 9.0, 61.7);
+      var layer = new ImageryLayer(provider, {
         rectangle: layerRectangle,
       });
 
@@ -567,18 +567,18 @@ describe(
 
     describe("createTileImagerySkeletons", function () {
       it("handles a base layer that does not cover the entire globe", function () {
-        const provider = new TileMapServiceImageryProvider({
+        var provider = new TileMapServiceImageryProvider({
           url: "Data/TMS/SmallArea",
         });
 
-        const layers = new ImageryLayerCollection();
-        const layer = layers.addImageryProvider(provider);
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var layers = new ImageryLayerCollection();
+        var layer = layers.addImageryProvider(provider);
+        var terrainProvider = new EllipsoidTerrainProvider();
 
         return pollToPromise(function () {
           return provider.ready && terrainProvider.ready;
         }).then(function () {
-          const tiles = QuadtreeTile.createLevelZeroTiles(
+          var tiles = QuadtreeTile.createLevelZeroTiles(
             terrainProvider.tilingScheme
           );
           tiles[0].data = new GlobeSurfaceTile();
@@ -642,24 +642,24 @@ describe(
         // Then, it triggers issue #2815 where that stale data is used in a later call.  Prior to the fix this
         // triggers an exception (use of an undefined reference).
 
-        const wholeWorldProvider = new SingleTileImageryProvider({
+        var wholeWorldProvider = new SingleTileImageryProvider({
           url: "Data/Images/Blue.png",
         });
 
-        const provider = new TileMapServiceImageryProvider({
+        var provider = new TileMapServiceImageryProvider({
           url: "Data/TMS/SmallArea",
         });
 
-        const layers = new ImageryLayerCollection();
-        const wholeWorldLayer = layers.addImageryProvider(wholeWorldProvider);
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var layers = new ImageryLayerCollection();
+        var wholeWorldLayer = layers.addImageryProvider(wholeWorldProvider);
+        var terrainProvider = new EllipsoidTerrainProvider();
 
         return pollToPromise(function () {
           return (
             wholeWorldProvider.ready && provider.ready && terrainProvider.ready
           );
         }).then(function () {
-          let tiles = QuadtreeTile.createLevelZeroTiles(
+          var tiles = QuadtreeTile.createLevelZeroTiles(
             terrainProvider.tilingScheme
           );
           tiles[0].data = new GlobeSurfaceTile();
@@ -675,7 +675,7 @@ describe(
           );
 
           layers.removeAll();
-          const layer = layers.addImageryProvider(provider);
+          var layer = layers.addImageryProvider(provider);
 
           // Use separate tiles for the small area provider.
           tiles = QuadtreeTile.createLevelZeroTiles(
@@ -712,23 +712,23 @@ describe(
       });
 
       it("handles a non-base layer that does not cover the entire globe", function () {
-        const baseProvider = new SingleTileImageryProvider({
+        var baseProvider = new SingleTileImageryProvider({
           url: "Data/Images/Green4x4.png",
         });
 
-        const provider = new TileMapServiceImageryProvider({
+        var provider = new TileMapServiceImageryProvider({
           url: "Data/TMS/SmallArea",
         });
 
-        const layers = new ImageryLayerCollection();
+        var layers = new ImageryLayerCollection();
         layers.addImageryProvider(baseProvider);
-        const layer = layers.addImageryProvider(provider);
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var layer = layers.addImageryProvider(provider);
+        var terrainProvider = new EllipsoidTerrainProvider();
 
         return pollToPromise(function () {
           return provider.ready && terrainProvider.ready;
         }).then(function () {
-          const tiles = QuadtreeTile.createLevelZeroTiles(
+          var tiles = QuadtreeTile.createLevelZeroTiles(
             terrainProvider.tilingScheme
           );
           tiles[0].data = new GlobeSurfaceTile();
@@ -794,31 +794,31 @@ describe(
       });
 
       it("honors the minimumTerrainLevel and maximumTerrainLevel properties", function () {
-        const provider = new SingleTileImageryProvider({
+        var provider = new SingleTileImageryProvider({
           url: "Data/Images/Green4x4.png",
         });
 
-        const layer = new ImageryLayer(provider, {
+        var layer = new ImageryLayer(provider, {
           minimumTerrainLevel: 2,
           maximumTerrainLevel: 4,
         });
 
-        const layers = new ImageryLayerCollection();
+        var layers = new ImageryLayerCollection();
         layers.add(layer);
 
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var terrainProvider = new EllipsoidTerrainProvider();
 
         return pollToPromise(function () {
           return provider.ready && terrainProvider.ready;
         }).then(function () {
-          const level0 = QuadtreeTile.createLevelZeroTiles(
+          var level0 = QuadtreeTile.createLevelZeroTiles(
             terrainProvider.tilingScheme
           );
-          const level1 = level0[0].children;
-          const level2 = level1[0].children;
-          const level3 = level2[0].children;
-          const level4 = level3[0].children;
-          const level5 = level4[0].children;
+          var level1 = level0[0].children;
+          var level2 = level1[0].children;
+          var level3 = level2[0].children;
+          var level4 = level3[0].children;
+          var level5 = level4[0].children;
 
           level0[0].data = new GlobeSurfaceTile();
           level1[0].data = new GlobeSurfaceTile();
@@ -848,15 +848,15 @@ describe(
       });
 
       it("honors limited extent of non-base ImageryLayer", function () {
-        const provider = new SingleTileImageryProvider({
+        var provider = new SingleTileImageryProvider({
           url: "Data/Images/Green4x4.png",
         });
 
-        const layer = new ImageryLayer(provider, {
+        var layer = new ImageryLayer(provider, {
           rectangle: Rectangle.fromDegrees(7.2, 60.9, 9.0, 61.7),
         });
 
-        const layers = new ImageryLayerCollection();
+        var layers = new ImageryLayerCollection();
         layers.addImageryProvider(
           new SingleTileImageryProvider({
             url: "Data/Images/Red16x16.png",
@@ -864,12 +864,12 @@ describe(
         );
         layers.add(layer);
 
-        const terrainProvider = new EllipsoidTerrainProvider();
+        var terrainProvider = new EllipsoidTerrainProvider();
 
         return pollToPromise(function () {
           return provider.ready && terrainProvider.ready;
         }).then(function () {
-          const tiles = QuadtreeTile.createLevelZeroTiles(
+          var tiles = QuadtreeTile.createLevelZeroTiles(
             terrainProvider.tilingScheme
           );
           tiles[0].data = new GlobeSurfaceTile();
@@ -884,7 +884,7 @@ describe(
           // The eastern hemisphere should have one tile with limited extent.
           expect(tiles[1].data.imagery.length).toBe(1);
 
-          const textureCoordinates =
+          var textureCoordinates =
             tiles[1].data.imagery[0].textureCoordinateRectangle;
           expect(textureCoordinates.x).toBeGreaterThan(0.0);
           expect(textureCoordinates.y).toBeGreaterThan(0.0);

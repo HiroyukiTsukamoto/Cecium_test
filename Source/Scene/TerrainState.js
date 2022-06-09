@@ -1,7 +1,7 @@
 /**
  * @private
  */
-const TerrainState = {
+var TerrainState = {
   FAILED: 0,
   UNLOADED: 1,
   RECEIVING: 2,

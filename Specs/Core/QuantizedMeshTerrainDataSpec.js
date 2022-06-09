@@ -6,6 +6,7 @@ import { Math as CesiumMath } from "../../Source/Cesium.js";
 import { QuantizedMeshTerrainData } from "../../Source/Cesium.js";
 import { TerrainData } from "../../Source/Cesium.js";
 import { TerrainMesh } from "../../Source/Cesium.js";
+import { when } from "../../Source/Cesium.js";
 
 describe("Core/QuantizedMeshTerrainData", function () {
   it("conforms to TerrainData interface", function () {
@@ -18,7 +19,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
       u |= 0;
       v *= 32767;
       v |= 0;
-      for (let i = 0; i < uBuffer.length; ++i) {
+      for (var i = 0; i < uBuffer.length; ++i) {
         if (Math.abs(uBuffer[i] - u) <= 1 && Math.abs(vBuffer[i] - v) <= 1) {
           return i;
         }
@@ -27,7 +28,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     }
 
     function hasTriangle(ib, i0, i1, i2) {
-      for (let i = 0; i < ib.length; i += 3) {
+      for (var i = 0; i < ib.length; i += 3) {
         if (
           (ib[i] === i0 && ib[i + 1] === i1 && ib[i + 2] === i2) ||
           (ib[i] === i1 && ib[i + 1] === i2 && ib[i + 2] === i0) ||
@@ -63,7 +64,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     }
 
     it("works for all four children of a simple quad", function () {
-      const data = new QuantizedMeshTerrainData({
+      var data = new QuantizedMeshTerrainData({
         minimumHeight: 0.0,
         maximumHeight: 4.0,
         quantizedVertices: new Uint16Array([
@@ -98,46 +99,46 @@ describe("Core/QuantizedMeshTerrainData", function () {
         childTileMask: 15,
       });
 
-      const tilingScheme = new GeographicTilingScheme();
+      var tilingScheme = new GeographicTilingScheme();
 
-      return Promise.resolve(
+      return when(
         data.createMesh({ tilingScheme: tilingScheme, x: 0, y: 0, level: 0 })
       )
         .then(function () {
-          const swPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
-          const sePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 0, 1);
-          const nwPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 1, 1);
-          const nePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 1, 1);
-          return Promise.all([swPromise, sePromise, nwPromise, nePromise]);
+          var swPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
+          var sePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 0, 1);
+          var nwPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 1, 1);
+          var nePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 1, 1);
+          return when.join(swPromise, sePromise, nwPromise, nePromise);
         })
         .then(function (upsampleResults) {
           expect(upsampleResults.length).toBe(4);
 
-          for (let i = 0; i < upsampleResults.length; ++i) {
-            const upsampled = upsampleResults[i];
+          for (var i = 0; i < upsampleResults.length; ++i) {
+            var upsampled = upsampleResults[i];
             expect(upsampled).toBeDefined();
 
-            const uBuffer = upsampled._uValues;
-            const vBuffer = upsampled._vValues;
-            const ib = upsampled._indices;
+            var uBuffer = upsampled._uValues;
+            var vBuffer = upsampled._vValues;
+            var ib = upsampled._indices;
 
             expect(uBuffer.length).toBe(4);
             expect(vBuffer.length).toBe(4);
             expect(upsampled._heightValues.length).toBe(4);
             expect(ib.length).toBe(6);
 
-            const sw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.0);
+            var sw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.0);
             expect(sw).not.toBe(-1);
-            const nw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 1.0);
+            var nw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 1.0);
             expect(nw).not.toBe(-1);
-            const se = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.0);
+            var se = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.0);
             expect(se).not.toBe(-1);
-            const ne = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 1.0);
+            var ne = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 1.0);
             expect(ne).not.toBe(-1);
 
-            const nwToSe =
+            var nwToSe =
               hasTriangle(ib, sw, se, nw) && hasTriangle(ib, nw, se, ne);
-            const swToNe =
+            var swToNe =
               hasTriangle(ib, sw, ne, nw) && hasTriangle(ib, sw, se, ne);
             expect(nwToSe || swToNe).toBe(true);
           }
@@ -145,7 +146,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     });
 
     it("oct-encoded normals works for all four children of a simple quad", function () {
-      const data = new QuantizedMeshTerrainData({
+      var data = new QuantizedMeshTerrainData({
         minimumHeight: 0.0,
         maximumHeight: 4.0,
         quantizedVertices: new Uint16Array([
@@ -194,31 +195,31 @@ describe("Core/QuantizedMeshTerrainData", function () {
         childTileMask: 15,
       });
 
-      const tilingScheme = new GeographicTilingScheme();
+      var tilingScheme = new GeographicTilingScheme();
 
-      return Promise.resolve(
+      return when(
         data.createMesh({ tilingScheme: tilingScheme, x: 0, y: 0, level: 0 })
       )
         .then(function () {
-          const swPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
-          const sePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 0, 1);
-          const nwPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 1, 1);
-          const nePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 1, 1);
-          return Promise.all([swPromise, sePromise, nwPromise, nePromise]);
+          var swPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
+          var sePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 0, 1);
+          var nwPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 1, 1);
+          var nePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 1, 1);
+          return when.join(swPromise, sePromise, nwPromise, nePromise);
         })
         .then(function (upsampleResults) {
           expect(upsampleResults.length).toBe(4);
 
-          for (let i = 0; i < upsampleResults.length; ++i) {
-            const upsampled = upsampleResults[i];
+          for (var i = 0; i < upsampleResults.length; ++i) {
+            var upsampled = upsampleResults[i];
             expect(upsampled).toBeDefined();
 
-            const encodedNormals = upsampled._encodedNormals;
+            var encodedNormals = upsampled._encodedNormals;
 
             expect(encodedNormals.length).toBe(8);
 
             // All 4 normals should remain oct-encoded representations of vec3(0.0, 0.0, -1.0)
-            for (let n = 0; n < encodedNormals.length; ++n) {
+            for (var n = 0; n < encodedNormals.length; ++n) {
               expect(encodedNormals[i]).toBe(255);
             }
           }
@@ -226,7 +227,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     });
 
     it("works for a quad with an extra vertex in the northwest child", function () {
-      const data = new QuantizedMeshTerrainData({
+      var data = new QuantizedMeshTerrainData({
         minimumHeight: 0.0,
         maximumHeight: 6.0,
         quantizedVertices: new Uint16Array([
@@ -264,41 +265,41 @@ describe("Core/QuantizedMeshTerrainData", function () {
         childTileMask: 15,
       });
 
-      const tilingScheme = new GeographicTilingScheme();
-      return Promise.resolve(
+      var tilingScheme = new GeographicTilingScheme();
+      return when(
         data.createMesh({ tilingScheme: tilingScheme, x: 0, y: 0, level: 0 })
       )
         .then(function () {
           return data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
         })
         .then(function (upsampled) {
-          const uBuffer = upsampled._uValues;
-          const vBuffer = upsampled._vValues;
-          const ib = upsampled._indices;
+          var uBuffer = upsampled._uValues;
+          var vBuffer = upsampled._vValues;
+          var ib = upsampled._indices;
 
           expect(uBuffer.length).toBe(9);
           expect(vBuffer.length).toBe(9);
           expect(upsampled._heightValues.length).toBe(9);
           expect(ib.length).toBe(8 * 3);
 
-          const sw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.0);
+          var sw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.0);
           expect(sw).not.toBe(-1);
-          const nw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 1.0);
+          var nw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 1.0);
           expect(nw).not.toBe(-1);
-          const se = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.0);
+          var se = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.0);
           expect(se).not.toBe(-1);
-          const ne = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 1.0);
+          var ne = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 1.0);
           expect(ne).not.toBe(-1);
-          const extra = findVertexWithCoordinates(uBuffer, vBuffer, 0.25, 0.5);
+          var extra = findVertexWithCoordinates(uBuffer, vBuffer, 0.25, 0.5);
           expect(extra).not.toBe(-1);
-          const v40 = findVertexWithCoordinates(
+          var v40 = findVertexWithCoordinates(
             uBuffer,
             vBuffer,
             horizontalIntercept(0.0, 0.0, 0.125, 0.75) * 2.0,
             0.0
           );
           expect(v40).not.toBe(-1);
-          const v42 = findVertexWithCoordinates(
+          var v42 = findVertexWithCoordinates(
             uBuffer,
             vBuffer,
             horizontalIntercept(
@@ -310,14 +311,14 @@ describe("Core/QuantizedMeshTerrainData", function () {
             0.0
           );
           expect(v42).not.toBe(-1);
-          const v402 = findVertexWithCoordinates(
+          var v402 = findVertexWithCoordinates(
             uBuffer,
             vBuffer,
             horizontalIntercept(0.5, 0.0, 0.125, 0.75) * 2.0,
             0.0
           );
           expect(v402).not.toBe(-1);
-          const v43 = findVertexWithCoordinates(
+          var v43 = findVertexWithCoordinates(
             uBuffer,
             vBuffer,
             1.0,
@@ -337,7 +338,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     });
 
     it("works for a quad with an extra vertex on the splitting plane", function () {
-      const data = new QuantizedMeshTerrainData({
+      var data = new QuantizedMeshTerrainData({
         minimumHeight: 0.0,
         maximumHeight: 6.0,
         quantizedVertices: new Uint16Array([
@@ -375,47 +376,47 @@ describe("Core/QuantizedMeshTerrainData", function () {
         childTileMask: 15,
       });
 
-      const tilingScheme = new GeographicTilingScheme();
-      return Promise.resolve(
+      var tilingScheme = new GeographicTilingScheme();
+      return when(
         data.createMesh({ tilingScheme: tilingScheme, x: 0, y: 0, level: 0 })
       )
         .then(function () {
-          const nwPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
-          const nePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 0, 1);
-          return Promise.all([nwPromise, nePromise]);
+          var nwPromise = data.upsample(tilingScheme, 0, 0, 0, 0, 0, 1);
+          var nePromise = data.upsample(tilingScheme, 0, 0, 0, 1, 0, 1);
+          return when.join(nwPromise, nePromise);
         })
         .then(function (upsampleResults) {
           expect(upsampleResults.length).toBe(2);
-          let uBuffer, vBuffer;
-          for (let i = 0; i < upsampleResults.length; i++) {
-            const upsampled = upsampleResults[i];
+          var uBuffer, vBuffer;
+          for (var i = 0; i < upsampleResults.length; i++) {
+            var upsampled = upsampleResults[i];
             expect(upsampled).toBeDefined();
 
             uBuffer = upsampled._uValues;
             vBuffer = upsampled._vValues;
-            const ib = upsampled._indices;
+            var ib = upsampled._indices;
 
             expect(uBuffer.length).toBe(6);
             expect(vBuffer.length).toBe(6);
             expect(upsampled._heightValues.length).toBe(6);
             expect(ib.length).toBe(4 * 3);
 
-            const sw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.0);
+            var sw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.0);
             expect(sw).not.toBe(-1);
-            const nw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 1.0);
+            var nw = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 1.0);
             expect(nw).not.toBe(-1);
-            const se = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.0);
+            var se = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.0);
             expect(se).not.toBe(-1);
-            const ne = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 1.0);
+            var ne = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 1.0);
             expect(ne).not.toBe(-1);
           }
 
           // northwest
           uBuffer = upsampleResults[0]._uValues;
           vBuffer = upsampleResults[0]._vValues;
-          let extra = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.5);
+          var extra = findVertexWithCoordinates(uBuffer, vBuffer, 1.0, 0.5);
           expect(extra).not.toBe(-1);
-          const v40 = findVertexWithCoordinates(
+          var v40 = findVertexWithCoordinates(
             uBuffer,
             vBuffer,
             horizontalIntercept(0.0, 0.0, 0.5, 0.75) * 2.0,
@@ -432,7 +433,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
           vBuffer = upsampleResults[1]._vValues;
           extra = findVertexWithCoordinates(uBuffer, vBuffer, 0.0, 0.5);
           expect(extra).not.toBe(-1);
-          const v42 = findVertexWithCoordinates(
+          var v42 = findVertexWithCoordinates(
             uBuffer,
             vBuffer,
             horizontalIntercept(1.0, 0.0, 0.5, 0.75) * 0.5,
@@ -448,8 +449,8 @@ describe("Core/QuantizedMeshTerrainData", function () {
   });
 
   describe("createMesh", function () {
-    let data;
-    let tilingScheme;
+    var data;
+    var tilingScheme;
 
     function createSampleTerrainData() {
       return new QuantizedMeshTerrainData({
@@ -571,9 +572,9 @@ describe("Core/QuantizedMeshTerrainData", function () {
     });
 
     it("requires 32bit indices for large meshes", function () {
-      const tilingScheme = new GeographicTilingScheme();
-      const quantizedVertices = [];
-      let i;
+      var tilingScheme = new GeographicTilingScheme();
+      var quantizedVertices = [];
+      var i;
       for (i = 0; i < 65 * 1024; i++) {
         quantizedVertices.push(i % 32767); // u
       }
@@ -583,7 +584,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
       for (i = 0; i < 65 * 1024; i++) {
         quantizedVertices.push(0.0); // height
       }
-      const data = new QuantizedMeshTerrainData({
+      var data = new QuantizedMeshTerrainData({
         minimumHeight: 0.0,
         maximumHeight: 4.0,
         quantizedVertices: new Uint16Array(quantizedVertices),
@@ -610,51 +611,51 @@ describe("Core/QuantizedMeshTerrainData", function () {
     });
 
     it("enables throttling for asynchronous tasks", function () {
-      const options = {
+      var options = {
         tilingScheme: tilingScheme,
         x: 0,
         y: 0,
         level: 0,
         throttle: true,
       };
-      const taskCount = TerrainData.maximumAsynchronousTasks + 1;
-      const promises = new Array();
-      for (let i = 0; i < taskCount; i++) {
-        const tempData = createSampleTerrainData();
-        const promise = tempData.createMesh(options);
+      var taskCount = TerrainData.maximumAsynchronousTasks + 1;
+      var promises = new Array();
+      for (var i = 0; i < taskCount; i++) {
+        var tempData = createSampleTerrainData();
+        var promise = tempData.createMesh(options);
         if (defined(promise)) {
           promises.push(promise);
         }
       }
       expect(promises.length).toBe(TerrainData.maximumAsynchronousTasks);
-      return Promise.all(promises);
+      return when.all(promises);
     });
 
     it("disables throttling for asynchronous tasks", function () {
-      const options = {
+      var options = {
         tilingScheme: tilingScheme,
         x: 0,
         y: 0,
         level: 0,
         throttle: false,
       };
-      const taskCount = TerrainData.maximumAsynchronousTasks + 1;
-      const promises = new Array();
-      for (let i = 0; i < taskCount; i++) {
-        const tempData = createSampleTerrainData();
-        const promise = tempData.createMesh(options);
+      var taskCount = TerrainData.maximumAsynchronousTasks + 1;
+      var promises = new Array();
+      for (var i = 0; i < taskCount; i++) {
+        var tempData = createSampleTerrainData();
+        var promise = tempData.createMesh(options);
         if (defined(promise)) {
           promises.push(promise);
         }
       }
       expect(promises.length).toBe(taskCount);
-      return Promise.all(promises);
+      return when.all(promises);
     });
   });
 
   describe("interpolateHeight", function () {
-    let tilingScheme;
-    let rectangle;
+    var tilingScheme;
+    var rectangle;
 
     beforeEach(function () {
       tilingScheme = new GeographicTilingScheme();
@@ -662,7 +663,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     });
 
     it("clamps coordinates if given a position outside the mesh", function () {
-      const mesh = new QuantizedMeshTerrainData({
+      var mesh = new QuantizedMeshTerrainData({
         minimumHeight: 0.0,
         maximumHeight: 4.0,
         quantizedVertices: new Uint16Array([
@@ -705,7 +706,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
     it("returns a height interpolated from the correct triangle", function () {
       // zero height along line between southwest and northeast corners.
       // Negative height in the northwest corner, positive height in the southeast.
-      const mesh = new QuantizedMeshTerrainData({
+      var mesh = new QuantizedMeshTerrainData({
         minimumHeight: -16384,
         maximumHeight: 16383,
         quantizedVertices: new Uint16Array([
@@ -741,11 +742,11 @@ describe("Core/QuantizedMeshTerrainData", function () {
       });
 
       // position in the northwest quadrant of the tile.
-      let longitude = rectangle.west + (rectangle.east - rectangle.west) * 0.25;
-      let latitude =
+      var longitude = rectangle.west + (rectangle.east - rectangle.west) * 0.25;
+      var latitude =
         rectangle.south + (rectangle.north - rectangle.south) * 0.75;
 
-      let result = mesh.interpolateHeight(rectangle, longitude, latitude);
+      var result = mesh.interpolateHeight(rectangle, longitude, latitude);
       expect(result).toBeLessThan(0.0);
 
       // position in the southeast quadrant of the tile.
@@ -765,7 +766,7 @@ describe("Core/QuantizedMeshTerrainData", function () {
   });
 
   describe("isChildAvailable", function () {
-    let data;
+    var data;
 
     beforeEach(function () {
       data = new QuantizedMeshTerrainData({

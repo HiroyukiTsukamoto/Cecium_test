@@ -2,7 +2,7 @@ import { clone } from "../../Source/Cesium.js";
 
 describe("Core/clone", function () {
   it("can make shallow clones", function () {
-    const obj = {
+    var obj = {
       a: 1,
       b: "s",
       c: {
@@ -10,7 +10,7 @@ describe("Core/clone", function () {
       },
     };
 
-    const clonedObj = clone(obj);
+    var clonedObj = clone(obj);
     expect(clonedObj).not.toBe(obj);
     expect(clonedObj.a).toEqual(obj.a);
     expect(clonedObj.b).toEqual(obj.b);
@@ -19,7 +19,7 @@ describe("Core/clone", function () {
   });
 
   it("can make deep clones", function () {
-    const obj = {
+    var obj = {
       a: 1,
       b: "s",
       c: {
@@ -32,7 +32,7 @@ describe("Core/clone", function () {
       },
     };
 
-    const clonedObj = clone(obj, true);
+    var clonedObj = clone(obj, true);
     expect(clonedObj).not.toBe(obj);
     expect(clonedObj.a).toEqual(obj.a);
     expect(clonedObj.b).toEqual(obj.b);

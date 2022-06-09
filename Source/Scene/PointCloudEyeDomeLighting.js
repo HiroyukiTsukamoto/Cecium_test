@@ -2,13 +2,17 @@ import Cartesian2 from "../Core/Cartesian2.js";
 import Color from "../Core/Color.js";
 import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
+import PixelFormat from "../Core/PixelFormat.js";
 import PrimitiveType from "../Core/PrimitiveType.js";
 import ClearCommand from "../Renderer/ClearCommand.js";
 import DrawCommand from "../Renderer/DrawCommand.js";
-import FramebufferManager from "../Renderer/FramebufferManager.js";
+import Framebuffer from "../Renderer/Framebuffer.js";
 import Pass from "../Renderer/Pass.js";
+import PixelDatatype from "../Renderer/PixelDatatype.js";
 import RenderState from "../Renderer/RenderState.js";
+import Sampler from "../Renderer/Sampler.js";
 import ShaderSource from "../Renderer/ShaderSource.js";
+import Texture from "../Renderer/Texture.js";
 import BlendingState from "../Scene/BlendingState.js";
 import StencilConstants from "../Scene/StencilConstants.js";
 import PointCloudEyeDomeLightingShader from "../Shaders/PostProcessStages/PointCloudEyeDomeLighting.js";
@@ -20,12 +24,10 @@ import PointCloudEyeDomeLightingShader from "../Shaders/PostProcessStages/PointC
  * @private
  */
 function PointCloudEyeDomeLighting() {
-  this._framebuffer = new FramebufferManager({
-    colorAttachmentsLength: 2,
-    depth: true,
-    supportsDepthTexture: true,
-  });
-
+  this._framebuffer = undefined;
+  this._colorGBuffer = undefined; // color gbuffer
+  this._depthGBuffer = undefined; // depth gbuffer
+  this._depthTexture = undefined; // needed to write depth so camera based on depth works
   this._drawCommand = undefined;
   this._clearCommand = undefined;
 
@@ -33,44 +35,81 @@ function PointCloudEyeDomeLighting() {
   this._radius = 1.0;
 }
 
-Object.defineProperties(PointCloudEyeDomeLighting.prototype, {
-  framebuffer: {
-    get: function () {
-      return this._framebuffer.framebuffer;
-    },
-  },
-  colorGBuffer: {
-    get: function () {
-      return this._framebuffer.getColorTexture(0);
-    },
-  },
-  depthGBuffer: {
-    get: function () {
-      return this._framebuffer.getColorTexture(1);
-    },
-  },
-});
-
 function destroyFramebuffer(processor) {
-  processor._framebuffer.destroy();
+  var framebuffer = processor._framebuffer;
+  if (!defined(framebuffer)) {
+    return;
+  }
+
+  processor._colorGBuffer.destroy();
+  processor._depthGBuffer.destroy();
+  processor._depthTexture.destroy();
+  framebuffer.destroy();
+
+  processor._framebuffer = undefined;
+  processor._colorGBuffer = undefined;
+  processor._depthGBuffer = undefined;
+  processor._depthTexture = undefined;
   processor._drawCommand = undefined;
   processor._clearCommand = undefined;
 }
 
-const distanceAndEdlStrengthScratch = new Cartesian2();
+function createFramebuffer(processor, context) {
+  var screenWidth = context.drawingBufferWidth;
+  var screenHeight = context.drawingBufferHeight;
+
+  var colorGBuffer = new Texture({
+    context: context,
+    width: screenWidth,
+    height: screenHeight,
+    pixelFormat: PixelFormat.RGBA,
+    pixelDatatype: PixelDatatype.UNSIGNED_BYTE,
+    sampler: Sampler.NEAREST,
+  });
+
+  var depthGBuffer = new Texture({
+    context: context,
+    width: screenWidth,
+    height: screenHeight,
+    pixelFormat: PixelFormat.RGBA,
+    pixelDatatype: PixelDatatype.UNSIGNED_BYTE,
+    sampler: Sampler.NEAREST,
+  });
+
+  var depthTexture = new Texture({
+    context: context,
+    width: screenWidth,
+    height: screenHeight,
+    pixelFormat: PixelFormat.DEPTH_COMPONENT,
+    pixelDatatype: PixelDatatype.UNSIGNED_INT,
+    sampler: Sampler.NEAREST,
+  });
+
+  processor._framebuffer = new Framebuffer({
+    context: context,
+    colorTextures: [colorGBuffer, depthGBuffer],
+    depthTexture: depthTexture,
+    destroyAttachments: false,
+  });
+  processor._colorGBuffer = colorGBuffer;
+  processor._depthGBuffer = depthGBuffer;
+  processor._depthTexture = depthTexture;
+}
+
+var distanceAndEdlStrengthScratch = new Cartesian2();
 
 function createCommands(processor, context) {
-  const blendFS = new ShaderSource({
+  var blendFS = new ShaderSource({
     defines: ["LOG_DEPTH_WRITE"],
     sources: [PointCloudEyeDomeLightingShader],
   });
 
-  const blendUniformMap = {
+  var blendUniformMap = {
     u_pointCloud_colorGBuffer: function () {
-      return processor.colorGBuffer;
+      return processor._colorGBuffer;
     },
     u_pointCloud_depthGBuffer: function () {
-      return processor.depthGBuffer;
+      return processor._depthGBuffer;
     },
     u_distanceAndEdlStrength: function () {
       distanceAndEdlStrengthScratch.x = processor._radius;
@@ -79,7 +118,7 @@ function createCommands(processor, context) {
     },
   };
 
-  const blendRenderState = RenderState.fromCache({
+  var blendRenderState = RenderState.fromCache({
     blending: BlendingState.ALPHA_BLEND,
     depthMask: true,
     depthTest: {
@@ -97,7 +136,7 @@ function createCommands(processor, context) {
   });
 
   processor._clearCommand = new ClearCommand({
-    framebuffer: processor.framebuffer,
+    framebuffer: processor._framebuffer,
     color: new Color(0.0, 0.0, 0.0, 0.0),
     depth: 1.0,
     renderState: RenderState.fromCache(),
@@ -107,10 +146,22 @@ function createCommands(processor, context) {
 }
 
 function createResources(processor, context) {
-  const width = context.drawingBufferWidth;
-  const height = context.drawingBufferHeight;
-  processor._framebuffer.update(context, width, height);
-  createCommands(processor, context);
+  var screenWidth = context.drawingBufferWidth;
+  var screenHeight = context.drawingBufferHeight;
+  var colorGBuffer = processor._colorGBuffer;
+  var nowDirty = false;
+  var resized =
+    defined(colorGBuffer) &&
+    (colorGBuffer.width !== screenWidth ||
+      colorGBuffer.height !== screenHeight);
+
+  if (!defined(colorGBuffer) || resized) {
+    destroyFramebuffer(processor);
+    createFramebuffer(processor, context);
+    createCommands(processor, context);
+    nowDirty = true;
+  }
+  return nowDirty;
 }
 
 function isSupported(context) {
@@ -120,11 +171,11 @@ function isSupported(context) {
 PointCloudEyeDomeLighting.isSupported = isSupported;
 
 function getECShaderProgram(context, shaderProgram) {
-  let shader = context.shaderCache.getDerivedShaderProgram(shaderProgram, "EC");
+  var shader = context.shaderCache.getDerivedShaderProgram(shaderProgram, "EC");
   if (!defined(shader)) {
-    const attributeLocations = shaderProgram._attributeLocations;
+    var attributeLocations = shaderProgram._attributeLocations;
 
-    const fs = shaderProgram.fragmentShaderSource.clone();
+    var fs = shaderProgram.fragmentShaderSource.clone();
 
     fs.sources = fs.sources.map(function (source) {
       source = ShaderSource.replaceMain(
@@ -177,15 +228,18 @@ PointCloudEyeDomeLighting.prototype.update = function (
   this._radius =
     pointCloudShading.eyeDomeLightingRadius * frameState.pixelRatio;
 
-  createResources(this, frameState.context);
+  var dirty = createResources(this, frameState.context);
 
   // Hijack existing point commands to render into an offscreen FBO.
-  let i;
-  const commandList = frameState.commandList;
-  const commandEnd = commandList.length;
+  var i;
+  var commandList = frameState.commandList;
+  var commandEnd = commandList.length;
+
+  var derivedCommand;
+  var originalShaderProgram;
 
   for (i = commandStart; i < commandEnd; ++i) {
-    const command = commandList[i];
+    var command = commandList[i];
     if (
       command.primitiveType !== PrimitiveType.POINTS ||
       command.pass === Pass.TRANSLUCENT
@@ -193,10 +247,12 @@ PointCloudEyeDomeLighting.prototype.update = function (
       continue;
     }
 
-    let derivedCommand;
-    let originalShaderProgram;
+    // These variables need to get reset for each iteration. It has to be
+    // done manually since var is function scope not block scope.
+    derivedCommand = undefined;
+    originalShaderProgram = undefined;
 
-    let derivedCommandObject = command.derivedCommands.pointCloudProcessor;
+    var derivedCommandObject = command.derivedCommands.pointCloudProcessor;
     if (defined(derivedCommandObject)) {
       derivedCommand = derivedCommandObject.command;
       originalShaderProgram = derivedCommandObject.originalShaderProgram;
@@ -205,13 +261,14 @@ PointCloudEyeDomeLighting.prototype.update = function (
     if (
       !defined(derivedCommand) ||
       command.dirty ||
+      dirty ||
       originalShaderProgram !== command.shaderProgram ||
-      derivedCommand.framebuffer !== this.framebuffer
+      derivedCommand.framebuffer !== this._framebuffer
     ) {
       // Prevent crash when tiles out-of-view come in-view during context size change or
       // when the underlying shader changes while EDL is disabled
       derivedCommand = DrawCommand.shallowClone(command, derivedCommand);
-      derivedCommand.framebuffer = this.framebuffer;
+      derivedCommand.framebuffer = this._framebuffer;
       derivedCommand.shaderProgram = getECShaderProgram(
         frameState.context,
         command.shaderProgram
@@ -233,8 +290,8 @@ PointCloudEyeDomeLighting.prototype.update = function (
     commandList[i] = derivedCommand;
   }
 
-  const clearCommand = this._clearCommand;
-  const blendCommand = this._drawCommand;
+  var clearCommand = this._clearCommand;
+  var blendCommand = this._drawCommand;
 
   blendCommand.boundingVolume = boundingVolume;
 

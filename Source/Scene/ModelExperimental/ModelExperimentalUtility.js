@@ -1,3 +1,4 @@
+import BoundingSphere from "../../Core/BoundingSphere.js";
 import Cartesian3 from "../../Core/Cartesian3.js";
 import defined from "../../Core/defined.js";
 import Matrix4 from "../../Core/Matrix4.js";
@@ -6,9 +7,6 @@ import RuntimeError from "../../Core/RuntimeError.js";
 import Axis from "../Axis.js";
 import AttributeType from "../AttributeType.js";
 import VertexAttributeSemantic from "../VertexAttributeSemantic.js";
-import CullFace from "../CullFace.js";
-import PrimitiveType from "../../Core/PrimitiveType.js";
-import Matrix3 from "../../Core/Matrix3.js";
 
 /**
  * Utility functions for {@link ModelExperimental}.
@@ -29,11 +27,11 @@ export default function ModelExperimentalUtility() {}
  */
 ModelExperimentalUtility.getFailedLoadFunction = function (model, type, path) {
   return function (error) {
-    let message = `Failed to load ${type}: ${path}`;
+    var message = "Failed to load " + type + ": " + path;
     if (defined(error)) {
-      message += `\n${error.message}`;
+      message += "\n" + error.message;
     }
-    return Promise.reject(new RuntimeError(message));
+    model._readyPromise.reject(new RuntimeError(message));
   };
 };
 
@@ -72,11 +70,11 @@ ModelExperimentalUtility.getAttributeBySemantic = function (
   semantic,
   setIndex
 ) {
-  const attributes = object.attributes;
-  const attributesLength = attributes.length;
-  for (let i = 0; i < attributesLength; ++i) {
-    const attribute = attributes[i];
-    const matchesSetIndex = defined(setIndex)
+  var attributes = object.attributes;
+  var attributesLength = attributes.length;
+  for (var i = 0; i < attributesLength; ++i) {
+    var attribute = attributes[i];
+    var matchesSetIndex = defined(setIndex)
       ? attribute.setIndex === setIndex
       : true;
     if (attribute.semantic === semantic && matchesSetIndex) {
@@ -85,57 +83,13 @@ ModelExperimentalUtility.getAttributeBySemantic = function (
   }
 };
 
-/**
- * Similar to getAttributeBySemantic, but search using the name field only,
- * as custom attributes do not have a semantic.
- *
- * @param {ModelComponents.Primitive|ModelComponents.Instances} object The primitive components or instances object
- * @param {String} name The name of the attribute as it appears in the model file.
- * @return {ModelComponents.Attribute} The selected attribute, or undefined if not found.
- *
- * @private
- */
-ModelExperimentalUtility.getAttributeByName = function (object, name) {
-  const attributes = object.attributes;
-  const attributesLength = attributes.length;
-  for (let i = 0; i < attributesLength; ++i) {
-    const attribute = attributes[i];
-    if (attribute.name === name) {
-      return attribute;
-    }
-  }
-};
-
-/**
- * Find a feature ID from an array with label or positionalLabel matching the
- * given label
- * @param {Array.<ModelComponents.FeatureIdAttribute|ModelComponents.FeatureIdImplicitRange|ModelComponents.FeatureIdTexture>} featureIds
- * @param {String} label the label to search for
- * @return {ModelComponents.FeatureIdAttribute|ModelComponents.FeatureIdImplicitRange|ModelComponents.FeatureIdTexture} The feature ID set if found, otherwise <code>undefined</code>
- *
- * @private
- */
-ModelExperimentalUtility.getFeatureIdsByLabel = function (featureIds, label) {
-  for (let i = 0; i < featureIds.length; i++) {
-    const featureIdSet = featureIds[i];
-    if (
-      featureIdSet.positionalLabel === label ||
-      featureIdSet.label === label
-    ) {
-      return featureIdSet;
-    }
-  }
-
-  return undefined;
-};
-
 ModelExperimentalUtility.hasQuantizedAttributes = function (attributes) {
   if (!defined(attributes)) {
     return false;
   }
 
-  for (let i = 0; i < attributes.length; i++) {
-    const attribute = attributes[i];
+  for (var i = 0; i < attributes.length; i++) {
+    var attribute = attributes[i];
     if (defined(attribute.quantization)) {
       return true;
     }
@@ -149,11 +103,11 @@ ModelExperimentalUtility.hasQuantizedAttributes = function (attributes) {
  * @private
  */
 ModelExperimentalUtility.getAttributeInfo = function (attribute) {
-  const semantic = attribute.semantic;
-  const setIndex = attribute.setIndex;
+  var semantic = attribute.semantic;
+  var setIndex = attribute.setIndex;
 
-  let variableName;
-  let hasSemantic = false;
+  var variableName;
+  var hasSemantic = false;
   if (defined(semantic)) {
     variableName = VertexAttributeSemantic.getVariableName(semantic, setIndex);
     hasSemantic = true;
@@ -161,28 +115,17 @@ ModelExperimentalUtility.getAttributeInfo = function (attribute) {
     variableName = attribute.name;
     // According to the glTF 2.0 spec, custom attributes must be prepended with
     // an underscore.
-    variableName = variableName.replace(/^_/, "");
+    variableName = variableName.substring(1);
     variableName = variableName.toLowerCase();
   }
 
-  const isVertexColor = /^color_\d+$/.test(variableName);
-  const attributeType = attribute.type;
-  let glslType = AttributeType.getGlslType(attributeType);
+  var attributeType = attribute.type;
+  var glslType = AttributeType.getGlslType(attributeType);
 
-  // color_n can be either a vec3 or a vec4. But in GLSL we can always use
-  // attribute vec4 since GLSL promotes vec3 attribute data to vec4 with
-  // the .a channel set to 1.0.
-  if (isVertexColor) {
-    glslType = "vec4";
-  }
-
-  const isQuantized = defined(attribute.quantization);
-  let quantizedGlslType;
+  var isQuantized = defined(attribute.quantization);
+  var quantizedGlslType;
   if (isQuantized) {
-    // The quantized color_n attribute also is promoted to a vec4 in the shader
-    quantizedGlslType = isVertexColor
-      ? "vec4"
-      : AttributeType.getGlslType(attribute.quantization.type);
+    quantizedGlslType = AttributeType.getGlslType(attribute.quantization.type);
   }
 
   return {
@@ -195,112 +138,76 @@ ModelExperimentalUtility.getAttributeInfo = function (attribute) {
   };
 };
 
-const cartesianMaxScratch = new Cartesian3();
-const cartesianMinScratch = new Cartesian3();
-
+var cartesianMaxScratch = new Cartesian3();
+var cartesianMinScratch = new Cartesian3();
 /**
- * Get the minimum and maximum values for a primitive's POSITION attribute.
- * This is used to compute the bounding sphere of the primitive, as well as
- * the bounding sphere of the whole model.
+ * Create a bounding sphere from a primitive's POSITION attribute and model
+ * matrix.
  *
  * @param {ModelComponents.Primitive} primitive The primitive components.
- * @param {Cartesian3} [instancingTranslationMin] The component-wise minimum value of the instancing translation attribute.
+ * @param {Matrix4} modelMatrix The primitive's model matrix.
  * @param {Cartesian3} [instancingTranslationMax] The component-wise maximum value of the instancing translation attribute.
- *
- * @return {Object} An object containing the minimum and maximum position values.
- *
- * @private
+ * @param {Cartesian3} [instancingTranslationMin] The component-wise minimum value of the instancing translation attribute.
  */
-ModelExperimentalUtility.getPositionMinMax = function (
+ModelExperimentalUtility.createBoundingSphere = function (
   primitive,
-  instancingTranslationMin,
-  instancingTranslationMax
+  modelMatrix,
+  instancingTranslationMax,
+  instancingTranslationMin
 ) {
-  const positionGltfAttribute = ModelExperimentalUtility.getAttributeBySemantic(
+  var positionGltfAttribute = ModelExperimentalUtility.getAttributeBySemantic(
     primitive,
     "POSITION"
   );
 
-  let positionMax = positionGltfAttribute.max;
-  let positionMin = positionGltfAttribute.min;
+  var positionMax = positionGltfAttribute.max;
+  var positionMin = positionGltfAttribute.min;
 
+  var boundingSphere;
   if (defined(instancingTranslationMax) && defined(instancingTranslationMin)) {
-    positionMin = Cartesian3.add(
+    var computedMin = Cartesian3.add(
       positionMin,
       instancingTranslationMin,
       cartesianMinScratch
     );
-    positionMax = Cartesian3.add(
+    var computedMax = Cartesian3.add(
       positionMax,
       instancingTranslationMax,
       cartesianMaxScratch
     );
+    boundingSphere = BoundingSphere.fromCornerPoints(computedMin, computedMax);
+  } else {
+    boundingSphere = BoundingSphere.fromCornerPoints(positionMin, positionMax);
   }
 
-  return {
-    min: positionMin,
-    max: positionMax,
-  };
+  BoundingSphere.transform(boundingSphere, modelMatrix, boundingSphere);
+  return boundingSphere;
 };
 
 /**
  * Model matrices in a model file (e.g. glTF) are typically in a different
- * coordinate system, such as with y-up instead of z-up in 3D Tiles.
- * This function returns a matrix that will correct this such that z is up,
- * and x is forward.
+ * coordinate system, such as with y-up instead of z-up. This method adjusts
+ * the matrix so z is up, x is forward.
  *
+ * @param {Matrix4} modelMatrix The original model matrix. This will be updated in place
  * @param {Axis} upAxis The original up direction
  * @param {Axis} forwardAxis The original forward direction
- * @param {Matrix4} result The matrix in which to store the result.
- * @return {Matrix4} The axis correction matrix
  *
  * @private
  */
-ModelExperimentalUtility.getAxisCorrectionMatrix = function (
+ModelExperimentalUtility.correctModelMatrix = function (
+  modelMatrix,
   upAxis,
-  forwardAxis,
-  result
+  forwardAxis
 ) {
-  result = Matrix4.clone(Matrix4.IDENTITY, result);
-
   if (upAxis === Axis.Y) {
-    result = Matrix4.clone(Axis.Y_UP_TO_Z_UP, result);
+    Matrix4.multiplyTransformation(modelMatrix, Axis.Y_UP_TO_Z_UP, modelMatrix);
   } else if (upAxis === Axis.X) {
-    result = Matrix4.clone(Axis.X_UP_TO_Z_UP, result);
+    Matrix4.multiplyTransformation(modelMatrix, Axis.X_UP_TO_Z_UP, modelMatrix);
   }
 
   if (forwardAxis === Axis.Z) {
     // glTF 2.0 has a Z-forward convention that must be adapted here to X-forward.
-    result = Matrix4.multiplyTransformation(result, Axis.Z_UP_TO_X_UP, result);
+    Matrix4.multiplyTransformation(modelMatrix, Axis.Z_UP_TO_X_UP, modelMatrix);
   }
-
-  return result;
-};
-
-const scratchMatrix3 = new Matrix3();
-
-/**
- * Get the cull face to use in the command's render state.
- * <p>
- * From the glTF spec section 3.7.4:
- * When a mesh primitive uses any triangle-based topology (i.e., triangles,
- * triangle strip, or triangle fan), the determinant of the node’s global
- * transform defines the winding order of that primitive. If the determinant
- * is a positive value, the winding order triangle faces is counterclockwise;
- * in the opposite case, the winding order is clockwise.
- * </p>
- *
- * @param {Matrix4} modelMatrix The model matrix
- * @param {PrimitiveType} primitiveType The primitive type
- * @return {CullFace} The cull face
- *
- * @private
- */
-ModelExperimentalUtility.getCullFace = function (modelMatrix, primitiveType) {
-  if (!PrimitiveType.isTriangles(primitiveType)) {
-    return CullFace.BACK;
-  }
-
-  const matrix3 = Matrix4.getMatrix3(modelMatrix, scratchMatrix3);
-  return Matrix3.determinant(matrix3) < 0.0 ? CullFace.FRONT : CullFace.BACK;
 };

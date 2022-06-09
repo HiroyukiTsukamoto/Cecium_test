@@ -11,8 +11,8 @@ import createScene from "../createScene.js";
 describe(
   "Scene/Moon",
   function () {
-    let scene;
-    const backgroundColor = [255, 0, 0, 255];
+    var scene;
+    var backgroundColor = [255, 0, 0, 255];
 
     beforeAll(function () {
       scene = createScene();
@@ -24,12 +24,12 @@ describe(
     });
 
     function lookAtMoon(camera, date) {
-      const icrfToFixed = new Matrix3();
+      var icrfToFixed = new Matrix3();
       if (!defined(Transforms.computeIcrfToFixedMatrix(date, icrfToFixed))) {
         Transforms.computeTemeToPseudoFixedMatrix(date, icrfToFixed);
       }
 
-      const moonPosition = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(
+      var moonPosition = Simon1994PlanetaryPositions.computeMoonPositionInEarthInertialFrame(
         date
       );
       Matrix3.multiplyByVector(icrfToFixed, moonPosition, moonPosition);
@@ -40,7 +40,7 @@ describe(
     }
 
     it("default constructs the moon", function () {
-      const moon = new Moon();
+      var moon = new Moon();
       expect(moon.show).toEqual(true);
       expect(moon.textureUrl).toContain("Assets/Textures/moonSmall.jpg");
       expect(moon.ellipsoid).toBe(Ellipsoid.MOON);
@@ -71,7 +71,7 @@ describe(
     });
 
     it("isDestroyed", function () {
-      const moon = new Moon();
+      var moon = new Moon();
       expect(moon.isDestroyed()).toEqual(false);
       moon.destroy();
       expect(moon.isDestroyed()).toEqual(true);

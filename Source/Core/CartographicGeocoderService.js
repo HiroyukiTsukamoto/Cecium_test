@@ -1,3 +1,4 @@
+import when from "../ThirdParty/when.js";
 import Cartesian3 from "./Cartesian3.js";
 import Check from "./Check.js";
 
@@ -21,16 +22,16 @@ CartographicGeocoderService.prototype.geocode = function (query) {
   Check.typeOf.string("query", query);
   //>>includeEnd('debug');
 
-  const splitQuery = query.match(/[^\s,\n]+/g);
+  var splitQuery = query.match(/[^\s,\n]+/g);
   if (splitQuery.length === 2 || splitQuery.length === 3) {
-    let longitude = +splitQuery[0];
-    let latitude = +splitQuery[1];
-    const height = splitQuery.length === 3 ? +splitQuery[2] : 300.0;
+    var longitude = +splitQuery[0];
+    var latitude = +splitQuery[1];
+    var height = splitQuery.length === 3 ? +splitQuery[2] : 300.0;
 
     if (isNaN(longitude) && isNaN(latitude)) {
-      const coordTest = /^(\d+.?\d*)([nsew])/i;
-      for (let i = 0; i < splitQuery.length; ++i) {
-        const splitCoord = splitQuery[i].match(coordTest);
+      var coordTest = /^(\d+.?\d*)([nsew])/i;
+      for (var i = 0; i < splitQuery.length; ++i) {
+        var splitCoord = splitQuery[i].match(coordTest);
         if (coordTest.test(splitQuery[i]) && splitCoord.length === 3) {
           if (/^[ns]/i.test(splitCoord[2])) {
             latitude = /^[n]/i.test(splitCoord[2])
@@ -46,13 +47,13 @@ CartographicGeocoderService.prototype.geocode = function (query) {
     }
 
     if (!isNaN(longitude) && !isNaN(latitude) && !isNaN(height)) {
-      const result = {
+      var result = {
         displayName: query,
         destination: Cartesian3.fromDegrees(longitude, latitude, height),
       };
-      return Promise.resolve([result]);
+      return when.resolve([result]);
     }
   }
-  return Promise.resolve([]);
+  return when.resolve([]);
 };
 export default CartographicGeocoderService;
